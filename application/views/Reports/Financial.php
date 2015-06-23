@@ -59,10 +59,10 @@
 <div class="clearfix">&nbsp;</div>
 <?php endif;?>
 </form>
-<h3>Total found: <?=count($submissions)?> ticket(s)</h3>
+<h3>Total found: <span id="tickets-count"><?=count($submissions)?></span> ticket(s)</h3>
 <table class="table table-hover" <?= Group::current('allow_assign') ? 'data-url="' . URL::base() . 'reports/financial/approve"' : ''?>>
     <?php foreach ($submissions as $job => $list):?>
-    <tr class="<?=isset($discrepancies[$job])? 'discrepancy' : ''?>">
+    <tr class="<?=isset($discrepancies[$job])? 'discrepancy' : ''?> job-id">
         <th colspan="<?=Group::current('allow_assign') ? 12 : 9?>"><a href="<?=URL::base()?>search/view/<?=$job?>"><?=$job?></a></th>
     </tr>
     <tr class="<?=isset($discrepancies[$job])? 'discrepancy' : ''?>">

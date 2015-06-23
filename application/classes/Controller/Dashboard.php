@@ -7,34 +7,40 @@ class Controller_Dashboard extends Controller {
 
         $total = array();
         $jobs = array();
+        $statuses = array();
         foreach ($result as $job) {
             $fsam = Arr::path($job, $key);
             $jobs[$job['_id']] = $fsam;
             $status = strtolower(preg_replace('/[^a-z]/i', '', Arr::path($job, 'data.44')));
+            $statuses[$job['_id']] = $status;
             if (!in_array($status, array('dirty', 'deferred', 'heldnbn')))
                 $total[$fsam] = Arr::get($total, $fsam, 0) + 1;
         }
 
         $query = array(
             'job_key' => array('$in' => $list),
-            'fields' => 44,
+            'data.44' => array('$exists' => 1),
         );
 
         if (Arr::get($_GET, 'start')) $query['update_time']['$gt'] = strtotime($_GET['start']);
         if (Arr::get($_GET, 'end')) $query['update_time']['$lt'] = strtotime($_GET['end']) + 86399;
 
-        $result = Database_Mongo::collection('archive')->find($query, array('_id' => 0, 'job_key' => 1, 'data.44' => 1));
+        $result = Database_Mongo::collection('archive')->find($query, array('_id' => 0, 'job_key' => 1, 'data.44' => 1, 'update_time' => 1))->sort(array('update_time' => 1));
+
+        foreach ($result as $job)
+            $statuses[$job['job_key']] = strtolower(preg_replace('/[^a-z]/i', '', Arr::path($job, 'data.44.new_value')));
 
         $built = array();
         $tested = array();
-        foreach ($result as $item) {
-            $fsam = Arr::get($jobs, $item['job_key'], '');
-            $status = strtolower(preg_replace('/[^a-z]/i', '', Arr::path($item, 'data.44.new_value')));
-            if ($status == 'built') {
-                $built[$fsam][$item['job_key']] = 1;
-            } elseif ($status == 'tested') {
-                unset($built[$fsam][$item['job_key']]);
-                $tested[$fsam][$item['job_key']] = 1;
+        foreach ($list as $id) {
+            $fsam = $jobs[$id];
+            switch (Arr::get($statuses, $id)) {
+                case 'built':
+                    $built[$fsam] = Arr::get($built, $fsam) + 1;
+                    break;
+                case 'tested':
+                    $tested[$fsam] = Arr::get($tested, $fsam) + 1;
+                    break;
             }
         }
 
@@ -42,8 +48,8 @@ class Controller_Dashboard extends Controller {
         foreach ($total as $key => $value)
             $fsam[$key ? : 'Unknown'] = array(
                 'total' => $value,
-                'built' => count(Arr::get($built, $key, array())),
-                'tested' => count(Arr::get($tested, $key, array())),
+                'built' => Arr::get($built, $key, 0),
+                'tested' => Arr::get($tested, $key, 0),
             );
 
         ksort($fsam);
@@ -74,8 +80,8 @@ class Controller_Dashboard extends Controller {
         $fsas = Database_Mongo::collection('jobs')->distinct('data.12', $query ? : NULL);
         $fsas = array_combine($fsas, $fsas);
 
-        if (Arr::get($_GET, 'fsa') && isset($fsas[$_GET['fsa']]))
-            $query['data.12'] = strval($_GET['fsa']);
+        if (Arr::get($_GET, 'fsa') && (isset($fsas[$_GET['fsa']]) || $_GET['fsa'] == 'Unknown'))
+            $query['data.12'] = $_GET['fsa'] == 'Unknown' ? array('$exists' => false) : strval($_GET['fsa']);
 
         $fsam = Database_Mongo::collection('jobs')->distinct('data.13', $query ? : NULL);
         $fsam = array_combine($fsam, $fsam);
@@ -119,8 +125,8 @@ class Controller_Dashboard extends Controller {
         $fsas = Database_Mongo::collection('jobs')->distinct('data.12', $query ? : NULL);
         $fsas = array_combine($fsas, $fsas);
 
-        if (Arr::get($_GET, 'fsa') && isset($fsas[$_GET['fsa']]))
-            $query['data.12'] = strval($_GET['fsa']);
+        if (Arr::get($_GET, 'fsa') && (isset($fsas[$_GET['fsa']]) || $_GET['fsa'] == 'Unknown'))
+            $query['data.12'] = $_GET['fsa'] == 'Unknown' ? array('$exists' => false) : strval($_GET['fsa']);
 
         $list = Database_Mongo::collection('jobs')->distinct('_id', $query ? : NULL);
 

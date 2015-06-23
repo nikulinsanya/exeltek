@@ -642,6 +642,7 @@ $(function () {
             $('tr.submission:not(.bg-danger)').removeClass('hidden');
             $('tr.discrepancy').removeClass('hidden');
         }
+        $('#tickets-count').text($('.job-id:not(.hidden)').length);
     });
     
     $('.checkbox-x').checkboxX({ useNative: true});
