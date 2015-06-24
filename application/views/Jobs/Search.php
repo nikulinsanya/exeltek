@@ -228,7 +228,7 @@
 
 
 
-<div class="col-xs-12">
+<div class="col-xs-12 text-center">
 <?=$pager = View::factory('Pager');?>
 </div>
 <div class="clearfix">&nbsp;</div>
@@ -241,12 +241,12 @@
 <form action="<?=URL::base()?>search/assign" method="post">
 <?php $columns = array_flip(explode(',', Group::current('columns')));?>
 <table class="table small">
-    <tr>
+    <tr class="text-center">
         <th><input type="checkbox" class="checkbox check-all" /></th>
 
         <th class="sortable" data-id="id">Ticket ID</th>
         <?php if (isset($columns['last_update'])):?>
-        <th class="hidden-sm hidden-xs dropdown sortable <?=Arr::get($_GET, 'start') || Arr::get($_GET, 'end') ? 'bg-warning' : ''?>" data-id="update">
+        <th class="hidden-sm hidden-xs dropdown sortable date-td <?=Arr::get($_GET, 'start') || Arr::get($_GET, 'end') ? 'bg-warning' : ''?>" data-id="update">
             <a href="javascript:;" class="dropdown-toggle" data-toggle="collapse" data-target="#filter-update">
                 Last update
             </a>
@@ -264,7 +264,7 @@
         <?php endif;?>
 
         <?php if (isset($columns['last_submit'])):?>
-        <th class="hidden-sm hidden-xs dropdown sortable <?=Arr::get($_GET, 'submit-start') || Arr::get($_GET, 'submit-end') ? 'bg-warning' : ''?>" data-id="submit">
+        <th class="hidden-sm hidden-xs dropdown sortable date-td <?=Arr::get($_GET, 'submit-start') || Arr::get($_GET, 'submit-end') ? 'bg-warning' : ''?>" data-id="submit">
             <a href="javascript:;" class="dropdown-toggle" data-toggle="collapse" data-target="#filter-submit">
                 Last submit
             </a>
@@ -331,7 +331,7 @@
         </th>
         <?php endforeach;?>
 
-        <th>&nbsp;</th>
+        <th class="table-buttons"></th>
     </tr>
     <?php foreach ($tickets as $ticket):
         $status = preg_replace('/[^a-z]/', '', strtolower(Arr::path($ticket, JOB_STATUS_COLUMN, '')));
@@ -356,7 +356,7 @@
                 $status = 'lightcyan';
         }
     ?>
-    <tr bgcolor="<?=$status?>">
+    <tr bgcolor="<?=$status?>" class="text-center">
         <td><input type="checkbox" class="checkbox" name="job[<?=$ticket['_id']?>]" /></td>
 
         <td><?=HTML::chars($ticket['_id'])?></td>
@@ -405,17 +405,17 @@
         <td><?=Columns::output(Arr::path($ticket, 'data.'.$id), Columns::get_type($id))?></td>
         <?php endforeach;?>
 
-        <td>
+        <td  class="table-buttons">
             <?php if (Group::current('allow_forms') && !Arr::get($ticket, 'locked') && in_array(User::current('company_id'), Arr::get($ticket, 'assigned', array(), true))):?>
-            <a href="<?=URL::base()?>search/form/<?=$ticket['_id']?>" class="btn btn-success"><span class="glyphicon glyphicon-list-alt"></span> Submit information</a>
+            <a href="<?=URL::base()?>search/form/<?=$ticket['_id']?>" class="btn btn-success"  data-toggle="tooltip" data-placement="top" title="Submit information"><span class="glyphicon glyphicon-list-alt"></span></a>
             <?php endif;?>
-            <a href="<?=URL::base()?>search/view/<?=$ticket['_id']?>" class="btn btn-info"><span class="glyphicon glyphicon-search"></span> View</a>
+            <a href="<?=URL::base()?>search/view/<?=$ticket['_id']?>" class="btn btn-info"  data-toggle="tooltip" data-placement="top" title="View"><span class="glyphicon glyphicon-search"></span></a>
             <?php if (Group::current('allow_reports')):?>
-            <a href="<?=URL::base()?>imex/reports?ticket=<?=$ticket['_id']?>" class="btn btn-warning"><span class="glyphicon glyphicon-list"></span> Reports</a>
-            <a href="<?=URL::base()?>assign?ticket=<?=$ticket['_id']?>" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Assign logs</a>
+            <a href="<?=URL::base()?>imex/reports?ticket=<?=$ticket['_id']?>" class="btn btn-warning"  data-toggle="tooltip" data-placement="top" title="Reports"><span class="glyphicon glyphicon-list"></span></a>
+            <a href="<?=URL::base()?>assign?ticket=<?=$ticket['_id']?>" class="btn btn-primary"  data-toggle="tooltip" data-placement="top" title="Assign logs"><span class="glyphicon glyphicon-pencil"></span></a>
             <?php endif;?>
             <?php if (Group::current('allow_submissions')):?>
-            <a href="<?=URL::base()?>submissions?ticket=<?=$ticket['_id']?>" class="btn btn-danger"><span class="glyphicon glyphicon-check"></span> Submissions</a>
+            <a href="<?=URL::base()?>submissions?ticket=<?=$ticket['_id']?>" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Submissions"><span class="glyphicon glyphicon-check"></span></a>
             <?php endif;?>
         </td>
     </tr>

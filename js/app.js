@@ -642,9 +642,12 @@ $(function () {
             $('tr.discrepancy').removeClass('hidden');
         }
     });
-    
-    $('.checkbox-x').checkboxX({ useNative: true});
 
+
+    function initPlugins(){
+        $('.checkbox-x').checkboxX({ useNative: true});
+        $('[data-toggle="tooltip"]').tooltip();
+    }
 
 
     function setSelectize(self){
@@ -679,4 +682,5 @@ $(function () {
 
 
     setSelectize($('.selectize'));
+    initPlugins();
 });
