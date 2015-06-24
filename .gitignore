@@ -4,3 +4,4 @@ application/cache
 application/logs
 application/config
 application/bootstrap.php
+tmp

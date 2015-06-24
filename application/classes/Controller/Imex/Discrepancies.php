@@ -53,7 +53,12 @@ class Controller_Imex_Discrepancies extends Controller {
         
         foreach ($list as $row) {
             $row['data'] = array_intersect_key($row['data'], Columns::get_visible());
-            
+            $row['current'] = array();
+
+            foreach ($row['data'] as $key => $value) {
+                $row['current'][$key] = Arr::path($jobs, array($row['job_key'], $key));
+            }
+
             foreach (Columns::get_static() as $static => $show)
                 $row['static'][$static] = Arr::path($jobs, array($row['job_key'], $static));
                             
@@ -106,6 +111,7 @@ class Controller_Imex_Discrepancies extends Controller {
         $data[] = "Column name";
         $data[] = "Old value";
         $data[] = "New value";
+        $data[] = 'Current value';
 
         fputcsv($file, $data);
         
@@ -126,6 +132,8 @@ class Controller_Imex_Discrepancies extends Controller {
                 $data[] = Columns::get_name($key);
                 $data[] = $date && $value['old_value'] ? date('d-m-Y H:i', $value['old_value']) : $value['old_value'];
                 $data[] = $date && $value['new_value'] ? date('d-m-Y H:i', $value['new_value']) : $value['new_value'];
+                $current = $ticket['current'][$key];
+                $data[] = $date && $current ? date('d-m-Y H:i', $current) : $current;
                 fputcsv($file, $data);
             }
         }

@@ -39,6 +39,7 @@ else:?>
         <th>Column name:</th>
         <th>Old value:</th>
         <th>New value:</th>
+        <th>Current value:</th>
     </tr>
     <?php
         foreach ($tickets as $ticket): $cnt = count($ticket['data']);
@@ -53,9 +54,10 @@ else:?>
         <?php foreach ($reports as $key => $name):?>
         <td rowspan="<?=$cnt?>"><?=Columns::output(Arr::path($ticket, 'static.'.$key), Columns::get_type($key))?></td>
         <?php endforeach; endif;?>
-        <td><?=HTML::chars(Columns::get_name($id))?></td>
+        <td><?=HTML::chars(Columns::get_name($id));?></td>
         <td><?=HTML::chars($date ? date("d-m-Y H:i", $value['old_value'] ? : 0) : $value['old_value'])?></td>
         <td><?=HTML::chars($date ? date("d-m-Y H:i", $value['new_value'] ? : 0) : $value['new_value'])?></td>
+        <td><?=HTML::chars($date ? date("d-m-Y H:i", $ticket['current'][$id] ? : 0) : $ticket['current'][$id])?></td>
     </tr>
     <?php $fl = false; endforeach;?>
     <?php endforeach;?>
