@@ -13,3 +13,53 @@
 body {
   padding-top: 60px;
 }
+
+label {
+    margin-top: 7px;
+}
+
+/*preloader*/
+#loading{
+    position: fixed;
+    left: 50%;
+    margin-left: -35px;
+    width: 70px;
+    top:50%;
+    margin-top: -70px;
+}
+
+#loading img{
+    width: 100%;
+    height: auto;
+}
+
+
+
+
+
+
+/*filters*/
+.text-info-filters{
+    margin-bottom: 5px;
+}
+.filter_value{
+    font-style: italic;
+    font-size: 16px;
+}
+
+.filter-info-container{
+    border: 1px solid #ccc;
+    padding: 0px 10px 10px 10px;
+}
+
+.filter-item{
+    padding: 5px 5px 5px 5px;
+}
+
+.filter-item:hover{
+    background: #e6e6e6;
+}
+
+select.selectize{
+    display: none;
+}

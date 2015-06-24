@@ -1,5 +1,7 @@
 .idea
-application/config
-application/logs
+.htaccess
 application/cache
+application/logs
+application/config
+application/bootstrap.php
 tmp

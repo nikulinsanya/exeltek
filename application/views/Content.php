@@ -6,28 +6,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Tickets Management Portal</title>
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script src="<?=URL::base()?>js/vendor/jquery.ui.widget.js"></script>
-    <script src="<?=URL::base()?>js/jquery.iframe-transport.js"></script>
-    <script src="<?=URL::base()?>js/jquery.fileupload.js"></script>
+    <script src="<?=URL::base()?>js/lib/jquery/jquery-1.11.3.min.js"></script>
+    <script src="<?=URL::base()?>js/lib/jquery/jquery.ui.widget.js"></script>
+    <script src="<?=URL::base()?>js/lib/jquery/jquery.iframe-transport.js"></script>
+    <script src="<?=URL::base()?>js/lib/jquery/jquery.fileupload.js"></script>
+    <script src="<?=URL::base()?>js/lib/jquery/jquery-ui.min.js"></script>
+
     <!-- Bootstrap -->
     <link href="<?=URL::base()?>css/bootstrap.min.css" rel="stylesheet">
     <link href="<?=URL::base()?>css/style.css" rel="stylesheet">
-    <script src="<?=URL::base()?>js/bootstrap.min.js"></script>
+    <script src="<?=URL::base()?>js/lib/bootstrap/bootstrap.min.js"></script>
+
+    <script src="<?=URL::base()?>js/lib/bootstrap/selectize.js"></script>
+    <link href="<?=URL::base()?>css/selectize.css" rel="stylesheet">
+
     <script src="<?=URL::base()?>js/app.js"></script>
 
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css" />
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js"></script>
     
     <link href="<?=URL::base()?>css/bootstrap-datetimepicker.min.css" rel="stylesheet">
-    <script src="<?=URL::base()?>js/bootstrap-datetimepicker.min.js"></script>
+    <script src="<?=URL::base()?>js/lib/bootstrap/bootstrap-datetimepicker.min.js"></script>
 
     <link href="<?=URL::base()?>css/style.min.css" rel="stylesheet">
-    <script src="<?=URL::base()?>js/jstree.min.js"></script>
+    <script src="<?=URL::base()?>js/lib/jstree.min.js"></script>
 
     <link href="<?=URL::base()?>css/checkbox-x.min.css" rel="stylesheet">
-    <script src="<?=URL::base()?>js/checkbox-x.min.js"></script>
+    <script src="<?=URL::base()?>js/lib/checkbox-x.min.js"></script>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -36,6 +41,10 @@
     <![endif]-->
   </head>
   <body>
+  <div class="modal fade" id="preloaderModal" tabindex="-1" role="dialog">
+      <div id="loading"><img src="img/loading.gif">Loading...</div>
+
+  </div>
     <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">

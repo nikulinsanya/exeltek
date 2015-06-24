@@ -1,9 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 class Controller_Api_Jobs extends Kohana_Controller {
-    public function before() {
-        header('Content-type: application/json');
-    }
 
     public function action_index() {
         $token = Arr::get($_REQUEST, 'token');
@@ -31,7 +28,7 @@ class Controller_Api_Jobs extends Kohana_Controller {
         $columns[13] = 1;
         $columns[14] = 1;
 
-        foreach (Form::$columns as $type => $list) foreach ($list as $keys => $name) foreach (explode(',' , $keys) as $key)
+        foreach (Form::$columns as $type => $list) foreach ($list as $key => $name)
             if (is_numeric($key)) $columns[$key] = 1;
 
         foreach ($result as $job) {
@@ -158,18 +155,6 @@ class Controller_Api_Jobs extends Kohana_Controller {
         $completed = Arr::get($_REQUEST, 'completed');
         $location = strval(Arr::get($_REQUEST, 'location'));
 
-        /*Database_Mongo::collection('api')->insert(array(
-            'get' => $_GET,
-            'post' => $_POST,
-            'request' => $_REQUEST,
-            'body' => \http\Env::getRequestBody(),
-            'headers' => \http\Env::getRequestHeader(),
-            'signature' => $signature,
-            'submissions' => $submissions,
-            'completed' => $completed,
-            'location' => $location,
-        ));*/
-
         if (!$signature || !$submissions || !$completed)
             die(json_encode(array('success' => false, 'error' => 'wrong data')));
 
@@ -213,8 +198,8 @@ class Controller_Api_Jobs extends Kohana_Controller {
                 $approval = false;
                 $archive = array();
 
-                foreach ($submissions as $key => $value) if (is_numeric($key)) {
-                    $value = Columns::get_type($key) == 'date' ? intval($submissions[$key]) : $submissions[$key];
+                foreach ($columns as $keys => $name) foreach (explode(',', $keys) as $key) if (is_numeric($key) && isset($submissions[$key])) {
+                    $value = Columns::parse($submissions[$key], Columns::get_type($key));
                     if (Columns::get_direct($key)) {
 
                         if (Arr::path($job, 'data.' . $key) != $value) {
@@ -249,37 +234,38 @@ class Controller_Api_Jobs extends Kohana_Controller {
                         Database_Mongo::collection('submissions')->insert($submission);
                         unset($submission['_id']);
                     }
+
+                    if ($update) {
+                        $update['$set']['last_update'] = time();
+                        if ($approval)
+                            $update['$set']['last_submit'] = time();
+                        Database_Mongo::collection('jobs')->update(
+                            array('_id' => $id),
+                            $update
+                        );
+
+                        if ($archive) {
+                            foreach (Columns::get_static() as $key => $value)
+                                $archive['static'][$key] = Arr::path($job, 'data.' . $key);
+                            $archive['fields'] = array_keys($archive['data']);
+                            $archive['job_key'] = $id;
+                            $archive['user_id'] = User::current('id');
+                            $archive['update_time'] = time();
+                            $archive['update_type'] = 2;
+                            $archive['filename'] = 'MANUAL';
+                            Database_Mongo::collection('archive')->insert($archive);
+                        }
+                    } elseif ($approval)
+                        Database_Mongo::collection('jobs')->update(
+                            array('_id' => $id),
+                            array('$set' => array('last_submit' => time()))
+                        );
                 }
-
-                if ($update) {
-                    $update['$set']['last_update'] = time();
-                    if ($approval)
-                        $update['$set']['last_submit'] = time();
-                    Database_Mongo::collection('jobs')->update(
-                        array('_id' => $id),
-                        $update
-                    );
-
-                    if ($archive) {
-                        foreach (Columns::get_static() as $key => $value)
-                            $archive['static'][$key] = Arr::path($job, 'data.' . $key);
-                        $archive['fields'] = array_keys($archive['data']);
-                        $archive['job_key'] = $id;
-                        $archive['user_id'] = User::current('id');
-                        $archive['update_time'] = time();
-                        $archive['update_type'] = 2;
-                        $archive['filename'] = 'MANUAL';
-                        Database_Mongo::collection('archive')->insert($archive);
-                    }
-                } elseif ($approval)
-                    Database_Mongo::collection('jobs')->update(
-                        array('_id' => $id),
-                        array('$set' => array('last_submit' => time()))
-                    );
             } else {
                 Database::instance()->rollback();
                 die(json_encode(array('success' => false, 'error' => 'signature problem')));
             }
+            Database_Mongo::collection('api')->insert($_REQUEST);
             die(json_encode(array('success' => true)));
         }
 

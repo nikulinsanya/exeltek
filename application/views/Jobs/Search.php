@@ -1,93 +1,233 @@
-<form class="filters-form" action="" method="get">
-<h4>Filters:</h4>
-<div class="col-xs-4 col-sm-4 col-md-4">
-    <input type="text" class="form-control" id="ticket-id" placeholder="Ticket ID" name="ticket" value="<?=Arr::get($_GET, 'ticket')?>" />
-</div>
-<div class="col-xs-4 col-sm-4 col-md-4">
-    <?=Form::select('region', array('' => 'All regions') + $regions, Arr::get($_GET, 'region'), array('class' => 'form-control'))?>
-</div>
-<div class="col-xs-4 col-sm-4 col-md-4">
-    <?=Form::select('type', array('' => 'All jobs') + $types, Arr::get($_GET, 'type'), array('class' => 'form-control'))?>
-</div>
-<div class="clearfix">&nbsp;</div>
-<input name="start" id="updated-start" type="hidden" value="<?=Arr::get($_GET, 'start')?>" />
-<input name="end" id="updated-end" type="hidden" value="<?=Arr::get($_GET, 'end')?>" />
-<input name="submit-start" id="submit-start" type="hidden" value="<?=Arr::get($_GET, 'submit-start')?>" />
-<input name="submit-end" id="submit-end" type="hidden" value="<?=Arr::get($_GET, 'submit-end')?>" />
-<?php if (Group::current('show_all_jobs')):?>
-<div class="col-xs-2 col-sm-2 col-md-1">
-    <label class="control-label">
-        Assigned:
-    </label>
-</div>
-<div class="col-xs-4 col-sm-4 col-md-2">
-        <?=Form::select('company', array('' => 'Any company') + $companies, Arr::get($_GET, 'company'), array('class' => 'form-control'))?>
-</div>
-<div class="col-xs-2 col-sm-2 col-md-1">
-    <label class="control-label">
-        Previous:
-    </label>
-</div>
-<div class="col-xs-4 col-sm-4 col-md-2">
-    <?=Form::select('ex', array('' => 'Any company') + $companies, Arr::get($_GET, 'ex'), array('class' => 'form-control'))?>
-</div>
-<?php endif;?>
-<div class="col-xs-6 col-sm-6 col-md-3">
-<button type="submit" class="btn btn-success">Search</button>
-<a href="<?=URL::base()?>search?clear" class="btn btn-warning">Clear</a>
-</div>
-<div class="clearfix">&nbsp;</div>
-<?php if (Group::current('allow_assign')) foreach (Columns::$settings as $id => $name):?>
-<div class="col-xs-4 col-sm-4 col-md-3">
-    <label>
-        <input name="settings[<?=$id?>]" class="checkbox-x" type="checkbox" checked value="<?=Arr::path($_GET, 'settings.' . $id) ? '1' : (Arr::path($_GET, 'settings.' . $id) === '0' ? '0' : '')?>" />
-        <?=HTML::chars($name)?>
-    </label>
-</div>
-<?php endforeach;?>
-<div class="clearfix">&nbsp;</div>
-<?php $cols = Arr::get($_GET, 'columns', array()); foreach ($cols as $id => $column):?>
-<div class="filter-row col-xs-12">
-    <div class="col-xs-12 col-sm-12 col-md-6">
-    <?=Form::select('columns[]', array('' => 'Please select') + $columns, $column, array('class' => 'form-control field-select'))?>
+<div>
+    <div class="filter-info-container">
+        <label  class="filter_value">Filters:</label>
+        <div class="text-info-filters">
+            <div>
+                <?php if(Arr::get($_GET, 'ticket')){?>
+                    <span class="filter-item">
+                            Ticket:
+                            <label class="filter_value">
+                                <?=Arr::get($_GET, 'ticket')?>
+                            </label>
+                    </span>
+                <?php } ?>
+                <?php if(Arr::get($_GET, 'region')){?>
+                    <span class="filter-item">
+                        Region:
+                        <label class="filter_value">
+                            <?=$regions[Arr::get($_GET, 'region')]?>
+                        </label>
+                    </span>
+                <?php } ?>
+                <?php if(Arr::get($_GET, 'type')){?>
+                    <span class="filter-item">
+                        Job:
+                        <label class="filter_value">
+                            <?=$types[Arr::get($_GET, 'type')]?>
+                        </label>
+                    </span>
+                <?php } ?>
+                <?php if(Arr::get($_GET, 'company')){?>
+                    <span class="filter-item">
+                        Assigned:
+                        <label class="filter_value">
+                            <?=$companies[Arr::get($_GET, 'company')]?>
+                        </label>
+                    </span>
+                <?php } ?>
+                <?php if(Arr::get($_GET, 'company')){?>
+                    <span class="filter-item">
+                        Previous:
+                        <label class="filter_value">
+                            <?=$companies[Arr::get($_GET, 'ex')]?>
+                        </label>
+                    </span>
+                <?php } ?>
+                <?php $cols = Arr::get($_GET, 'columns', array()); foreach ($cols as $id => $column):?>
+                    <span class="filter-item">
+                        <?php if($cols[$id]):?>
+                            <?=$columns[$column]?>:
+
+                            <label class="filter_value">
+                                <?=$actions[Arr::path($_GET, 'actions.' . $id)]?>
+                                <?=Arr::path($_GET, 'values.' . $id)?>
+                            </label>
+                        <?php endif;?>
+                    </span>
+                <?php endforeach; ?>
+            </div>
+
+            <div>
+                <?php if (Group::current('allow_assign')) foreach (Columns::$settings as $id => $name):?>
+                    <?php if(Arr::path($_GET, 'settings.' . $id)):?>
+                        <span class="filter-item">
+                            <label class="filter_value">
+                                <input disabled="disabled" class="checkbox-x" type="checkbox" checked value="<?=Arr::path($_GET, 'settings.' . $id) ? '1' : (Arr::path($_GET, 'settings.' . $id) === '0' ? '0' : '')?>" />
+                                <?=HTML::chars($name)?>
+                            </label>
+                        </span>
+                    <?php endif;?>
+                <?php endforeach;?>
+                <?php if (Group::current('allow_assign')) foreach (Columns::$settings as $id => $name):?>
+                    <?php if(Arr::path($_GET, 'settings.' . $id) === '0'):?>
+                        <span class="filter-item">
+                            <label class="filter_value">
+                                <input disabled="disabled" class="checkbox-x" type="checkbox" checked value="<?=Arr::path($_GET, 'settings.' . $id) ? '1' : (Arr::path($_GET, 'settings.' . $id) === '0' ? '0' : '')?>" />
+                                <?=HTML::chars($name)?>
+                            </label>
+                        </span>
+                    <?php endif;?>
+                <?php endforeach;?>
+            </div>
+
+            <div class="clearfix">&nbsp;</div>
+        </div>
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#filterModal">
+            <span class="glyphicon glyphicon-filter"></span>
+            Modify filters
+        </button>
     </div>
-    <div class="col-xs-3 col-sm-3 col-md-1">
-    <?=Form::select('actions[]', $actions, Arr::path($_GET, 'actions.' . $id), array('class' => 'form-control action-select'))?>
+
+
+    <!-- Modal Filters-->
+    <div class="modal fade" id="filterModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <form class="filters-form" action="" method="get">
+
+                    <!--template filter row-->
+                    <!--@todo - move to js templates -->
+                        <div id="filter_row_template" style="display: none;">
+                            <div class="filter-row">
+                                <div class="col-xs-12 col-sm-12 col-md-6">
+                                    <?=Form::select('columns[]', array('' => 'Please select') + $columns, false, array('class' => 'field-select'))?>
+                                </div>
+                                <div class="hidden visible-sm visible-xs clearfix">&nbsp;</div>
+                                <div class="col-xs-3 col-sm-3 col-md-3">
+                                    <?=Form::select('actions[]', $actions, false, array('class' => 'action-select'))?>
+                                </div>
+                                <div class="col-xs-7 col-sm-7 col-md-2">
+                                    <input type="text" class="form-control action-value" placeholder="Value" name="values[]" />
+                                </div>
+                                <div class="col-xs-2 col-sm-1">
+                                    <button type="button" class="btn btn-info add-filter"><span class="glyphicon glyphicon-plus"></span></button>
+<!--                                    <button type="button" class="btn btn-danger remove-filter"><span class="glyphicon glyphicon-minus"></span></button>-->
+                                </div>
+                                <div class="clearfix">&nbsp;</div>
+                            </div>
+                        </div>
+
+
+
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Modify filters</h4>
+                    </div>
+                    <div class="modal-body" id="filter-form">
+                        <div class="col-xs-4 col-sm-4 col-md-2">
+                            <input type="text" class="form-control" id="ticket-id" placeholder="Ticket ID" name="ticket" value="<?=Arr::get($_GET, 'ticket')?>" />
+                        </div>
+                        <div class="col-xs-4 col-sm-4 col-md-2">
+                            <?=Form::select('region', array('' => 'All regions') + $regions, Arr::get($_GET, 'region'), array('class' => 'form-control'))?>
+                        </div>
+                        <div class="col-xs-4 col-sm-4 col-md-2">
+                            <?=Form::select('type', array('' => 'All jobs') + $types, Arr::get($_GET, 'type'), array('class' => 'form-control'))?>
+                        </div>
+                        <input name="start" id="updated-start" type="hidden" value="<?=Arr::get($_GET, 'start')?>" />
+                        <input name="end" id="updated-end" type="hidden" value="<?=Arr::get($_GET, 'end')?>" />
+                        <input name="submit-start" id="submit-start" type="hidden" value="<?=Arr::get($_GET, 'submit-start')?>" />
+                        <input name="submit-end" id="submit-end" type="hidden" value="<?=Arr::get($_GET, 'submit-end')?>" />
+                        <?php if (Group::current('show_all_jobs')):?>
+                            <div class="col-xs-2 col-sm-2 col-md-1">
+                                <label class="control-label">
+                                    Assigned:
+                                </label>
+                            </div>
+                            <div class="col-xs-4 col-sm-4 col-md-2">
+                                <?=Form::select('company', array('' => 'Any company') + $companies, Arr::get($_GET, 'company'), array('class' => 'form-control'))?>
+                            </div>
+                            <div class="col-xs-2 col-sm-2 col-md-1">
+                                <label class="control-label">
+                                    Previous:
+                                </label>
+                            </div>
+                            <div class="col-xs-4 col-sm-4 col-md-2">
+                                <?=Form::select('ex', array('' => 'Any company') + $companies, Arr::get($_GET, 'ex'), array('class' => 'form-control'))?>
+                            </div>
+                        <?php endif;?>
+                        <div class="clearfix">&nbsp;</div>
+                        <?php if (Group::current('allow_assign')) foreach (Columns::$settings as $id => $name):?>
+                            <div class="col-xs-4 col-sm-4 col-md-3">
+                                <label>
+                                    <input name="settings[<?=$id?>]" class="checkbox-x" type="checkbox" checked value="<?=Arr::path($_GET, 'settings.' . $id) ? '1' : (Arr::path($_GET, 'settings.' . $id) === '0' ? '0' : '')?>" />
+                                    <?=HTML::chars($name)?>
+                                </label>
+                            </div>
+                        <?php endforeach;?>
+                        <div class="clearfix">&nbsp;</div>
+                        <div class="clearfix">&nbsp;</div>
+                        <?php $cols = Arr::get($_GET, 'columns', array()); foreach ($cols as $id => $column):?>
+                            <div>
+                                <div class="col-xs-12 col-sm-12 col-md-6">
+                                    <?=Form::select('columns[]', array('' => 'Please select') + $columns, $column, array('class' => 'selectize'))?>
+                                </div>
+                                <div class="col-xs-3 col-sm-3 col-md-3">
+                                    <?=Form::select('actions[]', $actions, Arr::path($_GET, 'actions.' . $id), array('class' => 'selectize'))?>
+                                </div>
+                                <div class="col-xs-7 col-sm-7 col-md-2">
+                                    <input type="text" class="form-control" placeholder="Value" name="values[]" value="<?=Arr::path($_GET, 'values.' . $id)?>"/>
+                                </div>
+                                <div class="col-xs-2 col-sm-1">
+                                    <button type="button" class="btn btn-danger remove-filter"><span class="glyphicon glyphicon-minus"></span></button>
+                                </div>
+                                <div class="clearfix">&nbsp;</div>
+                            </div>
+                        <?php endforeach; ?>
+                        <div class="filter-row">
+                            <div class="col-xs-12 col-sm-12 col-md-6">
+                                <?=Form::select('columns[]', array('' => 'Please select') + $columns, false, array('class' => 'selectize'))?>
+                            </div>
+                            <div class="hidden visible-sm visible-xs clearfix">&nbsp;</div>
+                            <div class="col-xs-3 col-sm-3 col-md-3">
+                                <?=Form::select('actions[]', $actions, false, array('class' => 'selectize'))?>
+                            </div>
+                            <div class="col-xs-7 col-sm-7 col-md-2">
+                                <input type="text" class="form-control form-value" placeholder="Value" name="values[]" />
+                            </div>
+                            <div class="col-xs-2 col-sm-1">
+                                <button type="button" class="btn btn-info add-filter"><span class="glyphicon glyphicon-plus"></span></button>
+                            </div>
+                            <div class="clearfix">&nbsp;</div>
+                        </div>
+                        <div class="clearfix">&nbsp;</div>
+                        <div id="sorting">
+                            <?php $sorting = Arr::get($_GET, 'sort', array()); foreach ($sorting as $sort):?>
+                                <input type="hidden" name="sort[]" value="<?=$sort?>" />
+                            <?php endforeach; $sorting = array_flip($sorting);?>
+                        </div>
+                        <div class="clearfix">&nbsp;</div>
+                        <input type="hidden" id="status-filter" name="status" value="<?=Arr::get($_GET, 'status')?>" />
+
+                    </div>
+                    <div class="modal-footer">
+                        <a href="<?=URL::base()?>search?clear" class="btn btn-warning" id="clearFilters">Clear</a>
+                        <button type="submit" class="btn btn-success" id="hideModalFilters">Apply filters</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="col-xs-7 col-sm-7 col-md-2">
-    <input type="text" class="form-control" placeholder="Value" name="values[]" value="<?=Arr::path($_GET, 'values.' . $id)?>"/>
-    </div>
-    <div class="col-xs-2 col-sm-2"> 
-    <button type="button" class="btn btn-danger remove-filter"><span class="glyphicon glyphicon-minus"></span> Remove</button>
-    </div>
-    <div class="clearfix">&nbsp;</div>
+
+
+
 </div>
-<?php endforeach; ?>
-<div class="filter-row col-xs-12">
-    <div class="col-xs-12 col-sm-12 col-md-6">
-        <?=Form::select('columns[]', array('' => 'Please select') + $columns, false, array('class' => 'form-control field-select'))?>
-    </div>
-    <div class="hidden visible-sm visible-xs clearfix">&nbsp;</div>
-    <div class="col-xs-3 col-sm-3 col-md-1"> 
-    <?=Form::select('actions[]', $actions, false, array('class' => 'form-control action-select'))?>
-    </div>
-    <div class="col-xs-7 col-sm-7 col-md-2"> 
-    <input type="text" class="form-control" placeholder="Value" name="values[]" />
-    </div>
-    <div class="col-xs-2 col-sm-2"> 
-    <button type="button" class="btn btn-info add-filter"><span class="glyphicon glyphicon-plus"></span> Add</button>
-    </div>
-    <div class="clearfix">&nbsp;</div>
-</div>
-<div class="clearfix">&nbsp;</div>
-<div id="sorting">
-    <?php $sorting = Arr::get($_GET, 'sort', array()); foreach ($sorting as $sort):?>
-    <input type="hidden" name="sort[]" value="<?=$sort?>" />
-    <?php endforeach; $sorting = array_flip($sorting);?>
-</div>
-<div class="clearfix">&nbsp;</div>
-<input type="hidden" id="status-filter" name="status" value="<?=Arr::get($_GET, 'status')?>" />
-</form>
+
+
+
+
+
+
 <div class="col-xs-12">
 <?=$pager = View::factory('Pager');?>
 </div>
@@ -313,4 +453,7 @@
     <button type="submit" class="btn btn-info export-result"><span class="glyphicon glyphicon-export"></span>Export search result</button>
 </div>
 <div class="clearfix">&nbsp;</div>
+
 </form>
+
+

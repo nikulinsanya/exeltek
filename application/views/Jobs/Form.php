@@ -50,5 +50,5 @@
 </form>
 
 <?=View::factory('Jobs/UploadFile')?>
-<script src="<?=URL::base()?>js/signature_pad.min.js"></script>
-<script src="<?=URL::base()?>js/signature.js"></script>
+<script src="<?=URL::base()?>js/lib/signature_pad.min.js"></script>
+<script src="<?=URL::base()?>js/lib/signature.js"></script>
