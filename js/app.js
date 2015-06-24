@@ -212,9 +212,21 @@ $(function () {
         }
         return false;
     });
+
+    $('#clearFilters').on('click',function(e){
+        $('#filterModal').modal('hide');
+        $('#preloaderModal').modal('show');
+    });
     
-    $('.filters-form').submit(function () {
-        if ($(this).attr('hold')) return false;
+    $('.filters-form').submit(function (e) {
+        $('#filterModal').modal('hide');
+        $('#preloaderModal').modal('show');
+        if ($(this).attr('hold')){
+            $('#preloaderModal').modal('hide');
+            return false;
+        }
+
+
 
         $(this).find('.filter-row').each(function () {
             if ($(this).find('select').first().val() == '') $(this).remove();
@@ -642,8 +654,12 @@ $(function () {
             $('tr.submission:not(.bg-danger)').removeClass('hidden');
             $('tr.discrepancy').removeClass('hidden');
         }
-        $('#tickets-count').text($('.job-id:not(.hidden)').length);
     });
     
     $('.checkbox-x').checkboxX({ useNative: true});
+
+    $('.selectize').selectize({
+        create: true,
+        sortField: 'text'
+    });
 });

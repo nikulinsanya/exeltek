@@ -2,10 +2,6 @@
 
 class Controller_Api_Images extends Kohana_Controller {
 
-    public function before() {
-        header('Content-type: application/json');
-    }
-
     public function action_prepare() {
         $token = Arr::get($_REQUEST, 'token');
         $location = Arr::get($_REQUEST, 'location', '');

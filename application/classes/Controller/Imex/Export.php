@@ -25,7 +25,7 @@ class Controller_Imex_Export extends Controller {
                 $data = array_fill(0, count($columns) + 1, '');
                 $data[0] = $job['_id'];
                 foreach ($columns as $key => $value)
-                    $data[$key] = iconv("UTF-8", 'CP1251//ignore', Columns::output(Arr::get($job['data'], $key, ''), Columns::get_type($key), true));
+                    $data[$key] = Columns::output(Arr::get($job['data'], $key, ''), Columns::get_type($key), true);
                      
                 fputcsv($file, $data);
             }
@@ -51,7 +51,7 @@ class Controller_Imex_Export extends Controller {
                 $data = array_fill(0, count($columns) + 1, '');
                 $data[0] = $job['_id'];
                 foreach ($columns as $key => $value)
-                    $data[$key] = iconv("UTF-8", 'CP1251//ignore', Columns::output(Arr::get($job['data'], $key, ''), Columns::get_type($key), true));
+                    $data[$key] = Columns::output(Arr::get($job['data'], $key, ''), Columns::get_type($key), true);
                      
                 fputcsv($file, $data);
             }

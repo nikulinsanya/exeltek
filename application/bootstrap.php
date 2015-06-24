@@ -82,7 +82,7 @@ if (isset($_SERVER['SERVER_PROTOCOL']))
  * Note: If you supply an invalid environment name, a PHP warning will be thrown
  * saying "Couldn't find constant Kohana::<INVALID_ENV_NAME>"
  */
-if ($_SERVER['HTTP_HOST'] == 'exeltek.savvyled.pl') 
+if ($_SERVER['HTTP_HOST'] == 'exeltek.savvyled.pl' || true)
     Kohana::$environment = Kohana::DEVELOPMENT;
 else
     Kohana::$environment = Kohana::PRODUCTION;
@@ -112,7 +112,7 @@ if (Kohana::$environment == Kohana::PRODUCTION)
  */
 Kohana::init(array(
     'index_file' => false,
-	'base_url'   => (Kohana::$environment == Kohana::PRODUCTION ? '/jobs/' : '/'),
+	'base_url'   => (Kohana::$environment == Kohana::PRODUCTION ? '/jobs/' : '/exeltek/'),
     'profile'    => Kohana::$environment !== Kohana::PRODUCTION,
 ));
 
