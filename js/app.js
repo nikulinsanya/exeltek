@@ -271,7 +271,7 @@ $(function () {
     });
     
     $('.check-all').click(function() {
-        $(this).parents('table').find('input:checkbox').prop('checked', $(this).prop('checked'));
+        $(this).parents('table').find('td>input:checkbox').prop('checked', $(this).prop('checked'));
     });
     $('.submission-select').click(function() {
         var parent = $(this).parents('.form-group');
@@ -302,13 +302,6 @@ $(function () {
         else
             return false;
     });
-    
-    /*$('.list-filter').click(function() {
-        var parent = $(this).parents('ul.dropdown-menu');
-        parent.find('select').val(2);
-        parent.find('input').val($(this).text());
-        parent.find('button.table-filter').click();
-    });*/
     
     function confirm_link(e) {
         if (!confirm($(this).attr('confirm'))) {
@@ -384,9 +377,13 @@ $(function () {
         
         $('.modal').modal({backdrop: 'static', keyboard: false});
     });
-    
+
     $('.export-jobs').click(function() {
         $(this).parents('form').attr('action', './imex/export');
+    });
+
+    $('.export-result').click(function() {
+        $(this).parents('form').attr('action', './search/export');
     });
 
     $('.assign-jobs').click(function() {

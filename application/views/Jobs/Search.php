@@ -102,10 +102,8 @@
 <?php $columns = array_flip(explode(',', Group::current('columns')));?>
 <table class="table small">
     <tr>
-        <?php if (Group::current('allow_assign')):?>
         <th><input type="checkbox" class="checkbox check-all" /></th>
-        <?php endif;?>
-        
+
         <th class="sortable" data-id="id">Ticket ID</th>
         <?php if (isset($columns['last_update'])):?>
         <th class="hidden-sm hidden-xs dropdown sortable <?=Arr::get($_GET, 'start') || Arr::get($_GET, 'end') ? 'bg-warning' : ''?>" data-id="update">
@@ -219,10 +217,8 @@
         }
     ?>
     <tr bgcolor="<?=$status?>">
-        <?php if (Group::current('allow_assign')):?>
         <td><input type="checkbox" class="checkbox" name="job[<?=$ticket['_id']?>]" /></td>
-        <?php endif;?>
-        
+
         <td><?=HTML::chars($ticket['_id'])?></td>
 
         <?php if (isset($columns['last_update'])):?>
@@ -303,15 +299,18 @@
     <?=Form::select('company', array('' => 'Please, select company...', -1 => 'Unassign jobs') + $companies, false, array('class' => 'form-control'))?>
 </div>
 <div class="clearfix">&nbsp;</div>
+<?php endif;?>
 <div class="col-xs-12">
+    <?php if (Group::current('allow_assign')):?>
     <button type="submit" class="btn btn-warning assign-jobs">Assign jobs</button>
     <button type="submit" class="btn btn-danger archive-jobs">Archive jobs</button>
     <button type="submit" class="btn btn-success complete-jobs">Complete jobs</button>
     <button type="submit" class="btn btn-primary reset-jobs">Reset jobs</button>
+    <?php endif;?>
     <?php if (Group::current('allow_reports')):?>
     <button type="submit" class="btn btn-info export-jobs"><span class="glyphicon glyphicon-export"></span>Export jobs</button>
     <?php endif;?>
+    <button type="submit" class="btn btn-info export-result"><span class="glyphicon glyphicon-export"></span>Export search result</button>
 </div>
-<?php endif;?>
 <div class="clearfix">&nbsp;</div>
 </form>

@@ -5,18 +5,6 @@ class Controller_Dashboard extends Controller {
     private function group_jobs($key, $list) {
         $result = Database_Mongo::collection('jobs')->find(array('_id' => array('$in' => $list)), array($key => 1, 'data.44' => 1));
 
-        $total = array();
-        $jobs = array();
-        $statuses = array();
-        foreach ($result as $job) {
-            $fsam = Arr::path($job, $key);
-            $jobs[$job['_id']] = $fsam;
-            $status = strtolower(preg_replace('/[^a-z]/i', '', Arr::path($job, 'data.44')));
-            $statuses[$job['_id']] = $status;
-            if (!in_array($status, array('dirty', 'deferred', 'heldnbn')))
-                $total[$fsam] = Arr::get($total, $fsam, 0) + 1;
-        }
-
         $query = array(
             'job_key' => array('$in' => $list),
             'data.44' => array('$exists' => 1),
@@ -24,6 +12,18 @@ class Controller_Dashboard extends Controller {
 
         if (Arr::get($_GET, 'start')) $query['update_time']['$gt'] = strtotime($_GET['start']);
         if (Arr::get($_GET, 'end')) $query['update_time']['$lt'] = strtotime($_GET['end']) + 86399;
+
+        $total = array();
+        $jobs = array();
+        $statuses = array();
+        foreach ($result as $job) {
+            $fsam = Arr::path($job, $key);
+            $jobs[$job['_id']] = $fsam;
+            $status = strtolower(preg_replace('/[^a-z]/i', '', Arr::path($job, 'data.44')));
+            if (!isset($query['update_time'])) $statuses[$job['_id']] = $status;
+            if (!in_array($status, array('dirty', 'deferred', 'heldnbn')))
+                $total[$fsam] = Arr::get($total, $fsam, 0) + 1;
+        }
 
         $result = Database_Mongo::collection('archive')->find($query, array('_id' => 0, 'job_key' => 1, 'data.44' => 1, 'update_time' => 1))->sort(array('update_time' => 1));
 

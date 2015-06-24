@@ -4,17 +4,20 @@ class Controller_Imex_Export extends Controller {
 
     public function action_index()
     {
+        if (!Group::current('allow_reports'))
+            throw new HTTP_Exception_403('Forbidden');
+
         $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
         
         $form = new Form();
         $form->add('region', 'Region', Form::SELECT, array('' => 'Please, select region') + $regions, array('not_empty'));
-        
+
         if (isset($_POST['job'])) {
             header("Content-type: text/csv");
             header('Content-disposition: filename="' . date('Ymd') . '_EXEL_PARTIAL_EOD.csv"');
             
             $file = tmpfile();
-            
+
             $columns = Columns::get_csv();
             
             fputcsv($file, array(0 => 'Ticket Of Work') + $columns);
