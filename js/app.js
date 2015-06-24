@@ -189,27 +189,10 @@ $(function () {
             form.submit();
     }
     
-    $('.remove-filter').click(remove_filter);
+    $('#filter-form').on('click','.remove-filter',remove_filter);
     
-    $('.add-filter').click(function() {
-        var par = $(this).parent().parent();
-        var filter = $('<div class="filter-row col-xs-12"></div>').html(par.html());
-        var val = par.find('input').val();
-
-        filter.find('button').removeClass('btn-info add-filter').addClass('btn-danger remove-filter').html('<span class="glyphicon glyphicon-minus"></span> Remove').click(remove_filter);
-        filter.find('select')[0].selectedIndex = par.find('select')[0].selectedIndex;
-        filter.find('select')[1].selectedIndex = par.find('select')[1].selectedIndex;
-        filter.find('input').val(par.find('input').val());
-
-        par.find('select')[0].selectedIndex = 0;
-        par.find('select')[1].selectedIndex = 0;   
-        par.find('input').val('');
-        
-        par.before(filter);
-        
-        if (val) {
-            $(this).parents('form').submit();
-        }
+    $('#filter-form').on('click','.add-filter',function() {
+        addFilterRow(this);
         return false;
     });
 
@@ -348,19 +331,12 @@ $(function () {
     $('.table-filter').click(function() {
         var ul = $(this).parent().parent();
         var quick = ul.find('input:checked');
-        var filter = $('.add-filter').parents('.filter-row');
-        filter.parents('form').attr('hold', '1');
+        var filter = $('#filter-form .add-filter').parents('.filter-row');
+        $('#filter-form').parents('form').attr('hold', '1');
         
         var id = ul.attr('data-id');
         var action = ul.find('select').val();
-        var add = function(value) {
-            filter = $('.add-filter').parents('.filter-row');
-            filter.find('.field-select').val(id);
-            filter.find('.action-select').val(action);
-            filter.find('input').val(value);
-            $('.add-filter').click();
-            ul.prev().click();
-        };
+
         if (quick.length) {
             action = 2;
             quick.each(function(i, e) {
@@ -369,22 +345,36 @@ $(function () {
         } else {
             add(ul.find('input').val());
         }
-        
+
         filter.parents('form').attr('hold', '').submit();
+
+
+
+        function add (value) {
+            addFilterRow(
+                $('#filter-form .add-filter'),
+                {
+                    'field-select':id,
+                    'action-select':action,
+                    'action-value':value
+                }
+            );
+            ul.prev().click();
+        };
     });
     
     $('.date-filter').click(function() {
         $(this).parent().parent().find('input').each(function(i, e) {
             $($(e).attr('data-target')).val($(e).val());
         });
-        $('.add-filter').parents('form').attr('hold', '').submit();
+        $('#filter-form .add-filter').parents('form').attr('hold', '').submit();
     });
     
     $('.filter-clear').click(function () {
         $(this).parent().parent().find('input').each(function(i, e) {
             $($(e).attr('data-target')).val('');
         });
-        $('.add-filter').parents('form').attr('hold', '').submit();
+        $('#filter-form .add-filter').parents('form').attr('hold', '').submit();
     });
     
     $('.upload').click(function() {
@@ -658,8 +648,38 @@ $(function () {
     
     $('.checkbox-x').checkboxX({ useNative: true});
 
-    $('.selectize').selectize({
-        create: true,
-        sortField: 'text'
-    });
+
+
+    function setSelectize(self){
+        if(self){
+            $(self).selectize({
+                create: true,
+                sortField: 'text'
+            });
+        }
+    }
+
+    function addFilterRow(self, values){
+        var par = $('#filter_row_template'),
+            realPar = $(self).parent().parent(),
+            filter = $('<div></div>').html(par.html()),
+            val = realPar.find('input.form-control').val(),
+            i;
+        realPar.find('.add-filter').parent().html('<button type="button" class="btn btn-danger remove-filter"><span class="glyphicon glyphicon-minus"></span></button>');
+
+        if(values){
+            filter.find('.field-select').val(values['field-select']);
+            filter.find('.action-select').val(values['action-select']);
+            filter.find('.action-value').val(values['action-value']);
+        }
+        realPar.after(filter);
+        setSelectize(filter.find('select'));
+
+        if (val) {
+            $(self).parents('form').submit();
+        }
+    }
+
+
+    setSelectize($('.selectize'));
 });

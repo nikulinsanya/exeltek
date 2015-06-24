@@ -46,10 +46,10 @@
                 <?php $cols = Arr::get($_GET, 'columns', array()); foreach ($cols as $id => $column):?>
                     <span class="filter-item">
                         <?php if($cols[$id]):?>
-                            <?=$cols[$id]?>:
+                            <?=$columns[$column]?>:
 
                             <label class="filter_value">
-                                <?=$actions[$id]?>
+                                <?=$actions[Arr::path($_GET, 'actions.' . $id)]?>
                                 <?=Arr::path($_GET, 'values.' . $id)?>
                             </label>
                         <?php endif;?>
@@ -94,11 +94,37 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <form class="filters-form" action="" method="get">
+
+                    <!--template filter row-->
+                    <!--@todo - move to js templates -->
+                        <div id="filter_row_template" style="display: none;">
+                            <div class="filter-row">
+                                <div class="col-xs-12 col-sm-12 col-md-6">
+                                    <?=Form::select('columns[]', array('' => 'Please select') + $columns, false, array('class' => 'field-select'))?>
+                                </div>
+                                <div class="hidden visible-sm visible-xs clearfix">&nbsp;</div>
+                                <div class="col-xs-3 col-sm-3 col-md-3">
+                                    <?=Form::select('actions[]', $actions, false, array('class' => 'action-select'))?>
+                                </div>
+                                <div class="col-xs-7 col-sm-7 col-md-2">
+                                    <input type="text" class="form-control action-value" placeholder="Value" name="values[]" />
+                                </div>
+                                <div class="col-xs-2 col-sm-1">
+                                    <button type="button" class="btn btn-info add-filter"><span class="glyphicon glyphicon-plus"></span></button>
+<!--                                    <button type="button" class="btn btn-danger remove-filter"><span class="glyphicon glyphicon-minus"></span></button>-->
+                                </div>
+                                <div class="clearfix">&nbsp;</div>
+                            </div>
+                        </div>
+
+
+
+
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title" id="myModalLabel">Modify filters</h4>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body" id="filter-form">
                         <div class="col-xs-4 col-sm-4 col-md-2">
                             <input type="text" class="form-control" id="ticket-id" placeholder="Ticket ID" name="ticket" value="<?=Arr::get($_GET, 'ticket')?>" />
                         </div>
@@ -142,12 +168,12 @@
                         <div class="clearfix">&nbsp;</div>
                         <div class="clearfix">&nbsp;</div>
                         <?php $cols = Arr::get($_GET, 'columns', array()); foreach ($cols as $id => $column):?>
-                            <div class="">
+                            <div>
                                 <div class="col-xs-12 col-sm-12 col-md-6">
                                     <?=Form::select('columns[]', array('' => 'Please select') + $columns, $column, array('class' => 'selectize'))?>
                                 </div>
                                 <div class="col-xs-3 col-sm-3 col-md-3">
-                                    <?=Form::select('actions[]', $actions, Arr::path($_GET, 'actions.' . $id), array('class' => 'form-control action-select'))?>
+                                    <?=Form::select('actions[]', $actions, Arr::path($_GET, 'actions.' . $id), array('class' => 'selectize'))?>
                                 </div>
                                 <div class="col-xs-7 col-sm-7 col-md-2">
                                     <input type="text" class="form-control" placeholder="Value" name="values[]" value="<?=Arr::path($_GET, 'values.' . $id)?>"/>
@@ -158,16 +184,16 @@
                                 <div class="clearfix">&nbsp;</div>
                             </div>
                         <?php endforeach; ?>
-                        <div class="">
+                        <div class="filter-row">
                             <div class="col-xs-12 col-sm-12 col-md-6">
                                 <?=Form::select('columns[]', array('' => 'Please select') + $columns, false, array('class' => 'selectize'))?>
                             </div>
                             <div class="hidden visible-sm visible-xs clearfix">&nbsp;</div>
                             <div class="col-xs-3 col-sm-3 col-md-3">
-                                <?=Form::select('actions[]', $actions, false, array('class' => 'form-control action-select'))?>
+                                <?=Form::select('actions[]', $actions, false, array('class' => 'selectize'))?>
                             </div>
                             <div class="col-xs-7 col-sm-7 col-md-2">
-                                <input type="text" class="form-control" placeholder="Value" name="values[]" />
+                                <input type="text" class="form-control form-value" placeholder="Value" name="values[]" />
                             </div>
                             <div class="col-xs-2 col-sm-1">
                                 <button type="button" class="btn btn-info add-filter"><span class="glyphicon glyphicon-plus"></span></button>
@@ -428,4 +454,7 @@
 </div>
 <?php endif;?>
 <div class="clearfix">&nbsp;</div>
+
 </form>
+
+
