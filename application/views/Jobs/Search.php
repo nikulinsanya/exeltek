@@ -3,7 +3,7 @@
         <label  class="filter_value">Filters:</label>
         <div class="text-info-filters">
             <div>
-                <?php if(Arr::get($_GET, 'ticket')){?>
+                <?php $hasFilters = false; if(Arr::get($_GET, 'ticket')){?>
                     <span class="filter-item">
                             Ticket:
                             <label class="filter_value">
@@ -11,7 +11,9 @@
                             </label>
                     </span>
                 <?php } ?>
-                <?php if(Arr::get($_GET, 'region')){?>
+                <?php if(Arr::get($_GET, 'region')){
+                    $hasFilters = true;
+                ?>
                     <span class="filter-item">
                         Region:
                         <label class="filter_value">
@@ -19,7 +21,9 @@
                         </label>
                     </span>
                 <?php } ?>
-                <?php if(Arr::get($_GET, 'type')){?>
+                <?php if(Arr::get($_GET, 'type')){
+                    $hasFilters = true;
+                ?>
                     <span class="filter-item">
                         Job:
                         <label class="filter_value">
@@ -27,7 +31,9 @@
                         </label>
                     </span>
                 <?php } ?>
-                <?php if(Arr::get($_GET, 'company')){?>
+                <?php if(Arr::get($_GET, 'company')){
+                    $hasFilters = true;
+                ?>
                     <span class="filter-item">
                         Assigned:
                         <label class="filter_value">
@@ -35,7 +41,9 @@
                         </label>
                     </span>
                 <?php } ?>
-                <?php if(Arr::get($_GET, 'company')){?>
+                <?php if(Arr::get($_GET, 'company')){
+                    $hasFilters = true;
+                ?>
                     <span class="filter-item">
                         Previous:
                         <label class="filter_value">
@@ -45,43 +53,53 @@
                 <?php } ?>
                 <?php $cols = Arr::get($_GET, 'columns', array()); foreach ($cols as $id => $column):?>
                     <span class="filter-item">
-                        <?php if($cols[$id]):?>
+                        <?php if($cols[$id]){
+                            $hasFilters = true;
+                        ?>
                             <?=$columns[$column]?>:
 
                             <label class="filter_value">
                                 <?=$actions[Arr::path($_GET, 'actions.' . $id)]?>
                                 <?=Arr::path($_GET, 'values.' . $id)?>
                             </label>
-                        <?php endif;?>
+                        <?php }?>
                     </span>
                 <?php endforeach; ?>
             </div>
 
             <div>
                 <?php if (Group::current('allow_assign')) foreach (Columns::$settings as $id => $name):?>
-                    <?php if(Arr::path($_GET, 'settings.' . $id)):?>
+                    <?php if(Arr::path($_GET, 'settings.' . $id)){
+                        $hasFilters = true;
+                    ?>
                         <span class="filter-item">
                             <label class="filter_value">
                                 <input disabled="disabled" class="checkbox-x" type="checkbox" checked value="<?=Arr::path($_GET, 'settings.' . $id) ? '1' : (Arr::path($_GET, 'settings.' . $id) === '0' ? '0' : '')?>" />
                                 <?=HTML::chars($name)?>
                             </label>
                         </span>
-                    <?php endif;?>
+                    <?php }?>
                 <?php endforeach;?>
                 <?php if (Group::current('allow_assign')) foreach (Columns::$settings as $id => $name):?>
-                    <?php if(Arr::path($_GET, 'settings.' . $id) === '0'):?>
+                    <?php if(Arr::path($_GET, 'settings.' . $id) === '0'){
+                        $hasFilters = true;
+                    ?>
                         <span class="filter-item">
                             <label class="filter_value">
                                 <input disabled="disabled" class="checkbox-x" type="checkbox" checked value="<?=Arr::path($_GET, 'settings.' . $id) ? '1' : (Arr::path($_GET, 'settings.' . $id) === '0' ? '0' : '')?>" />
                                 <?=HTML::chars($name)?>
                             </label>
                         </span>
-                    <?php endif;?>
+                    <?php }?>
                 <?php endforeach;?>
             </div>
-
+            <?php if(!$hasFilters){?>
+                <label class="filter_value no-filters">None</label>
+            <?php }?>
             <div class="clearfix">&nbsp;</div>
         </div>
+
+
         <button type="button" class="btn btn-info" data-toggle="modal" data-target="#filterModal">
             <span class="glyphicon glyphicon-filter"></span>
             Modify filters
@@ -247,14 +265,14 @@
         <th class="sortable" data-id="id">Ticket ID</th>
         <?php if (isset($columns['last_update'])):?>
         <th class="hidden-sm hidden-xs dropdown sortable date-td <?=Arr::get($_GET, 'start') || Arr::get($_GET, 'end') ? 'bg-warning' : ''?>" data-id="update">
-            <a href="javascript:;" class="dropdown-toggle" data-toggle="collapse" data-target="#filter-update">
+            <a href="#" class="dropdown-toggle" data-toggle="collapse" data-target="#filter-update">
                 Last update
             </a>
             <ul class="collapse dropdown-menu" id="filter-update" data-id="update">
                 <li class="dropdown-header">Add filter:</li>
                 <li><?=Form::input(NULL, Arr::get($_GET, 'start'), array('data-target' => '#updated-start','class' => 'form-control datepicker', 'placeholder' => 'Start date'))?></li>
                 <li><?=Form::input(NULL, Arr::get($_GET, 'end'), array('data-target' => '#updated-end', 'class' => 'form-control datepicker', 'placeholder' => 'End date'))?></li>
-                <li class="dropdown-header">
+                <li class="dropdown-header buttons-row">
                     <button class="btn btn-success date-filter" type="button">Apply</button>
                     <button class="btn btn-warning filter-clear" type="button">Clear</button>
                     <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-update">Cancel</button>
@@ -265,14 +283,14 @@
 
         <?php if (isset($columns['last_submit'])):?>
         <th class="hidden-sm hidden-xs dropdown sortable date-td <?=Arr::get($_GET, 'submit-start') || Arr::get($_GET, 'submit-end') ? 'bg-warning' : ''?>" data-id="submit">
-            <a href="javascript:;" class="dropdown-toggle" data-toggle="collapse" data-target="#filter-submit">
+            <a href="#" class="dropdown-toggle" data-toggle="collapse" data-target="#filter-submit">
                 Last submit
             </a>
             <ul class="collapse dropdown-menu" id="filter-submit">
                 <li class="dropdown-header">Add filter:</li>
                 <li><?=Form::input(NULL, Arr::get($_GET, 'submit-start'), array('data-target' => '#submit-start','class' => 'form-control datepicker', 'placeholder' => 'Start date'))?></li>
                 <li><?=Form::input(NULL, Arr::get($_GET, 'submit-end'), array('data-target' => '#submit-end', 'class' => 'form-control datepicker', 'placeholder' => 'End date'))?></li>
-                <li class="dropdown-header">
+                <li class="dropdown-header buttons-row">
                     <button class="btn btn-success date-filter" type="button">Apply</button>
                     <button class="btn btn-warning filter-clear" type="button">Clear</button>
                     <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-submit">Cancel</button>
@@ -307,14 +325,14 @@
 
         <?php foreach (Columns::get_search() as $id => $type):?>
         <th class="dropdown sortable" data-id="data-<?=$id?>">
-            <a href="javascript:;" class="dropdown-toggle" data-toggle="collapse" data-target="#filter-<?=$id?>">
+            <a href="#" class="dropdown-toggle" data-toggle="collapse" data-target="#filter-<?=$id?>">
                 <?=Columns::get_name($id)?>
             </a>
                 <ul class="collapse dropdown-menu"  id="filter-<?=$id?>" data-id="<?=$id?>">
                     <li class="dropdown-header">Add filter:</li>
-                    <li><?=Form::select(NULL, $actions, false, array('class' => 'form-control'))?></li>
+                    <li><?=Form::select(NULL, $actions, false, array('class' => 'selectize'))?></li>
                     <li><?=Form::input(NULL, NULL, array('class' => 'form-control' . (Columns::get_type($id) == 'date' ? ' datepicker' : ''), 'placeholder' => 'Filtering value'))?></li>
-                    <li class="dropdown-header">
+                    <li class="dropdown-header buttons-row">
                         <button class="btn btn-success table-filter" type="button">Apply</button>
                         <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-<?=$id?>">Cancel</button>
                     </li>
@@ -340,23 +358,23 @@
             case 'demanddrops':
             case 'heldnbn':
             case 'dirty':
-                $status = '#fcc';
+                $status = 'rose';
                 break;
             case "inprogress":
-                $status = '#ffc';
+                $status = 'yellow';
                 break;
             case 'completed':
             case 'tested':
-                $status = '#8c8';
+                $status = 'green';
                 break;
             case 'built':
-                $status = '#cfc';
+                $status = 'lgreen';
                 break;
             default:
                 $status = 'lightcyan';
         }
     ?>
-    <tr bgcolor="<?=$status?>" class="text-center">
+    <tr class="text-center <?=$status?>">
         <td><input type="checkbox" class="checkbox" name="job[<?=$ticket['_id']?>]" /></td>
 
         <td><?=HTML::chars($ticket['_id'])?></td>

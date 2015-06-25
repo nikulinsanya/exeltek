@@ -680,6 +680,12 @@ $(function () {
         }
     }
 
+    $('table').on('click','a.dropdown-toggle',function(e){
+//        debugger;
+        $(".dropdown-menu.collapse").removeClass("in").addClass("collapse");
+        e.preventDefault();
+    });
+
 
     setSelectize($('.selectize'));
     initPlugins();
