@@ -451,7 +451,7 @@
         <h3>No jobs found!</h3>
         </div>
     <?php endif;?>    
-<div class="col-xs-12">
+<div class="col-xs-12 text-center">
 <?=$pager;?>
 </div>
 <?php if (Group::current('allow_assign')):?>
