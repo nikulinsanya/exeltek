@@ -104,6 +104,12 @@
             <span class="glyphicon glyphicon-filter"></span>
             Modify filters
         </button>
+        <?php if($hasFilters){?>
+            <a href="<?=URL::base()?>search?clear" class="btn btn-warning">
+                <span class="glyphicon glyphicon-remove"></span>
+                Clear</a>
+        <?php }?>
+
     </div>
 
 
