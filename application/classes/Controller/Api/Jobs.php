@@ -6,7 +6,7 @@ class Controller_Api_Jobs extends Kohana_Controller {
         $token = Arr::get($_REQUEST, 'token');
 
         if (!API::check($token))
-            die(json_encode(array('success' => false)));
+            die(json_encode(array('success' => false, 'error' => 'forbidden')));
 
         $regs = DB::select('region_id')->from('user_regions')->where('user_id', '=', User::current('id'))->execute()->as_array(NULL, 'region_id');
 
@@ -136,18 +136,19 @@ class Controller_Api_Jobs extends Kohana_Controller {
         if (!$id)
             die(json_encode(array('success' => false, 'error' => 'not found')));
 
-        $query = array(
-            'companies' => intval(User::current('company_id')),
-            '_id' => $id,
-        );
+        $job = Database_Mongo::collection('jobs')->findOne(array('_id' => $id));
 
-        $regs = DB::select('region_id')->from('user_regions')->where('user_id', '=', User::current('id'))->execute()->as_array(NULL, 'region_id');
+        if (!$job)
+            die(json_encode(array('success' => false, 'error' => 'not found')));
+
+        $regs = DB::select('region_id')->from('user_regions')->where('user_id', '=', User::current('id'))->execute()->as_array('region_id', 'region_id');
 
         if ($regs) $query['region'] = array('$in' => $regs);
 
-        $job = Database_Mongo::collection('jobs')->findOne($query);
+        if ($regs && !isset($regs[$job['region']]))
+            die(json_encode(array('success' => false, 'error' => 'not found')));
 
-        if (!$job)
+        if (!isset($job['companies']) || !in_array(intval(User::current('company_id')), $job['companies'], true))
             die(json_encode(array('success' => false, 'error' => 'not found')));
 
         $signature = strval(Arr::get($_REQUEST, 'signature'));
@@ -234,33 +235,33 @@ class Controller_Api_Jobs extends Kohana_Controller {
                         Database_Mongo::collection('submissions')->insert($submission);
                         unset($submission['_id']);
                     }
-
-                    if ($update) {
-                        $update['$set']['last_update'] = time();
-                        if ($approval)
-                            $update['$set']['last_submit'] = time();
-                        Database_Mongo::collection('jobs')->update(
-                            array('_id' => $id),
-                            $update
-                        );
-
-                        if ($archive) {
-                            foreach (Columns::get_static() as $key => $value)
-                                $archive['static'][$key] = Arr::path($job, 'data.' . $key);
-                            $archive['fields'] = array_keys($archive['data']);
-                            $archive['job_key'] = $id;
-                            $archive['user_id'] = User::current('id');
-                            $archive['update_time'] = time();
-                            $archive['update_type'] = 2;
-                            $archive['filename'] = 'MANUAL';
-                            Database_Mongo::collection('archive')->insert($archive);
-                        }
-                    } elseif ($approval)
-                        Database_Mongo::collection('jobs')->update(
-                            array('_id' => $id),
-                            array('$set' => array('last_submit' => time()))
-                        );
                 }
+
+                if ($update) {
+                    $update['$set']['last_update'] = time();
+                    if ($approval)
+                        $update['$set']['last_submit'] = time();
+                    Database_Mongo::collection('jobs')->update(
+                        array('_id' => $id),
+                        $update
+                    );
+
+                    if ($archive) {
+                        foreach (Columns::get_static() as $key => $value)
+                            $archive['static'][$key] = Arr::path($job, 'data.' . $key);
+                        $archive['fields'] = array_keys($archive['data']);
+                        $archive['job_key'] = $id;
+                        $archive['user_id'] = User::current('id');
+                        $archive['update_time'] = time();
+                        $archive['update_type'] = 2;
+                        $archive['filename'] = 'MANUAL';
+                        Database_Mongo::collection('archive')->insert($archive);
+                    }
+                } elseif ($approval)
+                    Database_Mongo::collection('jobs')->update(
+                        array('_id' => $id),
+                        array('$set' => array('last_submit' => time()))
+                    );
             } else {
                 Database::instance()->rollback();
                 die(json_encode(array('success' => false, 'error' => 'signature problem')));

@@ -10,7 +10,7 @@ class Controller_Reports_Financial extends Controller {
     
     public function action_index()
     {
-        $start = Arr::get($_GET, 'start') ? strtotime($_GET['start']) : (strtotime('this week', strtotime('this week') > time() ? strtotime('yesterday') : time()));
+        $start = Arr::get($_GET, 'start') ? strtotime($_GET['start']) : strtotime('first day of this month');
         $end = Arr::get($_GET, 'end') ? strtotime($_GET['end']) + 86399 : time();
 
         $query = array(
@@ -59,44 +59,118 @@ class Controller_Reports_Financial extends Controller {
 
         if ($users) User::get(array_keys($users));
 
-        if (isset($_GET['export'])) {
-            header('Content-type: text/csv');
-            header('Content-disposition: filename="Submissions.' . date('Ymd', $start) . '-' . date('Ymd', $end) . '.' . date('YmdHi', time()) . '.csv"');
-            $file = tmpfile();
-            $headers = array(
-                'Tickets ID',
-                'Submission Date',
-                'Approval Date',
-                'User',
-            );
-            if (Group::current('allow_assign')) $headers[] = 'Company';
-            $headers[] = 'Column';
-            $headers[] = 'Value';
+        $rates = array();
 
-            $keys = array();
+        $result = DB::select('company_id', 'column_id', 'rate')->from('rates')->execute();
 
-            fputcsv($file, $headers);
-            foreach ($submissions as $job => $list)
-                foreach ($list as $submission) {
-                    $keys[$submission['key']] = 1;
-                    $key = substr($submission['key'], 5);
-                    $data = array(
-                        $job,
-                        date('d-m-Y H:i', $submission['update_time']),
-                        Arr::get($submission, 'process_time') ? date('d-m-Y H:i', $submission['process_time']) : '',
-                        User::get($submission['user_id'], 'login'),
-                    );
-                    if (Group::current('allow_assign')) $data[] = Arr::get($companies, User::get($submission['user_id'], 'company_id'), 'Unknown');
-                    $data[] = Columns::get_name($key);
-                    $data[] = Columns::output($submission['value'], Columns::get_type($key), true);
+        foreach ($result as $row)
+            $rates[$row['company_id']][$row['column_id']] = $row['rate'];
 
-                    fputcsv($file, $data);
+        $columns = DB::select('id', 'financial')->from('job_columns')->where('financial', '>', 0)->execute()->as_array('id', 'financial');
+
+        $approved = array();
+        $duplicates = array();
+        $discr = array();
+        $partial = array();
+        $full = array();
+        $skip = array();
+        if (Group::current('allow_assign') && isset($_GET['approve']) && Arr::get($_GET, 'company')) {
+            $rates = Arr::get($rates, $_GET['company'], array());
+            foreach ($submissions as $job => $list) {
+                $data = array();
+                $partial_fl = false;
+                $full_fl = true;
+                $dup_fl = false;
+                $discr_fl = false;
+                $skip_fl = false;
+                foreach ($list as $submission)
+                    $data[$submission['key']][] = $submission;
+
+                foreach ($data as $key => $values) {
+                    $value = array_shift($values);
+                    if (count($values)) {
+                        $dup_fl = true;
+                        $full_fl = false;
+                    } elseif ($value['value'] != Arr::path($jobs, $job . '.' . $key)) {
+                        $discr_fl = true;
+                        $full_fl = false;
+                    } elseif (!Arr::get($rates, substr($key, 5))) {
+                        $skip_fl = true;
+                        $full_fl = false;
+                    } elseif (!$value['financial_time']) {
+                        $approved[] = array(
+                            'id' => $value['_id'],
+                            'rate' => $rates[substr($key, 5)],
+                            'paid' => min(floatval($value['value']), Arr::get($columns, substr($key, 5))),
+                        );
+                        $partial_fl = true;
+                    }
                 }
-            fseek($file, 0);
-            fpassthru($file);
-            fclose($file);
-            die();
-        } elseif (isset($_GET['excel'])) {
+
+                if ($partial_fl)
+                    if ($full_fl)
+                        $full[$job] = 1;
+                    else
+                        $partial[$job] = 1;
+
+                if ($skip_fl) $skip[$job] = 1;
+                if ($dup_fl) $duplicates[$job] = 1;
+                if ($discr_fl) $discr[$job] = 1;
+
+                $submissions[$job] = $data;
+            }
+            $time = time();
+            foreach ($approved as $value) {
+                Database_Mongo::collection('submissions')->update(array('_id' => $value['id']), array('$set' => array(
+                    'paid' => $value['paid'],
+                    'rate' => $value['rate'],
+                    'financial_time' => $time,
+                )));
+            }
+            Messages::save(sprintf('%d/%d tickets were successfully approved.', count($full), count($jobs)), 'success');
+            if ($partial) Messages::save(sprintf('%d tickets were partially approved.', count($partial)), 'warning');
+            if ($discr) Messages::save(sprintf('%d tickets contain discrepancies.', count($discr)), 'danger');
+            if ($duplicates) Messages::save(sprintf('%d tickets contain duplicates.', count($duplicates)), 'danger');
+            if ($skip) Messages::save(sprintf('%d tickets contain submissions with unknown rates.', count($skip)), 'danger');
+            $this->redirect($this->request->url() . URL::query(array('approve' => NULL)));
+        } elseif (isset($_GET['export'])) {
+                header('Content-type: text/csv');
+                header('Content-disposition: filename="Submissions.' . date('Ymd', $start) . '-' . date('Ymd', $end) . '.' . date('YmdHi', time()) . '.csv"');
+                $file = tmpfile();
+                $headers = array(
+                    'Tickets ID',
+                    'Submission Date',
+                    'Approval Date',
+                    'User',
+                );
+                if (Group::current('allow_assign')) $headers[] = 'Company';
+                $headers[] = 'Column';
+                $headers[] = 'Value';
+
+                $keys = array();
+
+                fputcsv($file, $headers);
+                foreach ($submissions as $job => $list)
+                    foreach ($list as $submission) {
+                        $keys[$submission['key']] = 1;
+                        $key = substr($submission['key'], 5);
+                        $data = array(
+                            $job,
+                            date('d-m-Y H:i', $submission['update_time']),
+                            Arr::get($submission, 'process_time') ? date('d-m-Y H:i', $submission['process_time']) : '',
+                            User::get($submission['user_id'], 'login'),
+                        );
+                        if (Group::current('allow_assign')) $data[] = Arr::get($companies, User::get($submission['user_id'], 'company_id'), 'Unknown');
+                        $data[] = Columns::get_name($key);
+                        $data[] = Columns::output($submission['value'], Columns::get_type($key), true);
+
+                        fputcsv($file, $data);
+                    }
+                fseek($file, 0);
+                fpassthru($file);
+                fclose($file);
+                die();
+            } elseif (isset($_GET['excel'])) {
             $doc = PHPExcel_IOFactory::load(DOCROOT . 'financial.template.xlsx');
             $sheet = $doc->getSheet();
 
@@ -209,14 +283,6 @@ class Controller_Reports_Financial extends Controller {
             die();
         }
 
-        $columns = DB::select('id', 'financial')->from('job_columns')->where('financial', '>', 0)->execute()->as_array('id', 'financial');
-
-        $rates = array();
-
-        $result = DB::select('company_id', 'column_id', 'rate')->from('rates')->execute();
-
-        foreach ($result as $row)
-            $rates[$row['company_id']][$row['column_id']] = $row['rate'];
 
         $discrepancies = array();
         foreach ($submissions as $job => $list) {
@@ -231,6 +297,7 @@ class Controller_Reports_Financial extends Controller {
         }
 
         $view = View::factory("Reports/Financial")
+            ->set('approve_all', ($start > 0) && (date('m', $start) == date('m', $end)) && Arr::get($_GET, 'company') && !Arr::get($_GET, 'fin-start'))
             ->bind('companies', $companies)
             ->bind('submissions', $submissions)
             ->bind('discrepancies', $discrepancies)

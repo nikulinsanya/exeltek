@@ -231,7 +231,7 @@ class Controller_Search extends Controller {
             }
             if ($order) $sorting[$order] = $dir;
         }
-        
+
         $result->sort($sorting)->limit(Pager::limit())->skip(Pager::offset());
         
         $tickets = array();
@@ -280,8 +280,9 @@ class Controller_Search extends Controller {
     }
 
     public function action_export() {
-        $ids = array_keys(Arr::get($_POST, 'job'));
-        if (!$ids) throw new HTTP_Exception_404('Not found');
+        $ids = array_keys(Arr::get($_POST, 'job', array()));
+        if (!$ids)
+            throw new HTTP_Exception_404('Not found');
 
         $regs = DB::select('region_id')->from('user_regions')->where('user_id', '=', User::current('id'))->execute()->as_array('region_id', 'region_id');
 
@@ -379,7 +380,6 @@ class Controller_Search extends Controller {
 
         fclose($file);
 
-        //print_r($query);
         die();
     }
 

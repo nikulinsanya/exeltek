@@ -373,6 +373,7 @@ class Controller_Imex_Upload extends Controller {
                             '_id' => $id,
                             'region' => $region,
                             'created' => time(),
+                            'last_update' => time(),
                             'data' => $data,
                         );
                         $jobs->insert($job);

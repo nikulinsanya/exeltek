@@ -81,7 +81,7 @@ else:?>
         <td><?=Arr::get($actions, $ticket['update_type'])?></td>
         <td><a href="<?=URL::base() . 'imex/reports?file=' . urlencode($ticket['filename'])?>"><?=HTML::chars($ticket['filename'])?></a></td>
         <?php foreach ($reports as $id => $name):?>
-        <td><?=Arr::path($ticket, 'static.'.$id)?></td>
+        <td><?=Columns::output(Arr::path($ticket, 'static.'.$id), Columns::get_type($id))?></td>
         <?php endforeach;?>
         <td colspan="3">N/A</td>
     </tr>

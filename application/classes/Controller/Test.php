@@ -3,19 +3,64 @@
 class Controller_Test extends Kohana_Controller {
 
     public function action_index() {
+        $jobs = Database_Mongo::collection('jobs');
 
-        $jobs = Database_Mongo::collection('jobs')->distinct('_id');
+        $archive = Database_Mongo::collection('archive');
 
-        $ids = Database_Mongo::collection('archive')->distinct('job_key');
+        $region = 2;
 
-        $missing = array_diff($jobs, $ids);
+        $list = $jobs->find(array('last_update' => array('$exists' => 0)));
 
-        foreach ($missing as $id)
-            if (in_array($id, $jobs))
-                echo $id;
-        //print_r($missing);
+        foreach ($list as $item) {
+            $jobs->update(array('_id' => $item['_id']), array('$set' => array('last_update' => $item['created'])));
+        }
 
-        die();
+        $file = fopen(DOCROOT . '/tmp/jeopardy.csv', 'r');
+
+        fgetcsv($file);
+
+        $count = 0;
+
+        while ($row = fgetcsv($file)) {
+            $job = $jobs->findOne(array('_id' => $row[0]));
+            //if ($job) $jobs->remove(array('_id' => $row[0]));
+            if (!$job) {
+                $count++;
+                $data = array(
+                    '1' => $row[1],
+                    '8' => $row[2],
+                    '9' => $row[3],
+                    '10' => $row[4],
+                    '13' => $row[5],
+                    '14' => $row[6],
+                    '17' => strtotime($row[7]),
+                    '18' => strtotime($row[8]),
+                    '19' => $row[9],
+                    '20' => $row[10],
+                );
+
+                $job = array(
+                    '_id' => $row[0],
+                    'region' => $region,
+                    'created' => time(),
+                    'last_update' => time(),
+                    'data' => $data,
+                );
+                $jobs->insert($job);
+                $archive->insert(array(
+                    'job_key' => $row[0],
+                    'update_time' => time(),
+                    'update_type' => 1,
+                    'user_id' => User::current('id'),
+                    'filename' => 'JEOPARDY',
+                    'static' => array(),
+                    'data' => array(),
+                    'fields' => array(),
+                ));
+            }
+        }
+
+        die('Done: ' . $count);
     }
 
 }

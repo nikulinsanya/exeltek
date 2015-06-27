@@ -10,7 +10,7 @@ class Controller_Api_Images extends Kohana_Controller {
         $filename = Arr::get($_REQUEST, 'name', '');
 
         if (!API::check($token))
-            die(json_encode(array('success' => false)));
+            die(json_encode(array('success' => false, 'error' => 'forbidden')));
 
         $id = strval(Arr::get($_REQUEST, 'id'));
 
@@ -103,7 +103,7 @@ class Controller_Api_Images extends Kohana_Controller {
         $pos = intval(Arr::get($_GET, 'pos'));
 
         if (!API::check($token))
-            die(json_encode(array('success' => false)));
+            die(json_encode(array('success' => false, 'error' => 'forbidden')));
 
         $attachment = DB::select()->from('attachments')->where('id', '=', $id)->execute()->current();
 

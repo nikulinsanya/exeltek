@@ -16,7 +16,8 @@ class Controller_Api_Auth extends Kohana_Controller {
                 'success' => true,
                 'token' => $token,
             )));
-        } else throw new HTTP_Exception_403('Forbidden');
+        } else
+            die(json_encode(array('success' => false, 'error' => 'forbidden')));
     }
 
     public function action_check() {
@@ -25,6 +26,6 @@ class Controller_Api_Auth extends Kohana_Controller {
         if (API::check($token))
             die(json_encode(array('success' => 'true')));
         else
-            throw new HTTP_Exception_403('Forbidden');
+            die(json_encode(array('success' => false, 'error' => 'forbidden')));
     }
 }

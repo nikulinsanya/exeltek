@@ -28,10 +28,10 @@
 </div>
 <div class="clearfix">&nbsp;</div>
 <div class="col-xs-4">
-<?=Form::input('fin-start', Arr::get($_GET, 'fin-start'), array('class' => 'form-control datepicker', 'placeholder' => 'Start date (Financial)', 'id' => 'app-start'))?>
+<?=Form::input('fin-start', Arr::get($_GET, 'fin-start'), array('class' => 'form-control datepicker', 'placeholder' => 'Start date (Financial)', 'id' => 'fin-start'))?>
 </div>
 <div class="col-xs-4">
-<?=Form::input('fin-end', Arr::get($_GET, 'fin-end'), array('class' => 'form-control datepicker', 'placeholder' => 'End date (Financial)', 'id' => 'app-end'))?>
+<?=Form::input('fin-end', Arr::get($_GET, 'fin-end'), array('class' => 'form-control datepicker', 'placeholder' => 'End date (Financial)', 'id' => 'fin-end'))?>
 </div>
 <div class="col-xs-4">
     <button type="button" class="btn btn-info date-range" data-suffix="fin" data-start="<?=date('d-m-Y', strtotime('first day of this month'))?>" data-end="<?=date('d-m-Y')?>">This month</button>
@@ -59,8 +59,14 @@
 <div class="clearfix">&nbsp;</div>
 <?php endif;?>
 </form>
-<h3>Total found: <?=count($submissions)?> ticket(s)</h3>
-<table class="table table-hover" <?= Group::current('allow_assign') ? 'data-url="' . URL::base() . 'reports/financial/approve"' : ''?>>
+<div>
+<h3 class="pull-left">Total found: <?=count($submissions)?> ticket(s)</h3>
+<?php if ($approve_all):?>
+    <a href="<?=URL::base() . Request::current()->uri() . URL::query(array('approve' => 1))?>" class="pull-right btn btn-success">Approve all</a>
+<?php endif;?>
+</div>
+<div class="clearfix">&nbsp;</div>
+<table class="table table-hover" <?=Group::current('allow_assign') ? 'data-url="' . URL::base() . 'reports/financial/approve"' : ''?>>
     <?php foreach ($submissions as $job => $list):?>
     <tr class="<?=isset($discrepancies[$job])? 'discrepancy' : ''?>">
         <th colspan="<?=Group::current('allow_assign') ? 12 : 9?>"><a href="<?=URL::base()?>search/view/<?=$job?>"><?=$job?></a></th>
