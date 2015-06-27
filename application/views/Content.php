@@ -11,6 +11,7 @@
     <script src="<?=URL::base()?>js/lib/jquery/jquery.iframe-transport.js"></script>
     <script src="<?=URL::base()?>js/lib/jquery/jquery.fileupload.js"></script>
     <script src="<?=URL::base()?>js/lib/jquery/jquery-ui.min.js"></script>
+    <script src="<?=URL::base()?>js/lib/jquery/jquery.shorten.js"></script>
 
     <!-- Bootstrap -->
     <link href="<?=URL::base()?>css/bootstrap.min.css" rel="stylesheet">

@@ -137,7 +137,7 @@ class Controller_Api_Images extends Kohana_Controller {
 
             if (isset($_GET['last'])) {
                 $data = array(
-                    'mime' => mime_content_type(DOCROOT . 'storage/' . $id),
+                    'mime' => File::mime(DOCROOT . 'storage/' . $id),
                     'uploaded' => time(),
                 );
                 Database::instance()->begin();

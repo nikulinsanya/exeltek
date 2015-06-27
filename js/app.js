@@ -647,6 +647,7 @@ $(function () {
     function initPlugins(){
         $('.checkbox-x').checkboxX({ useNative: true});
         $('[data-toggle="tooltip"]').tooltip();
+        $('.shorten').shorten();
     }
 
 

@@ -31,32 +31,32 @@
                         </label>
                     </span>
                 <?php } ?>
-                <?php if(Arr::get($_GET, 'company')){
+                <?php if(Arr::get($_GET, 'company')):
                     $hasFilters = true;
                 ?>
                     <span class="filter-item">
                         Assigned:
                         <label class="filter_value">
-                            <?=$companies[Arr::get($_GET, 'company')]?>
+                            <?=Arr::get($companies, $_GET['company'])?>
                         </label>
                     </span>
-                <?php } ?>
-                <?php if(Arr::get($_GET, 'company')){
+                <?php endif; ?>
+                <?php if(Arr::get($_GET, 'ex')):
                     $hasFilters = true;
                 ?>
                     <span class="filter-item">
                         Previous:
                         <label class="filter_value">
-                            <?=$companies[Arr::get($_GET, 'ex')]?>
+                            <?=Arr::get($companies, $_GET['ex'])?>
                         </label>
                     </span>
-                <?php } ?>
+                <?php endif; ?>
                 <?php $cols = Arr::get($_GET, 'columns', array()); foreach ($cols as $id => $column):?>
                     <span class="filter-item">
                         <?php if($cols[$id]){
                             $hasFilters = true;
                         ?>
-                            <?=$columns[$column]?>:
+                            <?=Columns::get_name($column)?>:
 
                             <label class="filter_value">
                                 <?=$actions[Arr::path($_GET, 'actions.' . $id)]?>
@@ -425,21 +425,21 @@
         <td class="hidden-xs"><?=Arr::get($attachments, $ticket['_id'])?></td>
         <?php endif;?>
 
-        <?php foreach (Columns::get_search() as $id => $name):?>
-        <td><?=Columns::output(Arr::path($ticket, 'data.'.$id), Columns::get_type($id))?></td>
+        <?php foreach (Columns::get_search() as $id => $name): $value = Columns::output(Arr::path($ticket, 'data.'.$id), Columns::get_type($id));?>
+        <td <?=strlen($value) > 100 ? 'class="shorten"' : ''?>><?=$value?></td>
         <?php endforeach;?>
 
         <td  class="table-buttons">
             <?php if (Group::current('allow_forms') && !Arr::get($ticket, 'locked') && in_array(User::current('company_id'), Arr::get($ticket, 'assigned', array(), true))):?>
-            <a href="<?=URL::base()?>search/form/<?=$ticket['_id']?>" class="btn btn-success"  data-toggle="tooltip" data-placement="top" title="Submit information"><span class="glyphicon glyphicon-list-alt"></span></a>
+            <a href="<?=URL::base()?>search/form/<?=$ticket['_id']?>" class="btn btn-success col-xs-12"  data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-list-alt"></span> Submit data</a>
             <?php endif;?>
-            <a href="<?=URL::base()?>search/view/<?=$ticket['_id']?>" class="btn btn-info"  data-toggle="tooltip" data-placement="top" title="View"><span class="glyphicon glyphicon-search"></span></a>
+            <a href="<?=URL::base()?>search/view/<?=$ticket['_id']?>" class="btn btn-info col-xs-12"  data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-search"></span> View</a>
             <?php if (Group::current('allow_reports')):?>
-            <a href="<?=URL::base()?>imex/reports?ticket=<?=$ticket['_id']?>" class="btn btn-warning"  data-toggle="tooltip" data-placement="top" title="Reports"><span class="glyphicon glyphicon-list"></span></a>
-            <a href="<?=URL::base()?>assign?ticket=<?=$ticket['_id']?>" class="btn btn-primary"  data-toggle="tooltip" data-placement="top" title="Assign logs"><span class="glyphicon glyphicon-pencil"></span></a>
+            <a href="<?=URL::base()?>imex/reports?ticket=<?=$ticket['_id']?>" class="btn btn-warning col-xs-12"  data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-list"></span> Reports</a>
+            <a href="<?=URL::base()?>assign?ticket=<?=$ticket['_id']?>" class="btn btn-primary col-xs-12"  data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-pencil"></span> Assign logs</a>
             <?php endif;?>
             <?php if (Group::current('allow_submissions')):?>
-            <a href="<?=URL::base()?>submissions?ticket=<?=$ticket['_id']?>" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Submissions"><span class="glyphicon glyphicon-check"></span></a>
+            <a href="<?=URL::base()?>submissions?ticket=<?=$ticket['_id']?>" class="btn btn-danger col-xs-12" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-check"></span> Submissions</a>
             <?php endif;?>
         </td>
     </tr>

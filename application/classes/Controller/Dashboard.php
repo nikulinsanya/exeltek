@@ -2,11 +2,10 @@
 
 class Controller_Dashboard extends Controller {
 
-    private function group_jobs($key, $list) {
-        $result = Database_Mongo::collection('jobs')->find(array('_id' => array('$in' => $list)), array($key => 1, 'data.44' => 1));
+    private function group_jobs($key, $query) {
+        $result = Database_Mongo::collection('jobs')->find($query, array($key => 1, 'data.44' => 1));
 
         $query = array(
-            'job_key' => array('$in' => $list),
             'data.44' => array('$exists' => 1),
         );
 
@@ -25,6 +24,8 @@ class Controller_Dashboard extends Controller {
                 $total[$fsam] = Arr::get($total, $fsam, 0) + 1;
         }
 
+        $query['job_key'] = array('$in' => array_keys($jobs));
+
         $result = Database_Mongo::collection('archive')->find($query, array('_id' => 0, 'job_key' => 1, 'data.44' => 1, 'update_time' => 1))->sort(array('update_time' => 1));
 
         foreach ($result as $job)
@@ -32,8 +33,7 @@ class Controller_Dashboard extends Controller {
 
         $built = array();
         $tested = array();
-        foreach ($list as $id) {
-            $fsam = $jobs[$id];
+        foreach ($jobs as $id => $fsam) {
             switch (Arr::get($statuses, $id)) {
                 case 'built':
                     $built[$fsam] = Arr::get($built, $fsam) + 1;
@@ -89,9 +89,7 @@ class Controller_Dashboard extends Controller {
         if (Arr::get($_GET, 'fsam') && isset($fsam[$_GET['fsam']]))
             $query['data.13'] = strval($_GET['fsam']);
 
-        $list = Database_Mongo::collection('jobs')->distinct('_id', $query ? : NULL);
-
-        $fdas = $this->group_jobs('data.14', $list);
+        $fdas = $this->group_jobs('data.14', $query);
 
         $view = View::factory('Dashboard/Fda')
             ->bind('fsam', $fsam)
@@ -128,9 +126,7 @@ class Controller_Dashboard extends Controller {
         if (Arr::get($_GET, 'fsa') && (isset($fsas[$_GET['fsa']]) || $_GET['fsa'] == 'Unknown'))
             $query['data.12'] = $_GET['fsa'] == 'Unknown' ? array('$exists' => false) : strval($_GET['fsa']);
 
-        $list = Database_Mongo::collection('jobs')->distinct('_id', $query ? : NULL);
-
-        $fsam = $this->group_jobs('data.13', $list);
+        $fsam = $this->group_jobs('data.13', $query);
 
         $view = View::factory('Dashboard/Fsam')
             ->bind('fsam', $fsam)
@@ -163,9 +159,7 @@ class Controller_Dashboard extends Controller {
 
         }
 
-        $list = Database_Mongo::collection('jobs')->distinct('_id', $query ? : NULL);
-
-        $fsa = $this->group_jobs('data.12', $list);
+        $fsa = $this->group_jobs('data.12', $query);
 
         $view = View::factory('Dashboard/Fsa')
             ->bind('fsa', $fsa)
