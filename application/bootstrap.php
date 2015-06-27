@@ -7,13 +7,13 @@ require SYSPATH.'classes/Kohana/Core'.EXT;
 
 if (is_file(APPPATH.'classes/Kohana'.EXT))
 {
-	// Application extends the core
-	require APPPATH.'classes/Kohana'.EXT;
+    // Application extends the core
+    require APPPATH.'classes/Kohana'.EXT;
 }
 else
 {
-	// Load empty core extension
-	require SYSPATH.'classes/Kohana'.EXT;
+    // Load empty core extension
+    require SYSPATH.'classes/Kohana'.EXT;
 }
 
 /**
@@ -72,8 +72,8 @@ I18n::lang('en-AU');
 
 if (isset($_SERVER['SERVER_PROTOCOL']))
 {
-	// Replace the default protocol.
-	HTTP::$protocol = $_SERVER['SERVER_PROTOCOL'];
+    // Replace the default protocol.
+    HTTP::$protocol = $_SERVER['SERVER_PROTOCOL'];
 }
 
 /**
@@ -82,14 +82,14 @@ if (isset($_SERVER['SERVER_PROTOCOL']))
  * Note: If you supply an invalid environment name, a PHP warning will be thrown
  * saying "Couldn't find constant Kohana::<INVALID_ENV_NAME>"
  */
-if ($_SERVER['HTTP_HOST'] == 'exeltek.savvyled.pl')
+if ($_SERVER['HTTP_HOST'] == 'exeltek.savvyled.pl' || $_SERVER['HTTP_HOST'] == 'localhost')
     Kohana::$environment = Kohana::DEVELOPMENT;
 else
     Kohana::$environment = Kohana::PRODUCTION;
-    
+
 if (isset($_SERVER['KOHANA_ENV']))
 {
-	Kohana::$environment = constant('Kohana::'.strtoupper($_SERVER['KOHANA_ENV']));
+    Kohana::$environment = constant('Kohana::'.strtoupper($_SERVER['KOHANA_ENV']));
 }
 
 if (Kohana::$environment == Kohana::PRODUCTION)
@@ -112,7 +112,7 @@ if (Kohana::$environment == Kohana::PRODUCTION)
  */
 Kohana::init(array(
     'index_file' => false,
-	'base_url'   => (Kohana::$environment == Kohana::PRODUCTION ? '/jobs/' : '/'),
+    'base_url'   => (Kohana::$environment == Kohana::PRODUCTION ? '/jobs/' : $_SERVER['HTTP_HOST'] == 'localhost' ? '/exeltek' : '/'),
     'profile'    => Kohana::$environment !== Kohana::PRODUCTION,
 ));
 
@@ -130,21 +130,21 @@ Kohana::$config->attach(new Config_File);
  * Enable modules. Modules are referenced by a relative or absolute path.
  */
 Kohana::modules(array(
-	'auth'       => MODPATH.'auth',       // Basic authentication
-	// 'cache'      => MODPATH.'cache',      // Caching with multiple backends
-	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
-	'database'   => MODPATH.'database',   // Database access
-	// 'image'      => MODPATH.'image',      // Image manipulation
-	// 'minion'     => MODPATH.'minion',     // CLI Tasks
-	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
-	// 'unittest'   => MODPATH.'unittest',   // Unit testing
-	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
-	));
+    'auth'       => MODPATH.'auth',       // Basic authentication
+    // 'cache'      => MODPATH.'cache',      // Caching with multiple backends
+    // 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
+    'database'   => MODPATH.'database',   // Database access
+    // 'image'      => MODPATH.'image',      // Image manipulation
+    // 'minion'     => MODPATH.'minion',     // CLI Tasks
+    // 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
+    // 'unittest'   => MODPATH.'unittest',   // Unit testing
+    // 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
+));
 
 /**
  * Cookie Salt
  * @see  http://kohanaframework.org/3.3/guide/kohana/cookies
- * 
+ *
  * If you have not defined a cookie salt in your Cookie class then
  * uncomment the line below and define a preferrably long salt.
  */
