@@ -132,7 +132,7 @@ class Controller_Reports_Financial extends Controller {
             if ($discr) Messages::save(sprintf('%d tickets contain discrepancies.', count($discr)), 'danger');
             if ($duplicates) Messages::save(sprintf('%d tickets contain duplicates.', count($duplicates)), 'danger');
             if ($skip) Messages::save(sprintf('%d tickets contain submissions with unknown rates.', count($skip)), 'danger');
-            $this->redirect($this->request->url() . URL::query(array('approve' => NULL)));
+            $this->redirect($this->request->uri() . URL::query(array('approve' => NULL)));
         } elseif (isset($_GET['export'])) {
                 header('Content-type: text/csv');
                 header('Content-disposition: filename="Submissions.' . date('Ymd', $start) . '-' . date('Ymd', $end) . '.' . date('YmdHi', time()) . '.csv"');
