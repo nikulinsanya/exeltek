@@ -161,7 +161,7 @@ table td input[type=checkbox]{
 }
 
 .lgreen:nth-child(even){
-    background: #cfc;
+    background: #B8FDB8;
 }
 .lgreen:nth-child(odd){
     background: #cfffcc;
