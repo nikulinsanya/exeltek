@@ -500,16 +500,9 @@
                         <th>Settings</th>
                         <th>Pending submissions</th>
                         <th>Attachments</th>
-                        <th>Address </th>
-                        <th>FSAM ID</th>
-                        <th> FDA ID</th>
-                        <th>Finish Before Date</th>
-                        <th>Part LIC Used </th>
-                        <th>Non Usage Reason Code </th>
-                        <th>Status</th>
-                        <th>Status Reason select based on Status</th>
-
-
+                        <?php foreach (Columns::get_search() as $id => $type):?>
+                        <th><?=Columns::get_name($id)?></th>
+                        <?php endforeach;?>
                     </tr>
                     <tr class="text-center tr-body"></tr>
                 </table>
