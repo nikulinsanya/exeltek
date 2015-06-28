@@ -492,14 +492,14 @@
                 <table class="table small">
                     <tr class="text-center tr-header">
                         <th>Ticket ID</th>
-                        <th>Last update</th>
-                        <th> Last submit</th>
-                        <th>Job status</th>
-                        <th>Assigned works</th>
-                        <th>Assigned companies</th>
-                        <th>Settings</th>
-                        <th>Pending submissions</th>
-                        <th>Attachments</th>
+                        <?php if (isset($columns['last_update'])):?><th>Last update</th><?php endif;?>
+                        <?php if (isset($columns['last_submit'])):?><th> Last submit</th><?php endif;?>
+                        <?php if (isset($columns['status']) && Group::current('show_all_jobs') && $_GET['status'] == -1):?><th>Job status</th><?php endif;?>
+                        <?php if (isset($columns['types'])):?><th>Assigned works</th><?php endif;?>
+                        <?php if (isset($columns['companies'])):?><th>Assigned companies</th><?php endif;?>
+                        <?php if (isset($columns['settings'])):?><th>Settings</th><?php endif;?>
+                        <?php if (isset($columns['pending'])):?><th>Pending submissions</th><?php endif;?>
+                        <?php if (isset($columns['attachments'])):?><th>Attachments</th><?php endif;?>
                         <?php foreach (Columns::get_search() as $id => $type):?>
                         <th><?=Columns::get_name($id)?></th>
                         <?php endforeach;?>
