@@ -687,7 +687,7 @@ $(function () {
     });
 
     $('table#search-table').on('click','tr:not(.table-header)',function(e){
-        if(e.target.nodeName != 'INPUT'){
+        if(e.target.nodeName != 'INPUT' && e.target.nodeName != 'A'){
             e.preventDefault();
             var html = $(this).html(),
                 newHtml = $('<div></div>').html(html),
