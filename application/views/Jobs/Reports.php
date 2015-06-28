@@ -31,7 +31,7 @@ else:?>
 </div>
 <div class="clearfix">&nbsp;</div>
 <table class="table table-striped">
-    <tr>
+    <tr class="text-center">
         <th class="col-xs-1">Ticket ID</th>
         <th class="col-xs-1">Date</th>
         <th class="col-xs-1">User</th>
@@ -58,7 +58,7 @@ else:?>
         foreach ($tickets as $ticket):?>
     <?php if ($ticket['update_type'] == 2 && $ticket['data']): $cnt = count($ticket['data']);?>
     <?php $fl = true; foreach($ticket['data'] as $id => $value): $date = Columns::get_type($id) == 'date';?>
-    <tr class="warning">
+    <tr class="warning text-center">
         <?php if ($fl):?>    
         <td rowspan="<?=$cnt?>"><a href="<?=URL::base() . 'imex/reports?ticket=' . $ticket['job_key']?>"><?=$ticket['job_key']?></a></td>
         <td rowspan="<?=$cnt?>" nowrap="nowrap"><?=date('d-m-Y H:i', $ticket['update_time'])?></td>
@@ -74,7 +74,7 @@ else:?>
     </tr>
     <?php $fl = false; endforeach;?>
     <?php else:?>     
-    <tr class="<?=Arr::get($classes, $ticket['update_type'])?>">
+    <tr class="<?=Arr::get($classes, $ticket['update_type'])?> text-center">
         <td><a href="<?=URL::base() . 'imex/reports?ticket=' . $ticket['job_key']?>"><?=$ticket['job_key']?></a></td>
         <td nowrap="nowrap"><?=date('d-m-Y H:i', $ticket['update_time'])?></td>
         <td><?=User::get(Arr::get($ticket, 'user_id'), 'login') ? : 'Unknown'?></td>

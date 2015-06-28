@@ -12,6 +12,7 @@
 
 body {
   padding-top: 60px;
+    min-width: 900px;
 }
 
 label {
@@ -41,6 +42,8 @@ label {
 /*filters*/
 .text-info-filters{
     margin-bottom: 5px;
+    min-height: 0px;
+    height: auto;
 }
 .filter_value{
     font-style: italic;
@@ -87,8 +90,8 @@ select.selectize{
     vertical-align: middle!important;
 }
 
-.text-center th{
-    /*white-space: nowrap;*/
+tr.text-center td{
+    cursor: pointer;
 }
 
 table td input[type=checkbox]{
@@ -96,9 +99,9 @@ table td input[type=checkbox]{
 }
 
 .no-filters{
-    top: 2px;
-    position: absolute;
-    left: 80px;
+    top: -39px;
+    position: relative;
+    left: -65px;
 }
 
 .dropdown-menu.collapse.in{
@@ -168,6 +171,54 @@ table td input[type=checkbox]{
 }
 
 
+.nav.nav-tabs.status-filter{
+    background-color:#e7e7e7;
+    padding: 5px 5px 0px 5px;
+    border-top: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+}
+
+.nav-tabs>li>a:hover {
+    background-color: #D8D8D8;
+}
+
+.content form{
+    border-right: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+}
+
+.with-pager{
+    height: 50px;
+}
+
+
+#tableRowDetails .modal-dialog{
+    width: 95%;
+}
+
+#tableRowButtons a{
+    display: inline-block;
+    width: auto;
+}
+
+
+#table-row-details table.table{
+    margin-bottom: 0px;
+    border: 1px solid #ccc;
+}
+
+#table-row-details table.table td{
+    cursor: default;
+}
+
+#search-table .table-buttons{
+    display: none;
+}
+
+
+
+
 
 
 
@@ -175,6 +226,19 @@ table td input[type=checkbox]{
 
 
 /*bootstrap fixes*/
+table.table>tbody>tr>td{
+    border-right: 1px solid #fff;
+}
+.table>tbody>tr>th{
+    border-right: 1px solid #ededed;
+    background-color: #F0F7FF;
+}
+
+.table>tbody>tr>th:last-child,
+.table>tbody>tr>td:last-child{
+    border-right: none;
+}
+
 .dropdown-header{
     padding-left: 5px;
     font-size: 14px;
@@ -184,9 +248,15 @@ table td input[type=checkbox]{
     padding-right: 0px;
 }
 
-@media (min-width:1060px){.navbar-nav{float:left;margin:0}}
 
-@media (max-width: 1060px) {
+
+@media (min-width:1070px){.navbar-nav{float:left;margin:0}}
+
+@media (max-width: 1070px) {
+    .container{
+        display: table;
+    }
+
     .navbar-header {
         float: none;
     }

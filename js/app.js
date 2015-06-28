@@ -682,9 +682,25 @@ $(function () {
     }
 
     $('table').on('click','a.dropdown-toggle',function(e){
-//        debugger;
         $(".dropdown-menu.collapse").removeClass("in").addClass("collapse");
         e.preventDefault();
+    });
+
+    $('table#search-table').on('click','tr:not(.table-header)',function(e){
+        if(e.target.nodeName != 'INPUT'){
+            e.preventDefault();
+            var html = $(this).html(),
+                newHtml = $('<div></div>').html(html),
+                buttons = $(newHtml).find('td.table-buttons').html(),
+                details = $(newHtml).find('td:not(.table-buttons):not(.checkbox-container)'),
+                className = $(this).attr('class') + ' text-center tr-body';
+
+            $('#tableRowButtons').html(buttons);
+            $('#table-row-details table tr.tr-body').attr('class',className).html(details);
+
+            $('#tableRowDetails').modal('show');
+            $(".dropdown-menu.collapse").removeClass("in").addClass("collapse");
+        }
     });
 
 

@@ -3,7 +3,7 @@
         <label  class="filter_value">Filters:</label>
         <div class="text-info-filters">
             <div>
-                <?php $hasFilters = false; if(Arr::get($_GET, 'ticket')){?>
+                <?php $hasFilters = false; if(Arr::get($_GET, 'ticket')){ $hasFilters = true;?>
                     <span class="filter-item">
                             Ticket:
                             <label class="filter_value">
@@ -93,11 +93,9 @@
                     <?php }?>
                 <?php endforeach;?>
             </div>
-            <?php if(!$hasFilters){?>
-                <label class="filter_value no-filters">None</label>
-            <?php }?>
-            <div class="clearfix">&nbsp;</div>
+
         </div>
+
 
 
         <button type="button" class="btn btn-info" data-toggle="modal" data-target="#filterModal">
@@ -108,10 +106,12 @@
             <a href="<?=URL::base()?>search?clear" class="btn btn-warning">
                 <span class="glyphicon glyphicon-remove"></span>
                 Clear</a>
+        <?php }else{?>
+            <label class="filter_value no-filters">None</label>
         <?php }?>
 
-    </div>
 
+    </div>
 
     <!-- Modal Filters-->
     <div class="modal fade" id="filterModal" tabindex="-1" role="dialog">
@@ -252,7 +252,7 @@
 
 
 
-<div class="col-xs-12 text-center">
+<div class="col-xs-12 text-center with-pager">
 <?=$pager = View::factory('Pager');?>
 </div>
 <div class="clearfix">&nbsp;</div>
@@ -264,9 +264,9 @@
 </ul>
 <form action="<?=URL::base()?>search/assign" method="post">
 <?php $columns = array_flip(explode(',', Group::current('columns')));?>
-<table class="table small">
-    <tr class="text-center">
-        <th><input type="checkbox" class="checkbox check-all" /></th>
+<table class="table small" id="search-table">
+    <tr class="text-center table-header">
+        <th class="checkbox-container"><input type="checkbox" class="checkbox check-all" /></th>
 
         <th class="sortable" data-id="id">Ticket ID</th>
         <?php if (isset($columns['last_update'])):?>
@@ -381,7 +381,7 @@
         }
     ?>
     <tr class="text-center <?=$status?>">
-        <td><input type="checkbox" class="checkbox" name="job[<?=$ticket['_id']?>]" /></td>
+        <td class="checkbox-container"><input type="checkbox" class="checkbox" name="job[<?=$ticket['_id']?>]" /></td>
 
         <td><?=HTML::chars($ticket['_id'])?></td>
 
@@ -433,7 +433,7 @@
             <?php if (Group::current('allow_forms') && !Arr::get($ticket, 'locked') && in_array(User::current('company_id'), Arr::get($ticket, 'assigned', array(), true))):?>
             <a href="<?=URL::base()?>search/form/<?=$ticket['_id']?>" class="btn btn-success col-xs-12"  data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-list-alt"></span> Submit data</a>
             <?php endif;?>
-            <a href="<?=URL::base()?>search/view/<?=$ticket['_id']?>" class="btn btn-info col-xs-12"  data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-search"></span> View</a>
+            <a href="<?=URL::base()?>search/view/<?=$ticket['_id']?>" class="btn btn-info col-xs-12"  data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-search"></span> Edit</a>
             <?php if (Group::current('allow_reports')):?>
             <a href="<?=URL::base()?>imex/reports?ticket=<?=$ticket['_id']?>" class="btn btn-warning col-xs-12"  data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-list"></span> Reports</a>
             <a href="<?=URL::base()?>assign?ticket=<?=$ticket['_id']?>" class="btn btn-primary col-xs-12"  data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-pencil"></span> Assign logs</a>
@@ -481,3 +481,41 @@
 </form>
 
 
+<div class="modal fade" id="tableRowDetails" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Ticket details</h4>
+            </div>
+            <div class="modal-body" id="table-row-details">
+                <table class="table small">
+                    <tr class="text-center tr-header">
+                        <th>Ticket ID</th>
+                        <th>Last update</th>
+                        <th> Last submit</th>
+                        <th>Job status</th>
+                        <th>Assigned works</th>
+                        <th>Assigned companies</th>
+                        <th>Settings</th>
+                        <th>Pending submissions</th>
+                        <th>Attachments</th>
+                        <th>Address </th>
+                        <th>FSAM ID</th>
+                        <th> FDA ID</th>
+                        <th>Finish Before Date</th>
+                        <th>Part LIC Used </th>
+                        <th>Non Usage Reason Code </th>
+                        <th>Status</th>
+                        <th>Status Reason select based on Status</th>
+
+
+                    </tr>
+                    <tr class="text-center tr-body"></tr>
+                </table>
+            </div>
+            <div class="modal-footer" id="tableRowButtons">
+            </div>
+        </div>
+    </div>
+</div>
