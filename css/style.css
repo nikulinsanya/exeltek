@@ -187,6 +187,11 @@ table td input[type=checkbox]{
     border-right: 1px solid #ccc;
     border-left: 1px solid #ccc;
 }
+form.dashboard-form{
+    border: 1px solid #ccc;
+    padding: 10px 0px;
+    margin-bottom: 5px;
+}
 
 .with-pager{
     height: 50px;
@@ -215,6 +220,28 @@ table td input[type=checkbox]{
 #search-table .table-buttons{
     display: none;
 }
+
+.progress-label>span{
+    padding: 0px 5px;
+    color: #fff;
+}
+
+.progress-row{
+    padding-top: 10px;
+}
+
+.progress-row:nth-child(even){
+    background: #D9FDDE;
+
+}
+.progress-row:nth-child(odd){
+    border-top: 1px solid #fff;
+    background: #BEFFC7;
+    border-bottom: 1px solid #fff;
+}
+
+
+
 
 
 

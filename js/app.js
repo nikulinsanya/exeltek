@@ -335,9 +335,11 @@ $(function () {
             quick.each(function(i, e) {
                 add($(e).attr('data-value'));
             });
-        } else {
-            add(ul.find('input').val());
-        }
+        }else if(ul.find('input.form-control').val()){
+            //restore action
+//                action = ul.find('select').val();
+                add(ul.find('input.form-control').val());
+            }
 
         filter.parents('form').attr('hold', '').submit();
 
