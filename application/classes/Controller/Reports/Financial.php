@@ -134,45 +134,46 @@ class Controller_Reports_Financial extends Controller {
             if ($skip) Messages::save(sprintf('%d tickets contain submissions with unknown rates.', count($skip)), 'danger');
             $this->redirect($this->request->uri() . URL::query(array('approve' => NULL)));
         } elseif (isset($_GET['export'])) {
-                header('Content-type: text/csv');
-                header('Content-disposition: filename="Submissions.' . date('Ymd', $start) . '-' . date('Ymd', $end) . '.' . date('YmdHi', time()) . '.csv"');
-                $file = tmpfile();
-                $headers = array(
-                    'Tickets ID',
-                    'Submission Date',
-                    'Approval Date',
-                    'User',
-                );
-                if (Group::current('allow_assign')) $headers[] = 'Company';
-                $headers[] = 'Column';
-                $headers[] = 'Value';
+            header('Content-type: text/csv');
+            header('Content-disposition: filename="Submissions.' . date('Ymd', $start) . '-' . date('Ymd', $end) . '.' . date('YmdHi', time()) . '.csv"');
+            $file = tmpfile();
+            $headers = array(
+                'Tickets ID',
+                'Submission Date',
+                'Approval Date',
+                'User',
+            );
+            if (Group::current('allow_assign')) $headers[] = 'Company';
+            $headers[] = 'Column';
+            $headers[] = 'Value';
 
-                $keys = array();
+            $keys = array();
 
-                fputcsv($file, $headers);
-                foreach ($submissions as $job => $list)
-                    foreach ($list as $submission) {
-                        $keys[$submission['key']] = 1;
-                        $key = substr($submission['key'], 5);
-                        $data = array(
-                            $job,
-                            date('d-m-Y H:i', $submission['update_time']),
-                            Arr::get($submission, 'process_time') ? date('d-m-Y H:i', $submission['process_time']) : '',
-                            User::get($submission['user_id'], 'login'),
-                        );
-                        if (Group::current('allow_assign')) $data[] = Arr::get($companies, User::get($submission['user_id'], 'company_id'), 'Unknown');
-                        $data[] = Columns::get_name($key);
-                        $data[] = Columns::output($submission['value'], Columns::get_type($key), true);
+            fputcsv($file, $headers);
+            foreach ($submissions as $job => $list)
+                foreach ($list as $submission) {
+                    $keys[$submission['key']] = 1;
+                    $key = substr($submission['key'], 5);
+                    $data = array(
+                        $job,
+                        date('d-m-Y H:i', $submission['update_time']),
+                        Arr::get($submission, 'process_time') ? date('d-m-Y H:i', $submission['process_time']) : '',
+                        User::get($submission['user_id'], 'login'),
+                    );
+                    if (Group::current('allow_assign')) $data[] = Arr::get($companies, User::get($submission['user_id'], 'company_id'), 'Unknown');
+                    $data[] = Columns::get_name($key);
+                    $data[] = Columns::output($submission['value'], Columns::get_type($key), true);
 
-                        fputcsv($file, $data);
-                    }
-                fseek($file, 0);
-                fpassthru($file);
-                fclose($file);
-                die();
-            } elseif (isset($_GET['excel'])) {
+                    fputcsv($file, $data);
+                }
+            fseek($file, 0);
+            fpassthru($file);
+            fclose($file);
+            die();
+        } elseif (isset($_GET['excel'])) {
             $doc = PHPExcel_IOFactory::load(DOCROOT . 'financial.template.xlsx');
             $sheet = $doc->getSheet();
+            $sheet->setTitle(date('d-m-Y', $start) . ' - ' . date('d-m-Y', $end));
 
             $s = date('M Y', $start);
             $e = date('M Y', $end);
@@ -206,6 +207,21 @@ class Controller_Reports_Financial extends Controller {
             $total = array();
             $amount = array();
             $users = array();
+
+            if (count($submissions)) {
+                foreach (array_merge($map, array('AC' => 0, 'AD' => 0)) as $column => $key)
+                    $sheet->setCellValue($column . '7', '=SUM(' . $column . '11:' . $column . (count($submissions) + 10) . ')');
+
+                $styleArray = array(
+                    'borders' => array(
+                        'allborders' => array(
+                            'style' => PHPExcel_Style_Border::BORDER_THIN
+                        )
+                    )
+                );
+
+                $sheet->getStyle('B11:AD' . (count($submissions) + 10))->applyFromArray($styleArray);
+            }
 
             foreach ($submissions as $job => $list) {
                 $job = Database_Mongo::collection('jobs')->findOne(array('_id' => $job));

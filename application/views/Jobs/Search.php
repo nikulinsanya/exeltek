@@ -433,7 +433,7 @@
             <?php if (Group::current('allow_forms') && !Arr::get($ticket, 'locked') && in_array(User::current('company_id'), Arr::get($ticket, 'assigned', array(), true))):?>
             <a href="<?=URL::base()?>search/form/<?=$ticket['_id']?>" class="btn btn-success col-xs-12"  data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-list-alt"></span> Submit data</a>
             <?php endif;?>
-            <a href="<?=URL::base()?>search/view/<?=$ticket['_id']?>" class="btn btn-info col-xs-12"  data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-search"></span> Edit</a>
+            <a href="<?=URL::base()?>search/view/<?=$ticket['_id']?>" class="btn btn-info col-xs-12"  data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-search"></span> View</a>
             <?php if (Group::current('allow_reports')):?>
             <a href="<?=URL::base()?>imex/reports?ticket=<?=$ticket['_id']?>" class="btn btn-warning col-xs-12"  data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-list"></span> Reports</a>
             <a href="<?=URL::base()?>assign?ticket=<?=$ticket['_id']?>" class="btn btn-primary col-xs-12"  data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-pencil"></span> Assign logs</a>
