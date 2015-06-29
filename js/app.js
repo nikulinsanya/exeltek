@@ -379,7 +379,7 @@ $(function () {
             });
         }
         
-        $('.modal').modal({backdrop: 'static', keyboard: false});
+        $('#upload-dialog').modal({backdrop: 'static', keyboard: false});
     });
 
     $('.export-jobs').click(function() {
@@ -450,7 +450,7 @@ $(function () {
             $('#upload-progress').parent().removeClass('hidden');
             $('#upload-progress').text("0%").attr('aria-valuenow', 0).css('width', '0%');
             $('.modal-footer').find('button').addClass('hidden');
-            $('.modal').modal();
+            //$('#preloaderModal').modal({backdrop: 'static', keyboard: false});
         },
         progress: function (e, data) {
             var progress = parseInt(data.loaded / data.total * 100, 10);
@@ -473,6 +473,7 @@ $(function () {
             data.files.pop();
             $('#upload-progress').parent().addClass('hidden');
             $('.modal-footer').find('button').removeClass('hidden');
+            //$('#preloaderModal').modal('hide');
         },
         add: function(e, target) {
             $('#start-upload').off('click').on('click', function() {

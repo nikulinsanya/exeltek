@@ -43,7 +43,7 @@
   </head>
   <body>
   <div class="modal fade" id="preloaderModal" tabindex="-1" role="dialog">
-      <div id="loading"><img src="img/loading.gif">Loading...</div>
+      <div id="loading"><img src="<?=URL::base()?>img/loading.gif">Loading...</div>
 
   </div>
     <nav class="navbar navbar-default navbar-fixed-top">
