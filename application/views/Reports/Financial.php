@@ -85,7 +85,7 @@
         <th>Rate</th>
         <?php if (Group::current('allow_assign')):?><th>&nbsp;</th><?php endif;?>
     </tr>
-    <?php foreach ($list as $submission): $key = substr($submission['key'], 5);?>
+    <?php foreach ($list as $submission): $key = substr($submission['key'], 5); $type = Columns::get_type($key);?>
     <tr class="submission <?=Group::current('allow_assign') && Arr::path($jobs, $job . '.' . $submission['key']) != $submission['value'] ? 'bg-danger' : (Arr::get($submission, 'financial_time') ? 'bg-success' : 'bg-warning')?>" data-id="<?=$job?>">
         <td><?=date('d-m-Y H:i', $submission['update_time'])?></td>
         <td><?=Arr::get($submission, 'process_time') ? date('d-m-Y H:i', $submission['process_time']) : ''?></td>
@@ -93,8 +93,8 @@
         <td><?=User::get($submission['user_id'], 'login')?></td>
         <?php if (Group::current('allow_assign')):?><td><?=Arr::get($companies, User::get($submission['user_id'], 'company_id'), 'Unknown')?></td><?php endif;?>
         <td><?=Columns::get_name($key)?></td>
-        <td><?=$submission['value']?></td>
-        <?php if (Group::current('allow_assign')):?><td><?=Arr::path($jobs, $job . '.' . $submission['key'])?></td><?php endif;?>
+        <td><?=Columns::output($submission['value'], $type);?></td>
+        <?php if (Group::current('allow_assign')):?><td><?=Arr::path($jobs, $job . '.' . $submission['key']) ? Columns::output($jobs[$job]['data'][$key], $type) : ''?></td><?php endif;?>
         <td class="paid"><?=Arr::get($submission, 'paid')?></td>
         <td><?=floatval(Arr::get($columns, $key))?></td>
         <td class="rate"><?=Arr::get($submission, 'rate') ? number_format($submission['rate'], 2) : Arr::path($rates, array(User::get($submission['user_id'], 'company_id'), $key), '')?></td>

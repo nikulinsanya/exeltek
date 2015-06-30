@@ -352,11 +352,11 @@ $(function () {
             quick.each(function(i, e) {
                 add($(e).attr('data-value'));
             });
-        }else if(ul.find('input.form-control').val()){
+        }else{
             //restore action
-//                action = ul.find('select').val();
-                add(ul.find('input.form-control').val());
-            }
+            //action = ul.find('select').val();
+            add(ul.find('input.form-control').val());
+        }
 
         filter.parents('form').attr('hold', '').submit();
 
@@ -668,6 +668,8 @@ $(function () {
         $('.checkbox-x').checkboxX({ useNative: true});
         $('[data-toggle="tooltip"]').tooltip();
         $('.shorten').shorten();
+        $('.input-float').numericInput({allowFloat: true, allowNegative: true});
+        $('.input-int').numericInput({allowFloat: false, allowNegative: true});
     }
 
 

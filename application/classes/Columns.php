@@ -219,6 +219,12 @@ class Columns {
             case 'datetime':
                 return '<input type="text" id="' . $name . ($id ? '-' . $id : '') . '" class="form-control datetimepicker" name="' . $name . ($id ? '[' . $id . ']' : '') . '" value="' . ($value ? date('d-m-Y H:i', $value) : '') . '" />';
                 break;
+            case 'float':
+                return '<input class="form-control input-float" id="' . $name . ($id ? '-' . $id : '') . '" name="' . $name . ($id ? '[' . $id . ']' : '') . '" type="text" value="'. HTML::chars($value) . '" />';
+                break;
+            case 'int':
+                return '<input class="form-control input-int" id="' . $name . ($id ? '-' . $id : '') . '" name="' . $name . ($id ? '[' . $id . ']' : '') . '" type="text" value="'. HTML::chars($value) . '" />';
+                break;
             default:
                 return '<input class="form-control" id="' . $name . ($id ? '-' . $id : '') . '" name="' . $name . ($id ? '[' . $id . ']' : '') . '" type="text" value="'. HTML::chars($value) . '" />';
         }
