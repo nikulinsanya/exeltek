@@ -11,9 +11,9 @@
                         File group:
                         <select class="form-control" id="file-type">
                             <option data-capture="" data-accept="" value="other" selected="selected">Other</option>
-                            <option data-capture="camera" data-accept="image/*" value="photo-before">Dilapidation photos - before</option>
-                            <option data-capture="camera" data-accept="image/*" value="photo-after">Dilapidation photos - after</option>
-                            <option data-capture="camera" data-accept="image/*,application/pdf,application/x-pdf" value="jsa">JSA Form</option>
+                            <option data-capture="" data-accept="image/*" value="photo-before">Dilapidation photos - before</option>
+                            <option data-capture="" data-accept="image/*" value="photo-after">Dilapidation photos - after</option>
+                            <option data-capture="" data-accept="image/*,application/pdf,application/x-pdf" value="jsa">JSA Form</option>
                             <option data-capture="" data-accept="" value="otdr">OTDR Traces</option>
                             <option data-capture="" data-accept="" value="waiver">Waiver Form</option>
                         </select>

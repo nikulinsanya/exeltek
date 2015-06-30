@@ -651,6 +651,8 @@ $(function () {
         $('.checkbox-x').checkboxX({ useNative: true});
         $('[data-toggle="tooltip"]').tooltip();
         $('.shorten').shorten();
+        $('.input-float').numericInput({allowFloat: true, allowNegative: true});
+        $('.input-int').numericInput({allowFloat: false, allowNegative: true});
     }
 
 
