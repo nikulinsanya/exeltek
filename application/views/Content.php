@@ -32,6 +32,8 @@
     <link href="<?=URL::base()?>css/style.min.css" rel="stylesheet">
     <script src="<?=URL::base()?>js/lib/jstree.min.js"></script>
 
+    <script src="<?=URL::base()?>js/lib/jquery/jquery.numeric.min.js"></script>
+
     <link href="<?=URL::base()?>css/checkbox-x.min.css" rel="stylesheet">
     <script src="<?=URL::base()?>js/lib/checkbox-x.min.js"></script>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
