@@ -335,7 +335,8 @@ form.view-form  label.checkbox{
 }
 
 .top-buttons{
-    padding: 10px;
+    padding: 10px 0px 10px 10px;
+    text-align: end;
 }
 
 .radio-container input[type="radio"]{
