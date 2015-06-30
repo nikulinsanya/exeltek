@@ -313,6 +313,14 @@ form.view-form  label.checkbox{
     text-overflow: ellipsis;
     line-height: 18px;
 }
+.col-container .radio-container label{
+    width: 100%;
+}
+
+.col-container .left-label{
+    float: left;
+}
+
 .col-container td>div{
     display: inline-block;
     position: relative;
@@ -330,7 +338,25 @@ form.view-form  label.checkbox{
     padding: 10px;
 }
 
+.radio-container input[type="radio"]{
+    width: 20px;
+    float: left;
+    margin-top: 2px;
+}
 
+.multiselect .multiselect-selected-text{
+    display: initial;
+}
+
+.panel-body.active .col-container{
+    width: 100%;
+}
+
+.checkbox-label input[type="checkbox"]{
+    width: 20px;
+    height: 14px;
+    display: inline-block;
+}
 
 
 
@@ -449,5 +475,13 @@ table.table>tbody>tr>td{
     background-color: #ffffff;
     border: 1px solid #ddd;
     border-top-color: transparent;
+}
+
+.badge{
+    background-color: #30B843;
+}
+
+.btn .caret {
+    margin-top: -2px;
 }
 

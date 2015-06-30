@@ -223,7 +223,7 @@ $(function () {
 
 
     //tabs on search view
-    $('ul.nav').find('a').on('click',function() {
+    $('.content ul.nav').find('a').on('click',function() {
         var li = $(this).parent();
         var id = li.attr('data-id');
         var ul = li.parent();
@@ -683,7 +683,7 @@ $(function () {
     function setMultiselect(self){
         if(self){
             $(self).multiselect({
-                numberDisplayed: 1
+                numberDisplayed: 0
             });
         }
     }

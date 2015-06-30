@@ -19,13 +19,13 @@
     <div class="top-buttons">
         <button type="button" class="btn btn-danger back-button">Back</button>
         <button type="submit" class="btn btn-success">Save</button>
+        <?php if (Group::current('allow_assign') && Arr::get($job, 'assigned')):?>
+            <button title="Unassign all companies" type="submit" class="btn btn-primary <?=array_column($tabs, 'submissions') ? 'disabled' : ''?>">Finish job</button>
+        <?php endif;?>
     </div>
 
 <!--    tabs-->
     <ul class="nav nav-tabs status-filter topsideup">
-        <?php if (Group::current('allow_assign') && Arr::get($job, 'assigned')):?>
-        <li role="presentation" id="finish-job" class="pull-right"><button title="Unassign all companies" type="submit" class="btn btn-primary <?=array_column($tabs, 'submissions') ? 'disabled' : ''?>">Finish job</button></li>
-        <?php endif;?>
 
     <?php $fl = true; foreach ($tabs as $id => $tab) if (isset($tab['columns'])):?>
         <li role="presentation" data-id="<?=$id?>" class="<?=$fl ? 'active':''?>">
@@ -57,11 +57,11 @@
                 <?php endif; ?>
                 <td  class="<?=Arr::get($submissions, 'data.' . $id) ? 'bg-danger' : ''?>">
 
-                        <label class=""><?=HTML::chars($name)?><?=isset($values['data' . $id]) ? '*' : ''?>: </label>
+                        <label  class="left-label"><?=HTML::chars($name)?><?=isset($values['data' . $id]) ? '*' : ''?>: </label>
                         <div class="">
                             <?php $type = Columns::get_type($id); if (Columns::allowed($id) == Columns::COLUMN_WRITE):?>
                                 <?php echo Columns::input('data', $id, $type, $value); if (isset($submissions['data.' . $id])):?>
-                                    <ul class="list-unstyled">
+                                    <ul class="list-unstyled radio-container">
                                         <li><label><input type="radio" class="submission-select" data-id="data-<?=$id?>" name="submission-data[<?=$id?>]" value="0" />Keep current</label></li>
 
                                         <?php $multi = substr($type, 0, 4) == 'enum' && Enums::is_multi(substr($type, 5));
@@ -91,65 +91,88 @@
         <?php $fl = false; endif;?>
         <?php if ($submissions):?>
         <div data-id="submissions" class="panel-body hidden">
-            <?php $time = false; $user_id = false; foreach ($submissions['list'] as $submission):?>
-            <?php if ($time != $submission['time'] || $user_id != $submission['user_id']): 
-                if ($time) echo '</ul></div>';
-                $user = User::get($submission['user_id']);
-                $user_id = $submission['user_id'];
-                $time = $submission['time'];
-            ?>
-            <div>
-                <label>
-                    <?=date('d-m-Y H:i', $submission['time']) . ' - ' . Arr::get($user, 'login', 'Unknown user') . ' / ' . Arr::get($companies, Arr::get($user, 'company_id'), 'Unknown company')?>
-                </label>
-                <ul>
-            <?php endif;?>
-                    <li>
-                        <?php if ($submission['active'] == 1):?>
-                        <span id="submission-<?=$submission['id']?>" class="pending-<?=$submission['key']?> text-info glyphicon glyphicon-edit"></span>
-                        <?php elseif ($submission['active'] == -1):?>
-                        <span class="text-success glyphicon glyphicon-ok"></span>
-                        <?php else:?>
-                        <span class="text-danger glyphicon glyphicon-remove"></span>
-                        <?php endif;?>
-                        <strong><?=$submission['name']?>: </strong>
-                        <?=Columns::output($submission['value'], $submission['type'])?>
-                    </li>
-            <?php endforeach;?>
-                </ul>
-            </div>
+            <table class="col-container">
+                <?php $time = false; $user_id = false; foreach ($submissions['list'] as $submission):?>
+                <?php if ($time != $submission['time'] || $user_id != $submission['user_id']):
+                    $user = User::get($submission['user_id']);
+                    $user_id = $submission['user_id'];
+                    $time = $submission['time'];
+                    ?>
+                    <tr>
+                        <td>
+                        <label>
+                            <?=date('d-m-Y H:i', $submission['time']) . ' - ' . Arr::get($user, 'login', 'Unknown user') . ' / ' . Arr::get($companies, Arr::get($user, 'company_id'), 'Unknown company')?>
+                        </label>
+                        </td>
+                    </tr>
+                <?php endif;?>
+
+
+                    <tr>
+                        <td>
+                            <?php if ($submission['active'] == 1):?>
+                                <span id="submission-<?=$submission['id']?>" class="pending-<?=$submission['key']?> text-info glyphicon glyphicon-edit"></span>
+                            <?php elseif ($submission['active'] == -1):?>
+                                <span class="text-success glyphicon glyphicon-ok"></span>
+                            <?php else:?>
+                                <span class="text-danger glyphicon glyphicon-remove"></span>
+                            <?php endif;?>
+                            <strong><?=$submission['name']?>: </strong>
+                            <?=Columns::output($submission['value'], $submission['type'])?>
+                        </td>
+                    </tr>
+
+                <?php endforeach; ?>
+            </table>
             <div class="clearfix">&nbsp;</div>
         </div>
         <?php endif;?>
         <?php if (Group::current('allow_assign')):?>
         <div data-id="assigned" class="panel-body hidden">
-            <?php $history = array_flip(Arr::get($job, 'ex', array())); foreach ($job_types as $id => $type): unset($history[Arr::path($job, 'assigned.' . $id)]);?>
-            <div class="form-group">
-                <label class="col-xs-4 control-label"><?=HTML::chars($type)?></label>
-                <div class="col-xs-8">
-                <?=Form::select('assigned[' . $id . ']', array('' => 'None') + $companies, Arr::path($job, 'assigned.' . $id), array('class' => 'form-control'))?>
-                </div>
-            </div>
-            <?php endforeach; if ($history):?>
-            <h4>Previously assigned companies:</h4>
-            <ul class="list-unstyled">
-            <?php foreach ($history as $key => $value):?>
-                <li><?=Arr::get($companies, $key, 'Unknown')?></li>
-            <?php endforeach;?>
-            </ul>
+            <table class="col-container">
+                    <?php $history = array_flip(Arr::get($job, 'ex', array()));$index = 0;   foreach ($job_types as $id => $type): unset($history[Arr::path($job, 'assigned.' . $id)]);?>
+                    <?php if (0 == $index++ % 2) :?>
+                        <tr>
+                    <?php endif; ?>
+                        <td>
+
+                            <label  class="left-label"><?=HTML::chars($type)?></label>
+                            <div class="">
+                            <?=Form::select('assigned[' . $id . ']', array('' => 'None') + $companies, Arr::path($job, 'assigned.' . $id), array('class' => 'form-control'))?>
+                            </div>
+                        </td>
+                        <?php if (0 == $index % 2) :?>
+                            </tr>
+                        <?php endif; ?>
+                    <?php endforeach;?>
+                </table>
+
+
+                <!--@todo stylize this block -->
+                <?php if ($history):?>
+                <h4>Previously assigned companies:</h4>
+                <ul class="list-unstyled">
+                    <?php foreach ($history as $key => $value):?>
+                        <li><?=Arr::get($companies, $key, 'Unknown')?></li>
+                    <?php endforeach;?>
+                </ul>
+
+
             <?php endif;?>
         </div>
         <div data-id="settings" class="panel-body hidden">
-            <div class="col-xs-12">
+            <table class="col-container">
                 <?php foreach (Columns::$settings as $key => $value):?>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" name="<?=$key?>" <?=Arr::get($job, $key) ? 'checked' : ''?> value="1" />
-                        <?=HTML::chars($value)?>
-                    </label>
-                </div>
+                    <tr>
+                        <td>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="<?=$key?>" <?=Arr::get($job, $key) ? 'checked' : ''?> value="1" />
+                                <?=HTML::chars($value)?>
+                            </label>
+                        </td>
+                    </tr>
                 <?php endforeach;?>
-            </div>
+            </table>
         </div>
         <?php endif;?>
         <div data-id="attachments" class="panel-body hidden">
@@ -181,10 +204,6 @@
     </div>
     <!--    tabs-->
     <ul class="nav nav-tabs status-filter upsidedown">
-        <?php if (Group::current('allow_assign') && Arr::get($job, 'assigned')):?>
-            <li role="presentation" id="finish-job" class="pull-right"><button title="Unassign all companies" type="submit" class="btn btn-primary <?=array_column($tabs, 'submissions') ? 'disabled' : ''?>">Finish job</button></li>
-        <?php endif;?>
-
         <?php $fl = true; foreach ($tabs as $id => $tab) if (isset($tab['columns'])):?>
             <li role="presentation" data-id="<?=$id?>" class="<?=$fl ? 'active':''?>">
                 <a href="javascript:;"><?=HTML::chars($tab['name'])?>
