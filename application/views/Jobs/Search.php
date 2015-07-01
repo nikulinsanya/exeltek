@@ -308,7 +308,7 @@
         <?php if (isset($columns['status']) && Group::current('show_all_jobs') && $_GET['status'] == -1):?>
         <th class="hidden-sm hidden-xs">Job status</th>
         <?php endif;?>
-        
+
         <?php if (isset($columns['types'])):?>
         <th class="hidden-xs">Assigned works</th>
         <?php endif;?>
@@ -324,7 +324,7 @@
         <?php if (isset($columns['pending'])):?>
         <th class="hidden-sm hidden-xs">Pending submissions</th>
         <?php endif;?>
-        
+
         <?php if (isset($columns['attachments'])):?>
         <th class="hidden-xs">Attachments</th>
         <?php endif;?>
@@ -351,7 +351,7 @@
                         </ul>
                     </li>
                     <?php endif;?>
-                </ul>                                     
+                </ul>
         </th>
         <?php endforeach;?>
 
@@ -396,7 +396,7 @@
         <?php if (isset($columns['status']) && Group::current('show_all_jobs') && $_GET['status'] == -1):?>
         <td class="hidden-sm hidden-xs"><?=Arr::get(Enums::$statuses, Arr::get($ticket, 'status', 0), 'Unknown')?></td>
         <?php endif;?>
-        
+
         <?php if (isset($columns['types'])):?>
         <?php if (Group::current('allow_assign')):?>
         <td class="hidden-xs"><?=HTML::chars(implode(', ', array_intersect_key($types, Arr::get($ticket, 'assigned', array()))))?></td>
@@ -420,7 +420,7 @@
         <?php if (isset($columns['pending'])):?>
         <td class="hidden-sm hidden-xs"><?=Arr::get($submissions, $ticket['_id'])?></td>
         <?php endif;?>
-        
+
         <?php if (isset($columns['attachments'])):?>
         <td class="hidden-xs"><?=Arr::get($attachments, $ticket['_id'])?></td>
         <?php endif;?>
@@ -450,7 +450,7 @@
         <div class="text-center text-danger">
         <h3>No jobs found!</h3>
         </div>
-    <?php endif;?>    
+    <?php endif;?>
 <div class="col-xs-12 text-center">
 <?=$pager;?>
 </div>
@@ -492,14 +492,14 @@
                 <table class="table small">
                     <tr class="text-center tr-header">
                         <th>Ticket ID</th>
-                        <?php if (isset($columns['last_update'])):?><th>Last update</th><?php endif;?>
-                        <?php if (isset($columns['last_submit'])):?><th> Last submit</th><?php endif;?>
-                        <?php if (isset($columns['status']) && Group::current('show_all_jobs') && $_GET['status'] == -1):?><th>Job status</th><?php endif;?>
-                        <?php if (isset($columns['types'])):?><th>Assigned works</th><?php endif;?>
-                        <?php if (isset($columns['companies'])):?><th>Assigned companies</th><?php endif;?>
-                        <?php if (isset($columns['settings'])):?><th>Settings</th><?php endif;?>
-                        <?php if (isset($columns['pending'])):?><th>Pending submissions</th><?php endif;?>
-                        <?php if (isset($columns['attachments'])):?><th>Attachments</th><?php endif;?>
+                        <?php if (isset($columns['last_update'])):?><th class="hidden-sm hidden-xs">Last update</th><?php endif;?>
+                        <?php if (isset($columns['last_submit'])):?><th class="hidden-sm hidden-xs"> Last submit</th><?php endif;?>
+                        <?php if (isset($columns['status']) && Group::current('show_all_jobs') && $_GET['status'] == -1):?><th class="hidden-sm hidden-xs">Job status</th><?php endif;?>
+                        <?php if (isset($columns['types'])):?><th class="hidden-xs">Assigned works</th><?php endif;?>
+                        <?php if (isset($columns['companies'])):?><th class="hidden-sm hidden-xs">Assigned companies</th><?php endif;?>
+                        <?php if (isset($columns['settings'])):?><th class="hidden-sm hidden-xs">Settings</th><?php endif;?>
+                        <?php if (isset($columns['pending'])):?><th class="hidden-sm hidden-xs">Pending submissions</th><?php endif;?>
+                        <?php if (isset($columns['attachments'])):?><th class="hidden-xs">Attachments</th><?php endif;?>
                         <?php foreach (Columns::get_search() as $id => $type):?>
                         <th><?=Columns::get_name($id)?></th>
                         <?php endforeach;?>
