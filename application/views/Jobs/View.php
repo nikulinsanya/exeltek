@@ -194,11 +194,14 @@
                     <?php endif;?>
                 </li>
                 <?php endforeach;?>
-                <li><button type="button" class="btn btn-primary upload" data-target="<?=URL::base()?>search/" data-id="<?=$job['_id']?>">Upload</button></li>
             </ul>
-            <?php if (Group::current('allow_reports')):?>
-            <a href="<?=URL::base()?>imex/reports/uploads/<?=$job['_id']?>" class="btn btn-info">View attachment log</a>
-            <?php endif;?>
+            <div class="upload-buttons">
+                <button type="button" class="btn btn-primary upload" data-target="<?=URL::base()?>search/" data-id="<?=$job['_id']?>">Upload</button>
+                <?php if (Group::current('allow_reports')):?>
+                    <a href="<?=URL::base()?>imex/reports/uploads/<?=$job['_id']?>" class="btn btn-info">View attachment log</a>
+                <?php endif;?>
+            </div>
+
             <?=View::factory('Jobs/UploadFile')?>
         </div>
     </div>

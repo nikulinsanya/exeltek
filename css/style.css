@@ -359,6 +359,14 @@ form.view-form  label.checkbox{
     display: inline-block;
 }
 
+.upload-buttons{
+    padding: 10px;
+}
+
+
+.modal-content .progress{
+    margin: 10px 0px;
+}
 
 
 
