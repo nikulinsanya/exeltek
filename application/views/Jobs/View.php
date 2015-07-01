@@ -176,25 +176,29 @@
         </div>
         <?php endif;?>
         <div data-id="attachments" class="panel-body hidden">
-            <ul class="list-unstyled">
+            <table class="col-container files-container">
                 <?php foreach ($job['attachments'] as $attachment):?>
-                <li>
-                    <?php if (Group::current('allow_assign')):?>
-                    <a href="<?=URL::base()?>search/view/<?=$job['_id']?>?delete=<?=$attachment['id']?>"
-                        confirm="Do you really want to delete this attachment? This action can't be undone!!!"
-                        class="text-danger glyphicon glyphicon-remove remove-link"></a>
-                    <?php endif;?>
-                    <a href="<?=URL::base()?>download/attachment/<?=$attachment['id']?>">
-                    <img src="http://stdicon.com/<?=$attachment['mime']?>?size=32&default=http://stdicon.com/text" />
-                    <?=HTML::chars($attachment['folder'] . ' / ' . $attachment['fda_id'] . ' / ' . $attachment['address'] . ' / ' . $attachment['filename'])?>
-                    </a>
-                    - Uploaded <?=date('d-m-Y H:i', $attachment['uploaded'])?> by <?=User::get($attachment['user_id'], 'login')?>
-                    <?php if ($attachment['location']):?>
-                        <a target="_blank" href="https://www.google.com/maps/@<?=$attachment['location']?>,19z">(Location)</a>
-                    <?php endif;?>
-                </li>
+                    <tr>
+                        <td>
+                            <?php if (Group::current('allow_assign')):?>
+                                <a href="<?=URL::base()?>search/view/<?=$job['_id']?>?delete=<?=$attachment['id']?>"
+                                   confirm="Do you really want to delete this attachment? This action can't be undone!!!"
+                                   class="text-danger glyphicon glyphicon-remove remove-link"></a>
+                            <?php endif;?>
+                            <a target="_blank" href="<?=URL::base()?>download/attachment/<?=$attachment['id']?>">
+                                <img src="http://stdicon.com/<?=$attachment['mime']?>?size=32&default=http://stdicon.com/text" />
+                                <?=HTML::chars($attachment['folder'] . ' / ' . $attachment['fda_id'] . ' / ' . $attachment['address'] . ' / ' . $attachment['filename'])?>
+                            </a>
+                            - Uploaded <?=date('d-m-Y H:i', $attachment['uploaded'])?> by <?=User::get($attachment['user_id'], 'login')?>
+                            <?php if ($attachment['location']):?>
+                                <a target="_blank" href="https://www.google.com/maps/@<?=$attachment['location']?>,19z">(Location)</a>
+                            <?php endif;?>
+                        </td>
+                    </tr>
                 <?php endforeach;?>
-            </ul>
+            </table>
+
+
             <div class="upload-buttons">
                 <button type="button" class="btn btn-primary upload" data-target="<?=URL::base()?>search/" data-id="<?=$job['_id']?>">Upload</button>
                 <?php if (Group::current('allow_reports')):?>

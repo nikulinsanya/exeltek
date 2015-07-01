@@ -295,16 +295,15 @@ form.view-form  label.checkbox{
 
 .col-container tr:nth-child(odd){
     background: #D9FDDE;
-    border-top: 1px solid #fff;
 }
 .col-container tr:nth-child(even){
-    border-top: 1px solid #fff;
     background: #BEFFC7;
 }
 .col-container td{
     width: 50%;
     padding: 10px;
     border-right: 1px solid #fff;
+    border-top: 1px solid #fff;
 }
 
 .col-container label{

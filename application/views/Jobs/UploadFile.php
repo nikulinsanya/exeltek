@@ -25,6 +25,8 @@
                                 </select>
                                 </div>
                             </td>
+                            </tr>
+                            <tr>
                             <td>
                                 <label>
                                     Title:
@@ -35,7 +37,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="2">
+                            <td>
                                 <input type="file" id="file-content" />
                             </td>
                         </tr>
