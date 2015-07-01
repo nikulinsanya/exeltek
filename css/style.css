@@ -1,4 +1,5 @@
 @charset "UTF-8";
+@import "media.css";
 /*
  * jQuery File Upload Plugin CSS Example 8.8.2
  * https://github.com/blueimp/jQuery-File-Upload
@@ -12,7 +13,6 @@
 
 body {
   padding-top: 60px;
-    min-width: 900px;
 }
 
 label {
@@ -247,7 +247,6 @@ form.dashboard-form{
 }
 
 form.view-form{
-    min-width: 1000px;
     border: none;
 }
 
@@ -334,8 +333,8 @@ form.view-form  label.checkbox{
 }
 
 .top-buttons{
-    padding: 10px 0px 10px 10px;
-    text-align: end;
+    padding: 10px 0px 10px 0px;
+    text-align: left;
 }
 
 .radio-container input[type="radio"]{
@@ -491,5 +490,9 @@ table.table>tbody>tr>td{
 
 .btn .caret {
     margin-top: -2px;
+}
+
+.modal-body{
+    overflow: scroll;
 }
 
