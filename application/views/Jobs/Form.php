@@ -1,4 +1,4 @@
-<form action="" method="post">
+<form action="" method="post" class="margin-10">
     <input type="hidden" id="location" name="location" value="" />
     <table class="col-container job-submit">
         <tr>
