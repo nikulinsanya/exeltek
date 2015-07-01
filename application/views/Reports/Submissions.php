@@ -62,7 +62,7 @@
         <td><?=User::get($submission['user_id'], 'login')?></td>
         <?php if (Group::current('allow_assign')):?><td><?=Arr::get($companies, User::get($submission['user_id'], 'company_id'), 'Unknown')?></td><?php endif;?>
         <td><?=Columns::get_name($key)?></td>
-        <td><?=Columns::output($submission['value'], Columns::get_type($key))?></td>
+        <td class="<?=strlen(Columns::output($submission['value'], Columns::get_type($key))) > 100 ? 'shorten' : ''?>"><?=Columns::output($submission['value'], Columns::get_type($key))?></td>
     </tr>
     <?php endforeach;?>
     <?php endforeach;?>
