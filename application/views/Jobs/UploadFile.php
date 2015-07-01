@@ -8,7 +8,7 @@
             <div class="">
                 <input type="hidden" id="location" />
                 <div class="">
-                    <table class="col-container">
+                    <table class="col-container file-upload">
                         <tr>
                             <td>
                                 <label>

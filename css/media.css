@@ -17,4 +17,11 @@
     .col-container td:nth-child(even){
         background: #BEFFC7;
     }
+
+    .status-cell{
+        width: 100%!important;
+    }
+    .extra{
+        display: none!important;
+    }
 }

@@ -672,6 +672,9 @@ $(function () {
         $('.shorten').shorten();
         $('.input-float').numericInput({allowFloat: true, allowNegative: true});
         $('.input-int').numericInput({allowFloat: false, allowNegative: true});
+
+        setSelectize($('.selectize'));
+        setMultiselect($('.multiselect'));
     }
 
 
@@ -736,10 +739,6 @@ $(function () {
             $(".dropdown-menu.collapse").removeClass("in").addClass("collapse");
         }
     });
-
-
-    setSelectize($('.selectize'));
-    setMultiselect($('.multiselect'));
 
     initPlugins();
 });

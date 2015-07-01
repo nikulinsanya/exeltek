@@ -26,7 +26,8 @@ $(function () {
         }
     });
     
-    $('#job-completed').quickChange(function() {
+    $('#job-completed').quickChange(function() {debugger;
+
         var val = $(this).val();
         $('.fields-group').addClass('hidden');
         if (val) {
