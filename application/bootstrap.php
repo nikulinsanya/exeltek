@@ -82,7 +82,7 @@ if (isset($_SERVER['SERVER_PROTOCOL']))
  * Note: If you supply an invalid environment name, a PHP warning will be thrown
  * saying "Couldn't find constant Kohana::<INVALID_ENV_NAME>"
  */
-if ($_SERVER['HTTP_HOST'] == 'exeltek.savvyled.pl' || $_SERVER['HTTP_HOST'] == 'localhost')
+if (strpos($_SERVER['HTTP_HOST'], 'savvyled.pl') !== false || $_SERVER['HTTP_HOST'] == 'localhost')
     Kohana::$environment = Kohana::DEVELOPMENT;
 else
     Kohana::$environment = Kohana::PRODUCTION;
