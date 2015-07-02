@@ -1,0 +1,27 @@
+@media (max-width:1070px){
+    .col-container tr:nth-child(odd){
+        background: none!important;
+        /*background: #D9FDDE;*/
+    }
+    .col-container tr:nth-child(even){
+        /*background: #BEFFC7;*/
+        background: none!important;
+    }
+    .col-container td{
+        width: 100%!important;
+        display: inline-block;
+    }
+    .col-container td:nth-child(odd){
+        background: #D9FDDE;
+    }
+    .col-container td:nth-child(even){
+        background: #BEFFC7;
+    }
+
+    .status-cell{
+        width: 100%!important;
+    }
+    .extra{
+        display: none!important;
+    }
+}

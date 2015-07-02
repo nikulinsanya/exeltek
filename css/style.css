@@ -1,4 +1,5 @@
 @charset "UTF-8";
+@import "media.css";
 /*
  * jQuery File Upload Plugin CSS Example 8.8.2
  * https://github.com/blueimp/jQuery-File-Upload
@@ -12,7 +13,7 @@
 
 body {
   padding-top: 60px;
-    min-width: 900px;
+    min-width: 800px;
 }
 
 label {
@@ -247,7 +248,6 @@ form.dashboard-form{
 }
 
 form.view-form{
-    min-width: 1000px;
     border: none;
 }
 
@@ -295,16 +295,15 @@ form.view-form  label.checkbox{
 
 .col-container tr:nth-child(odd){
     background: #D9FDDE;
-    border-top: 1px solid #fff;
 }
 .col-container tr:nth-child(even){
-    border-top: 1px solid #fff;
     background: #BEFFC7;
 }
 .col-container td{
     width: 50%;
     padding: 10px;
-    border-right: 1px solid #fff;
+    border-left: 1px solid #fff;
+    border-top: 1px solid #fff;
 }
 
 .col-container label{
@@ -335,8 +334,8 @@ form.view-form  label.checkbox{
 }
 
 .top-buttons{
-    padding: 10px 0px 10px 10px;
-    text-align: end;
+    padding: 10px 0px 10px 0px;
+    text-align: left;
 }
 
 .radio-container input[type="radio"]{
@@ -349,7 +348,9 @@ form.view-form  label.checkbox{
     display: initial;
 }
 
-.panel-body.active .col-container{
+.panel-body.active .col-container,
+.job-submit,
+.file-upload{
     width: 100%;
 }
 
@@ -359,7 +360,8 @@ form.view-form  label.checkbox{
     display: inline-block;
 }
 
-.upload-buttons{
+.upload-buttons,
+.status-cell{
     padding: 10px;
 }
 
@@ -368,9 +370,40 @@ form.view-form  label.checkbox{
     margin: 10px 0px;
 }
 
+.col-container .multiselect-container label {
+    width: 100%;
+}
 
+.column-value .multiselect-container a{
+    height: 25px;
+}
+.column-value .multiselect-container a input[type="checkbox"] {
+    margin-top: 3px;
+}
 
+.col-container label.old_value{
+    width: 100%;
+}
 
+.flatten-sub-table tr{
+    background: none!important;
+}
+.flatten-sub-table td{
+    background: none!important;
+    border:none!important;
+}
+
+.width100{
+    width: 100%!important;
+}
+
+.extra{
+    border-left: none!important;
+}
+
+.margin-10{
+    margin-top: -10px;
+}
 
 
 
@@ -492,5 +525,13 @@ table.table>tbody>tr>td{
 
 .btn .caret {
     margin-top: -2px;
+}
+
+.modal-body{
+    overflow: scroll;
+}
+
+.text-danger {
+    color: red;
 }
 

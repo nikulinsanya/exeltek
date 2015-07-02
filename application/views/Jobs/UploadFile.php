@@ -8,7 +8,7 @@
             <div class="">
                 <input type="hidden" id="location" />
                 <div class="">
-                    <table class="col-container">
+                    <table class="col-container file-upload">
                         <tr>
                             <td>
                                 <label>
@@ -25,6 +25,8 @@
                                 </select>
                                 </div>
                             </td>
+                            </tr>
+                            <tr>
                             <td>
                                 <label>
                                     Title:
@@ -35,7 +37,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="2">
+                            <td>
                                 <input type="file" id="file-content" />
                             </td>
                         </tr>

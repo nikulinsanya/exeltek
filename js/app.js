@@ -448,9 +448,9 @@ $(function () {
     
     $('#file-type').quickChange(function() {
         if ($(this).val() == 'other')
-            $('#file-title').parent().parent().removeClass('hidden');
+            $('#file-title').parents('tr').first().show();
         else
-            $('#file-title').parent().parent().addClass('hidden');
+            $('#file-title').parents('tr').first().hide();
             
         var selected = $(this).find(':selected');
         $('#file-content').attr('capture', selected.attr('data-capture'));
@@ -475,13 +475,14 @@ $(function () {
         },
         done: function (e, data) {
             $('#upload-count').val(parseInt($('#upload-count').val()) + 1);
-            var parent = $('.upload').parent('li');
+            var parent = $('.files-container').find('tr').first();
             if (parent) {
-                var link = $('<li>' + data.result.attachment.content + '</li>');
+                var link = $('<tr><td>' + data.result.attachment.content + '</td></tr>');
                 link.find('.remove-link').click(confirm_link).click(remove_link);
                 parent.before(link);
             }
             $('.modal-footer').find('button.btn-success').before(data.result.attachment.message);
+            $('#file-content').val('');
         },
         fail: function (e, data) {
             dump(data.jqXHR);
@@ -490,6 +491,7 @@ $(function () {
             data.files.pop();
             $('#upload-progress').parent().addClass('hidden');
             $('.modal-footer').find('button').removeClass('hidden');
+            $('#start-upload').addClass('hidden');
             //$('#preloaderModal').modal('hide');
         },
         add: function(e, target) {
@@ -670,6 +672,9 @@ $(function () {
         $('.shorten').shorten();
         $('.input-float').numericInput({allowFloat: true, allowNegative: true});
         $('.input-int').numericInput({allowFloat: false, allowNegative: true});
+
+        setSelectize($('.selectize'));
+        setMultiselect($('.multiselect'));
     }
 
 
@@ -734,10 +739,6 @@ $(function () {
             $(".dropdown-menu.collapse").removeClass("in").addClass("collapse");
         }
     });
-
-
-    setSelectize($('.selectize'));
-    setMultiselect($('.multiselect'));
 
     initPlugins();
 });
