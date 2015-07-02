@@ -57,7 +57,7 @@
             <tr id="fields-<?=crc32($key)?>" class="custom-jobs-container hidden">
                 <?php $tdIndex=0;?>
                 <td colspan="2">
-                    <label><?=Columns::get_name($column)?>:</label>
+                    <label><?=$key?>:</label>
                     <div class="width100">
                         <table class="flatten-sub-table width100">
                             <?php foreach ($values as $id => $value): $index = 0; $status = Arr::path($job_values, 'data' . intval($id) . '.status'); $old = Arr::path($job_values, 'data' . intval($id) . '.value'); ?>
