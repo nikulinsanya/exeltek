@@ -28,7 +28,7 @@ $(function () {
     
     $('#job-completed').quickChange(function() {
         var val = $(this).val();
-        $('.fields-group').addClass('hidden');
+        $('.custom-jobs-container').addClass('hidden');
         if (val) {
             $('#fields-' + val).removeClass('hidden');
         }

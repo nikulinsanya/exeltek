@@ -54,7 +54,7 @@
             <td class="extra"></td>
         </tr>
         <?php  foreach ($columns as $key => $values):?>
-            <tr id="fields-<?=crc32($key)?>" class="hidden">
+            <tr id="fields-<?=crc32($key)?>" class="custom-jobs-container hidden">
                 <?php $tdIndex=0;?>
                 <td colspan="2">
                     <label><?=Columns::get_name($column)?>:</label>
