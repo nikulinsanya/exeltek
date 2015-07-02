@@ -199,8 +199,8 @@ class Controller_Api_Jobs extends Kohana_Controller {
                 $approval = false;
                 $archive = array();
 
-                foreach ($columns as $keys => $name) foreach (explode(',', $keys) as $key) if (is_numeric($key) && isset($submissions[$key])) {
-                    $value = Columns::parse($submissions[$key], Columns::get_type($key));
+                foreach ($submissions as $key => $value) if (is_numeric($key)) {
+                    $value = Columns::parse($value, Columns::get_type($key));
                     if (Columns::get_direct($key)) {
 
                         if (Arr::path($job, 'data.' . $key) != $value) {

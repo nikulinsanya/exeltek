@@ -4,8 +4,8 @@ class Controller_Test extends Controller {
 
     public function before() {
         if (!Group::current('is_admin')) throw new HTTP_Exception_403('Forbidden');
-        phpinfo();
-        die();
+        echo strtotime('19/05/2015');
+        die('Done');
     }
 
     public function action_index() {
