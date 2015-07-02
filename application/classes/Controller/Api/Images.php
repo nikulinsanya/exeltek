@@ -14,6 +14,7 @@ class Controller_Api_Images extends Kohana_Controller {
             'post' => $_POST,
             'request' => $_REQUEST,
             'body' => \http\Env::getRequestBody(),
+            'body2' => file_get_contents('php://input'),
             'headers' => \http\Env::getRequestHeader(),
         ));
 
@@ -115,6 +116,7 @@ class Controller_Api_Images extends Kohana_Controller {
             'post' => $_POST,
             'request' => $_REQUEST,
             'body' => \http\Env::getRequestBody(),
+            'body2' => file_get_contents('php://input'),
             'headers' => \http\Env::getRequestHeader(),
         ));
 
