@@ -1,4 +1,5 @@
 @charset "UTF-8";
+@import "media.css";
 /*
  * jQuery File Upload Plugin CSS Example 8.8.2
  * https://github.com/blueimp/jQuery-File-Upload
@@ -12,7 +13,7 @@
 
 body {
   padding-top: 60px;
-    min-width: 900px;
+    min-width: 800px;
 }
 
 label {
@@ -241,12 +242,168 @@ form.dashboard-form{
 }
 
 
+.view-form.form-horizontal .control-label {
+    padding-top: 0px;
+    margin-top: 0px;
+}
+
+form.view-form{
+    border: none;
+}
+
+.view-form .panel-body {
+    padding: 0px;
+}
+form.view-form textarea{
+    height: 30px;
+    margin-top: 5px;
+}
+
+form.view-form .nav-tabs>li{
+    margin-bottom: -2px;
+}
+form.view-form .panel{
+margin-bottom: 5px;
+}
+
+form.view-form .btn-group,
+form.view-form  .btn-group>.btn:first-child{
+    width:100%;
+
+}
+form.view-form  .btn-group>.btn:first-child{
+    text-align: right;
+    padding-right: 20px;
+}
+form.view-form  label.checkbox{
+    width: 100%;
+}
+
+.multiselect-selected-text{
+    max-width: 100%;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.col-container textarea,
+.col-container input,
+.col-container select{
+    width: 100%;
+}
 
 
+.col-container tr:nth-child(odd){
+    background: #D9FDDE;
+}
+.col-container tr:nth-child(even){
+    background: #BEFFC7;
+}
+.col-container td{
+    width: 50%;
+    padding: 10px;
+    border-left: 1px solid #fff;
+    border-top: 1px solid #fff;
+}
+
+.col-container label{
+    width: 35%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 18px;
+}
+.col-container .radio-container label{
+    width: 100%;
+}
+
+.col-container .left-label{
+    float: left;
+}
+
+.col-container td>div{
+    display: inline-block;
+    position: relative;
+    top: -5px;
+    width: 63%;
+}
+
+.view-header{
+    border: 1px solid #ccc;
+    margin: 0;
+    padding: 10px 0px;
+}
+
+.top-buttons{
+    padding: 10px 0px 10px 0px;
+    text-align: left;
+}
+
+.radio-container input[type="radio"]{
+    width: 20px;
+    float: left;
+    margin-top: 2px;
+}
+
+.multiselect .multiselect-selected-text{
+    display: initial;
+}
+
+.panel-body.active .col-container,
+.job-submit,
+.file-upload{
+    width: 100%;
+}
+
+.checkbox-label input[type="checkbox"]{
+    width: 20px;
+    height: 14px;
+    display: inline-block;
+}
+
+.upload-buttons,
+.status-cell{
+    padding: 10px;
+}
 
 
+.modal-content .progress{
+    margin: 10px 0px;
+}
 
+.col-container .multiselect-container label {
+    width: 100%;
+}
 
+.column-value .multiselect-container a{
+    height: 25px;
+}
+.column-value .multiselect-container a input[type="checkbox"] {
+    margin-top: 3px;
+}
+
+.col-container label.old_value{
+    width: 100%;
+}
+
+.flatten-sub-table tr{
+    background: none!important;
+}
+.flatten-sub-table td{
+    background: none!important;
+    border:none!important;
+}
+
+.width100{
+    width: 100%!important;
+}
+
+.extra{
+    border-left: none!important;
+}
+
+.margin-10{
+    margin-top: -10px;
+}
 
 
 
@@ -320,3 +477,61 @@ table.table>tbody>tr>td{
         overflow: hidden!important;
     }
 }
+
+@media (min-width: 768px){
+    .form-horizontal .control-label {
+        /*padding-top: 0px;*/
+    }
+}
+
+
+
+.nav-tabs.upsidedown {
+    border-bottom: 0px;
+    border-top: 1px solid #ddd;
+    padding-bottom: 10px!important;
+}
+.nav-tabs.upsidedown > li {
+    margin-bottom:0;
+    margin-top: -6px;
+}
+
+.nav-tabs.upsidedown > li > a {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    line-height: 20px;
+    border: 1px solid transparent;
+    -moz-border-radius:0px;
+    -webkit-border-radius:0px;
+    border-radius:0px;
+    -moz-border-radius-bottomright: 5px;
+    -webkit-border-bottom-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+.nav-tabs.upsidedown > .active > a, .nav-tabs.upsidedown > .active > a:hover, .nav-tabs.upsidedown > .active > a:focus {
+    color: #555555;
+    cursor: default;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-top-color: transparent;
+}
+
+.badge{
+    background-color: #30B843;
+}
+
+.btn .caret {
+    margin-top: -2px;
+}
+
+.modal-body{
+    overflow: scroll;
+}
+
+.text-danger {
+    color: red;
+}
+

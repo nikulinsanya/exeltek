@@ -196,11 +196,14 @@ class Columns {
         if (strpos($type, 'enum') !== false) {
             $enum = substr($type, 5);
             if (Enums::is_multi($enum)) {
-                $values = explode(', ', $value);
-                $result = '';
-                foreach (Enums::get_values($enum) as $value)
-                    $result .= Form::label(NULL, Form::checkbox($name . ($id ? '[' . $id . ']' : '') . '[]', $value, in_array($value, $values, true)) . $value, array('class' => 'control-label')) . '<br/>';
-                return $result;
+
+                return Form::select($name . ($id ? '[' . $id . ']' : ''),Enums::get_values($enum, $value), $value, array('class' => 'form-control multiselect', 'multiple'=>'multiple'));
+
+//                $values = explode(', ', $value);
+//                $result = '';
+//                foreach (Enums::get_values($enum) as $value)
+//                    $result .= Form::label(NULL, Form::checkbox($name . ($id ? '[' . $id . ']' : '') . '[]', $value, in_array($value, $values, true)) . $value, array('class' => 'control-label')) . '<br/>';
+//                return $result;
             } else {
                 return Form::select($name . ($id ? '[' . $id . ']' : ''), array('' => '') + Enums::get_values($enum, $value), $value, array('class' => 'form-control'));
             }

@@ -289,7 +289,8 @@ class Controller_Imex_Upload extends Controller {
                     foreach ($row as $key => $value) if ($value) {
                         switch ($types[$keys[$key]]) {
                             case 'date':
-                                $value = strtotime($value);
+                            case 'datetime':
+                                $value = strtotime(str_replace('/', '-', $value));
                                 break;
                             case 'int':
                                 $value = intval($value);

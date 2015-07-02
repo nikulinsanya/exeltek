@@ -1,6 +1,12 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_Test extends Kohana_Controller {
+class Controller_Test extends Controller {
+
+    public function before() {
+        if (!Group::current('is_admin')) throw new HTTP_Exception_403('Forbidden');
+        echo strtotime('19/05/2015');
+        die('Done');
+    }
 
     public function action_index() {
         $jobs = Database_Mongo::collection('jobs');

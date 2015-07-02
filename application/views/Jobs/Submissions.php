@@ -26,7 +26,7 @@
             <td><?=Arr::get($companies, User::get($submission['user_id'], 'company_id'))?></td>
             <td><?=Arr::get($submission, 'location') ? '<a target="_blank" href="https://www.google.com/maps/@' . $submission['location'] . ',19z">Location</a>' : ''?></td>
             <td><?=HTML::chars($name)?></td>
-            <td><?=Columns::output($submission['value'], $type)?></td>
+            <td class="<?=strlen(Columns::output($submission['value'], $type)) > 100 ? 'shorten' : ''?>"><?=Columns::output($submission['value'], $type)?></td>
         </tr>
     <?php endforeach;?>
 </table>
