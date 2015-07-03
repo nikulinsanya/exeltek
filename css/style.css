@@ -242,6 +242,11 @@ form.dashboard-form{
 
 
 
+.job-submit .column-value .multiselect-container a input[type="checkbox"] {
+  width: 20px;
+}
+
+
 
 
 
