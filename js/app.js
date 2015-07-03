@@ -286,7 +286,7 @@ $(function () {
         $(this).parents('table').find('td>input:checkbox').prop('checked', $(this).prop('checked'));
     });
     $('.submission-select').click(function() {
-        var parent = $(this).parents('.form-group');
+        var parent = $(this).parents('td').first();
         var id = $(this).attr('data-id');
         $('.pending-'+id).removeClass('glyphicon-edit text-info').addClass('text-danger glyphicon-remove');
         
@@ -297,7 +297,7 @@ $(function () {
             parent.removeClass('bg-danger');
             var tab = parent.parents('.panel-body').attr('data-id');
             tab = $('li[data-id="' + tab + '"]').find('.badge');
-            var count = parseInt(tab.text()) - 1;
+            var count = parseInt(tab.html(),10) - 1;
             if (count)
                 tab.text(count);
             else
