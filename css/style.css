@@ -535,7 +535,7 @@ table.table>tbody>tr>td{
 }
 
 .text-danger {
-    color: red;
+    color: red!important;
 }
 
 .pagination>.disabled>a{
