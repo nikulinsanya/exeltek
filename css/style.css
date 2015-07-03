@@ -396,6 +396,9 @@ form.view-form  label.checkbox{
 .width100{
     width: 100%!important;
 }
+.text-right{
+    text-align: right;
+}
 
 .extra{
     border-left: none!important;
@@ -520,7 +523,7 @@ table.table>tbody>tr>td{
 }
 
 .badge{
-    background-color: #30B843;
+    background-color: #FF8484;
 }
 
 .btn .caret {
@@ -533,5 +536,9 @@ table.table>tbody>tr>td{
 
 .text-danger {
     color: red;
+}
+
+.pagination>.disabled>a{
+    color: #BBB;
 }
 
