@@ -43,6 +43,7 @@ class Controller_Reports_Submissions extends Controller {
                 'Tickets ID',
                 'FDA ID',
                 'LOC ID',
+                'Address',
                 'Submission Date',
                 'Approval Date',
                 'User',
@@ -52,10 +53,11 @@ class Controller_Reports_Submissions extends Controller {
             $headers[] = 'Value';
 
             fputcsv($file, $headers);
-            $result = Database_Mongo::collection('jobs')->find(array('_id' => array('$in' => array_keys($submissions))), array('data.9' => 1, 'data.14' => 1));
+            $result = Database_Mongo::collection('jobs')->find(array('_id' => array('$in' => array_keys($submissions))), array('data.8' => 1, 'data.9' => 1, 'data.14' => 1));
             $jobs = array();
             foreach ($result as $job) {
                 $jobs[$job['_id']] = array(
+                    'a' => Arr::path($job, 'data.8', ''),
                     'f' => Arr::path($job, 'data.14', ''),
                     'l' => Arr::path($job, 'data.9', ''),
                 );
@@ -68,6 +70,7 @@ class Controller_Reports_Submissions extends Controller {
                         $job,
                         Arr::path($jobs, array($job, 'f')),
                         Arr::path($jobs, array($job, 'l')),
+                        Arr::path($jobs, array($job, 'a')),
                         date('d-m-Y H:i', $submission['update_time']),
                         Arr::get($submission, 'process_time') ? date('d-m-Y H:i', $submission['process_time']) : '',
                         User::get($submission['user_id'], 'login'),
@@ -102,18 +105,20 @@ class Controller_Reports_Submissions extends Controller {
                 'Tickets ID',
                 'FDA ID',
                 'LOC ID',
+                'Address',
                 'Submission Date',
                 'User',
             );
             if (Group::current('allow_assign')) $headers[] = 'Company';
             foreach ($columns as $column) $headers[] = Columns::get_name($column);
 
-            $result = Database_Mongo::collection('jobs')->find(array('_id' => array('$in' => array_keys($submissions))), array('data.9' => 1, 'data.14' => 1));
+            $result = Database_Mongo::collection('jobs')->find(array('_id' => array('$in' => array_keys($submissions))), array('data.8' => 1, 'data.9' => 1, 'data.14' => 1));
             $jobs = array();
             foreach ($result as $job) {
                 $jobs[$job['_id']] = array(
                     'f' => Arr::path($job, 'data.14', ''),
                     'l' => Arr::path($job, 'data.9', ''),
+                    'a' => Arr::path($job, 'data.8', ''),
                 );
             }
 
@@ -124,6 +129,7 @@ class Controller_Reports_Submissions extends Controller {
                     $job,
                     Arr::path($jobs, $job . '.f'),
                     Arr::path($jobs, $job . '.l'),
+                    Arr::path($jobs, $job . '.a'),
                     date('d-m-Y H:i', $time),
                     User::get($user, 'login'),
                 );

@@ -28,7 +28,7 @@ class Controller_Api_Jobs extends Kohana_Controller {
         $columns[13] = 1;
         $columns[14] = 1;
 
-        foreach (Form::$columns as $type => $list) foreach ($list as $key => $name)
+        foreach (Form::$columns as $type => $list) foreach ($list as $keys => $name) foreach (explode(',', $keys) as $key)
             if (is_numeric($key)) $columns[$key] = 1;
 
         foreach ($result as $job) {

@@ -383,7 +383,9 @@ form.view-form  label.checkbox{
 .column-value .multiselect-container a input[type="checkbox"] {
     margin-top: 3px;
 }
-
+.job-submit .column-value .multiselect-container a input[type="checkbox"] {
+  width: 20px;
+}
 .col-container label.old_value{
     width: 100%;
 }
