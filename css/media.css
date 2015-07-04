@@ -24,4 +24,7 @@
     .extra{
         display: none!important;
     }
+    .bg-danger {
+        background-color: #f2dede!important;
+    }
 }

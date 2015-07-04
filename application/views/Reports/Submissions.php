@@ -29,7 +29,7 @@
 <div class="clearfix">&nbsp;</div>
 <?php if (Group::current('allow_assign')):?>
 <div class="col-xs-12">
-<select name="company" class="form-control">
+<select name="company" class="selectize">
     <option value="">All contractors</option>
     <?php foreach ($companies as $key => $value):?>
     <option value="<?=$key?>" <?=$key == Arr::get($_GET, 'company') ? 'selected' : ''?>><?=$value?></option>
@@ -40,8 +40,10 @@
 <?php endif;?>
 </form>
 <h2>Total <?=count($submissions)?> job(s) found:</h2>
-<a href="?export&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', $week))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="pull-right btn btn-info"><span class="glyphicon glyphicon-export"></span> Export</a>
-<a href="?export2&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', $week))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="pull-right btn btn-primary"><span class="glyphicon glyphicon-export"></span> Export grouped</a>
+<div class="upload-buttons text-right">
+<a href="?export&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', $week))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="btn btn-info"><span class="glyphicon glyphicon-export"></span> Export</a>
+<a href="?export2&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', $week))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="btn btn-primary"><span class="glyphicon glyphicon-export"></span> Export grouped</a>
+</div>
 <table class="table table-hover">
     <?php foreach ($submissions as $job => $list):?>
     <tr>
@@ -67,5 +69,7 @@
     <?php endforeach;?>
     <?php endforeach;?>
 </table>
-<a href="?export&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', strtotime('first day of this month')))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="pull-right btn btn-info"><span class="glyphicon glyphicon-export"></span> Export</a>
-<a href="?export2&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', strtotime('first day of this month')))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="pull-right btn btn-primary"><span class="glyphicon glyphicon-export"></span> Export grouped</a>
+<div class="upload-buttons text-right">
+    <a href="?export&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', $week))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="btn btn-info"><span class="glyphicon glyphicon-export"></span> Export</a>
+    <a href="?export2&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', $week))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="btn btn-primary"><span class="glyphicon glyphicon-export"></span> Export grouped</a>
+</div>
