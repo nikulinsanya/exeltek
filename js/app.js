@@ -690,7 +690,7 @@ $(function () {
     function setMultiselect(self){
         if(self){
             $(self).multiselect({
-                numberDisplayed: 0
+//                numberDisplayed: 2
             });
         }
     }
