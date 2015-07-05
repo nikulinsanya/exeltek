@@ -21,6 +21,10 @@
     <script src="<?=URL::base()?>js/lib/bootstrap/selectize.js"></script>
     <link href="<?=URL::base()?>css/selectize.css" rel="stylesheet">
 
+    <script src="<?=URL::base()?>js/lib/moment.js"></script>
+    <script src="<?=URL::base()?>js/lib/jquery/daterangepicker.js"></script>
+    <link href="<?=URL::base()?>css/daterangepicker.css" rel="stylesheet">
+
     <script src="<?=URL::base()?>js/lib/bootstrap/bootstrap-multiselect.js"></script>
     <link href="<?=URL::base()?>css/bootstrap-multiselect.css" rel="stylesheet">
 
