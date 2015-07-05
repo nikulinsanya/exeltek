@@ -196,8 +196,7 @@ class Columns {
         if (strpos($type, 'enum') !== false) {
             $enum = substr($type, 5);
             if (Enums::is_multi($enum)) {
-
-                return Form::select($name . ($id ? '[' . $id . ']' : ''),Enums::get_values($enum, $value), $value, array('class' => 'form-control multiselect', 'multiple'=>'multiple'));
+                return Form::select($name . ($id ? '[' . $id . '][]' : '[]'),Enums::get_values($enum), explode(', ', $value), array('class' => 'form-control multiselect', 'multiple'=>'multiple'));
 
 //                $values = explode(', ', $value);
 //                $result = '';

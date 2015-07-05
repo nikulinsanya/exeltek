@@ -286,7 +286,7 @@ $(function () {
         $(this).parents('table').find('td>input:checkbox').prop('checked', $(this).prop('checked'));
     });
     $('.submission-select').click(function() {
-        var parent = $(this).parents('.form-group');
+        var parent = $(this).parents('td').first();
         var id = $(this).attr('data-id');
         $('.pending-'+id).removeClass('glyphicon-edit text-info').addClass('text-danger glyphicon-remove');
         
@@ -297,7 +297,7 @@ $(function () {
             parent.removeClass('bg-danger');
             var tab = parent.parents('.panel-body').attr('data-id');
             tab = $('li[data-id="' + tab + '"]').find('.badge');
-            var count = parseInt(tab.text()) - 1;
+            var count = parseInt(tab.html(),10) - 1;
             if (count)
                 tab.text(count);
             else
@@ -675,6 +675,7 @@ $(function () {
 
         setSelectize($('.selectize'));
         setMultiselect($('.multiselect'));
+        setFilterDateRangePickers();
     }
 
 
@@ -690,9 +691,53 @@ $(function () {
     function setMultiselect(self){
         if(self){
             $(self).multiselect({
-                numberDisplayed: 0
+//                numberDisplayed: 2
             });
         }
+    }
+    function setFilterDateRangePickers(){
+        $('.daterange').each(function(){
+            if($(this).attr('data-start') && $(this).attr('data-end')){
+               var startVal = $('#'+$(this).attr('data-start')).val(),
+                   endVal   = $('#'+$(this).attr('data-end')).val();
+               if(startVal && endVal){
+                   $(this).find('span').html(startVal + ' - ' + endVal);
+               }
+                   $(this).daterangepicker({
+                       format: 'DD-MM-YYYY',
+                       maxDate: new Date(),
+                       startDate: startVal ? startVal : '',
+                       endDate: endVal ? endVal : '',
+                       ranges: {
+                           'Today': [moment(), moment()],
+                           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                           'This week': [moment().subtract(1, 'week').startOf('week'), moment()],
+                           'Last week': [moment().subtract(2, 'week').startOf('week'),moment().subtract(1, 'week').startOf('week')],
+                           'This month': [moment().subtract(1, 'month').startOf('month'), moment().startOf('month')],
+                           'Last month': [moment().subtract(2, 'month').startOf('month'), moment().subtract(1, 'month').startOf('month')]
+                       },
+                       locale: { cancelLabel: 'Clear' }
+                   },
+                       function(start, end, label) {
+                           $('#preloaderModal').modal('show');
+                           this.element.find('span').html((start.isValid() ? start.format('DD-MM-YYYY') : '') + ' - ' + (end.isValid() ? end.format('DD-MM-YYYY') : ''));
+                           $('#'+this.element.attr('data-start')).val(start.isValid() ? start.format('DD-MM-YYYY') : '' );
+                           $('#'+this.element.attr('data-end')).val(end.isValid() ? end.format('DD-MM-YYYY') : moment().format('DD-MM-YYYY'));
+                           $(this.element).parents('form').submit();
+                       }
+                   ).on('cancel.daterangepicker', function(ev, picker) {
+                           $('#preloaderModal').modal('show');
+                           $(this).find('span').html('');
+                           $('#'+$(this).attr('data-start')).val('');
+                           $('#'+$(this).attr('data-end')).val('');
+                           $(this).parents('form').submit();
+                       });
+                ;
+
+            }
+        });
+
+
     }
 
 

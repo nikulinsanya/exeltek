@@ -98,6 +98,13 @@ tr.text-center td{
 table td input[type=checkbox]{
     margin-top: -3px;
 }
+table td .multiselect-container input[type=checkbox]{
+    margin-top: 3px;
+}
+
+.multiselect-container input[type=checkbox]{
+    width:15px;
+}
 
 .no-filters{
     top: -39px;
@@ -255,7 +262,7 @@ form.view-form{
     padding: 0px;
 }
 form.view-form textarea{
-    height: 30px;
+    height: 110px;
     margin-top: 5px;
 }
 
@@ -302,8 +309,8 @@ form.view-form  label.checkbox{
 .col-container td{
     width: 50%;
     padding: 10px;
-    border-left: 1px solid #fff;
-    border-top: 1px solid #fff;
+    border-left: 2px solid #fff;
+    border-top: 2px solid #fff;
 }
 
 .col-container label{
@@ -380,7 +387,9 @@ form.view-form  label.checkbox{
 .column-value .multiselect-container a input[type="checkbox"] {
     margin-top: 3px;
 }
-
+.job-submit .column-value .multiselect-container a input[type="checkbox"] {
+  width: 20px;
+}
 .col-container label.old_value{
     width: 100%;
 }
@@ -396,6 +405,9 @@ form.view-form  label.checkbox{
 .width100{
     width: 100%!important;
 }
+.text-right{
+    text-align: right;
+}
 
 .extra{
     border-left: none!important;
@@ -404,6 +416,35 @@ form.view-form  label.checkbox{
 .margin-10{
     margin-top: -10px;
 }
+
+.date-range-container input[type="text"]{
+    width: 200px;
+    text-align: center;
+    font-weight: bold;
+}
+.date-range-container{
+    display: inline-block;
+}
+.filter-select-container{
+    display: inline-block;
+    min-width: 215px;
+}
+.filter-select-label{
+    position: relative;
+    top: -10px;
+}
+
+.date-range-label{
+    width:165px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin-bottom: -5px;
+}
+
+.filter-info-container .selectize-input{
+    padding-right: 30px;
+}
+
 
 
 
@@ -520,7 +561,7 @@ table.table>tbody>tr>td{
 }
 
 .badge{
-    background-color: #30B843;
+    background-color: #FF8484;
 }
 
 .btn .caret {
@@ -532,6 +573,10 @@ table.table>tbody>tr>td{
 }
 
 .text-danger {
-    color: red;
+    color: red!important;
+}
+
+.pagination>.disabled>a{
+    color: #BBB;
 }
 
