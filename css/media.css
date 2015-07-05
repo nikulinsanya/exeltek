@@ -27,4 +27,17 @@
     .bg-danger {
         background-color: #f2dede!important;
     }
+
+    .daterangepicker.dropdown-menu{
+        min-width: 675px;
+        left: 0px!important;
+    }
+
+    .daterangepicker.show-calendar .calendar{
+        float: right;
+    }
+    .daterangepicker.opensright:before,
+    .daterangepicker.opensright:after{
+        display: none!important;
+    }
 }
