@@ -719,12 +719,14 @@ $(function () {
                        locale: { cancelLabel: 'Clear' }
                    },
                        function(start, end, label) {
+                           $('#preloaderModal').modal('show');
                            this.element.find('span').html((start.isValid() ? start.format('DD-MM-YYYY') : '') + ' - ' + (end.isValid() ? end.format('DD-MM-YYYY') : ''));
                            $('#'+this.element.attr('data-start')).val(start.isValid() ? start.format('DD-MM-YYYY') : '' );
                            $('#'+this.element.attr('data-end')).val(end.isValid() ? end.format('DD-MM-YYYY') : moment().format('DD-MM-YYYY'));
                            $(this.element).parents('form').submit();
                        }
                    ).on('cancel.daterangepicker', function(ev, picker) {
+                           $('#preloaderModal').modal('show');
                            $(this).find('span').html('');
                            $('#'+$(this).attr('data-start')).val('');
                            $('#'+$(this).attr('data-end')).val('');
