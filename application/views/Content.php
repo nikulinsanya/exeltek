@@ -68,8 +68,9 @@
               <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dashboard <span class="caret"></span></a>
                   <ul class="dropdown-menu">
-                      <li class="<?=Request::current()->controller() == 'Fsa' ? 'active' : ''?>"><a href="<?=URL::base()?>dashboard/fsa">FSA progress</a></li>
-                      <li class="<?=Request::current()->controller() == 'Fsam' ? 'active' : ''?>"><a href="<?=URL::base()?>dashboard/fsam">FSAM progress</a></li>
+                      <li class="<?=Request::current()->controller() == 'Dashboard' && Request::current()->action() == 'reports' ? 'active' : ''?>"><a href="<?=URL::base()?>dashboard/reports">Reports</a></li>
+                      <li class="<?=Request::current()->controller() == 'Dashboard' && Request::current()->action() == 'fsa' ? 'active' : ''?>"><a href="<?=URL::base()?>dashboard/fsa">FSA progress</a></li>
+                      <li class="<?=Request::current()->controller() == 'Dashboard' && Request::current()->action() == 'fsam' ? 'active' : ''?>"><a href="<?=URL::base()?>dashboard/fsam">FSAM progress</a></li>
                   </ul>
               </li>
               <li class="dropdown">

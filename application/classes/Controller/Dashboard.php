@@ -168,4 +168,10 @@ class Controller_Dashboard extends Controller {
 
         $this->response->body($view);
     }
+
+    public function action_reports() {
+        $view = View::factory('Dashboard/Reports');
+
+        $this->response->body($view);
+    }
 }
