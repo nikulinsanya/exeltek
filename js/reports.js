@@ -1,0 +1,7 @@
+$(function () {
+    initDashboard();
+
+    function initDashboard(){
+
+    }
+});
