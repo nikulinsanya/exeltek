@@ -19,7 +19,7 @@
 <?php if (isset($error)):
     echo View::factory('Error')->set('error', $error); 
 else:?>
-<div class="col-xs-12">
+<div class="col-xs-12 text-center">
 <?php if (Pager::pages() > 1) echo $pager = View::factory('Pager');?>
 </div>
 <div class="col-xs-12 text-right">
@@ -62,7 +62,7 @@ else:?>
     <?php $fl = false; endforeach;?>
     <?php endforeach;?>
 </table>
-<div class="col-xs-12">
+<div class="col-xs-12 text-center">
 <?php if (Pager::pages() > 1) echo $pager = View::factory('Pager');?>
 </div>
 <div class="col-xs-12">
