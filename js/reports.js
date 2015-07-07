@@ -172,6 +172,9 @@ $(function () {
             credits: {
                 enabled: false
             },
+            exporting: {
+                enabled: true
+            },
             series: series
         });
     }
@@ -258,6 +261,9 @@ $(function () {
                     showInLegend: true
                 }
             },
+            exporting: {
+                enabled: true
+            },
             series: [{
                 name: "Brands",
                 data: series
@@ -323,6 +329,9 @@ $(function () {
                 align: 'right',
                 verticalAlign: 'middle',
                 borderWidth: 0
+            },
+            exporting: {
+                enabled: true
             },
             series: series
         });
