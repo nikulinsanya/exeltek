@@ -2,6 +2,9 @@
     padding: 10px;
     margin: 0px 0px 10px 0px;
 }
+.content .report-block form{
+    border: none;
+}
 .report-label{
     margin: 0px 0px 15px 0px;
     font-size: 18px;
@@ -45,6 +48,10 @@
     height: 600px;
     background-color: #ccc;
     float: left;
+}
+.chart-container.full-width{
+    width: 100%;
+    float:none;
 }
 .list-label{
     font-size: 18px;

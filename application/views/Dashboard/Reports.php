@@ -1,41 +1,48 @@
-<div class="report-block filter-info-container">
+<?php
+$values = array(
+    'total' => array_sum(array_column($fsa, 'total')),
+    'tested' => array_sum(array_column($fsa, 'tested')),
+    'built' => array_sum(array_column($fsa, 'built')),
+);
+?>
 
+    <script type="application/javascript">
+        var REPORTDATA = {
+            totalTickets:
+            {
+                companyName: '<?= Arr::get($_GET, 'company') ? $companies[Arr::get($_GET, 'company')] : 'All companies'?>',
+                data:{
+                    total: <?= $values['total']?>,
+                    tested: <?= $values['tested']?>,
+                    built: <?= $values['built']?>
+                }
+            }
+        };
+
+    </script>
+
+<div class="report-block filter-info-container">
+<form class="auto-submit">
     <label  class="filter_value">Filters:</label>
     <div class="text-info-filters">
         <div>
             <label class="date-range-label">Date range: </label>
             <span class="date-range-container">
-                <div class="daterange" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+                <div class="daterange" class="pull-right" data-start="start" data-end="end" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
                     <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
                     <span></span> <b class="caret"></b>
                 </div>
             </span>
+            <?=Form::hidden('start', Arr::get($_GET, 'start'), array('id'=>'start'))?>
+            <?=Form::hidden('end', Arr::get($_GET, 'end'), array('id'=>'end'))?>
         </div>
         <div>
-            <label class="date-range-label">Company: </label>
-            <span class="date-range-container">
-                <select name="company" class="form-control" id="company-selector">
-                    <option value="">All</option>
-                    <option value="4">Dummy VK Construction - Not Active</option>
-                    <option value="5">Dummy John Contracting - Not Active</option>
-                    <option value="8">Tester - Wawan Team</option>
-                    <option value="9">Tester - Type A - Franky team</option>
-                    <option value="11">Tester - SA - Ethan Kellaway</option>
-                    <option value="12">Exel - South QLD Team - Steve W, Tim B, Tristan L</option>
-                    <option value="13">Tester - QLD - Jeff Cowl</option>
-                    <option value="15">Tester - QLD - Ben Corfield</option>
-                    <option value="16">Exel - North QLD - Ryen &amp; Piers</option>
-                    <option value="17">Tester - SA - Daniel Greene</option>
-                    <option value="18">Tester - SA - Courtney Caldow</option>
-                    <option value="19">Exel - SA Civil crew (Brett)</option>
-                    <option value="20">Icon Fibre - QLD - Type A Crews</option>
-                    <option value="21">Icon Fibre - QLD - Type C Crews</option>
-                    <option value="22">Tester - QLD - Craig W</option>
-                    <option value="23">Cynergy - QLD - Civil</option>
-                    <option value="24">AAA - temp acc.</option>
-                    <option value="25">Paltech - QLD</option>
-                </select>
-            </span>
+            <?php if (Group::current('allow_assign')):?>
+                <label class="date-range-label">Company: </label>
+                <span class="date-range-container">
+                    <?=Form::select('company', array('' => 'All') + $companies, Arr::get($_GET, 'company'), array('class' => 'form-control'))?>
+                </span>
+            <?php endif;?>
         </div>
     </div>
     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#filterModal">
@@ -44,6 +51,19 @@
     </button>
 </form>
 </div>
+<div class="report-block">
+    <div class="chart_with_list">
+        <div class="chart-container full-width" id="pie-total-report"></div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
 <div class="report-block">
     <div class="chart_with_list">
         <div class="chart-container" id="worker-report"></div>
@@ -76,3 +96,67 @@
         </div>
     </div>
 </div>
+
+
+
+
+<!---->
+<!--<div class="col-xs-12 progress-row">-->
+<!--    <div class="control-label">-->
+<!--        --><?php //$tested = $values['tested'] ? round($values['tested'] / $values['total'] * 100): 0;?>
+<!--        --><?php //$built = $values['built'] ? round($values['built'] / $values['total'] * 100) : 0;?>
+<!---->
+<!--        <strong>-->
+<!--            Overall progress: --><?//=$values['total']?><!-- --><?//=$values['total']>1 ? 'tickets' : 'ticket'?>
+<!--        </strong>-->
+<!--        <div class="progress-label">-->
+<!--            Tested: <span class="progress-bar-success">--><?//=$values['tested']?><!--</span>, Built: <span class="progress-bar-warning">--><?//=$values['built']?><!--</span>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="progress">-->
+<!--        --><?php //if ($values['tested']):?>
+<!--            <div class="progress-bar progress-bar-success" style="width: --><?//=$tested > 1 ? $tested : 1?><!--%" title="--><?//=$values['tested']?><!-- (--><?//=$tested?><!--%) Built and tested">-->
+<!--                --><?//=$tested?><!--%-->
+<!--            </div>-->
+<!--        --><?php //endif;?>
+<!--        --><?php //if ($values['built']):?>
+<!--            <div class="progress-bar progress-bar-warning" style="width: --><?//=$built > 1 ? $built: 1?><!--%" title="--><?//=$values['built']?><!-- (--><?//=$built?><!--%) Built">-->
+<!--                --><?//=$built?><!--%-->
+<!--            </div>-->
+<!--        --><?php //endif;?>
+<!--    </div>-->
+<!--</div>-->
+<!---->
+<!---->
+<?php //foreach ($fsa as $key => $values) if ($values['total']):?>
+<!--    <div class="col-xs-12 progress-row">-->
+<!--        --><?php //$tested = $values['tested'] ? round($values['tested'] / $values['total'] * 100): 0;?>
+<!--        --><?php //$built = $values['built'] ? round($values['built'] / $values['total'] * 100) : 0;?>
+<!---->
+<!--        <div class="control-label">-->
+<!--            <strong>-->
+<!--                <a href="--><?//=URL::base()?><!--dashboard/fsam--><?//=URL::query(array('fsa' => $key))?><!--">--><?//=$key?><!--: --><?//=$values['total']?><!-- --><?//=$values['total']>1 ? 'tickets' : 'ticket'?><!--</a>-->
+<!--            </strong>-->
+<!--            <div class="progress-label">-->
+<!--                --><?php //if ($values['tested']):?>
+<!--                    Tested: <span class="progress-bar-success">--><?//=$values['tested']?><!--</span>-->
+<!--                --><?php //endif;?>
+<!--                --><?php //if ($values['built']):?>
+<!--                    , Built: <span class="progress-bar-warning">--><?//=$values['built']?><!--</span>-->
+<!--                --><?php //endif;?>
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="progress">-->
+<!--            --><?php //if ($values['tested']):?>
+<!--                <div class="progress-bar progress-bar-success" style="width: --><?//=$tested > 1 ? $tested : 0?><!--%" title="--><?//=$values['tested']?><!-- (--><?//=$tested?><!--%) Built and tested">-->
+<!--                    --><?//=$tested?><!--%-->
+<!--                </div>-->
+<!--            --><?php //endif;?>
+<!--            --><?php //if ($values['built']):?>
+<!--                <div class="progress-bar progress-bar-warning" style="width: --><?//=$built > 1 ? $built: 0?><!--%" title="--><?//=$values['built']?><!-- (--><?//=$built?><!--%) Built">-->
+<!--                    --><?//=$built?><!--%-->
+<!--                </div>-->
+<!--            --><?php //endif;?>
+<!--        </div>-->
+<!--    </div>-->
+<?php //endif;?>

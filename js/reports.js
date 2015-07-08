@@ -1,5 +1,21 @@
 $(function () {
     var dateFormat = 'DD-MM-YYYY';
+    if(!REPORTDATA){
+        return false;
+    }
+    var totalProgress = REPORTDATA.totalTickets,
+        companyName = totalProgress.companyName,
+        totalTicketsPie =  [{
+            name: "Total tickets",
+            y: totalProgress.data.total
+        },{
+            name: "Tested tickets",
+            y: totalProgress.data.tested
+        },{
+            name: "Built tickets",
+            y: totalProgress.data.built
+        }];
+
     var historySeries = [{
         name: 'Company 1',
         data: [
@@ -79,8 +95,13 @@ $(function () {
     initDashboard();
 
     function initDashboard(){
-        initHandlers();
-        setFilterDateRangePickers();
+
+        /* total tickets pie chart*/
+        initTotalPieChart(totalTicketsPie);
+
+
+
+
 
         initWorkerList(workerList);
         initWorkerChart(workerList);
@@ -105,6 +126,45 @@ $(function () {
         initPieChart(list);
 
     }
+
+
+    function initTotalPieChart(series){
+        $('#pie-total-report').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie'
+            },
+            title: {
+                text: 'Total company tickets report ('+companyName+')'
+            },
+            tooltip: {
+                pointFormat: '<b>{series.name}</b>: {point.y}(<b>{point.percentage:.1f}%</b>)'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: false
+                    },
+                    showInLegend: true
+                }
+            },
+            exporting: {
+                enabled: true
+            },
+            series: [{
+                name: "Tickets",
+                data: series
+            }]
+        });
+    }
+
+
+
+
 
     function initWorkerChart(list){
         var series = [{
@@ -337,48 +397,4 @@ $(function () {
         });
     }
 
-
-
-
-
-
-
-    function initHandlers(){
-        $('.company-selector').on('change',function(){
-           debugger;
-        });
-    }
-    function setFilterDateRangePickers(){
-        $('.report-block').find('.daterange').each(function(){
-
-            var startVal = moment().format(dateFormat),
-                endVal   = moment().subtract(1, 'week').format(dateFormat);
-            if(startVal && endVal){
-                $(this).find('span').html(startVal + ' - ' + endVal);
-            }
-            $(this).daterangepicker({
-                    format: dateFormat,
-                    maxDate: new Date(),
-                    startDate: startVal ? startVal : '',
-                    endDate: endVal ? endVal : '',
-                    ranges: {
-                        'Today': [moment(), moment()],
-                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                        'This week': [moment().subtract(1, 'week').startOf('week'), moment()],
-                        'Last week': [moment().subtract(2, 'week').startOf('week'),moment().subtract(1, 'week').startOf('week')],
-                        'This month': [moment().subtract(1, 'month').startOf('month'), moment().startOf('month')],
-                        'Last month': [moment().subtract(2, 'month').startOf('month'), moment().subtract(1, 'month').startOf('month')]
-                    },
-                    locale: { cancelLabel: 'Clear' }
-                },
-                function(start, end, label) {
-//                            $('#preloaderModal').modal('show');
-                    this.element.find('span').html((start.isValid() ? start.format(dateFormat) : '') + ' - ' + (end.isValid() ? end.format(dateFormat) : ''));
-                }
-            ).on('cancel.daterangepicker', function(ev, picker) {
-//                            $('#preloaderModal').modal('show');
-                    $(this).find('span').html('');
-                });
-        });
-    }
 });
