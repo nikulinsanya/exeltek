@@ -172,6 +172,29 @@ table td .multiselect-container input[type=checkbox]{
     background: #fafac7!important;
 }
 
+.yellow:nth-child(even) .same-yellow{
+    background: #ffc;
+}
+
+.yellow:nth-child(odd) .same-yellow{
+    background: #f5ffcf;
+}
+
+.table>tbody>tr.same-yellow:first-child{
+    border:1px solid #fff!important;
+}
+.table>tbody>tr.same-yellow:first-child th{
+    border: none;
+}
+table.subtable{
+    border:1px solid #fff;
+    margin: 0px;
+}
+.table>tbody>tr.same-yellow>th{
+    background: #FFFFB2!important
+}
+
+
 .lgreen:nth-child(even){
     background: #B8FDB8;
 }
