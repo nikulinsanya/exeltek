@@ -1,6 +1,6 @@
 $(function () {
     var dateFormat = 'DD-MM-YYYY';
-    if(!REPORTDATA){
+    if(!window.REPORTDATA){
         return false;
     }
     var totalProgress = REPORTDATA.totalTickets,

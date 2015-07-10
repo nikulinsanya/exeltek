@@ -145,7 +145,7 @@ table td .multiselect-container input[type=checkbox]{
 }
 
 .green:hover{
-    background: #9dd89e;
+    background: #9dd89e!important;
 }
 
 .lightcyan:nth-child(even){
@@ -156,7 +156,7 @@ table td .multiselect-container input[type=checkbox]{
     background: rgb(210, 253, 253);
 }
 .lightcyan:hover{
-    background: rgb(198, 245, 253);
+    background: rgb(198, 245, 253)!important;
 }
 
 .yellow:nth-child(even){
@@ -166,7 +166,7 @@ table td .multiselect-container input[type=checkbox]{
     background: #f5ffcf;
 }
 .yellow:hover{
-    background: #fafac7;
+    background: #fafac7!important;
 }
 
 .lgreen:nth-child(even){
@@ -176,7 +176,7 @@ table td .multiselect-container input[type=checkbox]{
     background: #cfffcc;
 }
 .lgreen:hover{
-    background: #bdf3bd;
+    background: #bdf3bd!important;
 }
 
 

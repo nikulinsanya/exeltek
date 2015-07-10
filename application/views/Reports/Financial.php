@@ -62,11 +62,8 @@
 </div>
 <div class="clearfix">&nbsp;</div>
 <table class="table table-hover" <?=Group::current('allow_assign') ? 'data-url="' . URL::base() . 'reports/financial/approve"' : ''?>>
-    <?php foreach ($submissions as $job => $list):?>
-    <tr class="<?=isset($discrepancies[$job])? 'discrepancy' : ''?>">
-        <th colspan="<?=Group::current('allow_assign') ? 12 : 9?>"><a href="<?=URL::base()?>search/view/<?=$job?>"><?=$job?></a></th>
-    </tr>
-    <tr class="<?=isset($discrepancies[$job])? 'discrepancy' : ''?>">
+    <tr class="text-center tr-header">
+        <th>Ticket ID</th>
         <th>Submission date</th>
         <th>Approval date</th>
         <th>Financial date</th>
@@ -80,15 +77,17 @@
         <th>Rate</th>
         <?php if (Group::current('allow_assign')):?><th>&nbsp;</th><?php endif;?>
     </tr>
+    <?php foreach ($submissions as $job => $list):?>
     <?php foreach ($list as $submission): $key = substr($submission['key'], 5); $type = Columns::get_type($key);?>
-    <tr class="submission <?=Group::current('allow_assign') && Arr::path($jobs, $job . '.' . $submission['key']) != $submission['value'] ? 'bg-danger' : (Arr::get($submission, 'financial_time') ? 'bg-success' : 'bg-warning')?>" data-id="<?=$job?>">
+    <tr class="submission text-center <?=Group::current('allow_assign') && Arr::path($jobs, $job . '.' . $submission['key']) != $submission['value'] ? 'rose' : (Arr::get($submission, 'financial_time') ? 'lgreen' : 'yellow')?>" data-id="<?=$job?>">
+        <td><a href="<?=URL::base()?>search/view/<?=$job?>"><?=$job?></a></td>
         <td><?=date('d-m-Y H:i', $submission['update_time'])?></td>
         <td><?=Arr::get($submission, 'process_time') ? date('d-m-Y H:i', $submission['process_time']) : ''?></td>
         <td class="time"><?=Arr::get($submission, 'financial_time') ? date('d-m-Y H:i', $submission['financial_time']) : ''?></td>
         <td><?=User::get($submission['user_id'], 'login')?></td>
         <?php if (Group::current('allow_assign')):?><td><?=Arr::get($companies, User::get($submission['user_id'], 'company_id'), 'Unknown')?></td><?php endif;?>
         <td><?=Columns::get_name($key)?></td>
-        <td><?=Columns::output($submission['value'], $type);?></td>
+        <td <?=strlen(Columns::output($submission['value'], $type)) > 100 ? 'class="shorten"' : ''?>><?=Columns::output($submission['value'], $type);?></td>
         <?php if (Group::current('allow_assign')):?><td><?=Arr::path($jobs, $job . '.' . $submission['key']) ? Columns::output($jobs[$job]['data'][$key], $type) : ''?></td><?php endif;?>
         <td class="paid"><?=Arr::get($submission, 'paid')?></td>
         <td><?=floatval(Arr::get($columns, $key))?></td>
