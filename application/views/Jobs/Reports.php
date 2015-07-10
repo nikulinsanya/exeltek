@@ -57,7 +57,7 @@ else:?>
         <?php foreach ($reports as $id => $name):?>
         <th class="col-xs-1"><?=HTML::chars($name)?></th>
         <?php endforeach;?>
-        <th colspan="3">Column name:</th>
+        <th colspan="3">Column</th>
     </tr>
     <?php
         $actions = array(
@@ -85,7 +85,7 @@ else:?>
                 <td colspan="3">
                     <table class="table subtable">
                         <tr class="same-yellow">
-                            <th>Column</th>
+                            <th>Name</th>
                             <th>Old value:</th>
                             <th>New value:</th>
                         </tr>
