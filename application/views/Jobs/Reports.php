@@ -57,9 +57,7 @@ else:?>
         <?php foreach ($reports as $id => $name):?>
         <th class="col-xs-1"><?=HTML::chars($name)?></th>
         <?php endforeach;?>
-        <th>Column name:</th>
-        <th>Old value:</th>
-        <th>New value:</th>
+        <th colspan="3">Column name:</th>
     </tr>
     <?php
         $actions = array(
@@ -72,36 +70,49 @@ else:?>
             '2' => 'yellow',
             '3' => 'rose',
         );
-        foreach ($tickets as $ticket):?>
+    foreach ($tickets as $ticket):?>
     <?php if ($ticket['update_type'] == 2 && $ticket['data']): $cnt = count($ticket['data']);?>
-    <?php $fl = true; foreach($ticket['data'] as $id => $value): $date = Columns::get_type($id) == 'date';?>
-    <tr class="yellow text-center">
-        <?php if ($fl):?>    
-        <td rowspan="<?=$cnt?>"><a href="<?=URL::base() . 'imex/reports?ticket=' . $ticket['job_key']?>"><?=$ticket['job_key']?></a></td>
-        <td rowspan="<?=$cnt?>" nowrap="nowrap"><?=date('d-m-Y H:i', $ticket['update_time'])?></td>
-        <td rowspan="<?=$cnt?>"><?=User::get(Arr::get($ticket, 'user_id'), 'login') ? : 'Unknown'?></td>
-        <td rowspan="<?=$cnt?>"><?=Arr::get($actions, $ticket['update_type'])?></td>
-        <td rowspan="<?=$cnt?>"><a href="<?=URL::base() . 'imex/reports?file=' . urlencode($ticket['filename'])?>"><?=HTML::chars($ticket['filename'])?></a></td>
-        <?php foreach ($reports as $key => $name):?>
-        <td rowspan="<?=$cnt?>"><?=Columns::output(Arr::path($ticket, 'static.'.$key), Columns::get_type($key))?></td>
-        <?php endforeach; endif;?>
-        <td><?=HTML::chars(Columns::get_name($id))?></td>
-        <td <?=strlen($value['old_value']) > 100 ? 'class="shorten"' : ''?>><?=HTML::chars($date ? date("d-m-Y H:i", $value['old_value'] ? : 0) : $value['old_value'])?></td>
-        <td <?=strlen($value['new_value']) > 100 ? 'class="shorten"' : ''?>><?=HTML::chars($date ? date("d-m-Y H:i", $value['new_value'] ? : 0) : $value['new_value'])?></td>
-    </tr>
-    <?php $fl = false; endforeach;?>
-    <?php else:?>     
-    <tr class="<?=Arr::get($classes, $ticket['update_type'])?> text-center">
-        <td><a href="<?=URL::base() . 'imex/reports?ticket=' . $ticket['job_key']?>"><?=$ticket['job_key']?></a></td>
-        <td nowrap="nowrap"><?=date('d-m-Y H:i', $ticket['update_time'])?></td>
-        <td><?=User::get(Arr::get($ticket, 'user_id'), 'login') ? : 'Unknown'?></td>
-        <td><?=Arr::get($actions, $ticket['update_type'])?></td>
-        <td><a href="<?=URL::base() . 'imex/reports?file=' . urlencode($ticket['filename'])?>"><?=HTML::chars($ticket['filename'])?></a></td>
-        <?php foreach ($reports as $id => $name):?>
-        <td><?=Columns::output(Arr::path($ticket, 'static.'.$id), Columns::get_type($id))?></td>
-        <?php endforeach;?>
-        <td colspan="3">N/A</td>
-    </tr>
+            <tr class="text-center super yellow">
+                <td><a href="<?=URL::base() . 'imex/reports?ticket=' . $ticket['job_key']?>"><?=$ticket['job_key']?></a></td>
+                <td nowrap="nowrap"><?=date('d-m-Y H:i', $ticket['update_time'])?></td>
+                <td><?=User::get(Arr::get($ticket, 'user_id'), 'login') ? : 'Unknown'?></td>
+                <td><?=Arr::get($actions, $ticket['update_type'])?></td>
+                <td><a href="<?=URL::base() . 'imex/reports?file=' . urlencode($ticket['filename'])?>"><?=HTML::chars($ticket['filename'])?></a></td>
+                <?php foreach ($reports as $key => $name):?>
+                    <td><?=Columns::output(Arr::path($ticket, 'static.'.$key), Columns::get_type($key))?></td>
+                <?php endforeach;?>
+
+                <td colspan="3">
+                    <table class="table subtable">
+                        <tr class="same-yellow">
+                            <th>Column</th>
+                            <th>Old value:</th>
+                            <th>New value:</th>
+                        </tr>
+                        <?php foreach($ticket['data'] as $id => $value): $date = Columns::get_type($id) == 'date';?>
+                        <tr class="same-yellow">
+                                        <td><?=HTML::chars(Columns::get_name($id))?></td>
+                                        <td <?=strlen($value['old_value']) > 100 ? 'class="shorten"' : ''?>><?=HTML::chars($date ? date("d-m-Y H:i", $value['old_value'] ? : 0) : $value['old_value'])?></td>
+                                        <td <?=strlen($value['new_value']) > 100 ? 'class="shorten"' : ''?>><?=HTML::chars($date ? date("d-m-Y H:i", $value['new_value'] ? : 0) : $value['new_value'])?></td>
+
+                        </tr>
+                        <?php endforeach;?>
+                    </table>
+                </td>
+            </tr>
+
+    <?php else:?>
+        <tr class="<?=Arr::get($classes, $ticket['update_type'])?> text-center">
+            <td><a href="<?=URL::base() . 'imex/reports?ticket=' . $ticket['job_key']?>"><?=$ticket['job_key']?></a></td>
+            <td nowrap="nowrap"><?=date('d-m-Y H:i', $ticket['update_time'])?></td>
+            <td><?=User::get(Arr::get($ticket, 'user_id'), 'login') ? : 'Unknown'?></td>
+            <td><?=Arr::get($actions, $ticket['update_type'])?></td>
+            <td><a href="<?=URL::base() . 'imex/reports?file=' . urlencode($ticket['filename'])?>"><?=HTML::chars($ticket['filename'])?></a></td>
+            <?php foreach ($reports as $id => $name):?>
+            <td><?=Columns::output(Arr::path($ticket, 'static.'.$id), Columns::get_type($id))?></td>
+            <?php endforeach;?>
+            <td colspan="3">N/A</td>
+        </tr>
     <?php endif;?>
     <?php endforeach;?>
 </table>
