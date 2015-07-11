@@ -9,14 +9,14 @@ class Controller_Api_Images extends Kohana_Controller {
         $title = Arr::get($_REQUEST, 'title', '');
         $filename = Arr::get($_REQUEST, 'name', '');
 
-        Database_Mongo::collection('api')->insert(array(
+        /*Database_Mongo::collection('api')->insert(array(
             'get' => $_GET,
             'post' => $_POST,
             'request' => $_REQUEST,
             'body' => \http\Env::getRequestBody(),
             'body2' => file_get_contents('php://input'),
             'headers' => \http\Env::getRequestHeader(),
-        ));
+        ));*/
 
         if (!API::check($token))
             die(json_encode(array('success' => false, 'error' => 'forbidden')));
@@ -111,14 +111,14 @@ class Controller_Api_Images extends Kohana_Controller {
         $id = intval(Arr::get($_GET, 'id'));
         $pos = intval(Arr::get($_GET, 'pos'));
 
-        Database_Mongo::collection('api')->insert(array(
+        /*Database_Mongo::collection('api')->insert(array(
             'get' => $_GET,
             'post' => $_POST,
             'request' => $_REQUEST,
             'body' => \http\Env::getRequestBody(),
             'body2' => file_get_contents('php://input'),
             'headers' => \http\Env::getRequestHeader(),
-        ));
+        ));*/
 
         if (!API::check($token))
             die(json_encode(array('success' => false, 'error' => 'forbidden')));

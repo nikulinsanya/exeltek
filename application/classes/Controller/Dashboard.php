@@ -200,4 +200,69 @@ class Controller_Dashboard extends Controller {
 
         $this->response->body($view);
     }
+
+    public function action_api() {
+        $type = Arr::get($_GET, 'type');
+        $range = array();
+        if (Arr::get($_GET, 'start')) $range['$gte'] = strtotime($_GET['start']);
+        if (Arr::get($_GET, 'end')) $range['$lte'] = strtotime($_GET['end']) + 86399;
+
+        switch ($type) {
+            case 'companies':
+                $companies = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
+                $result = Database_Mongo::collection('jobs')->find(array(), array('data.44' => 1, 'companies' => 1, 'ex' => 1));
+                $list = array();
+                foreach ($result as $job) {
+                    $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', strtolower(Arr::path($job, 'data.44'))))) ? : 'Unknown';
+                    foreach (Arr::get($job, 'companies', array()) as $company)
+                        $list[Arr::get($companies, $company, 'Unknown')][$key] = Arr::path($list, array($company, $key)) + 1;
+
+                    foreach (Arr::get($job, 'ex', array()) as $company)
+                        $list[Arr::get($companies, $company, 'Unknown')][$key] = Arr::path($list, array($company, $key)) + 1;
+                }
+                break;
+            default:
+                if ($range) {
+                    $result = Database_Mongo::collection('archive')->aggregate(array(
+                        array('$match' => array(
+                            'update_time' => $range,
+                            'fields' => 44,
+                        )),
+                        array('$group' => array(
+                            '_id' => '$job_key',
+                            'status' => array('$last' => array('$toLower' => '$data.44.new_value')),
+                        )),
+                    ));
+                    $jobs = array();
+                    foreach ($result['result'] as $item)
+                        $jobs[$item['_id']] = $item['status'];
+
+                    $result = Database_Mongo::collection('jobs')->find(array('created' => $range), array('data.44' => 1));
+                    foreach ($result as $job)
+                        if (!isset($jobs[$job['_id']]))
+                            $jobs[$job['_id']] = strtolower(Arr::path($job, 'data.44'));
+
+                    $list = array();
+                    foreach ($jobs as $item) {
+                        $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', $item))) ? : 'Unknown';
+                        $list[$key] = Arr::get($list, $key, 0) + 1;
+                    }
+                } else {
+                    $result = Database_Mongo::collection('jobs')->aggregate(array(
+                        '$group' => array(
+                            '_id' => array('$toLower' => '$data.44'),
+                            'count' => array('$sum' => 1),
+                        )
+                    ));
+                    $list = array();
+                    foreach ($result['result'] as $item) {
+                        $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', $item['_id']))) ? : 'Unknown';
+                        $count = $item['count'];
+                        $list[$key] = Arr::get($list, $key, 0) + $count;
+                    }
+                }
+                break;
+        }
+        die(json_encode($list));
+    }
 }
