@@ -50,8 +50,7 @@
 <a href="?export2&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', $week))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="btn btn-primary"><span class="glyphicon glyphicon-export"></span> Export grouped</a>
 </div>
 <table class="table table-hover">
-    <?php foreach ($submissions as $job => $list):?>
-    <tr>
+    <tr class="text-center tr-header">
         <th>Ticket ID</th>
         <th>Submission date</th>
         <th>Approval date</th>
@@ -60,15 +59,16 @@
         <th>Column</th>
         <th>Value</th>
     </tr>
+    <?php foreach ($submissions as $job => $list):?>
     <?php foreach ($list as $submission): $key = substr($submission['key'], 5); $status = Arr::get($submission, 'active', 0);?>
-    <tr class="<?=$status > 0 ? 'bg-warning' : ($status < 0 ? 'bg-success' : 'bg-danger')?>">
+    <tr class="text-center <?=$status > 0 ? 'yellow' : ($status < 0 ? 'lgreen' : 'rose')?>">
         <td><a href="<?=URL::base()?>search/view/<?=$job?>"><?=$job?></a></td>
         <td><?=date('d-m-Y H:i', $submission['update_time'])?></td>
         <td><?=isset($submission['process_time']) ? date('d-m-Y H:i', $submission['process_time']) : ''?></td>
         <td><?=User::get($submission['user_id'], 'login')?></td>
         <?php if (Group::current('allow_assign')):?><td><?=Arr::get($companies, User::get($submission['user_id'], 'company_id'), 'Unknown')?></td><?php endif;?>
         <td><?=Columns::get_name($key)?></td>
-        <td class="<?=strlen(Columns::output($submission['value'], Columns::get_type($key))) > 100 ? 'shorten' : ''?>"><?=Columns::output($submission['value'], Columns::get_type($key))?></td>
+        <td class="<?=strlen(Columns::output($submission['value'], Columns::get_type($key))) > 2 ? 'shorten' : ''?>"><?=Columns::output($submission['value'], Columns::get_type($key))?></td>
     </tr>
     <?php endforeach;?>
     <?php endforeach;?>

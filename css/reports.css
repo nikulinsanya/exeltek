@@ -1,0 +1,58 @@
+.report-block{
+    padding: 10px;
+    margin: 0px 0px 10px 0px;
+}
+.content .report-block form{
+    border: none;
+}
+.report-label{
+    margin: 0px 0px 15px 0px;
+    font-size: 18px;
+}
+
+.chart_with_list{
+    position: relative;
+}
+
+.list-container li{
+    list-style: none;
+    height: 30px;
+    line-height: 30px;
+    padding: 0px 10px;
+    max-height: 600px;
+    overflow: auto;
+
+}
+.list-container li:nth-child(odd){
+    background-color: #F4F4F4;
+}
+.list-container li:nth-child(even){
+    background-color: #FDFDFD;
+}
+.list-container{
+    width: 30%;
+    padding: 10px;
+    float: right;
+}
+.list-container ul{
+    margin: 10px 0px;
+    padding: 0px;
+
+}
+.list-container ul input[type="checkbox"]{
+    margin: 0px 5px 0px 0px;
+
+}
+.chart-container{
+    width: 69%;
+    height: 600px;
+    background-color: #ccc;
+    float: left;
+}
+.chart-container.full-width{
+    width: 100%;
+    float:none;
+}
+.list-label{
+    font-size: 18px;
+}
