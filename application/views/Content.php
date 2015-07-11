@@ -18,13 +18,21 @@
     <link href="<?=URL::base()?>css/style.css" rel="stylesheet">
     <script src="<?=URL::base()?>js/lib/bootstrap/bootstrap.min.js"></script>
 
+
+
     <script src="<?=URL::base()?>js/lib/bootstrap/selectize.js"></script>
     <link href="<?=URL::base()?>css/selectize.css" rel="stylesheet">
 
+    <script src="<?=URL::base()?>js/lib/moment.js"></script>
+    <script src="<?=URL::base()?>js/lib/jquery/daterangepicker.js"></script>
+    <link href="<?=URL::base()?>css/daterangepicker.css" rel="stylesheet">
+
     <script src="<?=URL::base()?>js/lib/bootstrap/bootstrap-multiselect.js"></script>
     <link href="<?=URL::base()?>css/bootstrap-multiselect.css" rel="stylesheet">
+    <script src="<?=URL::base()?>js/lib/highcharts/highcharts.src.js"></script>
 
     <script src="<?=URL::base()?>js/app.js"></script>
+    <script src="<?=URL::base()?>js/reports.js"></script>
 
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css" />
     <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js"></script>

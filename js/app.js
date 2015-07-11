@@ -261,14 +261,19 @@ $(function () {
 
 
 
+
     $('.auto-complete').autocomplete({
         source: function(e, response) {
+            $('#preloaderModal').modal('show');
             $.get(this.element.attr('source') + e.term, function (data) {
                 data = $.parseJSON(data);
                 response(data);
+                $('#preloaderModal').modal('hide');
             });
         },
-        minLength: 0,
+        minLength: 0
+    }).focus(function(){
+        $(this).trigger('keydown');
     });
     
     $('.auto-submit').find('select,input,textarea').change(function() {
@@ -806,6 +811,7 @@ $(function () {
 
         setSelectize($('.selectize'));
         setMultiselect($('.multiselect'));
+        setFilterDateRangePickers();
     }
 
 
@@ -820,10 +826,48 @@ $(function () {
 
     function setMultiselect(self){
         if(self){
-            $(self).multiselect({
-//                numberDisplayed: 2
-            });
+            $(self).multiselect({});
         }
+    }
+    function setFilterDateRangePickers(){
+        $('.daterange').each(function(){
+            if($(this).attr('data-start') && $(this).attr('data-end')){
+               var startVal = $('#'+$(this).attr('data-start')).val(),
+                   endVal   = $('#'+$(this).attr('data-end')).val();
+               if(startVal && endVal){
+                   $(this).find('span').html(startVal + ' - ' + endVal);
+               }
+               $(this).daterangepicker({
+                   format: 'DD-MM-YYYY',
+                   maxDate: new Date(),
+                   startDate: startVal ? startVal : '',
+                   endDate: endVal ? endVal : '',
+                   ranges: {
+                       'Today': [moment(), moment()],
+                       'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                       'This week': [moment().subtract(1, 'week').startOf('week'), moment()],
+                       'Last week': [moment().subtract(2, 'week').startOf('week'),moment().subtract(1, 'week').startOf('week')],
+                       'This month': [moment().subtract(1, 'month').startOf('month'), moment().startOf('month')],
+                       'Last month': [moment().subtract(2, 'month').startOf('month'), moment().subtract(1, 'month').startOf('month')]
+                   },
+                   locale: { cancelLabel: 'Clear' }
+               },
+                   function(start, end, label) {
+                       $('#preloaderModal').modal('show');
+                       this.element.find('span').html((start.isValid() ? start.format('DD-MM-YYYY') : '') + ' - ' + (end.isValid() ? end.format('DD-MM-YYYY') : ''));
+                       $('#'+this.element.attr('data-start')).val(start.isValid() ? start.format('DD-MM-YYYY') : '' );
+                       $('#'+this.element.attr('data-end')).val(end.isValid() ? end.format('DD-MM-YYYY') : moment().format('DD-MM-YYYY'));
+                       $(this.element).parents('form').submit();
+                   }
+               ).on('cancel.daterangepicker', function(ev, picker) {
+                   $('#preloaderModal').modal('show');
+                   $(this).find('span').html('');
+                   $('#'+$(this).attr('data-start')).val('');
+                   $('#'+$(this).attr('data-end')).val('');
+                   $(this).parents('form').submit();
+               });
+            }
+        });
     }
 
 
