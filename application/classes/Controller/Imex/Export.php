@@ -30,12 +30,17 @@ class Controller_Imex_Export extends Controller {
             $columns = array();
             $csv = $_POST['csv'];
             if ($_POST['group']) {
-                $result = DB::select('column_id')->from('group_columns')->where('group_id', '=', $_POST['group'])->and_where('permissions', '>', 0)->execute()->as_array(NULL, 'column_id');
+                if (Group::get($_POST['group'], 'is_admin'))
+                    $result = DB::select('id')->from('job_columns')->execute()->as_array(NULL, 'id');
+                else
+                    $result = DB::select('column_id')->from('group_columns')->where('group_id', '=', $_POST['group'])->and_where('permissions', '>', 0)->execute()->as_array(NULL, 'column_id');
+
                 if ($csv != 'none') foreach ($result as $column)
                     if ($csv == 'all' || !(($csv == 'csv') xor Columns::get_csv($column)))
                         $columns[$column] = Columns::get_name($column);
             } else {
-
+                foreach (Arr::get($_POST, 'columns', array()) as $column => $value)
+                    $columns[$column] = Columns::get_name($column);
             }
 
             header("Content-type: text/csv");
