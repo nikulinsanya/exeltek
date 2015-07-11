@@ -48,60 +48,83 @@ $(function () {
         $('#upload').removeClass('hidden');
         $('#upload>h2').text($('#upload>h2').text() + ' (' + $(this).parent().text().trim() + '):')
     });
+
+    $('#preloaderModal').modal({backdrop: 'static', keyboard: false, show: false});
+
     function handle_progress(data) {
-        data = $.parseJSON(data);
-        
-        var url = $('#import-name').attr('data-url') + '?pos=' + data.position;
-        
-        if ($('#file-type-partial').prop('checked'))
-            url += '&partial';
-            
-        if (data.error) {
-            $('#error').html(data.error).removeClass('hidden');
-            return;
-        } else if (data.forced)
-            if (!confirm(data.forced.message)) {
-                $('#upload').removeClass('hidden');
-                $('#process').addClass('hidden');
+        var pos = 0;
+        var date = $('#file-date').val();
+        var tod = $('#file-tod').val();
+        var region = $('#file-region').val();
+
+        try {
+            data = $.parseJSON(data);
+
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+
+            if (data.import_name)
+                $('#reports-link').attr('href', $('#reports-link').attr('href') + data.import_name);
+
+            var time = parseFloat($('#import-time').text()) + parseFloat(data.time);
+            $('#import-time').text(time.toPrecision(3));
+
+            var memory = Math.max(parseInt($('#import-memory').attr('value')), parseInt(data.memory));
+            $('#import-memory').attr('value', memory);
+            $('#import-memory').text(bytesToSize(memory));
+
+            var inserted = parseInt($('#import-inserted').text()) + parseInt(data.inserted);
+            $('#import-inserted').text(inserted);
+
+            var updated = parseInt($('#import-updated').text()) + parseInt(data.updated);
+            $('#import-updated').text(updated);
+
+            var deleted = parseInt($('#import-deleted').text()) + parseInt(data.deleted);
+            $('#import-deleted').text(deleted);
+
+            var skipped = parseInt($('#import-skipped').text()) + parseInt(data.skipped);
+            $('#import-skipped').text(skipped);
+
+            var total = inserted + updated + skipped;
+            $('#import-total').text(total);
+
+            $('#import-progress').text(data.progress + '%');
+
+            if (data.done == '1') {
+                $('#import-progress').parent().addClass('hidden');
+                $('#import-done').removeClass('hidden');
+                alert('Done');
+                $('#preloaderModal').modal('hide');
                 return;
             } else {
-                url = data.forced.link;
+                pos = data.position;
             }
-        else if (data.import_name)
-            $('#reports-link').attr('href', $('#reports-link').attr('href') + data.import_name);
-
-        var time = parseFloat($('#import-time').text()) + parseFloat(data.time);
-        $('#import-time').text(time.toPrecision(3));
-
-        var memory = Math.max(parseInt($('#import-memory').attr('value')), parseInt(data.memory));
-        $('#import-memory').attr('value', memory);
-        $('#import-memory').text(bytesToSize(memory));
-
-        var inserted = parseInt($('#import-inserted').text()) + parseInt(data.inserted);
-        $('#import-inserted').text(inserted);
-
-        var updated = parseInt($('#import-updated').text()) + parseInt(data.updated);
-        $('#import-updated').text(updated);
-
-        var deleted = parseInt($('#import-deleted').text()) + parseInt(data.deleted);
-        $('#import-deleted').text(deleted);
-
-        var skipped = parseInt($('#import-skipped').text()) + parseInt(data.skipped);
-        $('#import-skipped').text(skipped);
-
-        var total = inserted + updated + skipped;
-        $('#import-total').text(total);
-        
-        $('#import-progress').text(data.progress + '%');
-        
-        if (data.done == '0') {
-            $.get(url, handle_progress);
-        } else {
-            $('#import-progress').parent().addClass('hidden');
-            $('#import-done').removeClass('hidden');
+        } catch (e) {
+            if (data) {
+                $('#import-progress').parent().addClass('hidden');
+                alert(data);
+                $('#preloaderModal').modal('hide');
+                return;
+            }
         }
+
+        var url = $('#import-name').attr('data-url');
+        var data = {
+            pos: pos,
+            date: date,
+            tod: tod,
+            region: region,
+            data: {},
+        };
+        $('#file-mapping').find('select').each(function(i, e) {
+            data.data[$(e).attr('data-id')] = $(e).val();
+        });
+
+        $.post(url, data, handle_progress);
     }
-    
+
     $('#fileupload').fileupload({
         type: 'POST',
         dataType: 'json',
@@ -110,26 +133,134 @@ $(function () {
             $('#upload').addClass('hidden');
             $('#div-progress').removeClass('hidden');
             $('#error').addClass('hidden');
+            $('#preloaderModal').modal('show');
         },
         progress: function (e, data) {
             var progress = parseInt(data.loaded / data.total * 100, 10);
             $('#progress').text(progress+"%");
         },
         done: function (e, data) {
-            $('#process').removeClass('hidden');
+            $('#prepare').removeClass('hidden');
             $('#div-progress').addClass('hidden');
             var filename = data.result.files[0].name;
-            $('#import-name').text(filename); 
+            $('#import-name').text(filename);
             $('#import-name').attr('data-url', $('#import-name').attr('data-url') + filename);
-            var url = $('#fileupload').attr('data-url') + '/start/' + filename;
-            $.get(url, handle_progress);
+            var url = $('#fileupload').attr('data-url') + '/prepare/' + filename;
+            $.get(url, function(data) {
+                data = $.parseJSON(data);
+                if (!data.region) data.region = '';
+                $('#file-date').val(data.date);
+                $('#file-tod').val(data.tod);
+                $('#file-region').val(data.region);
+                $('#file-last-update').text(data.last_update);
+                $('#file-mapping').html(data.html);
+                $('#file-region').trigger('change');
+
+                if ($('#file-mapping').find('select').length == 0)
+                    $('#import-start').removeClass('disabled');
+                else
+                    $('#file-mapping').find('select').change(function() {
+                        if ($(this).val() == '0')
+                            $(this).parents('tr').removeClass('bg-success').addClass('bg-danger');
+                        else
+                            $(this).parents('tr').addClass('bg-success').removeClass('bg-danger');
+
+                        var fl = true;
+                        $('#file-mapping').find('select').each(function(i, e) {
+                            if ($(e).val() == '0') fl = false;
+                        });
+
+                        if (fl)
+                            $('#import-start').removeClass('disabled');
+                        else
+                            $('#import-start').addClass('disabled');
+                    });
+                //dump(data.header);
+                $('#preloaderModal').modal('hide');
+            });
         },
         fail: function (e, data) {
             alert('Error occured!');
             $('#div-progress').addClass('hidden');
             $('#upload').removeClass('hidden');
+            $('#preloaderModal').modal('hide');
         },
     });
+    $('#file-region').change(function() {
+        var val = $(this).find(':selected').attr('data-date');
+        $('#file-last-update').text(val ? val : 'Unknown');
+    });
+    $('#import-start').click(function() {
+        var date = $('#file-date').val();
+        var tod = $('#file-tod').val();
+        var region = $('#file-region').val();
+
+        if (date == '') {
+            alert('Please, select date for this file!');
+            return false;
+        }
+        if (tod == '') {
+            alert('Please, select time of day for this file!');
+            return false;
+        }
+        if (region == '') {
+            alert('Please, select region for this file!');
+            return false;
+        }
+
+        var old = $('#file-last-update').text();
+        if (old != 'Unknown') old = Date.parse(old.replace(/(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3"));
+        date = Date.parse(date.replace( /(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3"));
+
+        if (old != 'Unknown' && old >= date && !confirm("You're trying to import old file - newer file was already imported! Are you really want to proceed with import?"))
+            return false;
+
+        $('#prepare').addClass('hidden');
+        $('#process').removeClass('hidden');
+
+        $('#preloaderModal').modal('show');
+        handle_progress('');
+    });
+    $('#csv-selector').find('label').click(function() {
+        var val = $(this).children('input').val();
+        $('#csv-input').val(val);
+        if ($('#region-input').val() != '' && $('#group-input').val()) $('#export-button').removeClass('disabled');
+        switch (val) {
+            case 'csv':
+                $('#columns').find('input[data-csv="1"]').prop('checked', true);
+                $('#columns').find('input[data-csv="0"]').prop('checked', false);
+                break;
+            case 'non-csv':
+                $('#columns').find('input[data-csv="0"]').prop('checked', true);
+                $('#columns').find('input[data-csv="1"]').prop('checked', false);
+                break;
+            case 'all':
+                $('#columns').find('input').prop('checked', true);
+                break;
+            case 'none':
+                $('#columns').find('input').prop('checked', false);
+                break;
+        }
+    });
+
+    $('#group-selector').find('label').click(function() {
+        var val = $(this).children('input').val();
+        $('#group-input').val(val);
+        if ($('#region-input').val() != '' && $('#csv-input').val()) $('#export-button').removeClass('disabled');
+        if (val == '0')
+            $('#columns').removeClass('hidden');
+        else
+            $('#columns').addClass('hidden');
+    });
+    $('#region-input').change(function() {
+        if ($(this).val() && $('#group-input').val() && $('#csv-input').val())
+            $('#export-button').removeClass('disabled');
+        else
+            $('#export-button').addClass('disabled');
+    });
+
+
+
     $('.auto-complete').autocomplete({
         source: function(e, response) {
             $.get(this.element.attr('source') + e.term, function (data) {
