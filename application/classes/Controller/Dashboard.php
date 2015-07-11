@@ -208,6 +208,19 @@ class Controller_Dashboard extends Controller {
         if (Arr::get($_GET, 'end')) $range['$lte'] = strtotime($_GET['end']) + 86399;
 
         switch ($type) {
+            case 'companies':
+                $companies = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
+                $result = Database_Mongo::collection('jobs')->find(array(), array('data.44' => 1, 'companies' => 1, 'ex' => 1));
+                $list = array();
+                foreach ($result as $job) {
+                    $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', strtolower(Arr::path($job, 'data.44'))))) ? : 'Unknown';
+                    foreach (Arr::get($job, 'companies', array()) as $company)
+                        $list[Arr::get($companies, $company, 'Unknown')][$key] = Arr::path($list, array($company, $key)) + 1;
+
+                    foreach (Arr::get($job, 'ex', array()) as $company)
+                        $list[Arr::get($companies, $company, 'Unknown')][$key] = Arr::path($list, array($company, $key)) + 1;
+                }
+                break;
             default:
                 if ($range) {
                     $result = Database_Mongo::collection('archive')->aggregate(array(
