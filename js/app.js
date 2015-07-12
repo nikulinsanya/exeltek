@@ -793,10 +793,10 @@ $(function () {
     $('input:checkbox.discrepancy').click(function() {
         if ($(this).prop('checked')) {
             var list = [];
-            $('tr.submission:not(.bg-danger)').addClass('hidden');
+            $('tr.submission:not(.rose)').addClass('hidden');
             $('tr.discrepancy').addClass('hidden');
         } else {
-            $('tr.submission:not(.bg-danger)').removeClass('hidden');
+            $('tr.submission:not(.rose)').removeClass('hidden');
             $('tr.discrepancy').removeClass('hidden');
         }
     });
