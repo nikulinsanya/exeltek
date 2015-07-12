@@ -34,15 +34,15 @@ $(function () {
         $('#preloaderModal').modal('show');
         defs.push(
             getAllTicketsByCompanies(),
-            getAllStatuses(),
-            getAllFSAStatuses()
+            getAllStatuses()
+//            getAllFSAStatuses()
         );
 
         $.when.apply($, defs).then(function(results){
             var result = Array.prototype.slice.call(arguments);
             window.REPORTDATA.allTickets = result[0][0];
             window.REPORTDATA.allStatuses = result[1][0];
-            window.REPORTDATA.allFSAStatuses = result[2][0];
+//            window.REPORTDATA.allFSAStatuses = result[2][0];
 
 
             showAllReports();
