@@ -22,6 +22,12 @@ class Controller_Reports_Submissions extends Controller {
         
         if (!Group::current('allow_assign') || Arr::get($_GET, 'company'))
             $query['user_id'] = array('$in' => DB::select('id')->from('users')->where('company_id', '=', Group::current('allow_assign') ? $_GET['company'] : User::current('company_id'))->execute()->as_array(NULL, 'id'));
+
+        if (Arr::get($_GET, 'finished')) {
+            $keys = Database_Mongo::collection('submissions')->distinct('job_key', $query);
+            $keys = Database_Mongo::collection('jobs')->distinct('_id', array('data.245' => $_GET['finished'], '_id' => array('$in' => $keys)));
+            $query['job_key'] = array('$in' => $keys);
+        }
         
         $result = Database_Mongo::collection('submissions')->find($query)->sort(array('job_key' => 1, 'update_time' => -1));
         
