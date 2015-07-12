@@ -51,9 +51,19 @@ $(function () {
     }
 
     function showAllReports(){
+        showAllAssignedTickets(window.REPORTDATA.allStatuses);
         showAllTickets(window.REPORTDATA.allTickets);
         showTicketsByCompanies(window.REPORTDATA.allTickets);
         showTicketsInStacked(window.REPORTDATA.allTickets);
+    }
+
+    function uppStatuses(statuses){
+        var res = {},
+            i;
+        for(i in statuses){
+            res[i.toUpperCase()] =statuses[i]
+        }
+        return res;
     }
 
     function uppTickets(tickets){
@@ -222,7 +232,7 @@ $(function () {
                 type: 'pie'
             },
             title: {
-                text: 'Total tickets allocation'
+                text: 'Tickets allocation by companies'
             },
             tooltip: {
                 pointFormat: '<b>{series.name}</b>: {point.y}(<b>{point.percentage:.1f}%</b>)'
@@ -238,6 +248,53 @@ $(function () {
             },
             series: [{
                 name: "Tickets",
+                data: series
+            }]
+        });
+    }
+
+
+
+    function showAllAssignedTickets(tickets){
+        var total = {}, i, j, name,
+            categories = [],
+            statuses = uppStatuses(tickets),
+            series=[];
+        for(i in window.REPORTDATA.allocation.order){
+            name = window.REPORTDATA.allocation.order[i]
+            if(statuses[name]){
+                categories.push(name);
+
+                series.push({
+                    y:statuses[name],
+                    color: window.REPORTDATA.allocation.colorByType[name]
+                })
+            }
+        }
+
+        $('#pie-total-tickets-assigned').highcharts({
+            chart: {
+                type: 'column'
+            },
+            xAxis: {
+                categories: categories
+            },
+            title: {
+                text: 'All ticket statuses'
+            },
+            plotOptions: {
+                column: {
+                    allowPointSelect: true,
+                    showInLegend: false
+                }
+            },
+            legend:{
+                enabled:false
+            },
+            exporting: {
+                enabled: true
+            },
+            series: [{
                 data: series
             }]
         });
