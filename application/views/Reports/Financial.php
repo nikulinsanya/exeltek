@@ -46,7 +46,13 @@
         </span>
     </div>
 
-<?=Form::hidden('start', Arr::get($_GET, 'start', date('d-m-Y', strtotime('first day of this month'))), array('class' => 'form-control datepicker', 'placeholder' => 'Start date', 'id' => 'start'))?>
+    <div id="sorting" class="hidden">
+        <?php $sorting = Arr::get($_GET, 'sort', array()); foreach ($sorting as $sort):?>
+            <input type="hidden" name="sort[]" value="<?=$sort?>" />
+        <?php endforeach; $sorting = array_flip($sorting);?>
+    </div>
+
+    <?=Form::hidden('start', Arr::get($_GET, 'start', date('d-m-Y', strtotime('first day of this month'))), array('class' => 'form-control datepicker', 'placeholder' => 'Start date', 'id' => 'start'))?>
 <?=Form::hidden('end', Arr::get($_GET, 'end', date('d-m-Y')), array('class' => 'form-control datepicker', 'placeholder' => 'End date', 'id' => 'end'))?>
 <?=Form::hidden('app-start', Arr::get($_GET, 'app-start'), array('class' => 'form-control datepicker', 'placeholder' => 'Start date (Approved)', 'id' => 'app-start'))?>
 <?=Form::hidden('app-end', Arr::get($_GET, 'app-end'), array('class' => 'form-control datepicker', 'placeholder' => 'End date (Approved)', 'id' => 'app-end'))?>
@@ -64,9 +70,9 @@
 <table class="table table-hover" <?=Group::current('allow_assign') ? 'data-url="' . URL::base() . 'reports/financial/approve"' : ''?>>
     <tr class="text-center tr-header">
         <th>Ticket ID</th>
-        <th>Submission date</th>
-        <th>Approval date</th>
-        <th>Financial date</th>
+        <th class="sortable" data-id="submission">Submission date</th>
+        <th class="sortable" data-id="approval">Approval date</th>
+        <th class="sortable" data-id="financial">Financial date</th>
         <th>User</th>
         <?php if (Group::current('allow_assign')):?><th>Company</th><?php endif;?>
         <th>Column</th>
