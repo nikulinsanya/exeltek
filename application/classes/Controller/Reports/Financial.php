@@ -31,7 +31,7 @@ class Controller_Reports_Financial extends Controller {
             $query['financial_time']['$lt'] = strtotime($_GET['fin-end']) + 86399;
 
         if (Group::current('allow_assign'))
-            $companies = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
+            $companies = DB::select('id', 'name')->from('companies')->order_by('name', 'asc')->execute()->as_array('id', 'name');
 
         if (!Group::current('allow_assign') || Arr::get($_GET, 'company'))
             $query['user_id'] = array('$in' => DB::select('id')->from('users')->where('company_id', '=', Group::current('allow_assign') ? $_GET['company'] : User::current('company_id'))->execute()->as_array(NULL, 'id'));

@@ -37,6 +37,11 @@
     </div>
 
 
+    <div id="sorting" class="hidden">
+        <?php $sorting = Arr::get($_GET, 'sort', array()); foreach ($sorting as $sort):?>
+            <input type="hidden" name="sort[]" value="<?=$sort?>" />
+        <?php endforeach; $sorting = array_flip($sorting);?>
+    </div>
 
 <?=Form::hidden('start', Arr::get($_GET, 'start', date('d-m-Y', $week)), array('class' => 'form-control datepicker', 'placeholder' => 'Start date', 'id' => 'start'))?>
 <?=Form::hidden('end', Arr::get($_GET, 'end', date('d-m-Y')), array('class' => 'form-control datepicker', 'placeholder' => 'End date', 'id' => 'end'))?>
@@ -52,8 +57,8 @@
 <table class="table table-hover">
     <tr class="text-center tr-header">
         <th>Ticket ID</th>
-        <th>Submission date</th>
-        <th>Approval date</th>
+        <th class="sortable" data-id="submission">Submission date</th>
+        <th class="sortable" data-id="approval">Approval date</th>
         <th>User</th>
         <?php if (Group::current('allow_assign')):?><th>Company</th><?php endif;?>
         <th>Column</th>
