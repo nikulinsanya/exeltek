@@ -221,6 +221,25 @@ class Controller_Dashboard extends Controller {
                         $list[Arr::get($companies, $company, 'Unknown')][$key] = Arr::path($list, array($company, $key)) + 1;
                 }
                 break;
+            case 'fsa':
+                $result = Database_Mongo::collection('jobs')->find(array(), array('data.44' => 1, 'data.12' => 1));
+                $list = array();
+                foreach ($result as $job) {
+                    $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', strtolower(Arr::path($job, 'data.44'))))) ? : 'Unknown';
+                    $fsa = Arr::path($job, 'data.12', 'Unknown');
+                    $list[$fsa][$key] = Arr::path($list, array($fsa, $key)) + 1;
+                }
+                break;
+            case 'fsam':
+                $fsa = strval(Arr::get($_GET, 'fsa', ''));
+                $result = Database_Mongo::collection('jobs')->find(array('data.12' => $fsa), array('data.44' => 1, 'data.13' => 1));
+                $list = array();
+                foreach ($result as $job) {
+                    $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', strtolower(Arr::path($job, 'data.44'))))) ? : 'Unknown';
+                    $fsa = Arr::path($job, 'data.13', 'Unknown');
+                    $list[$fsa][$key] = Arr::path($list, array($fsa, $key)) + 1;
+                }
+                break;
             default:
                 if ($range) {
                     $result = Database_Mongo::collection('archive')->aggregate(array(
