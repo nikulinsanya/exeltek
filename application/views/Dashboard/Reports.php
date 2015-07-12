@@ -6,20 +6,20 @@ $values = array(
 );
 ?>
 
-    <script type="application/javascript">
-        var REPORTDATA = {
-            totalTickets:
-            {
-                companyName: '<?= Arr::get($_GET, 'company') ? $companies[Arr::get($_GET, 'company')] : 'All companies'?>',
-                data:{
-                    total: <?= $values['total']?>,
-                    tested: <?= $values['tested']?>,
-                    built: <?= $values['built']?>
-                }
-            }
-        };
-
-    </script>
+<!--    <script type="application/javascript">-->
+<!--        var REPORTDATA = {-->
+<!--            totalTickets:-->
+<!--            {-->
+<!--                companyName: '--><?//= Arr::get($_GET, 'company') ? $companies[Arr::get($_GET, 'company')] : 'All companies'?><!--',-->
+<!--                data:{-->
+<!--                    total: --><?//= $values['total']?><!--,-->
+<!--                    tested: --><?//= $values['tested']?><!--,-->
+<!--                    built: --><?//= $values['built']?>
+<!--                }-->
+<!--            }-->
+<!--        };-->
+<!---->
+<!--    </script>-->
 
 <div class="report-block filter-info-container">
 <form class="auto-submit">
@@ -45,10 +45,6 @@ $values = array(
             <?php endif;?>
         </div>
     </div>
-    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#filterModal">
-        <span class="glyphicon glyphicon-ok"></span>
-        Apply filter
-    </button>
 </form>
 </div>
 <div class="report-block">

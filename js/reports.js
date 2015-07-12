@@ -1,8 +1,68 @@
 $(function () {
-    var dateFormat = 'DD-MM-YYYY';
+    var allStatuses = [];
+
+
+    function initData(){
+        var defs = [];
+        $('#preloaderModal').modal('show');
+        defs.push(
+            getAllStatuses(),
+            getAllFSAStatuses(),
+            getAllFSAMStatuses()
+        );
+
+        $.when.apply($, defs).then(function(results){
+            var result = Array.prototype.slice.call(arguments);
+            var allStatuses = result[0][0];
+            var allFSAStatuses = result[0][1];
+            var allFSAMStatuses = result[0][2];
+            console.log(result);
+            debugger;
+            $('#preloaderModal').modal('hide');
+        });
+    }
+
+    function getAllStatuses(callback){
+        return $.ajax({
+            url:"api",
+            type:'get',
+            dataType:'JSON'
+        })
+    }
+    function getAllFSAStatuses(callback){
+        return $.ajax({
+            url:"api?type=fsa",
+            type:'get',
+            dataType:'JSON'
+        })
+    }
+    function getAllFSAMStatuses(id){
+        return $.ajax({
+            url:"api?type=fsam",
+            type:'get',
+            dataType:'JSON'
+        })
+    }
+
+
+
+    initData();
+
+
+
+
+
+
+
+
+
+
+    /*var dateFormat = 'DD-MM-YYYY';
     if(!window.REPORTDATA){
         return false;
     }
+
+
     var totalProgress = REPORTDATA.totalTickets,
         companyName = totalProgress.companyName,
         totalTicketsPie =  [{
@@ -96,7 +156,6 @@ $(function () {
 
     function initDashboard(){
 
-        /* total tickets pie chart*/
         initTotalPieChart(totalTicketsPie);
 
 
@@ -396,5 +455,6 @@ $(function () {
             series: series
         });
     }
+    */
 
 });
