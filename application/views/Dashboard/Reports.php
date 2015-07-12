@@ -23,7 +23,6 @@ $values = array(
 
 <div class="report-block filter-info-container">
 <form class="auto-submit">
-    <label  class="filter_value">Filters:</label>
     <div class="text-info-filters">
         <div>
             <label class="date-range-label">Date range: </label>
