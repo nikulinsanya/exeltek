@@ -543,7 +543,7 @@ $(function () {
         $(this).parents('form').attr('action', './search/export');
     });
 
-    $('.assign-jobs').click(function() {
+    $('.ms').click(function() {
         $(this).parents('form').attr('action', './search/assign');
     });
     
@@ -847,10 +847,10 @@ $(function () {
                    ranges: {
                        'Today': [moment(), moment()],
                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                       'This week': [moment().subtract(1, 'week').startOf('week'), moment()],
-                       'Last week': [moment().subtract(2, 'week').startOf('week'),moment().subtract(1, 'week').startOf('week')],
-                       'This month': [moment().subtract(1, 'month').startOf('month'), moment().startOf('month')],
-                       'Last month': [moment().subtract(2, 'month').startOf('month'), moment().subtract(1, 'month').startOf('month')]
+                       'This week': [moment().startOf('week'), moment()],
+                       'Last week': [moment().subtract(2, 'week').startOf('week'),moment().subtract(1, 'week').startOf('week').subtract(1, 'days')],
+                       'This month': [moment().startOf('month'), moment()],
+                       'Last month': [moment().subtract(2, 'month').startOf('month'), moment().subtract(1, 'month').startOf('month').subtract(1, 'days')]
                    },
                    locale: { cancelLabel: 'Clear' }
                },
@@ -915,6 +915,36 @@ $(function () {
             $('#tableRowDetails').modal('show');
             $(".dropdown-menu.collapse").removeClass("in").addClass("collapse");
         }
+    });
+
+
+    $('.batch-jobs').on('click',function(e){
+        e.preventDefault();
+        var checkboxes = $('#search-table td').find('input:checked'),
+            parent,
+            cells,
+            html = [];
+        $(this).parents('form').attr('action', './search/update');
+        $.each(checkboxes, function(){
+
+            parent = $(this).parents('tr').first();
+            cells = parent.find('[data-editable-cell]');
+            html.push('<tr>');
+            $.each(cells,function(){
+                html.push('<td>',$(this).html(),'</td>');
+            });
+            html.push('</tr>');
+            $('#batchEditModal .edit-tickets-table').append(html.join(''));
+        });
+       $('#batchEditModal').modal('show');
+    });
+
+    $('.batch-ticket').on('click',function(){
+        if(!$('#your-username').val()){
+            alert('Enter your UserName');
+            return;
+        }
+
     });
 
     initPlugins();

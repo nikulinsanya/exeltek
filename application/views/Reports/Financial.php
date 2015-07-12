@@ -52,7 +52,7 @@
         <?php endforeach; $sorting = array_flip($sorting);?>
     </div>
 
-    <?=Form::hidden('start', Arr::get($_GET, 'start', date('d-m-Y', strtotime('first day of this month'))), array('class' => 'form-control datepicker', 'placeholder' => 'Start date', 'id' => 'start'))?>
+<?=Form::hidden('start', Arr::get($_GET, 'start', date('d-m-Y', strtotime('first day of this month'))), array('class' => 'form-control datepicker', 'placeholder' => 'Start date', 'id' => 'start'))?>
 <?=Form::hidden('end', Arr::get($_GET, 'end', date('d-m-Y')), array('class' => 'form-control datepicker', 'placeholder' => 'End date', 'id' => 'end'))?>
 <?=Form::hidden('app-start', Arr::get($_GET, 'app-start'), array('class' => 'form-control datepicker', 'placeholder' => 'Start date (Approved)', 'id' => 'app-start'))?>
 <?=Form::hidden('app-end', Arr::get($_GET, 'app-end'), array('class' => 'form-control datepicker', 'placeholder' => 'End date (Approved)', 'id' => 'app-end'))?>
@@ -68,8 +68,7 @@
 </div>
 <div class="clearfix">&nbsp;</div>
 <table class="table table-hover" <?=Group::current('allow_assign') ? 'data-url="' . URL::base() . 'reports/financial/approve"' : ''?>>
-    <tr class="text-center tr-header">
-        <th>Ticket ID</th>
+    <tr class="text-center">
         <th class="sortable" data-id="submission">Submission date</th>
         <th class="sortable" data-id="approval">Approval date</th>
         <th class="sortable" data-id="financial">Financial date</th>
@@ -84,29 +83,33 @@
         <?php if (Group::current('allow_assign')):?><th>&nbsp;</th><?php endif;?>
     </tr>
     <?php foreach ($submissions as $job => $list):?>
-    <?php foreach ($list as $submission): $key = substr($submission['key'], 5); $type = Columns::get_type($key);?>
-    <tr class="submission text-center <?=Group::current('allow_assign') && Arr::path($jobs, $job . '.' . $submission['key']) != $submission['value'] ? 'rose' : (Arr::get($submission, 'financial_time') ? 'lgreen' : 'yellow')?>" data-id="<?=$job?>">
-        <td><a href="<?=URL::base()?>search/view/<?=$job?>"><?=$job?></a></td>
-        <td><?=date('d-m-Y H:i', $submission['update_time'])?></td>
-        <td><?=Arr::get($submission, 'process_time') ? date('d-m-Y H:i', $submission['process_time']) : ''?></td>
-        <td class="time"><?=Arr::get($submission, 'financial_time') ? date('d-m-Y H:i', $submission['financial_time']) : ''?></td>
-        <td><?=User::get($submission['user_id'], 'login')?></td>
-        <?php if (Group::current('allow_assign')):?><td><?=Arr::get($companies, User::get($submission['user_id'], 'company_id'), 'Unknown')?></td><?php endif;?>
-        <td><?=Columns::get_name($key)?></td>
-        <td <?=strlen(Columns::output($submission['value'], $type)) > 100 ? 'class="shorten"' : ''?>><?=Columns::output($submission['value'], $type);?></td>
-        <?php if (Group::current('allow_assign')):?><td><?=Arr::path($jobs, $job . '.' . $submission['key']) ? Columns::output($jobs[$job]['data'][$key], $type) : ''?></td><?php endif;?>
-        <td class="paid"><?=Arr::get($submission, 'paid')?></td>
-        <td><?=floatval(Arr::get($columns, $key))?></td>
-        <td class="rate"><?=Arr::get($submission, 'rate') ? number_format($submission['rate'], 2) : Arr::path($rates, array(User::get($submission['user_id'], 'company_id'), $key), '')?></td>
-        <?php if (Group::current('allow_assign')):?>
-        <td>
-            <?php if (!$submission['financial_time'] && Arr::path($rates, array(User::get($submission['user_id'], 'company_id'), $key), '')):?>
-            <a href="javascript:;" data-id="<?=$submission['_id']?>" data-value="<?=min(floatval(Arr::get($columns, $key)), floatval($submission['value']) ? : 1)?>" data-max="<?=floatval(Arr::get($columns, $key))?>" class="btn btn-success approve-financial">Approve</a>
-            <?php else: echo '&nbsp;'; endif;?>
-        </td>
-        <?php endif;?>
-    </tr>
-    <?php endforeach;?>
+        <tr class="<?=isset($discrepancies[$job])? 'discrepancy text-center' : 'text-center'?>">
+            <th colspan="<?=Group::current('allow_assign') ? 12 : 9?>"><a href="<?=URL::base()?>search/view/<?=$job?>"><?=$job?></a></th>
+        </tr>
+
+        <?php foreach ($list as $submission): $key = substr($submission['key'], 5); $type = Columns::get_type($key);?>
+        <tr class="submission text-center <?=Group::current('allow_assign') && Arr::path($jobs, $job . '.' . $submission['key']) != $submission['value'] ? 'rose' : (Arr::get($submission, 'financial_time') ? 'lgreen' : 'yellow')?>" data-id="<?=$job?>">
+            <td><?=date('d-m-Y H:i', $submission['update_time'])?></td>
+            <td><?=Arr::get($submission, 'process_time') ? date('d-m-Y H:i', $submission['process_time']) : ''?></td>
+            <td class="time"><?=Arr::get($submission, 'financial_time') ? date('d-m-Y H:i', $submission['financial_time']) : ''?></td>
+            <td><?=User::get($submission['user_id'], 'login')?></td>
+            <?php if (Group::current('allow_assign')):?><td><?=Arr::get($companies, User::get($submission['user_id'], 'company_id'), 'Unknown')?></td><?php endif;?>
+            <td><?=Columns::get_name($key)?></td>
+            <td <?=strlen(Columns::output($submission['value'], $type)) > 100 ? 'class="shorten"' : ''?>><?=Columns::output($submission['value'], $type);?></td>
+            <?php if (Group::current('allow_assign')):?><td><?=Arr::path($jobs, $job . '.' . $submission['key']) ? Columns::output($jobs[$job]['data'][$key], $type) : ''?></td><?php endif;?>
+            <td class="paid"><?=Arr::get($submission, 'paid')?></td>
+            <td><?=floatval(Arr::get($columns, $key))?></td>
+            <td class="rate"><?=Arr::get($submission, 'rate') ? number_format($submission['rate'], 2) : Arr::path($rates, array(User::get($submission['user_id'], 'company_id'), $key), '')?></td>
+            <?php if (Group::current('allow_assign')):?>
+            <td>
+                <?php if (!$submission['financial_time'] && Arr::path($rates, array(User::get($submission['user_id'], 'company_id'), $key), '')):?>
+                <a href="javascript:;" data-id="<?=$submission['_id']?>" data-value="<?=min(floatval(Arr::get($columns, $key)), floatval($submission['value']) ? : 1)?>" data-max="<?=floatval(Arr::get($columns, $key))?>" class="btn btn-success approve-financial">Approve</a>
+                <?php else: echo '&nbsp;'; endif;?>
+            </td>
+            <?php endif;?>
+        </tr>
+        <?php endforeach;?>
+
     <?php endforeach;?>
 </table>
 <a href="?export&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', strtotime('first day of this month')))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="pull-right btn btn-info"><span class="glyphicon glyphicon-export"></span> Export</a>

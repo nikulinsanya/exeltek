@@ -36,25 +36,37 @@ $values = array(
             <?=Form::hidden('start', Arr::get($_GET, 'start'), array('id'=>'start'))?>
             <?=Form::hidden('end', Arr::get($_GET, 'end'), array('id'=>'end'))?>
         </div>
-        <div>
-            <?php if (Group::current('allow_assign')):?>
-                <label class="date-range-label">Company: </label>
-                <span class="date-range-container">
-                    <?=Form::select('company', array('' => 'All') + $companies, Arr::get($_GET, 'company'), array('class' => 'form-control'))?>
-                </span>
-            <?php endif;?>
-        </div>
+<!--        <div>-->
+<!--            --><?php //if (Group::current('allow_assign')):?>
+<!--                <label class="date-range-label">Company: </label>-->
+<!--                <span class="date-range-container">-->
+<!--                    --><?//=Form::select('company', array('' => 'All') + $companies, Arr::get($_GET, 'company'), array('class' => 'form-control'))?>
+<!--                </span>-->
+<!--            --><?php //endif;?>
+<!--        </div>-->
     </div>
-    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#filterModal">
-        <span class="glyphicon glyphicon-ok"></span>
-        Apply filter
-    </button>
 </form>
 </div>
+
+
+
+
 <div class="report-block">
     <div class="chart_with_list">
-        <div class="chart-container full-width" id="pie-total-report"></div>
+        <div class="chart-container full-width height-400" id="pie-total-tickets"></div>
     </div>
+</div>
+<div class="report-block">
+    <div class="charts-expand">
+        <button class="btn btn-simple small hidden do-collapse"><i class="glyphicon glyphicon-menu-up"></i> Collapse</button>
+        <button class="btn btn-simple small  do-expand"><i class="glyphicon glyphicon-menu-down"></i> Show additional info</button>
+    </div>
+
+    <div class="chart-list-container" id="tickets-companies" style="display: none;"></div>
+</div>
+
+<div class="report-block">
+    <div class="chart-container full-width" id="tickets-stacked"></div>
 </div>
 
 
@@ -63,39 +75,38 @@ $values = array(
 
 
 
-
-<div class="report-block">
-    <div class="chart_with_list">
-        <div class="chart-container" id="worker-report"></div>
-        <div class="list-container" id="worker-list">
-            <div class="list-label">Workers</div>
-            <ul>
-            </ul>
-        </div>
-    </div>
-</div>
-
-<div class="report-block">
-    <div class="chart_with_list">
-        <div class="chart-container" id="company-history-report"></div>
-        <div class="list-container" id="company-list">
-            <div class="list-label">Companies</div>
-            <ul>
-            </ul>
-        </div>
-    </div>
-</div>
-
-<div class="report-block">
-    <div class="chart_with_list">
-        <div class="chart-container" id="pie-company-report"></div>
-        <div class="list-container" id="pie-company-list">
-            <div class="list-label">Companies</div>
-            <ul>
-            </ul>
-        </div>
-    </div>
-</div>
+<!--<div class="report-block">-->
+<!--    <div class="chart_with_list">-->
+<!--        <div class="chart-container" id="worker-report"></div>-->
+<!--        <div class="list-container" id="worker-list">-->
+<!--            <div class="list-label">Workers</div>-->
+<!--            <ul>-->
+<!--            </ul>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!---->
+<!--<div class="report-block">-->
+<!--    <div class="chart_with_list">-->
+<!--        <div class="chart-container" id="company-history-report"></div>-->
+<!--        <div class="list-container" id="company-list">-->
+<!--            <div class="list-label">Companies</div>-->
+<!--            <ul>-->
+<!--            </ul>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!---->
+<!--<div class="report-block">-->
+<!--    <div class="chart_with_list">-->
+<!--        <div class="chart-container" id="pie-company-report"></div>-->
+<!--        <div class="list-container" id="pie-company-list">-->
+<!--            <div class="list-label">Companies</div>-->
+<!--            <ul>-->
+<!--            </ul>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 
 
 
