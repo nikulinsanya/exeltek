@@ -18,7 +18,7 @@ class Controller_Reports_Submissions extends Controller {
             $query['process_time']['$lt'] = strtotime($_GET['app-end']) + 86399;
         
         if (Group::current('allow_assign'))
-            $companies = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
+            $companies = DB::select('id', 'name')->from('companies')->order_by('name', 'asc')->execute()->as_array('id', 'name');
         
         if (!Group::current('allow_assign') || Arr::get($_GET, 'company'))
             $query['user_id'] = array('$in' => DB::select('id')->from('users')->where('company_id', '=', Group::current('allow_assign') ? $_GET['company'] : User::current('company_id'))->execute()->as_array(NULL, 'id'));
@@ -28,8 +28,26 @@ class Controller_Reports_Submissions extends Controller {
             $keys = Database_Mongo::collection('jobs')->distinct('_id', array('data.245' => $_GET['finished'], '_id' => array('$in' => $keys)));
             $query['job_key'] = array('$in' => $keys);
         }
-        
-        $result = Database_Mongo::collection('submissions')->find($query)->sort(array('job_key' => 1, 'update_time' => -1));
+
+        $sort = array('job_key' => 1);
+
+        if (!Arr::get($_GET, 'sort'))
+            $_GET['sort'] = array('-submission');
+
+        foreach ($_GET['sort'] as $s) {
+            $dir = substr($s, 0, 1) == '-' ? -1 : 1;
+            $s = substr($s, 1);
+            switch ($s) {
+                case 'submission':
+                    $sort['update_time'] = $dir;
+                    break;
+                case 'approval':
+                    $sort['process_time'] = $dir;
+                    break;
+            }
+        }
+
+        $result = Database_Mongo::collection('submissions')->find($query)->sort($sort);
         
         $submissions = array();
         $users = array();

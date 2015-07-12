@@ -46,6 +46,12 @@
         </span>
     </div>
 
+    <div id="sorting" class="hidden">
+        <?php $sorting = Arr::get($_GET, 'sort', array()); foreach ($sorting as $sort):?>
+            <input type="hidden" name="sort[]" value="<?=$sort?>" />
+        <?php endforeach; $sorting = array_flip($sorting);?>
+    </div>
+
 <?=Form::hidden('start', Arr::get($_GET, 'start', date('d-m-Y', strtotime('first day of this month'))), array('class' => 'form-control datepicker', 'placeholder' => 'Start date', 'id' => 'start'))?>
 <?=Form::hidden('end', Arr::get($_GET, 'end', date('d-m-Y')), array('class' => 'form-control datepicker', 'placeholder' => 'End date', 'id' => 'end'))?>
 <?=Form::hidden('app-start', Arr::get($_GET, 'app-start'), array('class' => 'form-control datepicker', 'placeholder' => 'Start date (Approved)', 'id' => 'app-start'))?>
@@ -62,24 +68,25 @@
 </div>
 <div class="clearfix">&nbsp;</div>
 <table class="table table-hover" <?=Group::current('allow_assign') ? 'data-url="' . URL::base() . 'reports/financial/approve"' : ''?>>
+    <tr class="text-center">
+        <th class="sortable" data-id="submission">Submission date</th>
+        <th class="sortable" data-id="approval">Approval date</th>
+        <th class="sortable" data-id="financial">Financial date</th>
+        <th>User</th>
+        <?php if (Group::current('allow_assign')):?><th>Company</th><?php endif;?>
+        <th>Column</th>
+        <th>Value</th>
+        <?php if (Group::current('allow_assign')):?><th>Current value</th><?php endif;?>
+        <th>Paid value</th>
+        <th>Max value</th>
+        <th>Rate</th>
+        <?php if (Group::current('allow_assign')):?><th>&nbsp;</th><?php endif;?>
+    </tr>
     <?php foreach ($submissions as $job => $list):?>
         <tr class="<?=isset($discrepancies[$job])? 'discrepancy text-center' : 'text-center'?>">
             <th colspan="<?=Group::current('allow_assign') ? 12 : 9?>"><a href="<?=URL::base()?>search/view/<?=$job?>"><?=$job?></a></th>
         </tr>
-        <tr class="<?=isset($discrepancies[$job])? 'discrepancy text-center' : 'text-center'?>">
-            <th>Submission date</th>
-            <th>Approval date</th>
-            <th>Financial date</th>
-            <th>User</th>
-            <?php if (Group::current('allow_assign')):?><th>Company</th><?php endif;?>
-            <th>Column</th>
-            <th>Value</th>
-            <?php if (Group::current('allow_assign')):?><th>Current value</th><?php endif;?>
-            <th>Paid value</th>
-            <th>Max value</th>
-            <th>Rate</th>
-            <?php if (Group::current('allow_assign')):?><th>&nbsp;</th><?php endif;?>
-        </tr>
+
         <?php foreach ($list as $submission): $key = substr($submission['key'], 5); $type = Columns::get_type($key);?>
         <tr class="submission text-center <?=Group::current('allow_assign') && Arr::path($jobs, $job . '.' . $submission['key']) != $submission['value'] ? 'rose' : (Arr::get($submission, 'financial_time') ? 'lgreen' : 'yellow')?>" data-id="<?=$job?>">
             <td><?=date('d-m-Y H:i', $submission['update_time'])?></td>
