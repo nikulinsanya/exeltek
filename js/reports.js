@@ -1,52 +1,293 @@
 $(function () {
-    var allStatuses = [];
+    if(!window.REPORTDATA){
+        return;
+    }
+    window.REPORTDATA = window.REPORTDATA || {}
+    window.REPORTDATA.allocation = {
+        colorByType:{
+            'TESTED': '#0EAD00',
+            'BUILT': '#64F257',
+            'HELD-CONTRACTOR':'#E07F00',
+            'IN-PROGRESS':'#E0A500',
+            'SCHEDULED': '#E0D100',
+            'DEFERRED': '#ED7476',
+            'DIRTY': '#EB1014',
+            'HEC': '#FC5356',
+            'HELD-NBN': '#FA6466'
+        },
+        order:[
+            'TESTED',
+            'BUILT',
+            'HELD-CONTRACTOR',
+            'IN-PROGRESS',
+            'SCHEDULED',
+            'DEFERRED',
+            'DIRTY',
+            'HEC',
+            'HELD-NBN'
+        ]
+    }
 
 
     function initData(){
         var defs = [];
         $('#preloaderModal').modal('show');
         defs.push(
+            getAllTicketsByCompanies(),
             getAllStatuses(),
-            getAllFSAStatuses(),
-            getAllFSAMStatuses()
+            getAllFSAStatuses()
         );
 
         $.when.apply($, defs).then(function(results){
             var result = Array.prototype.slice.call(arguments);
-            var allStatuses = result[0][0];
-            var allFSAStatuses = result[0][1];
-            var allFSAMStatuses = result[0][2];
-            console.log(result);
-            debugger;
+            window.REPORTDATA.allTickets = result[0][0];
+            window.REPORTDATA.allStatuses = result[1][0];
+            window.REPORTDATA.allFSAStatuses = result[2][0];
+
+
+            showAllReports();
             $('#preloaderModal').modal('hide');
         });
     }
 
+    function showAllReports(){
+        showAllTickets(window.REPORTDATA.allTickets);
+        showTicketsByCompanies(window.REPORTDATA.allTickets);
+        showTicketsInStacked(window.REPORTDATA.allTickets);
+    }
+
+    function uppTickets(tickets){
+        var res = {},
+            i;
+        for(i in tickets){
+            res[i] = {};
+            for (j in tickets[i]){
+                res[i][j.toUpperCase()] = tickets[i][j];
+            }
+        }
+        return res;
+    }
+
+    function showTicketsInStacked(tickets){
+        var i, j, k, name, currName,
+            data,
+            rawData = {},
+            upperTickets = uppTickets(tickets),
+            categories,
+            series = [];
+
+        for(i in window.REPORTDATA.allocation.order){
+            name = window.REPORTDATA.allocation.order[i];
+            data = [];
+            categories = [];
+            for(j in upperTickets){
+                categories.push(j);
+                data.push(upperTickets[j][name] || 0);
+            }
+            rawData[name] = data;
+        }
+
+        for(i in window.REPORTDATA.allocation.order){
+            name = window.REPORTDATA.allocation.order[i]
+            series.push({
+                name: name,
+                data: rawData[name],
+                color:  window.REPORTDATA.allocation.colorByType[name]
+            })
+
+        }
+
+        $('#tickets-stacked').highcharts({
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Tickets allocation'
+            },
+            xAxis: {
+                categories: categories
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Total tickets'
+                },
+                stackLabels: {
+                    enabled: false,
+                    style: {
+                        fontWeight: 'bold',
+                        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                    }
+                }
+            },
+            legend: {
+               enabled:true
+            },
+            tooltip: {
+                formatter: function () {
+                    return '<b>' + this.x + '</b><br/>' +
+                        this.series.name + ': ' + this.y + '<br/>' +
+                        'Total: ' + this.point.stackTotal;
+                }
+            },
+            plotOptions: {
+                column: {
+                    stacking: 'normal'
+                }
+            },
+            series: series
+        });
+    }
+
+    function showTicketsByCompanies(tickets){
+        var i, j, name,
+            chartContainer,
+            rawSeries,
+            series;
+
+        for(i in tickets){
+            chartContainer = $('<div class="width-1-3 height-300"></div>');
+            series = [];
+            rawSeries = {};
+            for(j in tickets[i]){
+                name = j.toUpperCase();
+                rawSeries[name] = tickets[i][j];
+            }
+            for(j in window.REPORTDATA.allocation.order){
+                name = window.REPORTDATA.allocation.order[j].toUpperCase();
+                if(rawSeries[name]){
+                    series.push({
+                        y:rawSeries[name],
+                        name: name,
+                        color: window.REPORTDATA.allocation.colorByType[name]
+                    });
+                }
+            }
+
+
+            $('#tickets-companies').append(chartContainer);
+
+            $(chartContainer).highcharts({
+                chart: {
+                    type: 'pie'
+                },
+                title: {
+                    text: i
+                },
+                tooltip: {
+                    pointFormat: '<b>{series.name}</b>: {point.y}(<b>{point.percentage:.1f}%</b>)'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        showInLegend: false,
+                        dataLabels: {
+                            enabled: false
+                        }
+                    }
+                },
+                exporting: {
+                    enabled: true
+                },
+                series: [{
+                    name: "Tickets",
+                    data: series
+                }]
+            });
+        };
+    }
+    function showAllTickets(tickets){
+        var total = {}, i, j, name,
+            series=[];
+        for(i in tickets){
+            for(j in tickets[i]){
+                name = j.toUpperCase();
+                total[name] = total[name] || 0;
+                total[name] += tickets[i][j];
+            }
+        }
+        for(i in window.REPORTDATA.allocation.order){
+            name = window.REPORTDATA.allocation.order[i]
+            if(total[name]){
+                series.push({
+                    name: name,
+                    y: total[name],
+                    color: window.REPORTDATA.allocation.colorByType[name]
+                })
+            }
+        }
+
+        $('#pie-total-tickets').highcharts({
+            chart: {
+                type: 'pie'
+            },
+            title: {
+                text: 'Total tickets allocation'
+            },
+            tooltip: {
+                pointFormat: '<b>{series.name}</b>: {point.y}(<b>{point.percentage:.1f}%</b>)'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    showInLegend: true
+                }
+            },
+            exporting: {
+                enabled: true
+            },
+            series: [{
+                name: "Tickets",
+                data: series
+            }]
+        });
+    }
+
+    function dateParams(){
+        return 'start='+$('#start').val()+'&end='+$('#end').val();
+    }
+
     function getAllStatuses(callback){
         return $.ajax({
-            url:"api",
+            url:"api?"+dateParams(),
             type:'get',
             dataType:'JSON'
         })
     }
     function getAllFSAStatuses(callback){
         return $.ajax({
-            url:"api?type=fsa",
+            url:"api?type=fsa&"+dateParams(),
             type:'get',
             dataType:'JSON'
         })
     }
-    function getAllFSAMStatuses(id){
+    function getAllTicketsByCompanies(id){
         return $.ajax({
-            url:"api?type=fsam",
+            url:"api?type=companies&"+dateParams(),
             type:'get',
             dataType:'JSON'
+        })
+    }
+
+    function initExpandCollapse(){
+        $('.charts-expand').find('.do-expand').on('click',function(e){
+            var parent = $(this).parents('.report-block').first();
+            $(this).addClass('hidden');
+            parent.find('.do-collapse').removeClass('hidden');
+            parent.find('.chart-list-container').slideDown();
+        });
+        $('.charts-expand').find('.do-collapse').on('click',function(e){
+            var parent = $(this).parents('.report-block').first();
+            $(this).addClass('hidden');
+            parent.find('.do-expand').removeClass('hidden');
+            parent.find('.chart-list-container').slideUp();
         })
     }
 
 
 
     initData();
+    initExpandCollapse();
 
 
 

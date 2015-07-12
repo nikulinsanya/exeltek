@@ -40,4 +40,9 @@
     .daterangepicker.opensright:after{
         display: none!important;
     }
+
+
+    .width-1-3{
+        width: 48%;
+    }
 }

@@ -847,10 +847,10 @@ $(function () {
                    ranges: {
                        'Today': [moment(), moment()],
                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                       'This week': [moment().subtract(1, 'week').startOf('week'), moment()],
-                       'Last week': [moment().subtract(2, 'week').startOf('week'),moment().subtract(1, 'week').startOf('week')],
-                       'This month': [moment().subtract(1, 'month').startOf('month'), moment().startOf('month')],
-                       'Last month': [moment().subtract(2, 'month').startOf('month'), moment().subtract(1, 'month').startOf('month')]
+                       'This week': [moment().startOf('week'), moment()],
+                       'Last week': [moment().subtract(2, 'week').startOf('week'),moment().subtract(1, 'week').startOf('week').subtract(1, 'days')],
+                       'This month': [moment().startOf('month'), moment()],
+                       'Last month': [moment().subtract(2, 'month').startOf('month'), moment().subtract(1, 'month').startOf('month').subtract(1, 'days')]
                    },
                    locale: { cancelLabel: 'Clear' }
                },
