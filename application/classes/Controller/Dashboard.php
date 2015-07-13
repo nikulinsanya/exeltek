@@ -63,7 +63,7 @@ class Controller_Dashboard extends Controller {
         $companies = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
         $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
 
-        if (!Group::current('allow_assign')) {
+        if (!Group::current('show_all_jobs')) {
             $query['$or'] = array(
                 array('companies' => intval(User::current('company_id'))),
                 array('ex' => intval(User::current('company_id'))),
@@ -207,22 +207,39 @@ class Controller_Dashboard extends Controller {
         if (Arr::get($_GET, 'start')) $range['$gte'] = strtotime($_GET['start']);
         if (Arr::get($_GET, 'end')) $range['$lte'] = strtotime($_GET['end']) + 86399;
 
+        $filter = array();
+
+        if (!Group::current('show_all_jobs')) {
+            $filter = array('$or' => array(
+                array('companies' => intval(User::current('company_id'))),
+                array('ex' => intval(User::current('company_id'))),
+            ));
+        }
+
         switch ($type) {
             case 'companies':
                 $companies = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
-                $result = Database_Mongo::collection('jobs')->find(array(), array('data.44' => 1, 'companies' => 1, 'ex' => 1));
+                $result = Database_Mongo::collection('jobs')->find($filter, array('data.44' => 1, 'companies' => 1, 'ex' => 1));
                 $list = array();
+                $total = array();
                 foreach ($result as $job) {
                     $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', strtolower(Arr::path($job, 'data.44'))))) ? : 'Unknown';
+
+                    $total[$key] = Arr::get($total, $key, 0) + 1;
+
                     foreach (Arr::get($job, 'companies', array()) as $company)
                         $list[Arr::get($companies, $company, 'Unknown')][$key] = Arr::path($list, array($company, $key)) + 1;
 
                     foreach (Arr::get($job, 'ex', array()) as $company)
                         $list[Arr::get($companies, $company, 'Unknown')][$key] = Arr::path($list, array($company, $key)) + 1;
                 }
+                $list = array(
+                    'total' => $total,
+                    'companies' => $list,
+                );
                 break;
             case 'fsa':
-                $result = Database_Mongo::collection('jobs')->find(array(), array('data.44' => 1, 'data.12' => 1));
+                $result = Database_Mongo::collection('jobs')->find($filter, array('data.44' => 1, 'data.12' => 1));
                 $list = array();
                 foreach ($result as $job) {
                     $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', strtolower(Arr::path($job, 'data.44'))))) ? : 'Unknown';
@@ -232,7 +249,8 @@ class Controller_Dashboard extends Controller {
                 break;
             case 'fsam':
                 $fsa = strval(Arr::get($_GET, 'fsa', ''));
-                $result = Database_Mongo::collection('jobs')->find(array('data.12' => $fsa), array('data.44' => 1, 'data.13' => 1));
+                $filter['data.12'] = $fsa;
+                $result = Database_Mongo::collection('jobs')->find($filter, array('data.44' => 1, 'data.13' => 1));
                 $list = array();
                 foreach ($result as $job) {
                     $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', strtolower(Arr::path($job, 'data.44'))))) ? : 'Unknown';
@@ -242,11 +260,17 @@ class Controller_Dashboard extends Controller {
                 break;
             default:
                 if ($range) {
+                    if ($filter)
+                        $ids = Database_Mongo::collection('jobs')->distinct('_id', $filter);
+                    else
+                        $ids = array();
+                    $filter = array('$match' => array(
+                        'update_time' => $range,
+                        'fields' => 44,
+                    ));
+                    if ($ids) $filter['$match']['job_key'] = array('$in' => $ids);
                     $result = Database_Mongo::collection('archive')->aggregate(array(
-                        array('$match' => array(
-                            'update_time' => $range,
-                            'fields' => 44,
-                        )),
+                        $filter,
                         array('$group' => array(
                             '_id' => '$job_key',
                             'status' => array('$last' => array('$toLower' => '$data.44.new_value')),
@@ -267,12 +291,13 @@ class Controller_Dashboard extends Controller {
                         $list[$key] = Arr::get($list, $key, 0) + 1;
                     }
                 } else {
-                    $result = Database_Mongo::collection('jobs')->aggregate(array(
-                        '$group' => array(
+                    $query = array();
+                    if ($filter) $query[] = array('$match' => $filter);
+                    $query[] = array('$group' => array(
                             '_id' => array('$toLower' => '$data.44'),
                             'count' => array('$sum' => 1),
-                        )
-                    ));
+                        ));
+                    $result = Database_Mongo::collection('jobs')->aggregate($query);
                     $list = array();
                     foreach ($result['result'] as $item) {
                         $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', $item['_id']))) ? : 'Unknown';
