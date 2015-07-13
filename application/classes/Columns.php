@@ -58,6 +58,7 @@ class Columns {
     private static $search = array();
     private static $direct = array();
     private static $track = array();
+    private static $persistent = array();
     
     private static function init() {
         $columns = DB::select()->from('job_columns')->execute()->as_array();
@@ -80,6 +81,7 @@ class Columns {
             if (Arr::get($permissions, $column['id'])) self::$permissions[$column['id']] = Arr::get($permissions, $column['id']);
             if (Arr::get($search, $column['id'])) self::$search[$column['id']] = Arr::get($search, $column['id']);
             if ($column['track']) self::$track[$column['id']] = $column['id'];
+            if ($column['persistent']) self::$persistent[$column['id']] = $column['id'];
         }
         
         if (Group::current('is_admin')) {
@@ -95,14 +97,21 @@ class Columns {
         
         return Arr::get(self::$all, $id);
     }
-    
+
     public static function get_track($id = false) {
         if (!self::$all)
             self::init();
-        
+
         return $id ? Arr::get(self::$track, $id) : self::$track;
     }
-    
+
+    public static function get_persistent($id = false) {
+        if (!self::$all)
+            self::init();
+
+        return $id ? Arr::get(self::$persistent, $id) : self::$persistent;
+    }
+
     public static function get_static($id = false) {
         if (!self::$all)
             self::init();

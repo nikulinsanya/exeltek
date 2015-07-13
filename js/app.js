@@ -400,15 +400,23 @@ $(function () {
         
         $.get(url + 'search?id=' + id + '&group=' + group + '&state=' + state);
     });
-    
+
     $('.column-show').change(function() {
         var id = $(this).attr('data-id');
         var url = $(this).parents('table').attr('data-url');
         var state = $(this).val();
-        
+
         $.get(url + 'show?id=' + id + "&state=" + state);
     });
-    
+
+    $('.column-persistent').click(function() {
+        var id = $(this).attr('data-id');
+        var url = $(this).parents('table').attr('data-url');
+        var state = $(this).prop('checked') ? 1 : 0;
+
+        $.get(url + 'persistent?id=' + id + "&state=" + state);
+    });
+
     $('.column-form').change(function() {
         var type = $(this).attr('type-id');
         var id = $(this).attr('data-id');

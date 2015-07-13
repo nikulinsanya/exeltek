@@ -29,7 +29,7 @@ class Controller_Imex_Discrepancies extends Controller {
             $filters['update_time']['$lt'] = $end;
         }
         
-        $result = $archive->find($filters)->sort(array('job_key' => 1, 'update_time' => -1));
+        $result = $archive->find($filters)->sort(array('update_time' => -1, 'job_key' => 1));
         
         if (!$all) {
             Pager::$count = $result->count();

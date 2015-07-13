@@ -326,10 +326,11 @@ class Controller_Imex_Upload extends Controller {
                         foreach ($data as $key => $value) {
                             $old = Arr::get($job['data'], $key, '');
                             if (($old || $value) && $old != $value) {
-                                if ($value)
-                                    $new['$set']['data.' . $key] = $value;
-                                else
-                                    $new['$unset']['data.' . $key] = 1;
+                                if (!Columns::get_persistent($key))
+                                    if ($value)
+                                        $new['$set']['data.' . $key] = $value;
+                                    else
+                                        $new['$unset']['data.' . $key] = 1;
                                 $diff[$key] = array(
                                     'old_value' => Arr::get($job['data'], $key),
                                     'new_value' => $value ? : '',
@@ -337,20 +338,6 @@ class Controller_Imex_Upload extends Controller {
                             }
                         }
                         if ($diff) {
-                            $new['$set']['last_update'] = time();
-                            $jobs->update(array('_id' => $id), $new);
-                            $archive->insert(array(
-                                'job_key' => $id,
-                                'update_time' => time(),
-                                'update_type' => 2,
-                                'user_id' => User::current('id'),
-                                'filename' => $reg_name . '_' . date('Ymd', $date) . '_' . $time,
-                                'static' => array_intersect_key($data, $static),
-                                'data' => $diff,
-                                'fields' => array_keys($diff),
-                            ));
-                            $updated++;
-
                             if (isset($data[44])) {
                                 $status = preg_replace('/[^a-z]/', '', strtolower(Arr::path($diff, '44.old_value')));
                                 $status2 = preg_replace('/[^a-z]/', '', strtolower(Arr::get($new, 'data.44')));
@@ -377,6 +364,26 @@ class Controller_Imex_Upload extends Controller {
 
                                 }
                             }
+                            if ($new) {
+                                $new['$set']['last_update'] = time();
+                                $jobs->update(array('_id' => $id), $new);
+
+                                foreach (array_keys($diff) as $key)
+                                    if (Columns::get_persistent($key))
+                                        unset($diff[$key]);
+
+                                $archive->insert(array(
+                                    'job_key' => $id,
+                                    'update_time' => time(),
+                                    'update_type' => 2,
+                                    'user_id' => User::current('id'),
+                                    'filename' => $reg_name . '_' . date('Ymd', $date) . '_' . $time,
+                                    'static' => array_intersect_key($data, $static),
+                                    'data' => $diff,
+                                    'fields' => array_keys($diff),
+                                ));
+                                $updated++;
+                            } else $skipped++;
                         } else $skipped++;
                     } elseif ($region > 0) {
                         $inserted++;

@@ -154,6 +154,12 @@ Cookie::$salt = 'fnFTmwHPZGrt8ncs';
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
  * defaults for the URI.
  */
+Route::set('search', '(search(/<controller>(/<id>)))', array('id' => '.*'))
+    ->defaults(array(
+        'directory' => 'search',
+        'controller' => 'search',
+        'action'     => 'index',
+    ));
 Route::set('defects', '<directory>(/<controller>(/<action>(/<id>)))', array('directory' => '(defects|security|imex|reports|api)', 'id' => '.*'))
     ->defaults(array(
         'controller' => 'default',
