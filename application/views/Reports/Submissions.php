@@ -34,7 +34,18 @@
             </select>
         </span>
         <?php endif;?>
+        <div class="clearfix">&nbsp;</div>
+        <label class="date-range-label filter-select-label">Is job finished? </label>
+        <span class="filter-select-container">
+            <select name="finished" class="selectize">
+                <option value="">Select</option>
+                <option value="Yes" <?=Arr::get($_GET, 'finished')=='Yes' ? 'selected': ''?>>Yes</option>
+                <option value="No"  <?=Arr::get($_GET, 'finished')=='No' ? 'selected': ''?>>No</option>
+            </select>
+        </span>
     </div>
+
+
 
     <div id="sorting" class="hidden">
         <?php $sorting = Arr::get($_GET, 'sort', array()); foreach ($sorting as $sort):?>
