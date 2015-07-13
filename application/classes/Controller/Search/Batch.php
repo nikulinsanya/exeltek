@@ -4,6 +4,8 @@ class Controller_Search_Batch extends Controller
 {
     public function action_index()
     {
+        header('Content-type: application/json');
+
         $action = $this->request->param('id');
 
         $result = array();
@@ -32,7 +34,7 @@ class Controller_Search_Batch extends Controller
                     $data[] = 'data.' . $column;
                 }
 
-                $ids = Arr::get($_GET, 'id', array());
+                $ids = explode(',', strval(Arr::get($_GET, 'id', '')));
                 $values = array();
                 if ($ids) {
                     $query = array('_id' => array('$in' => $ids));
@@ -47,6 +49,8 @@ class Controller_Search_Batch extends Controller
                     }
                 }
                 $result['jobs'] = $values;
+                break;
+            case 'save':
                 break;
         }
 
