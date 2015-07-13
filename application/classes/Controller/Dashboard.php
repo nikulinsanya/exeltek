@@ -228,14 +228,17 @@ class Controller_Dashboard extends Controller {
                     $total[$key] = Arr::get($total, $key, 0) + 1;
 
                     foreach (Arr::get($job, 'companies', array()) as $company)
-                        $list[Arr::get($companies, $company, 'Unknown')][$key] = Arr::path($list, array($company, $key)) + 1;
+                        $list[$company][$key] = Arr::path($list, array($company, $key)) + 1;
 
                     foreach (Arr::get($job, 'ex', array()) as $company)
-                        $list[Arr::get($companies, $company, 'Unknown')][$key] = Arr::path($list, array($company, $key)) + 1;
+                        $list[$company][$key] = Arr::path($list, array($company, $key)) + 1;
                 }
+                $result = array();
+                foreach ($list as $key => $values)
+                    $result[Arr::get($companies, $key, 'Unknown')] = $values;
                 $list = array(
                     'total' => $total,
-                    'companies' => $list,
+                    'companies' => $result,
                 );
                 break;
             case 'fsa':
