@@ -924,29 +924,6 @@ $(function () {
             $(".dropdown-menu.collapse").removeClass("in").addClass("collapse");
         }
     });
-
-
-    $('.batch-jobs').on('click',function(e){
-        e.preventDefault();
-        var checkboxes = $('#search-table td').find('input:checked'),
-            parent,
-            cells,
-            html = [];
-        $(this).parents('form').attr('action', './search/update');
-        $.each(checkboxes, function(){
-
-            parent = $(this).parents('tr').first();
-            cells = parent.find('[data-editable-cell]');
-            html.push('<tr>');
-            $.each(cells,function(){
-                html.push('<td>',$(this).html(),'</td>');
-            });
-            html.push('</tr>');
-            $('#batchEditModal .edit-tickets-table').append(html.join(''));
-        });
-       $('#batchEditModal').modal('show');
-    });
-
     $('.batch-ticket').on('click',function(){
         if(!$('#your-username').val()){
             alert('Enter your UserName');
@@ -954,6 +931,132 @@ $(function () {
         }
 
     });
+
+
+    $('.batch-jobs').on('click',function(e){
+        e.preventDefault();
+//        $('#preloaderModal').modal('show');
+        var ids = [],
+            i,
+            checkboxes = $('#search-table td').find('input:checked');
+        $.each(checkboxes, function(){
+           ids.push($(this).attr('data-id'));
+        });
+
+        getEditableFields(ids).done(function(data){
+
+            var html = [],
+                result = data[0],
+                rows = [],
+                i,j;
+            for(i in data.jobs){
+
+                rows.push(prepareField(data.jobs[i], data.columns));
+
+
+            }
+
+            j = rows.length;
+            while(j--){
+                html.push('<tr>');
+                for(i in rows[j]){
+                    html.push(rows[j][i].html);
+                }
+                html.push('</tr>');
+            }
+
+
+            debugger;
+
+            $('#batchEditModal .edit-tickets-table').html(html.join(''));
+
+
+            $('#preloaderModal').modal('hide');
+            $('#batchEditModal').modal('show');
+        }).fail(function(){
+            $('#preloaderModal').modal('hide');
+        })
+
+
+    });
+
+    function prepareField(row, values){
+        var fields = {
+            'text': '<div data-id="%ID%" data-type="%TYPE%"><label>%LABEL%</label><textarea>%VALUE%</textarea></div>',
+            'list': '<div data-id="%ID%" data-type="%TYPE%"><label>%LABEL%</label><select>%OPTIONS%</select></div>'
+            },
+            i, j,
+            id,
+            value,
+            columns = {},
+            field,
+            html;
+
+        if(!row || !values){
+            return '';
+        }
+
+
+
+        for(i in row.data){
+            html = [];
+            value = utils.searchInListById(i, values);
+
+
+            switch (value.type){
+                case 'text':
+                    field = fields[value.type];
+                    field = field.replace('%LABEL%', value.name);
+                    field = field.replace('%VALUE%', row.data[i]);
+                    field = field.replace('%ID%', i);
+                    field = field.replace('%TYPE%', value.type);
+                    html.push(field);
+                    break;
+                case 'list':
+                    var options = [];
+                    field = fields[value.type];
+                    field = field.replace('%LABEL%', value.name);
+                    field = field.replace('%ID%', i);
+                    field = field.replace('%TYPE%', value.type);
+
+                    j = value.values.length;
+                    while(j--){
+                        options.unshift(
+                            '<option value="',
+                            value.values[j],
+                            '">',
+                            value.values[j],
+                            '</option>'
+                        )
+                    }
+                    field = field.replace('%OPTIONS%',options.join(''));
+
+                    break;
+                default:
+            }
+            columns[i] = {
+                name: value.name,
+                type: value.type,
+                html: ['<td>',field,'</td>'].join('')
+            };
+
+        }
+        return columns;
+
+    }
+
+    function getEditableFields(ids){
+        var url = [],
+            i = ids.length;
+        url.push('search/batch/get?id=');
+        url.push(ids.join(','));
+
+        return $.ajax({
+            url:url.join(''),
+            dataType:'JSON',
+            type:'GET'
+        });
+    }
 
     initPlugins();
 });

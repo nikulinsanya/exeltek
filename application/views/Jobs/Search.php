@@ -381,7 +381,7 @@
         }
     ?>
     <tr class="text-center <?=$status?>">
-        <td class="checkbox-container"><input type="checkbox" class="checkbox" name="job[<?=$ticket['_id']?>]" /></td>
+        <td class="checkbox-container"><input type="checkbox" class="checkbox" data-id=<?=$ticket['_id']?> name="job[<?=$ticket['_id']?>]" /></td>
 
         <td><?=HTML::chars($ticket['_id'])?></td>
 
@@ -428,6 +428,8 @@
         <?php foreach (Columns::get_search() as $id => $name): $value = Columns::output(Arr::path($ticket, 'data.'.$id), Columns::get_type($id));?>
         <td <?=strlen($value) > 100 ? 'class="shorten data-editable-cell"' : 'data-editable-cell'?>><?=$value?></td>
         <?php endforeach;?>
+
+
 
         <td  class="table-buttons">
             <?php if (Group::current('allow_forms') && !Arr::get($ticket, 'locked') && in_array(User::current('company_id'), Arr::get($ticket, 'assigned', array(), true))):?>
@@ -527,11 +529,7 @@
             </div>
             <div class="modal-body" id="table-row-details">
                 <table class="table small edit-tickets-table">
-                    <?php foreach (Columns::get_search() as $id => $type):?>
-                    <th>
-                        <?=Columns::get_name($id)?>
-                    </th>
-                    <?php endforeach;?>
+
                 </table>
             </div>
             <div class="modal-footer" class="tableRowButtons">
