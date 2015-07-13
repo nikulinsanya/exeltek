@@ -792,13 +792,13 @@ $(function () {
 
     $('input:checkbox.discrepancy').click(function() {
         if ($(this).prop('checked')) {
-            var list = [];
             $('tr.submission:not(.rose)').addClass('hidden');
             $('tr.discrepancy').addClass('hidden');
         } else {
             $('tr.submission:not(.rose)').removeClass('hidden');
             $('tr.discrepancy').removeClass('hidden');
         }
+        $('#submissions_count').text($('.ticket-id:not(.hidden)').length);
     });
 
 

@@ -61,7 +61,7 @@
 
 </form>
 <div>
-<h3 class="pull-left">Total found: <?=count($submissions)?> ticket(s)</h3>
+<h3 class="pull-left">Total found: <span id="submissions_count"><?=count($submissions)?></span> ticket(s)</h3>
 <?php if ($approve_all):?>
     <a href="<?=URL::base() . Request::current()->uri() . URL::query(array('approve' => 1))?>" class="pull-right btn btn-success">Approve all</a>
 <?php endif;?>
@@ -83,7 +83,7 @@
         <?php if (Group::current('allow_assign')):?><th>&nbsp;</th><?php endif;?>
     </tr>
     <?php foreach ($submissions as $job => $list):?>
-        <tr class="<?=isset($discrepancies[$job])? 'discrepancy text-center' : 'text-center'?>">
+        <tr class="ticket-id <?=isset($discrepancies[$job])? 'discrepancy text-center' : 'text-center'?>">
             <th colspan="<?=Group::current('allow_assign') ? 12 : 9?>"><a href="<?=URL::base()?>search/view/<?=$job?>"><?=$job?></a></th>
         </tr>
 
