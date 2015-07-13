@@ -17,7 +17,7 @@ class Controller_Search_Batch extends Controller
 
                 foreach ($columns as $column) {
                     $value = array(
-                        'id' => $column,
+                        'id' => intval($column),
                         'name' => Columns::get_name($column),
                     );
                     $type = Columns::get_type($column);
