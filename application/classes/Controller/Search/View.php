@@ -462,6 +462,13 @@ class Controller_Search_View extends Controller {
                 $values[str_replace('.', '', $submission['key'])] = $submission['value'];
         }
 
+        $job['discrepancies'] = array();
+        if (Group::current('allow_reports')) {
+            $result = Database_Mongo::collection('discrepancies')->find(array('job_key' => $id), array('_id' => 0))->sort(array('update_time' => -1));
+            foreach ($result as $discr)
+                $job['discrepancies'][] = $discr;
+        }
+
         $view = View::factory('Jobs/View')
             ->bind('job', $job)
             ->bind('tabs', $tabs)

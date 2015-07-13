@@ -44,6 +44,9 @@
         <li role="presentation" data-id="submissions"><a href="javascript:;">Submissions</a></li>
         <?php endif; ?>
         <li role="presentation" data-id="attachments"><a href="javascript:;">Attachments</a></li>
+        <?php if ($job['discrepancies']):?>
+            <li role="presentation" class="bg-danger" data-id="discrepancies"><a href="javascript:;">Discrepancies</a></li>
+        <?php endif;?>
     </ul>
     
     <div class="panel panel-default">
@@ -208,6 +211,35 @@
 
             <?=View::factory('Jobs/UploadFile')?>
         </div>
+        <div data-id="discrepancies" class="panel-body hidden">
+            <table class="table">
+                <tr class="text-center">
+                    <th class="col-xs-1">Date</th>
+                    <th class="col-xs-1">User</th>
+                    <th class="col-xs-1">File name</th>
+                    <th>Column name:</th>
+                    <th>Old value:</th>
+                    <th>New value:</th>
+                    <th>Current value:</th>
+                </tr>
+                <?php foreach ($job['discrepancies'] as $ticket): $cnt = count($ticket['data']);
+                    $fl = true;
+                    foreach($ticket['data'] as $key => $value): ?>
+                        <tr class="lgreen text-center">
+                            <?php if ($fl):?>
+                                <td rowspan="<?=$cnt?>"><?=date('d-m-Y H:i', $ticket['update_time'])?></td>
+                                <td rowspan="<?=$cnt?>"><?=User::get(Arr::get($ticket, 'user_id'), 'login') ? : 'Unknown'?></td>
+                                <td rowspan="<?=$cnt?>"><a href="<?=URL::base() . 'imex/discrepancies?file=' . urlencode($ticket['filename'])?>"><?=HTML::chars($ticket['filename'])?></a></td>
+                            <?php endif;?>
+                            <td><?=HTML::chars(Columns::get_name($key));?></td>
+                            <td><?=Columns::output($value['old_value'], Columns::get_type($key))?></td>
+                            <td><?=Columns::output($value['new_value'], Columns::get_type($key))?></td>
+                            <td><?=Columns::output(Arr::path($job, array('data', $key)), Columns::get_type($key))?></td>
+                        </tr>
+                        <?php $fl = false; endforeach;?>
+                <?php endforeach;?>
+            </table>
+        </div>
     </div>
     <!--    tabs-->
     <ul class="nav nav-tabs status-filter upsidedown">
@@ -228,5 +260,8 @@
             <li role="presentation" data-id="submissions"><a href="javascript:;">Submissions</a></li>
         <?php endif; ?>
         <li role="presentation" data-id="attachments"><a href="javascript:;">Attachments</a></li>
+        <?php if ($job['discrepancies']):?>
+            <li role="presentation" class="bg-danger" data-id="discrepancies"><a href="javascript:;">Discrepancies</a></li>
+        <?php endif;?>
     </ul>
 </form>
