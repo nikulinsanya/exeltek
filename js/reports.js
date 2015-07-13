@@ -82,7 +82,7 @@ $(function () {
         var i, j, k, name, currName,
             data,
             rawData = {},
-            upperTickets = uppTickets(tickets),
+            upperTickets = uppTickets(tickets.companies),
             categories,
             series = [];
 
@@ -155,13 +155,13 @@ $(function () {
             rawSeries,
             series;
 
-        for(i in tickets){
+        for(i in tickets.companies){
             chartContainer = $('<div class="width-1-3 height-300"></div>');
             series = [];
             rawSeries = {};
-            for(j in tickets[i]){
+            for(j in tickets.companies[i]){
                 name = j.toUpperCase();
-                rawSeries[name] = tickets[i][j];
+                rawSeries[name] = tickets.companies[i][j];
             }
             for(j in window.REPORTDATA.allocation.order){
                 name = window.REPORTDATA.allocation.order[j].toUpperCase();
@@ -209,13 +209,8 @@ $(function () {
     function showAllTickets(tickets){
         var total = {}, i, j, name,
             series=[];
-        for(i in tickets){
-            for(j in tickets[i]){
-                name = j.toUpperCase();
-                total[name] = total[name] || 0;
-                total[name] += tickets[i][j];
-            }
-        }
+
+        total = uppStatuses(tickets.total);
         for(i in window.REPORTDATA.allocation.order){
             name = window.REPORTDATA.allocation.order[i]
             if(total[name]){
