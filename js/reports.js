@@ -301,21 +301,21 @@ $(function () {
 
     function getAllStatuses(callback){
         return $.ajax({
-            url:utils.baseUrl() + "api?"+dateParams(),
+            url:utils.baseUrl() + "dashboard/api?"+dateParams(),
             type:'get',
             dataType:'JSON'
         })
     }
     function getAllFSAStatuses(callback){
         return $.ajax({
-            url:utils.baseUrl() + "api?type=fsa&"+dateParams(),
+            url:utils.baseUrl() + "dashboard/api?type=fsa&"+dateParams(),
             type:'get',
             dataType:'JSON'
         })
     }
     function getAllTicketsByCompanies(id){
         return $.ajax({
-            url:utils.baseUrl() + "api?type=companies&"+dateParams(),
+            url:utils.baseUrl() + "dashboard/api?type=companies&"+dateParams(),
             type:'get',
             dataType:'JSON'
         })
