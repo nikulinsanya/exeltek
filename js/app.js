@@ -929,13 +929,29 @@ $(function () {
             alert('Enter your UserName');
             return;
         }
+        var data = {
+            jobs : collectDataToBatch(),
+            username: $('#your-username').val()
+        };
 
+        $('#preloaderModal').modal('show');
+        $.ajax({
+            url:utils.baseUrl()+'search/batch/set',
+            dataType:'JSON',
+            type:'POST',
+            data: data
+        }).done(function(data){
+            window.location.reload();
+        }).fail(function(e){
+            $('#preloaderModal').modal('hide');
+            alert('Error: ' + e.responseText);
+        })
     });
 
 
     $('.batch-jobs').on('click',function(e){
         e.preventDefault();
-//        $('#preloaderModal').modal('show');
+        $('#preloaderModal').modal('show');
         var ids = [],
             i,
             checkboxes = $('#search-table td').find('input:checked');
@@ -944,29 +960,44 @@ $(function () {
         });
 
         getEditableFields(ids).done(function(data){
-
             var html = [],
-                result = data[0],
-                rows = [],
-                i,j;
+                rows = {},
+                cellHtml,
+                i, j, id;
+            data.columns.sort(function(a,b){return a.type > b.type});
+
             for(i in data.jobs){
-
-                rows.push(prepareField(data.jobs[i], data.columns));
-
-
+                rows[data.jobs[i].id] = prepareField(data.jobs[i], data.columns);
             }
 
-            j = rows.length;
-            while(j--){
-                html.push('<tr>');
-                for(i in rows[j]){
-                    html.push(rows[j][i].html);
+            //fill table row
+            html.push('<tr>');
+            for (i in data.columns){
+                html.push(
+                    '<th>',
+                    data.columns[i]['name'],
+                    '</th>');
+            }
+            html.push('</tr>');
+
+            //fill table colls
+            for (j in rows){
+                html.push('<tr data-id="'+j+'">');
+                for (i in data.columns){
+                    id = data.columns[i]['id'];
+                    html.push('<td>');
+                    if(rows[j][id]){
+                        html.push(rows[j][id].html);
+                    }else{
+                        cellHtml = utils.getFieldByType(data.columns[i], {}, data.columns[i].id);
+                        html.push(cellHtml);
+                    }
+                    html.push('</td>');
                 }
                 html.push('</tr>');
             }
 
 
-            debugger;
 
             $('#batchEditModal .edit-tickets-table').html(html.join(''));
 
@@ -976,68 +1007,56 @@ $(function () {
         }).fail(function(){
             $('#preloaderModal').modal('hide');
         })
-
-
     });
 
+    function collectDataToBatch(){
+        var data = [],
+            i,
+            ticketId,
+            cellId,
+            rawData = {},
+            child,
+            editor,
+            container = $('#table-row-details td');
+        $.each(container, function(){
+            child = $(this).children();
+            ticketId = $(this).parent().attr('data-id');
+            cellId = child.attr('data-id');
+            if(!ticketId || !cellId){
+                return false;
+            }
+
+            rawData[ticketId] = rawData[ticketId] || {};
+            editor = child.children();
+            rawData[ticketId][cellId] = editor.val();
+        });
+
+        for(i in rawData){
+            data.push({
+                id: i,
+                data: rawData[i]
+            });
+        }
+        return data;
+    }
+
     function prepareField(row, values){
-        var fields = {
-            'text': '<div data-id="%ID%" data-type="%TYPE%"><label>%LABEL%</label><textarea>%VALUE%</textarea></div>',
-            'list': '<div data-id="%ID%" data-type="%TYPE%"><label>%LABEL%</label><select>%OPTIONS%</select></div>'
-            },
-            i, j,
-            id,
+        var i,
             value,
             columns = {},
-            field,
-            html;
+            field;
 
         if(!row || !values){
             return '';
         }
 
-
-
         for(i in row.data){
-            html = [];
             value = utils.searchInListById(i, values);
-
-
-            switch (value.type){
-                case 'text':
-                    field = fields[value.type];
-                    field = field.replace('%LABEL%', value.name);
-                    field = field.replace('%VALUE%', row.data[i]);
-                    field = field.replace('%ID%', i);
-                    field = field.replace('%TYPE%', value.type);
-                    html.push(field);
-                    break;
-                case 'list':
-                    var options = [];
-                    field = fields[value.type];
-                    field = field.replace('%LABEL%', value.name);
-                    field = field.replace('%ID%', i);
-                    field = field.replace('%TYPE%', value.type);
-
-                    j = value.values.length;
-                    while(j--){
-                        options.unshift(
-                            '<option value="',
-                            value.values[j],
-                            '">',
-                            value.values[j],
-                            '</option>'
-                        )
-                    }
-                    field = field.replace('%OPTIONS%',options.join(''));
-
-                    break;
-                default:
-            }
+            field = utils.getFieldByType(value, row.data, i);
             columns[i] = {
                 name: value.name,
                 type: value.type,
-                html: ['<td>',field,'</td>'].join('')
+                html: field
             };
 
         }
@@ -1048,7 +1067,7 @@ $(function () {
     function getEditableFields(ids){
         var url = [],
             i = ids.length;
-        url.push('search/batch/get?id=');
+        url.push(utils.baseUrl(),'search/batch/get?id=');
         url.push(ids.join(','));
 
         return $.ajax({

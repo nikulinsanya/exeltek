@@ -527,7 +527,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">Ticket details</h4>
             </div>
-            <div class="modal-body" id="table-row-details">
+            <div class="modal-body text-center" id="table-row-details">
                 <table class="table small edit-tickets-table">
 
                 </table>

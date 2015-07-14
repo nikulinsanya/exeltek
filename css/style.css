@@ -242,6 +242,11 @@ form.dashboard-form{
     width: auto;
 }
 
+#table-row-details{
+    padding: 5px;
+    max-height: 500px;
+    overflow: auto;
+}
 
 #table-row-details table.table{
     margin-bottom: 0px;
@@ -250,6 +255,17 @@ form.dashboard-form{
 
 #table-row-details table.table td{
     cursor: default;
+    vertical-align: middle;
+}
+
+#table-row-details textarea{
+    min-width: 250px;
+    height: 50px;
+    width: 100%;
+}
+#table-row-details select{
+    min-width: 150px;
+    width: 100%;
 }
 
 #search-table .table-buttons{

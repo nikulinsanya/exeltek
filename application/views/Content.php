@@ -56,7 +56,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body data-url="<?= URL::base()?>">
   <div class="modal fade" id="preloaderModal" tabindex="-1" role="dialog">
       <div id="loading"><img src="<?=URL::base()?>img/loading.gif">Loading...</div>
 
