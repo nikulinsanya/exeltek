@@ -60,7 +60,7 @@ class Controller_Search_Form extends Controller {
                     'uploaded' => time(),
                     'user_id' => User::current('id'),
                     'job_id' => $id,
-                    'folder' => 'Others',
+                    'folder' => 'Signatures',
                     'fda_id' => Arr::path($job, 'data.14'),
                     'address' => trim(preg_replace('/-{2,}/', '-', preg_replace('/[^0-9a-z\-]/i', '-', Arr::path($job, 'data.8'))), '-'),
                     'title' => '',
@@ -72,7 +72,7 @@ class Controller_Search_Form extends Controller {
                 if ($image_id && file_put_contents(DOCROOT . 'storage/' . $image_id, base64_decode(Arr::get($content, 1, '')))) {
                     unset($data['mime']);
                     $data = array(
-                        'filename' => trim(preg_replace('/-{2,}/', '-', preg_replace('/[^0-9a-z\-]/i', '-', 'other / ' . Arr::path($job, 'data.14') . ' / ' . Arr::path($job, 'data.8') . ' / Submission-' . date('dmY-His') . '-signature.png')), '-'),
+                        'filename' => trim(preg_replace('/-{2,}/', '-', preg_replace('/[^0-9a-z\-]/i', '-', 'Signatures / ' . Arr::path($job, 'data.14') . ' / ' . Arr::path($job, 'data.8') . ' / Submission-' . date('dmY-His') . '-signature.png')), '-'),
                         'uploaded' => time(),
                         'user_id' => User::current('id'),
                         'job_id' => $id,

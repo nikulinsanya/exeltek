@@ -661,7 +661,8 @@ $(function () {
     $('.tree').jstree({
         'core' : {
             'multiple': false,
-        }
+        },
+        'plugins': ['search'],
     }).on('select_node.jstree', function(e, data) {
         if (data.node.data.folder != undefined) {
             var folder = data.node.data.folder;
@@ -674,6 +675,14 @@ $(function () {
                 $('#files').html(data);
             });
         }
+    });
+    var search_timeout = false;
+    $('#attachments-filter').keyup(function() {
+        if (search_timeout) clearTimeout(search_timeout);
+        search_timeout = setTimeout(function() {
+            $('.tree').jstree(true).search($('#attachments-filter').val());
+            //alert($('#attachments-filter').val());
+        }, 250);
     });
     
     $('#download-folder').click(function() {

@@ -4,69 +4,52 @@ class Controller_Test extends Controller {
 
     public function before() {
         if (!Group::current('is_admin')) throw new HTTP_Exception_403('Forbidden');
-        echo strtotime('19/05/2015');
-        die('Done');
     }
 
     public function action_index() {
-        $jobs = Database_Mongo::collection('jobs');
+        $start = microtime(true);
+
+        header("Content-type: text/plain");
+        $jobs = Database_Mongo::collection('jobs')->find();
 
         $archive = Database_Mongo::collection('archive');
 
-        $region = 2;
+        $ids = array();
+        foreach ($jobs as $job) if (Arr::path($job, 'data.245') == 'Yes') {
+            $result = $archive->find(array(
+                'job_key' => $job['_id'],
+                'fields' => array('$in' => array(245, 43, 190, 191, 192)),
+            ))->sort(array('update_time' => 1));
+            $indexes = array();
 
-        $list = $jobs->find(array('last_update' => array('$exists' => 0)));
+            if (Arr::get($job['data'], 43))
+                $indexes['t'] = 43;
 
-        foreach ($list as $item) {
-            $jobs->update(array('_id' => $item['_id']), array('$set' => array('last_update' => $item['created'])));
-        }
+            if (Arr::get($job['data'], 43))
+                $indexes['a'] = 190;
 
-        $file = fopen(DOCROOT . '/tmp/jeopardy.csv', 'r');
+            if (Arr::get($job['data'], 43))
+                $indexes['b'] = 191;
 
-        fgetcsv($file);
+            if (Arr::get($job['data'], 43))
+                $indexes['c'] = 192;
 
-        $count = 0;
+            $finished = 0;
+            $types = array();
+            foreach ($result as $item) {
+                if (isset($item['data']['245']))
+                    $finished = $item['update_time'];
+                foreach ($indexes as $key => $value)
+                    if (isset($item['data'][$value]))
+                        $types[$key] = $item['update_time'];
 
-        while ($row = fgetcsv($file)) {
-            $job = $jobs->findOne(array('_id' => $row[0]));
-            //if ($job) $jobs->remove(array('_id' => $row[0]));
-            if (!$job) {
-                $count++;
-                $data = array(
-                    '1' => $row[1],
-                    '8' => $row[2],
-                    '9' => $row[3],
-                    '10' => $row[4],
-                    '13' => $row[5],
-                    '14' => $row[6],
-                    '17' => strtotime($row[7]),
-                    '18' => strtotime($row[8]),
-                    '19' => $row[9],
-                    '20' => $row[10],
-                );
-
-                $job = array(
-                    '_id' => $row[0],
-                    'region' => $region,
-                    'created' => time(),
-                    'last_update' => time(),
-                    'data' => $data,
-                );
-                $jobs->insert($job);
-                $archive->insert(array(
-                    'job_key' => $row[0],
-                    'update_time' => time(),
-                    'update_type' => 1,
-                    'user_id' => User::current('id'),
-                    'filename' => 'JEOPARDY',
-                    'static' => array(),
-                    'data' => array(),
-                    'fields' => array(),
-                ));
+            }
+            if ($finished && $types) {
+                if (isset($types['t']))
             }
         }
 
-        die('Done: ' . $count);
+        die('Done in ' . round(microtime(true) - $start, 3) . 's.');
     }
 
 }

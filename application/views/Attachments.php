@@ -1,3 +1,7 @@
+<div class="col-xs-4">
+    <input type="text" class="form-control" placeholder="Filter" id="attachments-filter" />
+</div>
+<div class="clearfix"></div>
 <div class="col-xs-6 tree" data-url="<?=URL::base()?>attachments/">
 <ul>
 <?php foreach ($folders as $root => $fdas):?>
