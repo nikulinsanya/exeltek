@@ -109,7 +109,8 @@ $(function () {
 
         $('#tickets-stacked').highcharts({
             chart: {
-                type: 'column'
+                type: 'column',
+                zoomType: 'x,y'
             },
             title: {
                 text: 'Tickets allocation'
@@ -269,7 +270,8 @@ $(function () {
 
         $('#pie-total-tickets-assigned').highcharts({
             chart: {
-                type: 'column'
+                type: 'column',
+                zoomType: 'x,y'
             },
             xAxis: {
                 categories: categories

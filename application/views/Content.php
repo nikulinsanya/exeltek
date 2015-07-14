@@ -31,6 +31,7 @@
     <link href="<?=URL::base()?>css/bootstrap-multiselect.css" rel="stylesheet">
     <script src="<?=URL::base()?>js/lib/highcharts/highcharts.src.js"></script>
     <script src="<?=URL::base()?>js/lib/highcharts/exporting.js"></script>
+    <script src="<?=URL::base()?>js/lib/highcharts/no-data-to-display.js"></script>
 
     <script src="<?=URL::base()?>js/utils.js"></script>
     <script src="<?=URL::base()?>js/app.js"></script>

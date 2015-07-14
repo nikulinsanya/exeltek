@@ -8,6 +8,7 @@ $values = array(
 
     <script type="application/javascript">
         var REPORTDATA = {
+            isAdmin: <?=Group::current('show_all_jobs') ?>,
             totalTickets:
             {
                 data:{
@@ -38,7 +39,7 @@ $values = array(
 </form>
 </div>
 
-
+<?php if(Group::current('show_all_jobs')):?>
 
 <div class="report-block">
     <div class="chart_with_list">
@@ -62,3 +63,30 @@ $values = array(
 <div class="report-block">
     <div class="chart-container full-width" id="tickets-stacked"></div>
 </div>
+
+<?php else:?>
+
+    <div class="report-block">
+        <div class="chart_with_list">
+            <div class="chart-container full-width height-400" id="pie-total-tickets-assigned"></div>
+        </div>
+    </div>
+    <div class="report-block">
+        <div class="chart_with_list">
+            <div class="chart-container full-width height-400" id="pie-total-tickets"></div>
+        </div>
+    </div>
+    <div class="report-block">
+        <div class="charts-expand">
+            <button class="btn btn-simple small hidden do-collapse"><i class="glyphicon glyphicon-menu-up"></i> Collapse</button>
+            <button class="btn btn-simple small  do-expand"><i class="glyphicon glyphicon-menu-down"></i> Show additional info</button>
+        </div>
+
+        <div class="chart-list-container" id="tickets-companies" style="display: none;"></div>
+    </div>
+
+    <div class="report-block">
+        <div class="chart-container full-width" id="tickets-stacked"></div>
+    </div>
+
+<?php endif;?>
