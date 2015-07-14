@@ -69,8 +69,6 @@ class Controller_Search_View extends Controller {
             $result = Database_Mongo::collection('submissions')->find(array('job_key' => $id, 'user_id' => array('$in' => $u)))->sort(array('update_time' => -1, 'user_id' => 1, 'key' => 1));
         }
 
-        $pending_submissions = false;
-
         foreach ($result as $submission) {
             $users[$submission['user_id']] = 1;
             $key = substr($submission['key'], 5);
@@ -195,7 +193,6 @@ class Controller_Search_View extends Controller {
 
                 $ass = false;
                 $values = array();
-                $finish = array();
                 foreach (Arr::get($_POST, 'assigned', array()) as $key => $value) if (Arr::path($job, 'assigned.' . $key) != $value) {
                     if ($ass < 1) $ass = $value ? 1 : -1;
 
@@ -359,12 +356,6 @@ class Controller_Search_View extends Controller {
                 }
                 if ($submissions) Messages::save(count($pending) . '/' . count($submissions['list']) . ' submission(s) were processed.', 'info');
             } else {
-                $submission = array(
-                    'job_key' => $id,
-                    'user_id' => User::current('id'),
-                    'update_time' => time(),
-                );
-
                 $submissions = array();
                 foreach (Arr::get($_POST, 'data', array()) as $key => $value) {
                     $value = Columns::parse($value, Columns::get_type($key));

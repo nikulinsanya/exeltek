@@ -76,7 +76,7 @@ class Controller_Api_Images extends Kohana_Controller {
                 $type = 'otdr-traces';
                 break;
             default:
-                $type = 'other';
+                $type = 'Other';
                 $filename = $title . $filename;
                 break;
         }

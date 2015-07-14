@@ -44,7 +44,7 @@ class Controller_Search_Prepare extends Controller
                 $filename = '';
                 break;
             default:
-                $type = 'other';
+                $type = 'Other';
                 $filename = '';
                 break;
         }
