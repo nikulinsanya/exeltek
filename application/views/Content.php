@@ -30,8 +30,9 @@
     <script src="<?=URL::base()?>js/lib/bootstrap/bootstrap-multiselect.js"></script>
     <link href="<?=URL::base()?>css/bootstrap-multiselect.css" rel="stylesheet">
     <script src="<?=URL::base()?>js/lib/highcharts/highcharts.src.js"></script>
-      <script src="<?=URL::base()?>js/lib/highcharts/exporting.js"></script>
+    <script src="<?=URL::base()?>js/lib/highcharts/exporting.js"></script>
 
+    <script src="<?=URL::base()?>js/utils.js"></script>
     <script src="<?=URL::base()?>js/app.js"></script>
     <script src="<?=URL::base()?>js/reports.js"></script>
 
@@ -55,7 +56,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body data-url="<?= URL::base()?>">
   <div class="modal fade" id="preloaderModal" tabindex="-1" role="dialog">
       <div id="loading"><img src="<?=URL::base()?>img/loading.gif">Loading...</div>
 

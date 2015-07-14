@@ -933,36 +933,158 @@ $(function () {
             $(".dropdown-menu.collapse").removeClass("in").addClass("collapse");
         }
     });
-
-
-    $('.batch-jobs').on('click',function(e){
-        e.preventDefault();
-        var checkboxes = $('#search-table td').find('input:checked'),
-            parent,
-            cells,
-            html = [];
-        $(this).parents('form').attr('action', './search/update');
-        $.each(checkboxes, function(){
-
-            parent = $(this).parents('tr').first();
-            cells = parent.find('[data-editable-cell]');
-            html.push('<tr>');
-            $.each(cells,function(){
-                html.push('<td>',$(this).html(),'</td>');
-            });
-            html.push('</tr>');
-            $('#batchEditModal .edit-tickets-table').append(html.join(''));
-        });
-       $('#batchEditModal').modal('show');
-    });
-
     $('.batch-ticket').on('click',function(){
         if(!$('#your-username').val()){
             alert('Enter your UserName');
             return;
         }
+        var data = {
+            jobs : collectDataToBatch(),
+            username: $('#your-username').val()
+        };
 
+        $('#preloaderModal').modal('show');
+        $.ajax({
+            url:utils.baseUrl()+'search/batch/set',
+            dataType:'JSON',
+            type:'POST',
+            data: data
+        }).done(function(data){
+            window.location.reload();
+        }).fail(function(e){
+            $('#preloaderModal').modal('hide');
+            alert('Error: ' + e.responseText);
+        })
     });
+
+
+    $('.batch-jobs').on('click',function(e){
+        e.preventDefault();
+        $('#preloaderModal').modal('show');
+        var ids = [],
+            i,
+            checkboxes = $('#search-table td').find('input:checked');
+        $.each(checkboxes, function(){
+           ids.push($(this).attr('data-id'));
+        });
+
+        getEditableFields(ids).done(function(data){
+            var html = [],
+                rows = {},
+                cellHtml,
+                i, j, id;
+            data.columns.sort(function(a,b){return a.type > b.type});
+
+            for(i in data.jobs){
+                rows[data.jobs[i].id] = prepareField(data.jobs[i], data.columns);
+            }
+
+            //fill table row
+            html.push('<tr>');
+            for (i in data.columns){
+                html.push(
+                    '<th>',
+                    data.columns[i]['name'],
+                    '</th>');
+            }
+            html.push('</tr>');
+
+            //fill table colls
+            for (j in rows){
+                html.push('<tr data-id="'+j+'">');
+                for (i in data.columns){
+                    id = data.columns[i]['id'];
+                    html.push('<td>');
+                    if(rows[j][id]){
+                        html.push(rows[j][id].html);
+                    }else{
+                        cellHtml = utils.getFieldByType(data.columns[i], {}, data.columns[i].id);
+                        html.push(cellHtml);
+                    }
+                    html.push('</td>');
+                }
+                html.push('</tr>');
+            }
+
+
+
+            $('#batchEditModal .edit-tickets-table').html(html.join(''));
+
+
+            $('#preloaderModal').modal('hide');
+            $('#batchEditModal').modal('show');
+        }).fail(function(){
+            $('#preloaderModal').modal('hide');
+        })
+    });
+
+    function collectDataToBatch(){
+        var data = [],
+            i,
+            ticketId,
+            cellId,
+            rawData = {},
+            child,
+            editor,
+            container = $('#table-row-details td');
+        $.each(container, function(){
+            child = $(this).children();
+            ticketId = $(this).parent().attr('data-id');
+            cellId = child.attr('data-id');
+            if(!ticketId || !cellId){
+                return false;
+            }
+
+            rawData[ticketId] = rawData[ticketId] || {};
+            editor = child.children();
+            rawData[ticketId][cellId] = editor.val();
+        });
+
+        for(i in rawData){
+            data.push({
+                id: i,
+                data: rawData[i]
+            });
+        }
+        return data;
+    }
+
+    function prepareField(row, values){
+        var i,
+            value,
+            columns = {},
+            field;
+
+        if(!row || !values){
+            return '';
+        }
+
+        for(i in row.data){
+            value = utils.searchInListById(i, values);
+            field = utils.getFieldByType(value, row.data, i);
+            columns[i] = {
+                name: value.name,
+                type: value.type,
+                html: field
+            };
+
+        }
+        return columns;
+
+    }
+
+    function getEditableFields(ids){
+        var url = [],
+            i = ids.length;
+        url.push(utils.baseUrl(),'search/batch/get?id=');
+        url.push(ids.join(','));
+
+        return $.ajax({
+            url:url.join(''),
+            dataType:'JSON',
+            type:'GET'
+        });
+    }
 
     initPlugins();
 });
