@@ -40,7 +40,7 @@ class Controller_Imex_Reports extends Controller {
             $filters['update_time']['$lt'] = $end;
         }
         
-        $result = $archive->find($filters)->sort(array('job_key' => 1, 'update_time' => -1));
+        $result = $archive->find($filters)->sort(array('update_time' => -1, 'job_key' => 1));
         
         if (!$all) {
             Pager::$count = $result->count();
@@ -204,8 +204,8 @@ class Controller_Imex_Reports extends Controller {
         $result = Database_Mongo::collection('archive')
             ->aggregate(array(
                 array('$match' => array('filename' => array('$regex' => '.*' . $id . '.*', '$options' => 'i'))),
-                array('$group' => array('_id' => '$filename')),
-                array('$sort' => array('_id' => 1)),
+                array('$group' => array('_id' => '$filename', 'update_time' => array('$max' => '$update_time'))),
+                array('$sort' => array('update_time' => -1)),
                 array('$limit' => 10),
             ));
             

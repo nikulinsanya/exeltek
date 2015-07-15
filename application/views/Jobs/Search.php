@@ -330,7 +330,7 @@
         <?php endif;?>
 
         <?php foreach (Columns::get_search() as $id => $type):?>
-        <th class="dropdown sortable" data-id="data-<?=$id?>">
+        <th class="dropdown sortable" data-id="data-<?=$id?>" data-editable-cell>
             <a href="#" class="dropdown-toggle" data-toggle="collapse" data-target="#filter-<?=$id?>">
                 <?=Columns::get_name($id)?>
             </a>
@@ -381,7 +381,7 @@
         }
     ?>
     <tr class="text-center <?=$status?>">
-        <td class="checkbox-container"><input type="checkbox" class="checkbox" name="job[<?=$ticket['_id']?>]" /></td>
+        <td class="checkbox-container"><input type="checkbox" class="checkbox" data-id=<?=$ticket['_id']?> name="job[<?=$ticket['_id']?>]" /></td>
 
         <td><?=HTML::chars($ticket['_id'])?></td>
 
@@ -426,8 +426,10 @@
         <?php endif;?>
 
         <?php foreach (Columns::get_search() as $id => $name): $value = Columns::output(Arr::path($ticket, 'data.'.$id), Columns::get_type($id));?>
-        <td <?=strlen($value) > 100 ? 'class="shorten"' : ''?>><?=$value?></td>
+        <td <?=strlen($value) > 100 ? 'class="shorten data-editable-cell"' : 'data-editable-cell'?>><?=$value?></td>
         <?php endforeach;?>
+
+
 
         <td  class="table-buttons">
             <?php if (Group::current('allow_forms') && !Arr::get($ticket, 'locked') && in_array(User::current('company_id'), Arr::get($ticket, 'assigned', array(), true))):?>
@@ -470,11 +472,14 @@
     <button type="submit" class="btn btn-danger archive-jobs">Archive jobs</button>
     <button type="submit" class="btn btn-success complete-jobs">Complete jobs</button>
     <button type="submit" class="btn btn-primary reset-jobs">Reset jobs</button>
+    <button type="button" class="btn btn-success batch-jobs"><span class="glyphicon glyphicon-edit"></span>Batch Edit</button>
     <?php endif;?>
     <?php if (Group::current('allow_reports')):?>
     <button type="submit" class="btn btn-info export-jobs"><span class="glyphicon glyphicon-export"></span>Export jobs</button>
     <?php endif;?>
     <button type="submit" class="btn btn-info export-result"><span class="glyphicon glyphicon-export"></span>Export search result</button>
+
+
 </div>
 <div class="clearfix">&nbsp;</div>
 
@@ -508,6 +513,33 @@
                 </table>
             </div>
             <div class="modal-footer" id="tableRowButtons">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="batchEditModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Ticket details</h4>
+            </div>
+            <div class="modal-body text-center" id="table-row-details">
+                <table class="table small edit-tickets-table">
+
+                </table>
+            </div>
+            <div class="modal-footer" class="tableRowButtons">
+                <span class="filter-item">
+                    Your Username:
+                    <label class="filter_value">
+                        <input type="text" id="your-username" placeholder="">
+                    </label>
+                </span>
+                <button type="submit" class="btn btn-success batch-ticket">Update</button>
             </div>
         </div>
     </div>

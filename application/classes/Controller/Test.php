@@ -4,69 +4,69 @@ class Controller_Test extends Controller {
 
     public function before() {
         if (!Group::current('is_admin')) throw new HTTP_Exception_403('Forbidden');
-        echo strtotime('19/05/2015');
-        die('Done');
+        die();
     }
 
     public function action_index() {
-        $jobs = Database_Mongo::collection('jobs');
+        $start = microtime(true);
+
+        header("Content-type: text/plain");
+        $jobs = Database_Mongo::collection('jobs')->find(array(), array('data.245' => 1, 'data.43' => 1, 'data.190' => 1, 'data.191' => 1, 'data.192' => 1, 'created' => 1));
 
         $archive = Database_Mongo::collection('archive');
 
-        $region = 2;
+        $result = DB::select('id', 'company_id')->from('users')->where('company_id', '>', 0)->execute()->as_array('id', 'company_id');
+        $companies = array();
+        foreach ($result as $key => $value)
+            $companies[intval($key)] = $value;
 
-        $list = $jobs->find(array('last_update' => array('$exists' => 0)));
+        $ids = array();
+        foreach ($jobs as $job) if (Arr::path($job, 'data.245') == 'Yes') {
+            $result = $archive->find(array(
+                'job_key' => $job['_id'],
+                'fields' => array('$in' => array(245, 43, 190, 191, 192)),
+                //'user_id' => array('$in' => array_keys($companies))
+            ))->sort(array('update_time' => 1));
+            $indexes = array();
 
-        foreach ($list as $item) {
-            $jobs->update(array('_id' => $item['_id']), array('$set' => array('last_update' => $item['created'])));
-        }
+            if (Arr::get($job['data'], 43)) {
+                $indexes['t'] = 43;
+                $types['t'][0] = $job['created'];
+            }
 
-        $file = fopen(DOCROOT . '/tmp/jeopardy.csv', 'r');
+            if (Arr::get($job['data'], 190)) {
+                $indexes['a'] = 190;
+                $types['a'][0] = $job['created'];
+            }
 
-        fgetcsv($file);
+            if (Arr::get($job['data'], 191)) {
+                $indexes['b'] = 191;
+                $types['b'][0] = $job['created'];
+            }
 
-        $count = 0;
+            if (Arr::get($job['data'], 192)) {
+                $indexes['c'] = 192;
+                $types['c'][0] = $job['created'];
+            }
 
-        while ($row = fgetcsv($file)) {
-            $job = $jobs->findOne(array('_id' => $row[0]));
-            //if ($job) $jobs->remove(array('_id' => $row[0]));
-            if (!$job) {
-                $count++;
-                $data = array(
-                    '1' => $row[1],
-                    '8' => $row[2],
-                    '9' => $row[3],
-                    '10' => $row[4],
-                    '13' => $row[5],
-                    '14' => $row[6],
-                    '17' => strtotime($row[7]),
-                    '18' => strtotime($row[8]),
-                    '19' => $row[9],
-                    '20' => $row[10],
-                );
+            $finished = 0;
+            $types = array();
+            foreach ($result as $item) if (isset($companies[$item['user_id']])) {
+                if (isset($item['data']['245']))
+                    $finished = $item['update_time'];
+                foreach ($indexes as $key => $value)
+                    if (isset($item['data'][$value]))
+                        $types[$key][$companies[$item['user_id']]] = $item['update_time'];
 
-                $job = array(
-                    '_id' => $row[0],
-                    'region' => $region,
-                    'created' => time(),
-                    'last_update' => time(),
-                    'data' => $data,
-                );
-                $jobs->insert($job);
-                $archive->insert(array(
-                    'job_key' => $row[0],
-                    'update_time' => time(),
-                    'update_type' => 1,
-                    'user_id' => User::current('id'),
-                    'filename' => 'JEOPARDY',
-                    'static' => array(),
-                    'data' => array(),
-                    'fields' => array(),
-                ));
+            }
+            if ($finished && $types) {
+                $types['f'] = $finished;
+                print_r($types);
+                die();
             }
         }
 
-        die('Done: ' . $count);
+        die('Done in ' . round(microtime(true) - $start, 3) . 's.');
     }
 
 }

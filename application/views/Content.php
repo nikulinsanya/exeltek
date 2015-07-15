@@ -18,6 +18,8 @@
     <link href="<?=URL::base()?>css/style.css" rel="stylesheet">
     <script src="<?=URL::base()?>js/lib/bootstrap/bootstrap.min.js"></script>
 
+
+
     <script src="<?=URL::base()?>js/lib/bootstrap/selectize.js"></script>
     <link href="<?=URL::base()?>css/selectize.css" rel="stylesheet">
 
@@ -27,8 +29,13 @@
 
     <script src="<?=URL::base()?>js/lib/bootstrap/bootstrap-multiselect.js"></script>
     <link href="<?=URL::base()?>css/bootstrap-multiselect.css" rel="stylesheet">
+    <script src="<?=URL::base()?>js/lib/highcharts/highcharts.src.js"></script>
+    <script src="<?=URL::base()?>js/lib/highcharts/exporting.js"></script>
+    <script src="<?=URL::base()?>js/lib/highcharts/no-data-to-display.js"></script>
 
+    <script src="<?=URL::base()?>js/utils.js"></script>
     <script src="<?=URL::base()?>js/app.js"></script>
+    <script src="<?=URL::base()?>js/reports.js"></script>
 
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css" />
     <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js"></script>
@@ -50,7 +57,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body data-url="<?= URL::base()?>">
   <div class="modal fade" id="preloaderModal" tabindex="-1" role="dialog">
       <div id="loading"><img src="<?=URL::base()?>img/loading.gif">Loading...</div>
 
@@ -72,8 +79,9 @@
               <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dashboard <span class="caret"></span></a>
                   <ul class="dropdown-menu">
-                      <li class="<?=Request::current()->controller() == 'Fsa' ? 'active' : ''?>"><a href="<?=URL::base()?>dashboard/fsa">FSA progress</a></li>
-                      <li class="<?=Request::current()->controller() == 'Fsam' ? 'active' : ''?>"><a href="<?=URL::base()?>dashboard/fsam">FSAM progress</a></li>
+                      <li class="<?=Request::current()->controller() == 'Dashboard' && Request::current()->action() == 'reports' ? 'active' : ''?>"><a href="<?=URL::base()?>dashboard/reports">Reports</a></li>
+                      <li class="<?=Request::current()->controller() == 'Dashboard' && Request::current()->action() == 'fsa' ? 'active' : ''?>"><a href="<?=URL::base()?>dashboard/fsa">FSA progress</a></li>
+                      <li class="<?=Request::current()->controller() == 'Dashboard' && Request::current()->action() == 'fsam' ? 'active' : ''?>"><a href="<?=URL::base()?>dashboard/fsam">FSAM progress</a></li>
                   </ul>
               </li>
               <li class="dropdown">

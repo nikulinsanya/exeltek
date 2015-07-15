@@ -31,7 +31,7 @@ class Controller_Imex_Upload extends Controller {
                 fseek($dest, Arr::get($range, 0, 0));
                 $buf = fread($src, $size);
                 fwrite($dest, $buf, $size);
-                
+
                 fclose($dest);
                 fclose($src);
                 unlink($file['tmp_name']);
@@ -55,150 +55,136 @@ class Controller_Imex_Upload extends Controller {
                         'size' => $size,
                     ),
                 ),
+                'header' => isset($header) ? $header : '',
             )));
         }
+
+        $regions = DB::select('id', 'name', 'last_update')->from('regions')->execute()->as_array('id');
         
-        $view = View::factory("Jobs/Upload");
+        $view = View::factory("Jobs/Upload")
+            ->bind('regions', $regions);
         
         $this->response->body($view);
     }
 
-    public function action_start()
-    {
+    public function action_prepare() {
         ini_set("memory_limit", "512M");
-        
+
         define('PRIMARY_KEY', 'Ticket Of Work');
-        
+
         $filename = $this->request->param('id');
-        
+
         if (!$filename || !file_exists(DOCROOT . 'files/' . $filename)) {
             die(json_encode(array(
                 'success' => true,
                 'error' => 'Warning: Import aborted - file not found!',
             )));
         }
-        
-        if (preg_match('/([0-9]{8})_EXEL_([A-Z]*)(_R)?_([SE]OD)/i', $filename, $matches)) {
-            
+
+        $region = 0;
+        $last_update = 0;
+        $time = '';
+        $date = 0;
+        if (preg_match('/([0-9]{8})_EXEL_([A-Z]*)(_R)?_([SE]OD)/i', strtoupper($filename), $matches)) {
             $date = $matches[1];
             $region = $matches[2];
-            $reg_name = $region;
             $time = $matches[4];
             $date = strtotime($date);
-            if ($time == 'EOD') $date += 18 * 60 * 60;
-            
+
+            switch ($time) {
+                case 'EOD':
+                    $time = 1;
+                    break;
+                case 'SOD':
+                    $time = 0;
+                    break;
+                default:
+                    $time = '';
+                    break;
+            }
+
             $result = DB::select()->from('regions')->where('name', '=', $region)->execute()->current();
             if ($result) {
                 $region = Arr::get($result, 'id');
-                
-                $old = Arr::get($result, 'last_update');
-                
-                if ($old >= $date && !isset($_GET['force']))
-                    $forced = array(
-                        'link' => URL::base() . $this->request->uri() . URL::query(array('force' => 1)),
-                        'message' => 'Warning: Newer file (' . date('Y-m-d H:i', $old) . ') was already imported! Do you want to proceed import with older file?',
-                    );
-            }
-        } else {
-            if (Kohana::$environment == Kohana::PRODUCTION) unlink(DOCROOT . 'files/' . $filename);
-            
-            die(json_encode(array(
-                'success' => true,
-                'error' => 'Warning: Wrong file name - unable to determine region. Import aborted! Proper file name format: DDMMYYYY_EXEL_ZZZ_TTT.csv, ZZZ - State, TTT - SOD or EOD',
-            )));
+            } elseif ($region == 'PARTIAL')
+                $region = -1;
+            else
+                $region = 0;
         }
-        
-        $file = fopen(DOCROOT . 'files/' . $filename, "r");
-        $headers = fgetcsv($file);
-        $used = array();
-        $primary_key_id = -1;
-        
-        $columns = DB::select('id', 'name', 'type')->from('job_columns')->where('csv', '=', '1')->execute();
-        $column_types = $columns->as_array('id', 'type');
-        $columns = $columns->as_array('id', 'name');
-        
-        $extra = array();
-        $types = array();
 
-        foreach ($headers as $id => $header) {
-            $header = str_replace("(YYYY-MM-DD)", '', $header);
-            $header = str_replace("(in m)", '', $header);
-            $header = preg_replace("/[^a-z _0-9]/i", ' ', $header);
-            $header = trim(preg_replace("/ +/", ' ', $header));
+        $file = fopen(DOCROOT . '/files/' . $filename, 'r');
+        $header = fgetcsv($file);
+        $total = 0;
+        while (fgetcsv($file) !== false) $total++;
+        fclose($file);
 
-            $key = array_search($header, $columns, true);
+        $columns = array(
+            -1 => 'Ticket Of Work',
+            0 => 'Please, select a column...',
+            -2 => '<<< IGNORE >>>',
+        );
+        $result = DB::select('id', 'name')->from('job_columns')->execute()->as_array('id', 'name');
+        foreach ($result as $key => $value)
+            $columns[$key] = $value;
+        $map = array('ticketofwork' => -1);
+        foreach ($columns as $key => $name)
+            $map[preg_replace('/[^a-z0-9]/', '', strtolower($name))] = $key;
 
-            if ($header == PRIMARY_KEY)
-                $primary_key_id = $id;
-            elseif ($key !== false) {
-                $used[$id] = $key;
-                $types[$id] = $column_types[$key];
-                unset($columns[$key]);
-            } else
-                $extra[$id] = $header;
-        }
-        
-        if ($extra || $columns) {
-            if (count($extra) == count($columns)) {
-                if (isset($_GET['replace'])) {
-                    $columns = array_keys($columns);
-                    foreach ($extra as $id => $column) {
-                        $used[$id] = array_shift($columns);
-                    }                    
-                } else {
-                    $list = array();
-                    foreach ($columns as $column) {
-                        $list[] = $column . ' => ' . array_shift($extra);
-                    }
-                    $forced = array(
-                        'link' => URL::base() . $this->request->uri() . URL::query(array('replace' => 1)),
-                        'message' => "Warning! Some fields were renamed:\n" . implode("\n", $list) . "\n" .
-                            'Do you want to force import with replacing renamed fields with original names?',
-                    );
+        foreach ($header as $value) {
+            $id = str_replace("(YYYY-MM-DD)", '', $value);
+            $id = str_replace("(in m)", '', $id);
+            $id = preg_replace('/[^a-z0-9]/', '', strtolower($id));
+            foreach ($columns as $key => $name)
+                if (preg_replace('/[^a-z0-9]/', '', strtolower($name)) == $id) {
+                    unset($columns[$key]);
+                    break;
                 }
-            } else {
-                print_r($extra);
-                //unlink(DOCROOT . 'files/' . $filename);
-                $res = "Warning: Import aborted, data fields mismatch!\n";
-                if ($extra)
-                    $res .= "Missing fields in data file: " . implode(', ', $extra) . "\n";
-                if ($used)
-                    $res .= "Unknown fields in data file: " . implode(', ', array_keys($used)) . "\n";
-                
-                die(json_encode(array(
-                    'success' => true,
-                    'error' => $res,
-                )));
-            }
         }
-        
-        $pos = ftell($file);
-        
-        Session::instance()->set('import-' . $filename . '-fields', $used);
-        Session::instance()->set('import-' . $filename . '-key', $primary_key_id);
-        Session::instance()->delete($filename);
-        
+        $html = '';
+        $matched = 0;
+        foreach ($header as $key => $value) {
+            $id = str_replace("(YYYY-MM-DD)", '', $value);
+            $id = str_replace("(in m)", '', $id);
+            $id = preg_replace('/[^a-z0-9]/', '', strtolower($id));
+
+            if (isset($map[$id]))
+                $matched++;
+            else
+                $html .= '<tr class="bg-' . (isset($map[$id]) ? 'success' : 'danger') . '"><td>' . $value . '</td><td>' .
+                    Form::select(NULL, $columns, '', array('class' => 'form-control', 'data-id' => $key))
+                . '</td></tr>';
+        }
+        if ($html)
+            $html = '<table class="table"><tr><th class="col-xs-4"></th><th class="col-xs-8"></th></tr>' . $html . '</table>';
+        else
+            $html = '<h4 class="text-success">All columns are matched - you can proceed to import</h4>';
+
+        $html = '<h3 class="text-success">Columns matched: ' . $matched . '/' . count($header) . '. Total tickets: ' . $total . '</h3>' . $html;
+
         die(json_encode(array(
             'success' => true,
-            'filename' => $filename,
-            'import_name' => $reg_name . '_' . date('Ymd', $date) . '_' . $time,
-            'position' => $pos,
-            'forced' => isset($forced) ? $forced : '',
-            'time' => 0,
-            'memory' => memory_get_peak_usage(true),
-            'inserted' => 0,
-            'updated' => 0,
-            'deleted' => 0,
-            'skipped' => 0,
-            'progress' => 0,
-            'done' => 0,
+            'region' => $region,
+            'date' => $date ? date('d-m-Y', $date) : '',
+            'tod' => $time,
+            'html' => $html,
         )));
-
     }
-    
+
     public function action_process() {
-        $pos = Arr::get($_GET, 'pos');
-        if (!$pos) die('Error: file position not defined!');
+        if (!isset($_POST['pos'])) die('Error: file position not defined!');
+
+        $pos = $_POST['pos'];
+
+        $region = Arr::get($_POST, 'region', 0);
+        $date = strtotime(Arr::get($_POST, 'date'));
+        $tod = Arr::get($_POST, 'tod', 0);
+        if ($tod) $date += 18 * 60 * 60;
+        $time = $tod ? 'EOD' : 'SOD';
+
+        if ($region > 0)
+            $reg_name = DB::select('name')->from('regions')->where('id', '=', $region)->execute()->get('name');
+        else
+            $reg_name = 'PARTIAL';
 
         ini_set("memory_limit", "512M");
         
@@ -210,45 +196,77 @@ class Controller_Imex_Upload extends Controller {
                 'error' => 'Warning: Import aborted - file not found!',
             )));
         }
-        
-        $partial = false;
-        
-        if (preg_match('/([0-9]{8})_EXEL_([A-Z]*)(_R)?_([SE]OD)/i', $filename, $matches)) {
-            
-            $date = $matches[1];
-            $region = $matches[2];
-            $reg_name = $region;
-            $time = $matches[4];
 
-            $date = strtotime($date);
-            if ($time == 'EOD') $date += 18 * 60 * 60;
-            
-            $result = DB::select()->from('regions')->where('name', '=', $region)->execute()->current();
-            if ($result) {
-                $region = Arr::get($result, 'id');
-                DB::update('regions')->set(array('last_update' => $date))->where('id', '=', $region)->execute();
-            } elseif (!isset($_GET['partial'])) {
-                $region = array(
-                    'name' => $region,
-                    'last_update' => $date,
-                );
-                $result = DB::insert('regions', array_keys($region))->values(array_values($region))->execute();
-                $region = strval(Arr::get($result, 0));
-            }
-        } else {
-            if (Kohana::$environment == Kohana::PRODUCTION) unlink(DOCROOT . 'files/' . $filename);
+        $file = fopen(DOCROOT . '/files/' . $filename, 'r');
+        $header = fgetcsv($file);
 
-            die(json_encode(array(
-                'success' => true,
-                'error' => 'Warning: Wrong file name - unable to determine region. Import aborted! Proper file name format: DDMMYYYY_EXEL_ZZZ_TTT.csv, ZZZ - State, TTT - SOD or EOD',
-            )));
+        $columns = array(
+            -1 => 'Ticket Of Work',
+            0 => 'Please, select a column...',
+            -2 => '<<< IGNORE >>>',
+        );
+        $result = DB::select('id', 'name')->from('job_columns')->execute()->as_array('id', 'name');
+        foreach ($result as $key => $value)
+            $columns[$key] = $value;
+        $map = array('ticketofwork' => -1);
+        foreach ($result as $key => $name) {
+            $id = preg_replace('/[^a-z0-9]/', '', strtolower($name));
+            if (isset($map[$id]))
+                if (is_array($map[$id]))
+                    $map[$id][] = $key;
+                else
+                    $map[$id] = array($map[$id], $key);
+            else
+                $map[$id] = $key;
         }
 
-        $file = fopen(DOCROOT . 'files/' . $filename, "r");
-        fseek($file, $pos);
-        
-        $keys = Session::instance()->get('import-' . $filename . '-fields');
-        $primary_key_id = Session::instance()->get('import-' . $filename . '-key');
+        foreach ($header as $value) {
+            $id = str_replace("(YYYY-MM-DD)", '', $value);
+            $id = str_replace("(in m)", '', $id);
+            $id = preg_replace('/[^a-z0-9]/', '', strtolower($id));
+            foreach ($columns as $key => $name)
+                if (preg_replace('/[^a-z0-9]/', '', strtolower($name)) == $id) {
+                    unset($columns[$key]);
+                    break;
+                }
+        }
+
+        $keys = array();
+        $data = Arr::get($_POST, 'data', array());
+        foreach ($header as $key => $value) {
+            $id = str_replace("(YYYY-MM-DD)", '', $value);
+            $id = str_replace("(in m)", '', $id);
+            $id = preg_replace('/[^a-z0-9]/', '', strtolower($id));
+
+            if (isset($map[$id])) {
+                if (is_array($map[$id])) {
+                    $keys[$key] = array_shift($map[$id]);
+                    if (!$map[$id]) unset($map[$id]);
+                } else {
+                    $keys[$key] = $map[$id];
+                    unset($map[$id]);
+                }
+            } else
+                if (isset($data[$key]) && isset ($columns[$data[$key]]))
+                    $keys[$key] = $data[$key];
+        }
+
+        if (count($keys) != count($header)) die(json_encode(array(
+            'success' => true,
+            'error' => 'Error: Unable to map all columns!',
+        )));
+
+        $primary_key_id = -1;
+        foreach ($keys as $key => $id)
+            if ($id == -1) $primary_key_id = $key;
+
+        if ($primary_key_id < 0) die(json_encode(array(
+            'success' => true,
+            'error' => 'Error: Unable to map Ticket ID!',
+        )));
+        else unset($keys[$primary_key_id]);
+
+        if ($pos) fseek($file, $pos);
         
         $types = DB::select('id', 'type')->from('job_columns')->where('csv', '=', 1)->execute()->as_array('id', 'type');
         
@@ -260,17 +278,12 @@ class Controller_Imex_Upload extends Controller {
         $skipped = 0;
         $deleted = 0;
         
-        $values = array();
-        $existing = array();
-        $updates = array();
-        $done = false;
-
         $jobs = Database_Mongo::collection('jobs');
         $archive = Database_Mongo::collection('archive');
-        
+
         $ids = Session::instance()->get($filename);
         
-        if ($ids === NULL || isset($_GET['reset'])) {
+        if ($region > 0 && $ids === NULL && !$pos) {
             $result = $jobs->find(array('region' => $region), array('_id'));
             $ids = array();
             while ($row = $result->next()) {
@@ -286,11 +299,11 @@ class Controller_Imex_Upload extends Controller {
                 try {
                     unset($row[$primary_key_id]);
                     $data = array();
-                    foreach ($row as $key => $value) if ($value) {
-                        switch ($types[$keys[$key]]) {
+                    foreach ($row as $key => $value) if ($keys[$key] > 0) {
+                        switch (Columns::get_type($keys[$key])) {
                             case 'date':
                             case 'datetime':
-                                $value = strtotime(str_replace('/', '-', $value));
+                                $value = $value ? strtotime(str_replace('/', '-', $value)) : '';
                                 break;
                             case 'int':
                                 $value = intval($value);
@@ -310,65 +323,69 @@ class Controller_Imex_Upload extends Controller {
                     if ($job) {
                         $diff = array();
                         $new = array();
-                        foreach ($data as $key => $value) if (Columns::get_csv($key)) {
-                            if (!isset($job['data'][$key]) || $job['data'][$key] != $value) {
-                                $new['data.' . $key] = $value;
+                        foreach ($data as $key => $value) {
+                            $old = Arr::get($job['data'], $key, '');
+                            if (($old || $value) && $old != $value) {
+                                if (!Columns::get_persistent($key))
+                                    if ($value)
+                                        $new['$set']['data.' . $key] = $value;
+                                    else
+                                        $new['$unset']['data.' . $key] = 1;
                                 $diff[$key] = array(
                                     'old_value' => Arr::get($job['data'], $key),
-                                    'new_value' => $value,
+                                    'new_value' => $value ? : '',
                                 );
                             }
-                            unset($job['data'][$key]);
                         }
-                        foreach ($job['data'] as $key => $value) if (Columns::get_csv($key)) if ($value) {
-                            $diff[$key] = array(
-                                'old_value' => $value,
-                                'new_value' => NULL,
-                            );
-                            $new['data.' . $key] = NULL;
-                        }
-
                         if ($diff) {
-                            $new['last_update'] = time();
-                            $jobs->update(array('_id' => $id), array('$set' => $new));
-                            $archive->insert(array(
-                                'job_key' => $id,
-                                'update_time' => time(),
-                                'update_type' => 2,
-                                'user_id' => User::current('id'),
-                                'filename' => $reg_name . '_' . date('Ymd', $date) . '_' . $time,
-                                'static' => array_intersect_key($data, $static),
-                                'data' => $diff,
-                                'fields' => array_keys($diff),
-                            ));
-                            $updated++;
+                            if (isset($data[44])) {
+                                $status = preg_replace('/[^a-z]/', '', strtolower(Arr::path($diff, '44.old_value')));
+                                $status2 = preg_replace('/[^a-z]/', '', strtolower(Arr::get($new, 'data.44')));
+                                $status_updated = isset($new['data.44']);
 
-                            $status = preg_replace('/[^a-z]/', '', strtolower(Arr::path($diff, '44.old_value')));
-                            $status2 = preg_replace('/[^a-z]/', '', strtolower(Arr::get($new, 'data.44')));
-                            $status_updated = isset($new['data.44']);
+                                $discrepancy = array();
+                                if ($status_updated && (($status == 'tested' && $status2 != 'tested') || ($status == 'built' && ($status2 != 'built' && $status2 != 'tested')) ||
+                                        ($status != $status2 && in_array($status2, array('deferred', 'dirty', 'heldnbn'), true)))
+                                )
+                                    $discrepancy[44] = $diff[44];
 
-                            $discrepancy = array();
-                            if ($status_updated && (($status == 'tested' && $status2 != 'tested') || ($status == 'built' && ($status2 != 'built' && $status2 != 'tested')) ||
-                                    ($status != $status2 && in_array($status2, array('deferred', 'dirty', 'heldnbn'), true)))
-                            )
-                                $discrepancy[44] = $diff[44];
+                                foreach (Columns::get_track() as $key) if (isset($diff[$key]) && !$diff[$key]['new_value'] && $diff[$key]['old_value'])
+                                    $discrepancy[$key] = $diff[$key];
 
-                            foreach (Columns::get_track() as $key) if (isset($diff[$key]) && !$diff[$key]['new_value'] && $diff[$key]['old_value'])
-                                $discrepancy[$key] = $diff[$key];
+                                if ($discrepancy) {
+                                    Database_Mongo::collection('discrepancies')->insert(array(
+                                        'job_key' => $id,
+                                        'update_time' => time(),
+                                        'user_id' => User::current('id'),
+                                        'filename' => $reg_name . '_' . date('Ymd', $date) . '_' . $time,
+                                        'data' => $discrepancy,
+                                        'fields' => array_keys($discrepancy),
+                                    ));
 
-                            if ($discrepancy) {
-                                Database_Mongo::collection('discrepancies')->insert(array(
+                                }
+                            }
+                            if ($new) {
+                                $new['$set']['last_update'] = time();
+                                $jobs->update(array('_id' => $id), $new);
+
+                                foreach (array_keys($diff) as $key)
+                                    if (Columns::get_persistent($key))
+                                        unset($diff[$key]);
+
+                                $archive->insert(array(
                                     'job_key' => $id,
                                     'update_time' => time(),
+                                    'update_type' => 2,
                                     'user_id' => User::current('id'),
                                     'filename' => $reg_name . '_' . date('Ymd', $date) . '_' . $time,
-                                    'data' => $discrepancy,
-                                    'fields' => array_keys($discrepancy),
+                                    'static' => array_intersect_key($data, $static),
+                                    'data' => $diff,
+                                    'fields' => array_keys($diff),
                                 ));
-
-                            }
+                                $updated++;
+                            } else $skipped++;
                         } else $skipped++;
-                    } elseif (!isset($_GET['partial'])) {
+                    } elseif ($region > 0) {
                         $inserted++;
                         $job = array(
                             '_id' => $id,
@@ -392,7 +409,8 @@ class Controller_Imex_Upload extends Controller {
 
                     unset($ids[$id]);
                 } catch (Exception $e) {
-
+                    print_r($e);
+                    die();
                 }
             }
             
@@ -403,7 +421,7 @@ class Controller_Imex_Upload extends Controller {
         
         $finished = filesize(DOCROOT . '/files/' . $filename) == $pos ? 1 : 0;
         if ($finished) {
-            if ($ids && !isset($_GET['partial'])) {
+            if ($ids && $region > 0 && !isset($_POST['skip-deleted'])) {
                 $result = $archive->find(
                     array('job_key' => array('$in' => array_keys($ids))),
                     array('job_key', 'update_type', 'update_time')
@@ -453,6 +471,10 @@ class Controller_Imex_Upload extends Controller {
             'progress' => $finished ? 100 : number_format($pos * 100/ filesize(DOCROOT . '/files/' . $filename)),
             'done' => $finished,
         );
+        if ($finished) {
+            $result['import_name'] = $reg_name . '_' . date('Ymd', $date) . '_' . $time;
+            DB::update('regions')->set(array('last_update' => $date))->where('id', '=', $region)->execute();
+        }
         
         die(json_encode($result));
     }

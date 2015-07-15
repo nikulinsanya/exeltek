@@ -63,7 +63,7 @@ class Controller_Dashboard extends Controller {
         $companies = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
         $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
 
-        if (!Group::current('allow_assign')) {
+        if (!Group::current('show_all_jobs')) {
             $query['$or'] = array(
                 array('companies' => intval(User::current('company_id'))),
                 array('ex' => intval(User::current('company_id'))),
@@ -167,5 +167,149 @@ class Controller_Dashboard extends Controller {
             ->bind('regions', $regions);
 
         $this->response->body($view);
+    }
+
+    public function action_reports() {
+        $query = array();
+
+        $companies = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
+        $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
+
+        if (!Group::current('allow_assign')) {
+            $query['$or'] = array(
+                array('companies' => intval(User::current('company_id'))),
+                array('ex' => intval(User::current('company_id'))),
+            );
+        } else {
+            if (Arr::get($_GET, 'company') && isset($companies[$_GET['company']]))
+                $query['$or'] = array(
+                    array('companies' => intval($_GET['company'])),
+                    array('ex' => intval($_GET['company'])),
+                );
+            if (Arr::get($_GET, 'region') && isset($regions[$_GET['region']]))
+                $query['region'] = strval($_GET['region']);
+
+        }
+
+        $fsa = $this->group_jobs('data.12', $query);
+
+        $view = View::factory('Dashboard/Reports')
+            ->bind('fsa', $fsa)
+            ->bind('companies', $companies)
+            ->bind('regions', $regions);
+
+        $this->response->body($view);
+    }
+
+    public function action_api() {
+        $type = Arr::get($_GET, 'type');
+        $range = array();
+        if (Arr::get($_GET, 'start')) $range['$gte'] = strtotime($_GET['start']);
+        if (Arr::get($_GET, 'end')) $range['$lte'] = strtotime($_GET['end']) + 86399;
+
+        $filter = array();
+
+        if (!Group::current('show_all_jobs')) {
+            $filter = array('$or' => array(
+                array('companies' => intval(User::current('company_id'))),
+                array('ex' => intval(User::current('company_id'))),
+            ));
+        }
+
+        switch ($type) {
+            case 'companies':
+                $companies = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
+                $result = Database_Mongo::collection('jobs')->find($filter, array('data.44' => 1, 'companies' => 1, 'ex' => 1));
+                $list = array();
+                $total = array();
+                foreach ($result as $job) {
+                    $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', strtolower(Arr::path($job, 'data.44'))))) ? : 'Unknown';
+
+                    $total[$key] = Arr::get($total, $key, 0) + 1;
+
+                    foreach (Arr::get($job, 'companies', array()) as $company) if (Group::current('show_all_jobs') || $company == User::current('company_id'))
+                        $list[$company][$key] = Arr::path($list, array($company, $key)) + 1;
+
+                    foreach (Arr::get($job, 'ex', array()) as $company) if (Group::current('show_all_jobs') || $company == User::current('company_id'))
+                        $list[$company][$key] = Arr::path($list, array($company, $key)) + 1;
+                }
+                $result = array();
+                foreach ($list as $key => $values)
+                    $result[Arr::get($companies, $key, 'Unknown')] = $values;
+                $list = array(
+                    'total' => $total,
+                    'companies' => $result,
+                );
+                break;
+            case 'fsa':
+                $result = Database_Mongo::collection('jobs')->find($filter, array('data.44' => 1, 'data.12' => 1));
+                $list = array();
+                foreach ($result as $job) {
+                    $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', strtolower(Arr::path($job, 'data.44'))))) ? : 'Unknown';
+                    $fsa = Arr::path($job, 'data.12', 'Unknown');
+                    $list[$fsa][$key] = Arr::path($list, array($fsa, $key)) + 1;
+                }
+                break;
+            case 'fsam':
+                $fsa = strval(Arr::get($_GET, 'fsa', ''));
+                $filter['data.12'] = $fsa;
+                $result = Database_Mongo::collection('jobs')->find($filter, array('data.44' => 1, 'data.13' => 1));
+                $list = array();
+                foreach ($result as $job) {
+                    $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', strtolower(Arr::path($job, 'data.44'))))) ? : 'Unknown';
+                    $fsa = Arr::path($job, 'data.13', 'Unknown');
+                    $list[$fsa][$key] = Arr::path($list, array($fsa, $key)) + 1;
+                }
+                break;
+            default:
+                if ($range) {
+                    if ($filter)
+                        $ids = Database_Mongo::collection('jobs')->distinct('_id', $filter);
+                    else
+                        $ids = array();
+                    $filter = array('$match' => array(
+                        'update_time' => $range,
+                        'fields' => 44,
+                    ));
+                    if ($ids) $filter['$match']['job_key'] = array('$in' => $ids);
+                    $result = Database_Mongo::collection('archive')->aggregate(array(
+                        $filter,
+                        array('$group' => array(
+                            '_id' => '$job_key',
+                            'status' => array('$last' => array('$toLower' => '$data.44.new_value')),
+                        )),
+                    ));
+                    $jobs = array();
+                    foreach ($result['result'] as $item)
+                        $jobs[$item['_id']] = $item['status'];
+
+                    $result = Database_Mongo::collection('jobs')->find(array('created' => $range), array('data.44' => 1));
+                    foreach ($result as $job)
+                        if (!isset($jobs[$job['_id']]))
+                            $jobs[$job['_id']] = strtolower(Arr::path($job, 'data.44'));
+
+                    $list = array();
+                    foreach ($jobs as $item) {
+                        $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', $item))) ? : 'Unknown';
+                        $list[$key] = Arr::get($list, $key, 0) + 1;
+                    }
+                } else {
+                    $query = array();
+                    if ($filter) $query[] = array('$match' => $filter);
+                    $query[] = array('$group' => array(
+                            '_id' => array('$toLower' => '$data.44'),
+                            'count' => array('$sum' => 1),
+                        ));
+                    $result = Database_Mongo::collection('jobs')->aggregate($query);
+                    $list = array();
+                    foreach ($result['result'] as $item) {
+                        $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', $item['_id']))) ? : 'Unknown';
+                        $count = $item['count'];
+                        $list[$key] = Arr::get($list, $key, 0) + $count;
+                    }
+                }
+                break;
+        }
+        die(json_encode($list));
     }
 }

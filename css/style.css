@@ -1,5 +1,6 @@
 @charset "UTF-8";
 @import "media.css";
+@import "reports.css";
 /*
  * jQuery File Upload Plugin CSS Example 8.8.2
  * https://github.com/blueimp/jQuery-File-Upload
@@ -28,6 +29,9 @@ label {
     width: 70px;
     top:50%;
     margin-top: -70px;
+    color: #fff;
+    text-align: center;
+    font-size: 17px;
 }
 
 #loading img{
@@ -53,7 +57,7 @@ label {
 
 .filter-info-container{
     border: 1px solid #ccc;
-    padding: 0px 10px 10px 10px;
+    padding: 10px 10px 10px 10px;
 }
 
 .filter-item{
@@ -144,7 +148,7 @@ table td .multiselect-container input[type=checkbox]{
 }
 
 .green:hover{
-    background: #9dd89e;
+    background: #9dd89e!important;
 }
 
 .lightcyan:nth-child(even){
@@ -155,7 +159,7 @@ table td .multiselect-container input[type=checkbox]{
     background: rgb(210, 253, 253);
 }
 .lightcyan:hover{
-    background: rgb(198, 245, 253);
+    background: rgb(198, 245, 253)!important;
 }
 
 .yellow:nth-child(even){
@@ -165,8 +169,31 @@ table td .multiselect-container input[type=checkbox]{
     background: #f5ffcf;
 }
 .yellow:hover{
-    background: #fafac7;
+    background: #fafac7!important;
 }
+
+.yellow:nth-child(even) .same-yellow{
+    background: #ffc;
+}
+
+.yellow:nth-child(odd) .same-yellow{
+    background: #f5ffcf;
+}
+
+.table>tbody>tr.same-yellow:first-child{
+    border:1px solid #fff!important;
+}
+.table>tbody>tr.same-yellow:first-child th{
+    border: none;
+}
+table.subtable{
+    border:1px solid #fff;
+    margin: 0px;
+}
+.table>tbody>tr.same-yellow>th{
+    background: #FFFFB2!important
+}
+
 
 .lgreen:nth-child(even){
     background: #B8FDB8;
@@ -175,7 +202,7 @@ table td .multiselect-container input[type=checkbox]{
     background: #cfffcc;
 }
 .lgreen:hover{
-    background: #bdf3bd;
+    background: #bdf3bd!important;
 }
 
 
@@ -215,6 +242,11 @@ form.dashboard-form{
     width: auto;
 }
 
+#table-row-details{
+    padding: 5px;
+    max-height: 500px;
+    overflow: auto;
+}
 
 #table-row-details table.table{
     margin-bottom: 0px;
@@ -223,6 +255,17 @@ form.dashboard-form{
 
 #table-row-details table.table td{
     cursor: default;
+    vertical-align: middle;
+}
+
+#table-row-details textarea{
+    min-width: 250px;
+    height: 50px;
+    width: 100%;
+}
+#table-row-details select{
+    min-width: 150px;
+    width: 100%;
 }
 
 #search-table .table-buttons{
@@ -417,7 +460,8 @@ form.view-form  label.checkbox{
     margin-top: -10px;
 }
 
-.date-range-container input[type="text"]{
+.date-range-container input[type="text"],
+.date-range-container select{
     width: 200px;
     text-align: center;
     font-weight: bold;
@@ -562,6 +606,10 @@ table.table>tbody>tr>td{
 
 .badge{
     background-color: #FF8484;
+}
+
+.btn-simple{
+    border: 1px solid #ccc;
 }
 
 .btn .caret {
