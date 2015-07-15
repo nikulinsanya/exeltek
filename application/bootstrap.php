@@ -112,7 +112,7 @@ if (Kohana::$environment == Kohana::PRODUCTION)
  */
 Kohana::init(array(
     'index_file' => false,
-    'base_url'   => (Kohana::$environment == Kohana::PRODUCTION ? '/jobs/' : $_SERVER['HTTP_HOST'] == 'localhost' ? '/exeltek' : '/'),
+    'base_url'   => (Kohana::$environment == Kohana::PRODUCTION ? '/jobs/' : ($_SERVER['HTTP_HOST'] == 'localhost' ? '/exeltek' : '/')),
     'profile'    => Kohana::$environment !== Kohana::PRODUCTION,
 ));
 

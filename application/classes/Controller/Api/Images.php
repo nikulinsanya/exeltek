@@ -38,7 +38,7 @@ class Controller_Api_Images extends Kohana_Controller {
             die(json_encode(array('success' => false, 'error' => 'type required')));
 
         $pos = strrpos($filename, '.');
-        $ext = $pos ? substr($filename, $pos + 1) : '';
+        $ext = $pos ? substr($filename, $pos) : '';
 
         $number = DB::select('numbering')
             ->from('attachments')
