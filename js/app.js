@@ -184,7 +184,7 @@ $(function () {
             $('#div-progress').addClass('hidden');
             $('#upload').removeClass('hidden');
             $('#preloaderModal').modal('hide');
-        },
+        }
     });
     $('#file-region').change(function() {
         var val = $(this).find(':selected').attr('data-date');
@@ -662,6 +662,10 @@ $(function () {
         'core' : {
             'multiple': false,
         },
+        'search': {
+            'show_only_matches': true,
+            'show_only_matches_children': true,
+        },
         'plugins': ['search'],
     }).on('select_node.jstree', function(e, data) {
         if (data.node.data.folder != undefined) {
@@ -825,6 +829,9 @@ $(function () {
         $('.shorten').shorten();
         $('.input-float').numericInput({allowFloat: true, allowNegative: true});
         $('.input-int').numericInput({allowFloat: false, allowNegative: true});
+        $('.datepicker').datepicker({
+            dateFormat: 'dd-mm-yy'
+        });
 
         setSelectize($('.selectize'));
         setMultiselect($('.multiselect'));
@@ -942,6 +949,11 @@ $(function () {
             jobs : collectDataToBatch(),
             username: $('#your-username').val()
         };
+        if(!data.jobs.length){
+            alert('Nothing to send');
+            return;
+        }
+
 
         $('#preloaderModal').modal('show');
         $.ajax({
@@ -1010,6 +1022,8 @@ $(function () {
 
             $('#batchEditModal .edit-tickets-table').html(html.join(''));
 
+            initPlugins();
+
 
             $('#preloaderModal').modal('hide');
             $('#batchEditModal').modal('show');
@@ -1027,17 +1041,21 @@ $(function () {
             child,
             editor,
             container = $('#table-row-details td');
+
         $.each(container, function(){
             child = $(this).children();
             ticketId = $(this).parent().attr('data-id');
             cellId = child.attr('data-id');
             if(!ticketId || !cellId){
-                return false;
+                return true;
             }
 
             rawData[ticketId] = rawData[ticketId] || {};
             editor = child.children();
             rawData[ticketId][cellId] = editor.val();
+            if(utils.isArray(rawData[ticketId][cellId])){
+                rawData[ticketId][cellId] = rawData[ticketId][cellId].join(', ')
+            }
         });
 
         for(i in rawData){

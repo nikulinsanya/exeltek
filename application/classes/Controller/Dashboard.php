@@ -202,10 +202,14 @@ class Controller_Dashboard extends Controller {
     }
 
     public function action_api() {
+        header('Content-type: application/json');
+
         $type = Arr::get($_GET, 'type');
         $range = array();
         if (Arr::get($_GET, 'start')) $range['$gte'] = strtotime($_GET['start']);
         if (Arr::get($_GET, 'end')) $range['$lte'] = strtotime($_GET['end']) + 86399;
+
+        $separate = strtolower(Arr::get($_GET, 'sep'));
 
         $filter = array();
 
@@ -262,37 +266,70 @@ class Controller_Dashboard extends Controller {
                 }
                 break;
             default:
-                if ($range) {
-                    if ($filter)
-                        $ids = Database_Mongo::collection('jobs')->distinct('_id', $filter);
-                    else
-                        $ids = array();
+                if ($range || $separate == 'd' || $separate == 'w' || $separate == 'm') {
+                    $jobs = array();
+                    $result = Database_Mongo::collection('jobs')->find($filter, array('data.44' => 1, 'created' => 1));
+                    $ids = array();
+                    $start = Arr::get($range, '$gte');
+                    $end = Arr::get($range, '$lte');
+
+                    foreach ($result as $job) {
+                        if ($filter) $ids[] = $job['_id'];
+                        if ((!$start || $start <= $job['created']) && (!$end || $end >= $job['created']))
+                            $jobs[$job['_id']] = array(
+                                's' => strtolower(Arr::path($job, 'data.44')),
+                                't' => $job['created'],
+                            );
+                    }
+
                     $filter = array('$match' => array(
-                        'update_time' => $range,
                         'fields' => 44,
                     ));
+                    if ($range) $filter['$match']['update_time'] = $range;
+
                     if ($ids) $filter['$match']['job_key'] = array('$in' => $ids);
+
                     $result = Database_Mongo::collection('archive')->aggregate(array(
                         $filter,
+                        array('$sort' => array('update_time' => 1)),
                         array('$group' => array(
                             '_id' => '$job_key',
+                            'date' => array('$last' => '$update_time'),
                             'status' => array('$last' => array('$toLower' => '$data.44.new_value')),
                         )),
                     ));
-                    $jobs = array();
-                    foreach ($result['result'] as $item)
-                        $jobs[$item['_id']] = $item['status'];
 
-                    $result = Database_Mongo::collection('jobs')->find(array('created' => $range), array('data.44' => 1));
-                    foreach ($result as $job)
-                        if (!isset($jobs[$job['_id']]))
-                            $jobs[$job['_id']] = strtolower(Arr::path($job, 'data.44'));
+                    foreach ($result['result'] as $item)
+                        $jobs[$item['_id']] = array(
+                            's' => $item['status'],
+                            't' => $item['date'],
+                        );
 
                     $list = array();
+                    $date = false;
                     foreach ($jobs as $item) {
-                        $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', $item))) ? : 'Unknown';
-                        $list[$key] = Arr::get($list, $key, 0) + 1;
+                        $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', $item['s']))) ? : 'Unknown';
+
+                        switch ($separate) {
+                            case 'm':
+                                $date = date('Y-m', $item['t']);
+                                break;
+                            case 'w':
+                                $date = date('Y-W', $item['t']);
+                                break;
+                            case 'd':
+                                $date = date('Y-m-d', $item['t']);
+                                break;
+                            default:
+                                $date = false;
+                                break;
+                        }
+                        if ($date)
+                            $list[$date][$key] = Arr::path($list, array($date, $key), 0) + 1;
+                        else
+                            $list[$key] = Arr::get($list, $key, 0) + 1;
                     }
+                    if ($date) ksort($list);
                 } else {
                     $query = array();
                     if ($filter) $query[] = array('$match' => $filter);

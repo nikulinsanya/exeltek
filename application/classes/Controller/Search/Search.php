@@ -62,10 +62,20 @@ class Controller_Search_Search extends Controller {
         }
 
         if (Group::current('show_all_jobs')) {
-            if (Arr::get($_GET, 'company'))
-                $list_query['companies'] = $query['companies'] = intval($_GET['company']);
-            if (Arr::get($_GET, 'ex'))
-                $list_query['ex'] = $query['ex'] = intval($_GET['ex']);
+            if (Arr::get($_GET, 'company')) {
+                $companies = explode(',', $_GET['company']);
+                if (count($companies) > 1) {
+                    $list_query['companies'] = $query['companies'] = array('$in' => array_map("intval", $companies));
+                } else
+                    $list_query['companies'] = $query['companies'] = intval($_GET['company']);
+            }
+            if (Arr::get($_GET, 'ex')) {
+                $companies = explode(',', $_GET['ex']);
+                if (count($companies) > 1) {
+                    $list_query['ex'] = $query['ex'] = array('$in' => array_map("intval", $companies));
+                } else
+                    $list_query['ex'] = $query['ex'] = intval($_GET['ex']);
+            }
         } else {
             if (Arr::get($_GET, 'status', -1) == 0) {
                 $list_query['ex'] = $query['ex'] = intval(User::current('company_id'));

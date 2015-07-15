@@ -1,7 +1,11 @@
 window.utils = (function() {
     var batchFields = {
+        'float': '<div data-id="%ID%" data-type="%TYPE%"><input class="input-float" type="number" step="any" value="%VALUE%"></div>',
         'text': '<div data-id="%ID%" data-type="%TYPE%"><textarea>%VALUE%</textarea></div>',
-        'list': '<div data-id="%ID%" data-type="%TYPE%"><select>%OPTIONS%</select></div>'
+        'string': '<div data-id="%ID%" data-type="%TYPE%"><input type="text" value="%VALUE%"></div>',
+        'date': '<div data-id="%ID%" data-type="%TYPE%"><input class="datepicker" type="text" value="%VALUE%"></div>',
+        'list': '<div data-id="%ID%" data-type="%TYPE%"><select>%OPTIONS%</select></div>',
+        'multi': '<div data-id="%ID%" data-type="%TYPE%"><select class="multiselect" multiple="multiple">%OPTIONS%</select></div>'
     };
 
     var utils = {
@@ -23,10 +27,30 @@ window.utils = (function() {
         getFieldByType: function(value, data, id){
             var j,field,
                 html,
+                multiValues,
                 valueFound = !data[id],
                 fields = this.batchFields;
+
             switch (value.type){
+                case 'date':
+                    field = fields[value.type];
+                    field = field.replace('%VALUE%', data[id] || '');
+                    field = field.replace('%ID%', id);
+                    field = field.replace('%TYPE%', value.type);
+                    break;
+                case 'float':
+                    field = fields[value.type];
+                    field = field.replace('%VALUE%', data[id] || '');
+                    field = field.replace('%ID%', id);
+                    field = field.replace('%TYPE%', value.type);
+                    break;
                 case 'text':
+                    field = fields[value.type];
+                    field = field.replace('%VALUE%', data[id] || '');
+                    field = field.replace('%ID%', id);
+                    field = field.replace('%TYPE%', value.type);
+                    break;
+                case 'string':
                     field = fields[value.type];
                     field = field.replace('%VALUE%', data[id] || '');
                     field = field.replace('%ID%', id);
@@ -42,9 +66,10 @@ window.utils = (function() {
                     while(j--){
                         options.unshift(
                             '<option value="',
-                            (data[id] ? (data[id] == value.values[j] ? 'selected' : ''): ''),
                             value.values[j],
-                            '">',
+                            '" ',
+                            (data[id] ? (data[id] == value.values[j] ? 'selected' : ''): ''),
+                            '>',
                             value.values[j],
                             '</option>'
                         )
@@ -62,9 +87,34 @@ window.utils = (function() {
                     field = field.replace('%OPTIONS%',options.join(''));
 
                     break;
+                case 'multi':
+                    var options = [];
+                    field = fields[value.type];
+                    field = field.replace('%ID%', id);
+                    field = field.replace('%TYPE%', value.type);
+                    multiValues = data[id] ? data[id].split(', ') : [];
+                    j = value.values.length;
+                    while(j--){
+                        options.unshift(
+                            '<option value="',
+                            value.values[j],
+                            '" ',
+                            (data[id] ? (multiValues.indexOf(value.values[j]) != -1 ? 'selected' : ''): ''),
+                            '>',
+                            value.values[j],
+                            '</option>'
+                        )
+                    }
+
+                    field = field.replace('%OPTIONS%',options.join(''));
+
+                    break;
                 default:
             }
             return field;
+        },
+        isArray: function(variable){
+            return variable instanceof Array;
         }
     };
     return utils;

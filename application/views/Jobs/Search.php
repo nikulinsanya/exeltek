@@ -314,7 +314,11 @@
         <?php endif;?>
 
         <?php if (isset($columns['companies'])):?>
-        <th class="hidden-sm hidden-xs">Assigned companies</th>
+            <th class="hidden-sm hidden-xs">Assigned companies</th>
+        <?php endif;?>
+
+        <?php if (isset($columns['ex'])):?>
+            <th class="hidden-sm hidden-xs">Previously assigned companies</th>
         <?php endif;?>
 
         <?php if (isset($columns['settings'])):?>
@@ -406,7 +410,11 @@
         <?php endif;?>
 
         <?php if (isset($columns['companies'])):?>
-        <td class="hidden-sm hidden-xs"><?=HTML::chars(implode(', ', array_intersect_key($companies, array_flip(Arr::get($ticket, 'assigned', array())))))?></td>
+            <td class="hidden-sm hidden-xs"><?=HTML::chars(implode(', ', array_intersect_key($companies, array_flip(Arr::get($ticket, 'assigned', array())))))?></td>
+        <?php endif;?>
+
+        <?php if (isset($columns['ex'])):?>
+            <td class="hidden-sm hidden-xs"><?=HTML::chars(implode(', ', array_intersect_key($companies, array_flip(Arr::get($ticket, 'ex', array())))))?></td>
         <?php endif;?>
 
         <?php if (isset($columns['settings'])):?>
