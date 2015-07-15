@@ -949,6 +949,11 @@ $(function () {
             jobs : collectDataToBatch(),
             username: $('#your-username').val()
         };
+        if(!data.jobs.length){
+            alert('Nothing to send');
+            return;
+        }
+
 
         $('#preloaderModal').modal('show');
         $.ajax({
