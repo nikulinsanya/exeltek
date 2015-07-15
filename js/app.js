@@ -993,6 +993,7 @@ $(function () {
 
             //fill table row
             html.push('<tr>');
+            html.push('<th>Ticket</th>');
             for (i in data.columns){
                 html.push(
                     '<th>',
@@ -1004,6 +1005,7 @@ $(function () {
             //fill table colls
             for (j in rows){
                 html.push('<tr data-id="'+j+'">');
+                html.push('<td>',j,'</td>');
                 for (i in data.columns){
                     id = data.columns[i]['id'];
                     html.push('<td>');
