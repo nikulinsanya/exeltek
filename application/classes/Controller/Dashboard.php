@@ -227,10 +227,10 @@ class Controller_Dashboard extends Controller {
 
                     $total[$key] = Arr::get($total, $key, 0) + 1;
 
-                    foreach (Arr::get($job, 'companies', array()) as $company)
+                    foreach (Arr::get($job, 'companies', array()) as $company) if (Group::current('show_all_jobs') || $company == User::current('company_id'))
                         $list[$company][$key] = Arr::path($list, array($company, $key)) + 1;
 
-                    foreach (Arr::get($job, 'ex', array()) as $company)
+                    foreach (Arr::get($job, 'ex', array()) as $company) if (Group::current('show_all_jobs') || $company == User::current('company_id'))
                         $list[$company][$key] = Arr::path($list, array($company, $key)) + 1;
                 }
                 $result = array();

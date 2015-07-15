@@ -662,6 +662,10 @@ $(function () {
         'core' : {
             'multiple': false,
         },
+        'search': {
+            'show_only_matches': true,
+            'show_only_matches_children': true,
+        },
         'plugins': ['search'],
     }).on('select_node.jstree', function(e, data) {
         if (data.node.data.folder != undefined) {
@@ -1027,12 +1031,13 @@ $(function () {
             child,
             editor,
             container = $('#table-row-details td');
+
         $.each(container, function(){
             child = $(this).children();
             ticketId = $(this).parent().attr('data-id');
             cellId = child.attr('data-id');
             if(!ticketId || !cellId){
-                return false;
+                return true;
             }
 
             rawData[ticketId] = rawData[ticketId] || {};

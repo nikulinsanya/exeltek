@@ -22,6 +22,7 @@ class Columns {
         'status' => 'Job status',
         'types' => 'Assigned job types',
         'companies' => 'Assigned companies',
+        'ex' => 'Previously assigned companies',
         'settings' => 'Job settings',
         'pending' => 'Pending submissions',
         'attachments' => 'Attachments',
