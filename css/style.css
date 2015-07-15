@@ -245,6 +245,7 @@ form.dashboard-form{
 #table-row-details{
     padding: 5px;
     max-height: 500px;
+    min-height: 300px;
     overflow: auto;
 }
 
@@ -263,9 +264,18 @@ form.dashboard-form{
     height: 50px;
     width: 100%;
 }
-#table-row-details select{
-    min-width: 150px;
+#table-row-details select,
+#table-row-details input[type="text"],
+#table-row-details input[type="number"]{
+    min-width: 100px;
     width: 100%;
+    padding: 10px 5px;
+}
+
+#table-row-details .multiselect-selected-text{
+    max-width: 200px;
+    overflow: hidden;
+    display: inline-block;
 }
 
 #search-table .table-buttons{

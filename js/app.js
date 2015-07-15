@@ -184,7 +184,7 @@ $(function () {
             $('#div-progress').addClass('hidden');
             $('#upload').removeClass('hidden');
             $('#preloaderModal').modal('hide');
-        },
+        }
     });
     $('#file-region').change(function() {
         var val = $(this).find(':selected').attr('data-date');
@@ -829,6 +829,9 @@ $(function () {
         $('.shorten').shorten();
         $('.input-float').numericInput({allowFloat: true, allowNegative: true});
         $('.input-int').numericInput({allowFloat: false, allowNegative: true});
+        $('.datepicker').datepicker({
+            dateFormat: 'dd-mm-yy'
+        });
 
         setSelectize($('.selectize'));
         setMultiselect($('.multiselect'));
@@ -1014,6 +1017,8 @@ $(function () {
 
             $('#batchEditModal .edit-tickets-table').html(html.join(''));
 
+            initPlugins();
+
 
             $('#preloaderModal').modal('hide');
             $('#batchEditModal').modal('show');
@@ -1043,6 +1048,9 @@ $(function () {
             rawData[ticketId] = rawData[ticketId] || {};
             editor = child.children();
             rawData[ticketId][cellId] = editor.val();
+            if(utils.isArray(rawData[ticketId][cellId])){
+                rawData[ticketId][cellId] = rawData[ticketId][cellId].join(', ')
+            }
         });
 
         for(i in rawData){
