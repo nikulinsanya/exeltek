@@ -15,6 +15,8 @@ class Controller_Search_Batch extends Controller
                 $columns = DB::select('id')->from('job_columns')->where('editable', '=', 1)->execute()->as_array(NULL, 'id');
                 $data = array();
 
+                $result['columns'] = array();
+
                 foreach ($columns as $column) {
                     $value = array(
                         'id' => intval($column),
