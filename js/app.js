@@ -1027,12 +1027,13 @@ $(function () {
             child,
             editor,
             container = $('#table-row-details td');
+
         $.each(container, function(){
             child = $(this).children();
             ticketId = $(this).parent().attr('data-id');
             cellId = child.attr('data-id');
             if(!ticketId || !cellId){
-                return false;
+                return true;
             }
 
             rawData[ticketId] = rawData[ticketId] || {};
