@@ -662,6 +662,10 @@ $(function () {
         'core' : {
             'multiple': false,
         },
+        'search': {
+            'show_only_matches': true,
+            'show_only_matches_children': true,
+        },
         'plugins': ['search'],
     }).on('select_node.jstree', function(e, data) {
         if (data.node.data.folder != undefined) {
