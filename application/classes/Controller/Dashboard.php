@@ -285,7 +285,7 @@ class Controller_Dashboard extends Controller {
                     $filter = array('$match' => array(
                         'fields' => 44,
                     ));
-                    if ($range) $filter['update_time'] = $range;
+                    if ($range) $filter['$match']['update_time'] = $range;
 
                     if ($ids) $filter['$match']['job_key'] = array('$in' => $ids);
 
