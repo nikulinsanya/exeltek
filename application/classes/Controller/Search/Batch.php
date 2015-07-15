@@ -46,6 +46,8 @@ class Controller_Search_Batch extends Controller
 
                     $jobs = Database_Mongo::collection('jobs')->find($query, $data);
                     foreach ($jobs as $job) {
+                        foreach ($job['data'] as $key => $value)
+                            $job['data'][$key] = Columns::output($value, Columns::get_type($key), true);
                         $job['id'] = $job['_id'];
                         unset($job['_id']);
                         $values[] = $job;
