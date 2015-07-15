@@ -10,9 +10,10 @@ class Controller_Search_Batch extends Controller
 
         $result = array();
 
+        $columns = DB::select('id')->from('job_columns')->where('editable', '=', 1)->execute()->as_array('id', 'id');
+
         switch ($action) {
             case 'get':
-                $columns = DB::select('id')->from('job_columns')->where('editable', '=', 1)->execute()->as_array(NULL, 'id');
                 $data = array();
 
                 $result['columns'] = array();
@@ -52,7 +53,64 @@ class Controller_Search_Batch extends Controller
                 }
                 $result['jobs'] = $values;
                 break;
-            case 'save':
+            case 'set':
+                if (User::current('login') !== Arr::get($_POST, 'username'))
+                    die('Wrong username! Please, check it and submit data again.');
+
+                $data = Arr::get($_POST, 'jobs');
+                $values = array();
+                foreach ($data as $job) {
+                    $id = strval(Arr::get($job, 'id', ''));
+                    foreach (Arr::get($job, 'data') as $key => $value) if (isset($columns[$key]))
+                        $values[$id][$key] = strval($value);
+                }
+
+                $query = array('_id' => array('$in' => array_keys($values)));
+                if (!Group::current('show_all_jobs'))
+                    $query['companies'] = intval(User::current('company_id'));
+
+                $data = array();
+                foreach ($columns as $column) {
+                    $data['data.' . $column] = 1;
+                }
+
+                $count = 0;
+
+                $jobs = Database_Mongo::collection('jobs')->find($query, $data);
+                foreach ($jobs as $job) if (isset($values[$job['_id']])) {
+                    $id = $job['_id'];
+                    $new = array();
+                    $archive = array();
+                    foreach ($values[$id] as $key => $value) {
+                        $value = $value ? Columns::parse($value, Columns::get_type($key)) : '';
+                        $old = Arr::path($job, 'data.' . $key);
+                        if (($value || $old) && $value != $old) {
+                            if ($value)
+                                $new['$set']['data.' . $key] = $value;
+                            else
+                                $new['$unset']['data.' . $key] = 1;
+
+                            $archive['data'][$key] = array(
+                                'old_value' => $old,
+                                'new_value' => $value,
+                            );
+                        }
+                    }
+                    if ($new) {
+                        $new['$set']['last_update'] = time();
+                        Database_Mongo::collection('jobs')->update(array('_id' => $id), $new);
+                        $archive['fields'] = array_keys($archive['data']);
+                        $archive['job_key'] = $id;
+                        $archive['user_id'] = User::current('id');
+                        $archive['update_time'] = time();
+                        $archive['update_type'] = 2;
+                        $archive['filename'] = 'MANUAL';
+                        Database_Mongo::collection('archive')->insert($archive);
+                        $count++;
+                    }
+                }
+
+                $result = array('success' => true, 'count' => $count);
                 break;
         }
 
