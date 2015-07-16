@@ -481,6 +481,7 @@
     <button type="submit" class="btn btn-success complete-jobs">Complete jobs</button>
     <button type="submit" class="btn btn-primary reset-jobs">Reset jobs</button>
     <button type="button" class="btn btn-success batch-jobs"><span class="glyphicon glyphicon-edit"></span>Batch Edit</button>
+    <button type="button" class="btn btn-primary export-attachments"><span class="glyphicon glyphicon-export"></span>Export Attachments</button>
     <?php endif;?>
     <?php if (Group::current('allow_reports')):?>
     <button type="submit" class="btn btn-info export-jobs"><span class="glyphicon glyphicon-export"></span>Export jobs</button>

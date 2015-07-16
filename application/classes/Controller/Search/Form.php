@@ -96,6 +96,7 @@ class Controller_Search_Form extends Controller {
                     $archive = array();
 
                     foreach ($submissions as $key => $value) if (Columns::get_direct($key)) {
+
                         if (Arr::path($job, 'data.' . $key) != $value) {
                             if ($value)
                                 $update['$set']['data.' . $key] = $value;
@@ -117,11 +118,6 @@ class Controller_Search_Form extends Controller {
                         unset($submission['process_time']);
                         unset($submission['_id']);
                     } else {
-                        $approval = true;
-
-                        if ($status != Enums::STATUS_PENDING)
-                            $status = $update['$set']['status'] = Enums::STATUS_PENDING;
-
                         $submission['key'] = 'data.' . $key;
                         $submission['value'] = $value;
                         $submission['active'] = 1;
@@ -129,10 +125,12 @@ class Controller_Search_Form extends Controller {
                         unset($submission['_id']);
                     }
 
+                    if ($status != Enums::STATUS_PENDING)
+                        $status = $update['$set']['status'] = Enums::STATUS_PENDING;
+
                     if ($update) {
                         $update['$set']['last_update'] = time();
-                        if ($approval)
-                            $update['$set']['last_submit'] = time();
+                        $update['$set']['last_submit'] = time();
                         Database_Mongo::collection('jobs')->update(
                             array('_id' => $id),
                             $update
@@ -149,11 +147,7 @@ class Controller_Search_Form extends Controller {
                             $archive['filename'] = 'MANUAL';
                             Database_Mongo::collection('archive')->insert($archive);
                         }
-                    } elseif ($approval)
-                        Database_Mongo::collection('jobs')->update(
-                            array('_id' => $id),
-                            array('$set' => array('last_submit' => time()))
-                        );
+                    }
                     Messages::save("Changes were succesfully submitted. " . ($approval ? 'Manager will review changes and confirm them.' : ''), 'success');
                 } else {
                     Database::instance()->rollback();

@@ -224,11 +224,6 @@ class Controller_Api_Jobs extends Kohana_Controller {
                         unset($submission['process_time']);
                         unset($submission['_id']);
                     } else {
-                        $approval = true;
-
-                        if ($status != Enums::STATUS_PENDING)
-                            $status = $update['$set']['status'] = Enums::STATUS_PENDING;
-
                         $submission['key'] = 'data.' . $key;
                         $submission['value'] = $value;
                         $submission['active'] = 1;
@@ -237,10 +232,12 @@ class Controller_Api_Jobs extends Kohana_Controller {
                     }
                 }
 
+                if ($status != Enums::STATUS_PENDING)
+                    $update['$set']['status'] = Enums::STATUS_PENDING;
+
                 if ($update) {
                     $update['$set']['last_update'] = time();
-                    if ($approval)
-                        $update['$set']['last_submit'] = time();
+                    $update['$set']['last_submit'] = time();
                     Database_Mongo::collection('jobs')->update(
                         array('_id' => $id),
                         $update
@@ -257,11 +254,7 @@ class Controller_Api_Jobs extends Kohana_Controller {
                         $archive['filename'] = 'MANUAL';
                         Database_Mongo::collection('archive')->insert($archive);
                     }
-                } elseif ($approval)
-                    Database_Mongo::collection('jobs')->update(
-                        array('_id' => $id),
-                        array('$set' => array('last_submit' => time()))
-                    );
+                }
             } else {
                 Database::instance()->rollback();
                 die(json_encode(array('success' => false, 'error' => 'signature problem')));
