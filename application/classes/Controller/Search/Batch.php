@@ -4,6 +4,8 @@ class Controller_Search_Batch extends Controller
 {
     public function action_index()
     {
+        if (!Group::current('allow_assign')) throw new HTTP_Exception_403('Forbidden');
+
         header('Content-type: application/json');
 
         $action = $this->request->param('id');
