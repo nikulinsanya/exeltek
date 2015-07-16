@@ -63,12 +63,27 @@ $values = array(
 <div class="report-block">
     <div class="chart-container full-width" id="tickets-stacked"></div>
 </div>
+    <div class="report-block">
+        <div class="chart_with_list">
+            <div class="chart-container full-width" id="fsa-statuses"></div>
+        </div>
+    </div>
+    <div class="report-block fsam-statuses" style="display:none;">
+        <div class="chart_with_list">
+            <div class="chart-container full-width" id="fsam-statuses"></div>
+        </div>
+    </div>
 
 <?php else:?>
 
     <div class="report-block">
         <div class="chart_with_list">
             <div class="chart-container full-width" id="fsa-statuses"></div>
+        </div>
+    </div>
+    <div class="report-block fsam-statuses" style="display:none;">
+        <div class="chart_with_list">
+            <div class="chart-container full-width" id="fsam-statuses"></div>
         </div>
     </div>
 
