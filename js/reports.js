@@ -83,28 +83,38 @@ $(function () {
 
     function showFSADrillDown(allFSAStatuses){
         var series = [],
+            name,
+            i,
+            rawData = {},
+            upperTickets = uppTickets(allFSAStatuses),
+            categories = [],
             data;
 
-//        debugger;
+        for(i in window.REPORTDATA.allocation.order){
+            name = window.REPORTDATA.allocation.order[i];
+            data = [];
+            categories = [];
 
+            for(j in upperTickets){
+                categories.push(j);
+                data.push({
+                    y: upperTickets[j][name] || 0,
+                    name: name,
+                    color:  window.REPORTDATA.allocation.colorByType[name],
+                    drilldown: j
+                });
+            }
+            rawData[name] = data;
+        }
 
-        series = [{
-            name: 'Things',
-            colorByPoint: true,
-            data: [{
-                name: 'Animals',
-                y: 5,
-                drilldown: true
-            }, {
-                name: 'Fruits',
-                y: 2,
-                drilldown: true
-            }, {
-                name: 'Cars',
-                y: 4,
-                drilldown: true
-            }]
-        }];
+        for(i in window.REPORTDATA.allocation.order){
+            name = window.REPORTDATA.allocation.order[i];
+            series.push({
+                name: name,
+                data: rawData[name]
+            })
+
+        }
 
         $('#fsa-statuses').highcharts({
             chart: {
@@ -112,75 +122,155 @@ $(function () {
                 events: {
                     drilldown: function (e) {
                         if (!e.seriesOptions) {
+                            var fsa = e.point.drilldown,
+                                chart = this,
+                                i, j, k,
+                                upperTickets,
+                                series = [],
+                                rawData = [],
+                                ticketData = [],
+                                rdata = {name:'',data:[]};
+                            chart.showLoading('Loading FSAM progress ...');
 
-                            var chart = this,
-                                drilldowns = {
-                                    'Animals': {
-                                        name: 'Animals',
-                                        data: [
-                                            ['Cows', 2],
-                                            ['Sheep', 3]
-                                        ]
-                                    },
-                                    'Fruits': {
-                                        name: 'Fruits',
-                                        data: [
-                                            ['Apples', 5],
-                                            ['Oranges', 7],
-                                            ['Bananas', 2]
-                                        ]
-                                    },
-                                    'Cars': {
+                            getFSAMStatus(fsa).then(function(data){
+                                chart.hideLoading();
+                                upperTickets = uppTickets(data);
+
+                                for(j in upperTickets){
+                                    rdata.name = j;
+                                    for(k in upperTickets[j]){
+                                        rdata.data.push({
+                                            name:k,
+                                            y: upperTickets[j][k] || 0,
+                                            color:window.REPORTDATA.allocation.colorByType[k]
+                                        });
+                                    }
+                                    ticketData.push(rdata);
+                                }
+
+
+                                var s = {
                                         name: 'Cars',
                                         data: [
                                             ['Toyota', 1],
                                             ['Volkswagen', 2],
                                             ['Opel', 5]
                                         ]
-                                    }
-                                },
-                                series = drilldowns[e.point.name];
+                                }
 
-                            chart.showLoading('Loading FSAM progress ...');
-
-                            setTimeout(function () {
-                                chart.hideLoading();
-                                chart.addSeriesAsDrilldown(e.point, series);
-                            }, 1000);
+                                console.log(ticketData);
+                                chart.addSeriesAsDrilldown(e.point,ticketData[0]);
+                            });
                         }
-
                     }
                 }
             },
             title: {
-                text: 'FSA progress'
-            },
-            subtitle: {
-                text: '(click on chart to see details)'
+                text: 'Basic drilldown'
             },
             xAxis: {
                 type: 'category'
             },
 
             legend: {
-                enabled: false
+                enabled: true
             },
 
             plotOptions: {
                 series: {
                     borderWidth: 0,
-                    dataLabels: {
-                        enabled: true
-                    }
+                    stacking: 'normal'
                 }
             },
 
-            series: series,
+            series: series
+        })
 
-            drilldown: {
-                series: []
-            }
-        });
+
+//        $('#fsa-statuses').highcharts({
+//            chart: {
+//                type: 'column',
+//                events: {
+//                    drilldown: function (e) {
+//                        debugger
+//                        if (!e.seriesOptions) {
+//
+//                            var chart = this,
+//                                drilldowns = {
+//                                    'Animals': {
+//                                        name: 'Animals',
+//                                        data: [
+//                                            ['Cows', 2],
+//                                            ['Sheep', 3]
+//                                        ]
+//                                    },
+//                                    'Fruits': {
+//                                        name: 'Fruits',
+//                                        data: [
+//                                            ['Apples', 5],
+//                                            ['Oranges', 7],
+//                                            ['Bananas', 2]
+//                                        ]
+//                                    },
+//                                    'Cars': {
+//                                        name: 'Cars',
+//                                        data: [
+//                                            ['Toyota', 1],
+//                                            ['Volkswagen', 2],
+//                                            ['Opel', 5]
+//                                        ]
+//                                    }
+//                                },
+//                                series = drilldowns[e.point.name];
+//
+//                            chart.showLoading('Loading FSAM progress ...');
+//
+//                            setTimeout(function () {
+//                                chart.hideLoading();
+//                                chart.addSeriesAsDrilldown(e.point, series);
+//                            }, 1000);
+//                        }
+//
+//                    }
+//                }
+//            },
+//            title: {
+//                text: 'FSA progress'
+//            },
+//            subtitle: {
+//                text: '(click on chart to see details)'
+//            },
+//            xAxis: {
+//                type: 'category',
+//                categories: categories
+//            },
+//
+//            legend: {
+//                enabled: true
+//            },
+//
+//            plotOptions: {
+//                column: {
+//                    stacking: 'normal'
+//                }
+//            },
+//
+//            series: series,
+//
+//            drilldown: {
+//                series: [{
+//                    id: 'cars',
+//                    name: 'Animals',
+//                    data: [
+//                        ['Cats', 4],
+//                        ['Dogs', 2],
+//                        ['Cows', 1],
+//                        ['Sheep', 2],
+//                        ['Pigs', 1]
+//                    ]
+//                }]
+//            }
+//        });
 
 
     }
@@ -418,6 +508,13 @@ $(function () {
     function getAllFSAStatuses(callback){
         return $.ajax({
             url:utils.baseUrl() + "dashboard/api?type=fsa&"+dateParams(),
+            type:'get',
+            dataType:'JSON'
+        })
+    }
+    function getFSAMStatus(fsa){
+        return $.ajax({
+            url:utils.baseUrl() + "dashboard/api?type=fsam&fsa="+fsa+"&"+dateParams(),
             type:'get',
             dataType:'JSON'
         })
