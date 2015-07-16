@@ -59,28 +59,28 @@ class Controller_Attachments extends Controller {
             
         die($data);
     }
-    
+
     public function action_folder() {
         $folder = Arr::get($_GET, 'folder');
         $fda = Arr::get($_GET, 'fda');
         $address = Arr::get($_GET, 'address');
-        
+
         $zip_name = $folder . ($fda ? '-' . $fda : '') . ($address ? '-' . $address : '');
-        
+
         $files = DB::select('id', 'filename', 'folder', 'fda_id', 'address')
-                ->from('attachments')
-                ->where('uploaded', '>', 0)
-                ->and_where('folder', '=', $folder);
-                
+            ->from('attachments')
+            ->where('uploaded', '>', 0)
+            ->and_where('folder', '=', $folder);
+
         if ($fda)
             $files->and_where('fda_id', '=', $fda);
-        
+
         if ($address)
             $files->and_where('address', '=', $address);
-                
+
         $files = $files->order_by('filename', 'asc')
             ->execute()->as_array();
-            
+
         $name = tempnam(sys_get_temp_dir(), 'jobs');
 
         $zip = new ZipArchive();
@@ -89,16 +89,52 @@ class Controller_Attachments extends Controller {
             $path = '';
             if (!$address) $path = $file['address'] . '/' . $path;
             if (!$fda) $path = $file['fda_id'] . '/' . $path;
-            
+
             $zip->addFile('storage/' . $file['id'], $path . $file['filename']);
         }
         $zip->close();
-        
+
         header('Content-type: application/zip');
         header('Content-disposition: filename="' . $zip_name . '.zip"');
         readfile($name);
         unlink($name);
-            
+
+        die();
+    }
+
+    public function action_tickets() {
+        $ids = explode(',', Arr::get($_GET, 'id'));
+
+        if (!$ids) throw new HTTP_Exception_404('Not found!');
+
+        $zip_name = implode('-', $ids);
+
+        $files = DB::select('id', 'filename', 'folder', 'fda_id', 'address')
+            ->from('attachments')
+            ->where('uploaded', '>', 0);
+
+        if (count($ids) > 1)
+            $files->and_where('job_id', 'IN', $ids);
+        else
+            $files->and_where('job_id', '=', array_shift($ids));
+
+        $files = $files->order_by('filename', 'asc')
+            ->execute()->as_array();
+
+        $name = tempnam(sys_get_temp_dir(), 'jobs');
+
+        $zip = new ZipArchive();
+        $zip->open($name, ZipArchive::CREATE);
+        foreach ($files as $file) {
+            $zip->addFile('storage/' . $file['id'], $file['folder'] . '/' . $file['fda_id'] . '/' . $file['address'] . '/' . $file['filename']);
+        }
+        $zip->close();
+
+        header('Content-type: application/zip');
+        header('Content-disposition: filename="' . $zip_name . '.zip"');
+        readfile($name);
+        unlink($name);
+
         die();
     }
 }

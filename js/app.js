@@ -543,6 +543,15 @@ $(function () {
         $('#upload-dialog').modal({backdrop: 'static', keyboard: false});
     });
 
+    $('.export-attachments').click(function() {
+        var ids = [];
+        $('#search-table input[type=checkbox][data-id]:checked').each(function(i, e) {
+            ids.push($(e).attr('data-id'));
+        });
+
+        document.location = utils.baseUrl() + 'attachments/tickets?id=' + ids.toString();
+    });
+
     $('.export-jobs').click(function() {
         $(this).parents('form').attr('action', './imex/export');
     });
@@ -551,7 +560,7 @@ $(function () {
         $(this).parents('form').attr('action', './search/export');
     });
 
-    $('.ms').click(function() {
+    $('.assign-jobs').click(function() {
         $(this).parents('form').attr('action', './search/assign');
     });
     

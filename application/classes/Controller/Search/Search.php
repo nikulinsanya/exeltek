@@ -22,7 +22,7 @@ class Controller_Search_Search extends Controller {
             '>',
             '>=',
             '<>',
-            'empty',
+            'empty', 
             'not empty',
         );
         $actions_mongo = array(
