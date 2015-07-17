@@ -608,6 +608,7 @@ $(function () {
         var selected = $(this).find(':selected');
         $('#file-content').attr('capture', selected.attr('data-capture'));
         $('#file-content').attr('accept', selected.attr('data-accept'));
+        $('#file-content').attr('accept', selected.attr('data-accept'));
     });
     $('#file-content').fileupload({
         autoUpload: true,

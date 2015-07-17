@@ -169,7 +169,7 @@
                                 </label>
                             </div>
                             <div class="col-xs-4 col-sm-4 col-md-2">
-                                <?=Form::select('company', array('' => 'Any company') + $companies, Arr::get($_GET, 'company'), array('class' => 'form-control'))?>
+                                <?=Form::select('company', array('' => 'Any company') + $companies, Arr::get($_GET, 'company'), array('class' => 'multiselect form-control width-140', 'multiple'=>'multiple'))?>
                             </div>
                             <div class="col-xs-2 col-sm-2 col-md-1">
                                 <label class="control-label">
@@ -177,7 +177,7 @@
                                 </label>
                             </div>
                             <div class="col-xs-4 col-sm-4 col-md-2">
-                                <?=Form::select('ex', array('' => 'Any company') + $companies, Arr::get($_GET, 'ex'), array('class' => 'form-control'))?>
+                                <?=Form::select('ex', array('' => 'Any company') + $companies, Arr::get($_GET, 'ex'), array('class' => 'form-control multiselect width-140', 'multiple'=>'multiple'))?>
                             </div>
                         <?php endif;?>
                         <div class="clearfix">&nbsp;</div>

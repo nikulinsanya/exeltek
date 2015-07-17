@@ -500,6 +500,14 @@ form.view-form  label.checkbox{
 }
 
 
+#filterModal .multiselect .multiselect-selected-text{
+    display: inline-block;
+    overflow: hidden;
+    width: 140px;
+    margin-bottom: -5px;
+}
+
+
 
 
 
