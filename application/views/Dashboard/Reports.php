@@ -75,7 +75,11 @@ $values = array(
     </div>
 
 <?php else:?>
-
+    <div class="report-block">
+        <div class="chart_with_list">
+            <div class="chart-container full-width height-400" id="pie-total-tickets-assigned"></div>
+        </div>
+    </div>
     <div class="report-block">
         <div class="chart_with_list">
             <div class="chart-container full-width" id="fsa-statuses"></div>
