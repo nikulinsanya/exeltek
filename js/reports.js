@@ -129,8 +129,12 @@ $(function () {
                     data: rawData[name]
                 })
             }
+            $('.fsam-statuses').slideDown(300,function(){
+                $('html, body').animate({ scrollTop: $('#fsam-statuses').offset().top-50}, 300);
+            });
 
-            $('.fsam-statuses').slideDown();
+
+
             $('#fsam-statuses').highcharts({
                 chart: {
                     type: 'column'
@@ -185,7 +189,7 @@ $(function () {
                     y: upperTickets[j][name] || 0,
                     name: name,
                     color:  window.REPORTDATA.allocation.colorByType[name],
-                    drilldown: j
+                   // drilldown: j
                 });
             }
             rawData[name] = data;
@@ -256,7 +260,17 @@ $(function () {
             plotOptions: {
                 series: {
                     borderWidth: 0,
-                    stacking: 'normal'
+                    stacking: 'normal',
+                    cursor: 'pointer',
+                    point: {
+                        events: {
+                            click: function () {
+                                var chart = this;
+                                showFSAMChart(chart.category).then(function(){
+                                });
+                            }
+                        }
+                    }
                 }
             },
 
