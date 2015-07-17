@@ -37,9 +37,14 @@
                     <span class="filter-item">
                         Assigned:
                         <label class="filter_value">
-                            <?=Arr::get($companies, $_GET['company'])?>
+                            <?php $comps = explode(',',$_GET['company']);$compa = array();?>
+                            <?php foreach ($comps as $id => $c):?>
+                                <?php $compa[]= Arr::get($companies, $c)?>
+                            <?php endforeach; ?>
+                            <?=implode(', ',$compa)?>
                         </label>
                     </span>
+                    <br/>
                 <?php endif; ?>
                 <?php if(Arr::get($_GET, 'ex')):
                     $hasFilters = true;
@@ -47,7 +52,11 @@
                     <span class="filter-item">
                         Previous:
                         <label class="filter_value">
-                            <?=Arr::get($companies, $_GET['ex'])?>
+                            <?php $comps = explode(',',$_GET['ex']);$compa = array();?>
+                            <?php foreach ($comps as $id => $c):?>
+                                <?php $compa[]= Arr::get($companies, $c)?>
+                            <?php endforeach; ?>
+                            <?=implode(', ',$compa)?>
                         </label>
                     </span>
                 <?php endif; ?>
@@ -169,7 +178,7 @@
                                 </label>
                             </div>
                             <div class="col-xs-4 col-sm-4 col-md-2">
-                                <?=Form::select('company', array('' => 'Any company') + $companies, Arr::get($_GET, 'company'), array('class' => 'form-control'))?>
+                                <?=Form::select('company', $companies, isset($_GET['company']) ? explode(',',$_GET['company']) : [], array('class' => 'multiselect form-control width-140', 'multiple'=>'multiple'))?>
                             </div>
                             <div class="col-xs-2 col-sm-2 col-md-1">
                                 <label class="control-label">
@@ -177,7 +186,7 @@
                                 </label>
                             </div>
                             <div class="col-xs-4 col-sm-4 col-md-2">
-                                <?=Form::select('ex', array('' => 'Any company') + $companies, Arr::get($_GET, 'ex'), array('class' => 'form-control'))?>
+                                <?=Form::select('ex', $companies, isset($_GET['ex']) ? explode(',',$_GET['ex']) : [], array('class' => 'form-control multiselect width-140', 'multiple'=>'multiple'))?>
                             </div>
                         <?php endif;?>
                         <div class="clearfix">&nbsp;</div>

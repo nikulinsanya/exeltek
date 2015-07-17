@@ -353,6 +353,12 @@ $(function () {
         $(this).find('input:checkbox[value="0"]').each(function(i, e) {
             $(e).prepend('<input type="hidden" name="' + $(e).attr('name') + '" value="0"/>');
         });
+        var select = $(this).find('select[name="company"]');
+        $(this).append('<input type="hidden" name="company" value="'+($(select).val() && $(select).val().join(',') || '') +'">');
+        $(select).remove();
+        select = $(this).find('select[name="ex"]');
+        $(this).append('<input type="hidden" name="ex" value="'+($(select).val() && $(select).val().join(',') || '') +'">');
+        $(select).remove();
     });
 
 
@@ -607,6 +613,7 @@ $(function () {
             
         var selected = $(this).find(':selected');
         $('#file-content').attr('capture', selected.attr('data-capture'));
+        $('#file-content').attr('accept', selected.attr('data-accept'));
         $('#file-content').attr('accept', selected.attr('data-accept'));
     });
     $('#file-content').fileupload({
