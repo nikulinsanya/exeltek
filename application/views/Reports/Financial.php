@@ -41,9 +41,9 @@
         </span>
         <?php endif;?>
         <div class="clearfix">&nbsp;</div>
+
             <label class="date-range-label">Discrepancies only: </label>
-            <input type="checkbox" class="discrepancy" />
-        </span>
+            <input name="discrepancy" type="checkbox" class="discrepancy no-submit" <?=Arr::get($_GET, 'discrepancy') ? ' checked' : ''?>/>
     </div>
 
     <div id="sorting" class="hidden">
@@ -61,7 +61,7 @@
 
 </form>
 <div>
-<h3 class="pull-left">Total found: <span id="submissions_count"><?=count($submissions)?></span> ticket(s)</h3>
+<h3 class="pull-left">Total found: <span id="submissions_count"><?=Arr::get($_GET, 'discrepancy') ? count($submissions) - count($discrepancies) : count($submissions)?></span> ticket(s)</h3>
 <?php if ($approve_all):?>
     <a href="<?=URL::base() . Request::current()->uri() . URL::query(array('approve' => 1))?>" class="pull-right btn btn-success">Approve all</a>
 <?php endif;?>
@@ -83,12 +83,12 @@
         <?php if (Group::current('allow_assign')):?><th>&nbsp;</th><?php endif;?>
     </tr>
     <?php foreach ($submissions as $job => $list):?>
-        <tr class="ticket-id <?=isset($discrepancies[$job])? 'discrepancy text-center' : 'text-center'?>">
+        <tr class="ticket-id <?=isset($discrepancies[$job])? 'discrepancy text-center'  . (Arr::get($_GET, 'discrepancy') ? ' hidden' : '') : 'text-center'?>">
             <th colspan="<?=Group::current('allow_assign') ? 12 : 9?>"><a href="<?=URL::base()?>search/view/<?=$job?>"><?=$job?></a></th>
         </tr>
 
-        <?php foreach ($list as $submission): $key = substr($submission['key'], 5); $type = Columns::get_type($key);?>
-        <tr class="submission text-center <?=Group::current('allow_assign') && Arr::path($jobs, $job . '.' . $submission['key']) != $submission['value'] ? 'rose' : (Arr::get($submission, 'financial_time') ? 'lgreen' : 'yellow')?>" data-id="<?=$job?>">
+        <?php foreach ($list as $submission): $key = substr($submission['key'], 5); $type = Columns::get_type($key); $discr = Group::current('allow_assign') && Arr::path($jobs, $job . '.' . $submission['key']) != $submission['value'];?>
+        <tr class="submission text-center <?=$discr ? 'rose' : (Arr::get($_GET, 'discrepancy') ? 'hidden ' : '') .  (Arr::get($submission, 'financial_time') ? 'lgreen' : 'yellow')?>" data-id="<?=$job?>">
             <td><?=date('d-m-Y H:i', $submission['update_time'])?></td>
             <td><?=Arr::get($submission, 'process_time') ? date('d-m-Y H:i', $submission['process_time']) : ''?></td>
             <td class="time"><?=Arr::get($submission, 'financial_time') ? date('d-m-Y H:i', $submission['financial_time']) : ''?></td>
@@ -112,5 +112,5 @@
 
     <?php endforeach;?>
 </table>
-<a href="?export&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', strtotime('first day of this month')))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="pull-right btn btn-info"><span class="glyphicon glyphicon-export"></span> Export</a>
-<a href="<?=URL::query($_GET + array('excel' => ''))?>" class="pull-right btn btn-success"><span class="glyphicon glyphicon-export"></span> Export to Excel</a>
+<a href="javascript:;" data-id="export" class="export-financial pull-right btn btn-info"><span class="glyphicon glyphicon-export"></span> Export</a>
+<a href="javascript:;" data-id="excel" class="export-financial pull-right btn btn-success"><span class="glyphicon glyphicon-export"></span> Export to Excel</a>
