@@ -550,7 +550,8 @@ $(function () {
     });
 
     $('.export-button').click(function() {
-        var url = $(this).attr('data-url') + '?';
+        var url = '';
+        if ($(this).attr('data-url')) url = $(this).attr('data-url') + '?'; else url = '?';
         if ($(this).attr('data-id')) url += $(this).attr('data-id') + '&';
         $(this).attr('href', url + $('div.content').find('form').serialize());
     });
