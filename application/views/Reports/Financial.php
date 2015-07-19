@@ -112,5 +112,5 @@
 
     <?php endforeach;?>
 </table>
-<a href="javascript:;" data-id="export" class="export-financial pull-right btn btn-info"><span class="glyphicon glyphicon-export"></span> Export</a>
-<a href="javascript:;" data-id="excel" class="export-financial pull-right btn btn-success"><span class="glyphicon glyphicon-export"></span> Export to Excel</a>
+<a href="javascript:;" data-id="export" class="export-button pull-right btn btn-info"><span class="glyphicon glyphicon-export"></span> Export</a>
+<a href="javascript:;" data-id="excel" class="export-button pull-right btn btn-success"><span class="glyphicon glyphicon-export"></span> Export to Excel</a>
