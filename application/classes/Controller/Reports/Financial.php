@@ -172,7 +172,7 @@ class Controller_Reports_Financial extends Controller {
 
             fputcsv($file, $headers);
             foreach ($submissions as $job => $list)
-                foreach ($list as $submission) {
+                foreach ($list as $submission) if (!$discr || Arr::path($jobs, $job . '.' . $submission['key']) != $submission['value']) {
                     $keys[$submission['key']] = 1;
                     $key = substr($submission['key'], 5);
                     $data = array(

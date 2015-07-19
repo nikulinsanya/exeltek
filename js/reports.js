@@ -71,6 +71,7 @@ $(function () {
             showTicketsInStacked(window.REPORTDATA.allTickets);
             showFSADrillDown(window.REPORTDATA.allFSAStatuses);
         }else{
+            showAllAssignedTickets(window.REPORTDATA.allStatuses);
             showFSADrillDown(window.REPORTDATA.allFSAStatuses);
         }
     }

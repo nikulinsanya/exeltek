@@ -276,7 +276,7 @@ $(function () {
         $(this).trigger('keydown');
     });
     
-    $('.auto-submit').find('select,input,textarea').change(function() {
+    $('.auto-submit').find('select:not(.no-submit),input:not(.no-submit),textarea:not(.no-submit)').change(function() {
         if ($(this).attr('name'))
             $(this).parents('form').submit();
     });
@@ -547,6 +547,12 @@ $(function () {
         }
         
         $('#upload-dialog').modal({backdrop: 'static', keyboard: false});
+    });
+
+    $('.export-button').click(function() {
+        var url = $(this).attr('data-url') + '?';
+        if ($(this).attr('data-id')) url += $(this).attr('data-id') + '&';
+        $(this).attr('href', url + $('div.content').find('form').serialize());
     });
 
     $('.export-attachments').click(function() {
