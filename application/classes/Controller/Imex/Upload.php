@@ -337,7 +337,10 @@ class Controller_Imex_Upload extends Controller {
                                 );
                             }
                         }
-                        if ($diff) {
+                        if (Arr::get($job, 'removed'))
+                            $new['$unset']['removed'] = 1;
+
+                        if ($diff || $new) {
                             if (isset($data[44])) {
                                 $status = preg_replace('/[^a-z]/', '', strtolower(Arr::path($diff, '44.old_value')));
                                 $status2 = preg_replace('/[^a-z]/', '', strtolower(Arr::get($new, 'data.44')));
@@ -372,16 +375,18 @@ class Controller_Imex_Upload extends Controller {
                                     if (Columns::get_persistent($key))
                                         unset($diff[$key]);
 
-                                $archive->insert(array(
-                                    'job_key' => $id,
-                                    'update_time' => time(),
-                                    'update_type' => 2,
-                                    'user_id' => User::current('id'),
-                                    'filename' => $filename,
-                                    'static' => array_intersect_key($data, $static),
-                                    'data' => $diff,
-                                    'fields' => array_keys($diff),
-                                ));
+                                if ($diff) {
+                                    $archive->insert(array(
+                                        'job_key' => $id,
+                                        'update_time' => time(),
+                                        'update_type' => 2,
+                                        'user_id' => User::current('id'),
+                                        'filename' => $filename,
+                                        'static' => array_intersect_key($data, $static),
+                                        'data' => $diff,
+                                        'fields' => array_keys($diff),
+                                    ));
+                                }
                                 $updated++;
                             } else $skipped++;
                         } else $skipped++;
@@ -422,6 +427,7 @@ class Controller_Imex_Upload extends Controller {
         $finished = filesize(DOCROOT . '/files/' . $filename) == $pos ? 1 : 0;
         if ($finished) {
             if ($ids && $region > 0 && !isset($_POST['skip-deleted'])) {
+                $jobs->update(array('_id' => array('$in' => array_keys($ids))), array('$set' => array('removed' => "1")), array('multiple' => 1));
                 $result = $archive->find(
                     array('job_key' => array('$in' => array_keys($ids))),
                     array('job_key', 'update_type', 'update_time')
@@ -436,7 +442,7 @@ class Controller_Imex_Upload extends Controller {
                         );
                     } elseif ($list[$value['job_key']]['date'] < $value['update_time'])
                         $list[$value['job_key']]['state'] = $value['update_type'];
-                
+
                 $cnt = 0;
                 foreach ($ids as $id => $v) if (Arr::path($list, array($id, 'state'), 0) != 3) {
                     $cnt++;

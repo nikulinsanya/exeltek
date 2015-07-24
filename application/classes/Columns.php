@@ -36,6 +36,7 @@ class Columns {
         'sor' => 'SOR data correct',
         'quality' => 'QA audit done',
         'passed' => 'QA audit passed',
+        'removed' => 'Removed from SOD',
     );
     
     public static $settings_img = array(
@@ -46,6 +47,7 @@ class Columns {
         'sor' => 'ok',
         'quality' => 'pencil',
         'passed' => 'check',
+        'removed' => 'remove',
     );
     
     private static $columns = array();

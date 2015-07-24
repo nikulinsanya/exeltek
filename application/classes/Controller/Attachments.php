@@ -81,23 +81,39 @@ class Controller_Attachments extends Controller {
         $files = $files->order_by('filename', 'asc')
             ->execute()->as_array();
 
-        $name = tempnam(sys_get_temp_dir(), 'jobs');
+        $fname = tempnam(sys_get_temp_dir(), 'jobs');
 
         $zip = new ZipArchive();
-        $zip->open($name, ZipArchive::CREATE);
+        $zip->open($fname, ZipArchive::CREATE);
         foreach ($files as $file) {
             $path = '';
             if (!$address) $path = $file['address'] . '/' . $path;
             if (!$fda) $path = $file['fda_id'] . '/' . $path;
 
-            $zip->addFile('storage/' . $file['id'], $path . $file['filename']);
+            $pos = strrpos($file['filename'], '.');
+            if ($pos) {
+                $ext = substr($file['filename'], $pos);
+                $name = $path . '/' . substr($file['filename'], 0, $pos);
+            } else {
+                $ext = '';
+                $name = $path . '/' . $file['filename'];
+            }
+
+            if (isset($list[$name . $ext])) {
+                $i = 1;
+                while (isset($list[$name . '(' . $i . ')' . $ext])) $i++;
+                $name = $name . '(' . $i . ')';
+            }
+
+            $zip->addFile('storage/' . $file['id'], $name . $ext);
+            $list[$name . $ext] = 1;
         }
         $zip->close();
 
         header('Content-type: application/zip');
         header('Content-disposition: filename="' . $zip_name . '.zip"');
-        readfile($name);
-        unlink($name);
+        readfile($fname);
+        unlink($fname);
 
         die();
     }
@@ -121,19 +137,37 @@ class Controller_Attachments extends Controller {
         $files = $files->order_by('filename', 'asc')
             ->execute()->as_array();
 
-        $name = tempnam(sys_get_temp_dir(), 'jobs');
+        $fname = tempnam(sys_get_temp_dir(), 'jobs');
 
         $zip = new ZipArchive();
-        $zip->open($name, ZipArchive::CREATE);
+        $zip->open($fname, ZipArchive::CREATE);
+        $list = array();
         foreach ($files as $file) {
-            $zip->addFile('storage/' . $file['id'], $file['folder'] . '/' . $file['fda_id'] . '/' . $file['address'] . '/' . $file['filename']);
+            $pos = strrpos($file['filename'], '.');
+            if ($pos) {
+                $ext = substr($file['filename'], $pos);
+                $name = $file['folder'] . '/' . $file['fda_id'] . '/' . $file['address'] . '/' . substr($file['filename'], 0, $pos);
+            } else {
+                $ext = '';
+                $name = $file['folder'] . '/' . $file['fda_id'] . '/' . $file['address'] . '/' . $file['filename'];
+            }
+
+            if (isset($list[$name . $ext])) {
+                $i = 1;
+                while (isset($list[$name . '(' . $i . ')' . $ext])) $i++;
+                $name = $name . '(' . $i . ')';
+            }
+
+            $zip->addFile('storage/' . $file['id'], $name . $ext);
+            $list[$name . $ext] = 1;
+
         }
         $zip->close();
 
         header('Content-type: application/zip');
         header('Content-disposition: filename="' . $zip_name . '.zip"');
-        readfile($name);
-        unlink($name);
+        readfile($fname);
+        unlink($fname);
 
         die();
     }
