@@ -83,6 +83,7 @@ class Controller_Search_Upload extends Controller
                     );
                     DB::insert('upload_log', array_keys($data))->values(array_values($data))->execute();
                     Database::instance()->commit();
+                    Database_Mongo::collection('jobs')->update(array('_id' => $attachment['job_id']), array('$unset' => array('downloaded' => 1), '$set' => array('last_update' => time())));
                     Messages::save("File " . $file['name'] . ' was successfully uploaded!', 'success');
                     die(json_encode(array(
                         'attachment' => array(
