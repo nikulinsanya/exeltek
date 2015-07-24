@@ -131,8 +131,10 @@ class Controller_Attachments extends Controller {
 
         if (count($ids) > 1)
             $files->and_where('job_id', 'IN', $ids);
-        else
-            $files->and_where('job_id', '=', array_shift($ids));
+        else {
+            $ids = array_shift($ids);
+            $files->and_where('job_id', '=', $ids);
+        }
 
         $files = $files->order_by('filename', 'asc')
             ->execute()->as_array();
@@ -168,6 +170,13 @@ class Controller_Attachments extends Controller {
         header('Content-disposition: filename="' . $zip_name . '.zip"');
         readfile($fname);
         unlink($fname);
+
+        if (is_array($ids))
+            $query = array('_id' => array('$in' => $ids));
+        else
+            $query = array('_id' => $ids);
+
+        Database_Mongo::collection('jobs')->update($query, array('$set' => array('downloaded' => '1')), array('multiple' => 1));
 
         die();
     }

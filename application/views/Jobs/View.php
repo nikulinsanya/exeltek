@@ -169,7 +169,7 @@
                     <tr>
                         <td>
                             <label class="checkbox-label">
-                                <input type="checkbox" name="<?=$key?>" <?=Arr::get($job, $key) ? 'checked' : ''?> value="1" />
+                                <input type="checkbox" name="<?=$key?>" <?=Arr::get($job, $key) ? 'checked' : ''?> <?=in_array($key, Columns::$settings_read_only, true) ? 'disabled' : ''?> value="1" />
                                 <?=HTML::chars($value)?>
                             </label>
                         </td>

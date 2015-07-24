@@ -276,7 +276,7 @@ class Controller_Search_View extends Controller {
                 $companies = array();
                 if (isset($job['assigned'])) foreach ($job['assigned'] as $company) if ($company) $companies[$company] = 1;
 
-                foreach (Columns::$settings as $key => $value)
+                foreach (Columns::$settings as $key => $value) if (!in_array($key, Columns::$settings_read_only, true))
                     if (Arr::get($job, $key) != Arr::get($_POST, $key)) {
                         $value = Arr::get($_POST, $key) ? 1 : 0;
                         $update[$value ? '$set' : '$unset'][$key] = 1;
