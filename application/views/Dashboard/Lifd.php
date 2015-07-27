@@ -25,7 +25,7 @@
 
                     <div class="modal-body" id="filter-form" style="min-height: 300px;">
                         <div class="col-xs-4 col-sm-4 col-md-2">
-                            <?=Form::select('region', array('' => 'All regions') + $regions, Arr::get($_GET, 'region'), array('class' => 'form-control'))?>
+                            <?=Form::select('region', array('' => 'All regions') + $regions, Arr::get($_GET, 'region'), array('class' => 'form-control region-filter'))?>
                         </div>
                         <?php if (Group::current('show_all_jobs')):?>
                             <div class="col-xs-2 col-sm-2 col-md-1">
