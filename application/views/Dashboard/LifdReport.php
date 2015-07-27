@@ -1,5 +1,5 @@
 <table class="table small">
-    <tr>
+    <tr class="text-center table-header">
         <th>FSA ID</th>
         <th>FSAM ID</th>
         <th>LIFD</th>
