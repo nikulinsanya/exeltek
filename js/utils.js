@@ -6,9 +6,27 @@ window.utils = (function() {
         'date': '<div data-id="%ID%" data-type="%TYPE%"><input class="datepicker" type="text" value="%VALUE%"></div>',
         'list': '<div data-id="%ID%" data-type="%TYPE%"><select>%OPTIONS%</select></div>',
         'multi': '<div data-id="%ID%" data-type="%TYPE%"><select class="multiselect" multiple="multiple">%OPTIONS%</select></div>'
-    };
+    },
+    dateRangeFormats = {
+        m:{
+            interval: moment.duration(1, 'month').valueOf(),
+            start:'month',
+            format:'MM,YY'
+        },
+        d:{
+            interval: moment.duration(1, 'day').valueOf(),
+            start:'day',
+            format:'DD-MM-YY'
+        },
+        w:{
+            interval: moment.duration(1, 'week').valueOf(),
+            start:'week',
+            format:'DD-MM-YY'
+        }
+    },
 
-    var utils = {
+
+    utils = {
 
         baseUrl : function(){ return $('body').attr('data-url')},
 
@@ -23,6 +41,7 @@ window.utils = (function() {
         },
 
         batchFields : batchFields,
+        dateRangeFormats:dateRangeFormats,
 
         getFieldByType: function(value, data, id){
             var j,field,

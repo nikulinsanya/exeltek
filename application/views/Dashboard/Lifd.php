@@ -34,9 +34,28 @@
                                 </label>
                             </div>
                             <div class="col-xs-4 col-sm-4 col-md-2">
-                                <?=Form::select('company[]', $companies, isset($_GET['company']) ? explode(',',$_GET['company']) : [], array('class' => 'multiselect form-control width-140', 'multiple'=>'multiple'))?>
+                                <?=Form::select('company[]', $companies, isset($_GET['company']) ? explode(',',$_GET['company']) : [], array('class' => 'multiselect form-control width-140 company-filter', 'multiple'=>'multiple'))?>
                             </div>
                         <?php endif;?>
+
+                        <div class="col-xs-2 col-sm-2 col-md-1 hidden fsa-hidden">
+                            <label class="control-label">
+                                FSA:
+                            </label>
+                        </div>
+                        <div class="col-xs-4 col-sm-4 col-md-2 hidden fsa-hidden">
+                            <select class="fsa-filter multiselect" multiple="multiple" name="fsa[]">
+                            </select>
+                        </div>
+                        <div class="col-xs-2 col-sm-2 col-md-1 hidden fsam-hidden">
+                            <label class="control-label">
+                                FSAM:
+                            </label>
+                        </div>
+                        <div class="col-xs-4 col-sm-4 col-md-2 hidden fsam-hidden">
+                            <select class="fsam-filter multiselect" multiple="multiple" name="fsam[]">
+                            </select>
+                        </div>
 
                     </div>
 
