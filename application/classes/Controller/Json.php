@@ -16,8 +16,9 @@ class Controller_Json extends Controller {
                 array('ex' => intval(User::current('company_id'))),
             );
         } else {
-            if (Arr::get($_GET, 'company') && is_array($_GET['company'])) {
-                $company = array_map('intval', $_GET['company']);
+            if (Arr::get($_GET, 'company')) {
+                $company = is_array($_GET['company']) ? $_GET['company'] : explode(',', $_GET['company']);
+                $company = array_map('intval', $company);
                 if (count($company) == 1) $company = array_shift($company);
                 $query['$or'] = array(
                     array('companies' => is_array($company) ? array('$in' => $company) : $company),
@@ -44,8 +45,9 @@ class Controller_Json extends Controller {
                 array('ex' => intval(User::current('company_id'))),
             );
         } else {
-            if (Arr::get($_GET, 'company') && is_array($_GET['company'])) {
-                $company = array_map('intval', $_GET['company']);
+            if (Arr::get($_GET, 'company')) {
+                $company = is_array($_GET['company']) ? $_GET['company'] : explode(',', $_GET['company']);
+                $company = array_map('intval', $company);
                 if (count($company) == 1) $company = array_shift($company);
                 $query['$or'] = array(
                     array('companies' => is_array($company) ? array('$in' => $company) : $company),
