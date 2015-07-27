@@ -1065,6 +1065,7 @@ $(function () {
 
     $('#lifd-report-form').submit(function() {
         var data = $(this).serialize();
+        $('#filterModal').modal('hide');
         $('#preloaderModal').modal('show');
         if (data) {
             $('label.no-filters').hide();
