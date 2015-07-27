@@ -1098,46 +1098,38 @@ $(function () {
     });
 
     $('.company-filter').on('change',function(){
-        if($(this).val()){
-            $.ajax({
-                url:utils.baseUrl() + "json/fsa?company="+$(this).val().join(','),
-                type:'get',
-                dataType:'JSON',
-                success: function(data){
-                    var i = data.length,
-                        html = [];
-                    while(i--){
-                        html.push('<option value="',
-                            data[i],
-                            '">',
-                            data[i],
-                            '</option>')
-                    }
-                    $('.fsa-filter').html(html.join(''));
-                    $('.fsa-filter').multiselect('rebuild');
-                    if(data.length){
-                        $('.fsa-hidden').removeClass('hidden');
-                    }else{
-                        $('.fsa-hidden').addClass('hidden');
-                        $('.fsam-hidden').addClass('hidden');
-                    }
-                },
-                error: function(e){
-                    alert(e.responseText);
-                    $('.fsa-hidden').addClass('hidden');
-                    $('.fsam-hidden').addClass('hidden');
+        $.ajax({
+            url:utils.baseUrl() + "json/fsa?company="+
+                ($(this).val() ? $(this).val().join(','): ''),
+            type:'get',
+            dataType:'JSON',
+            success: function(data){
+                var i = data.length,
+                    html = [];
+                while(i--){
+                    html.push('<option value="',
+                        data[i],
+                        '">',
+                        data[i],
+                        '</option>')
                 }
-            })
-        }else{
-            $('.fsa-hidden').addClass('hidden');
-            $('.fsam-hidden').addClass('hidden');
-        }
+                $('.fsa-filter').html(html.join(''));
+                $('.fsa-filter').multiselect('rebuild');
+
+            },
+            error: function(e){
+                alert(e.responseText);
+            }
+        })
+
     });
 
     $('.fsa-filter').on('change',function(){
-        if($(this).val() && $('.company-filter').val()){
             $.ajax({
-                url:utils.baseUrl() + "json/fsam?company="+$('.company-filter').val().join(',')+'&fsa='+$(this).val().join(','),
+                url:utils.baseUrl() + "json/fsam?company="+
+                    ($('.company-filter').val() ? $('.company-filter').val().join(',') : '') +
+                    '&fsa='+
+                    ($(this).val() ? $(this).val().join(',') : ''),
                 type:'get',
                 dataType:'JSON',
                 success: function(data){
@@ -1152,20 +1144,11 @@ $(function () {
                     }
                     $('.fsam-filter').html(html.join(''));
                     $('.fsam-filter').multiselect('rebuild');
-                    if(data.length){
-                        $('.fsam-hidden').removeClass('hidden');
-                    }else{
-                        $('.fsam-hidden').addClass('hidden');
-                    }
                 },
                 error: function(e){
                     alert(e.responseText);
-                    $('.fsam-hidden').addClass('hidden');
                 }
             })
-        }else{
-            $('.fsam-hidden').addClass('hidden');
-        }
     });
 
 

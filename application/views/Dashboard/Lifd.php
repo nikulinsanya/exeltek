@@ -38,21 +38,21 @@
                             </div>
                         <?php endif;?>
 
-                        <div class="col-xs-2 col-sm-2 col-md-1 hidden fsa-hidden">
+                        <div class="col-xs-2 col-sm-2 col-md-1">
                             <label class="control-label">
                                 FSA:
                             </label>
                         </div>
-                        <div class="col-xs-4 col-sm-4 col-md-2 hidden fsa-hidden">
+                        <div class="col-xs-4 col-sm-4 col-md-2">
                             <select class="fsa-filter multiselect" multiple="multiple" name="fsa[]">
                             </select>
                         </div>
-                        <div class="col-xs-2 col-sm-2 col-md-1 hidden fsam-hidden">
+                        <div class="col-xs-2 col-sm-2 col-md-1">
                             <label class="control-label">
                                 FSAM:
                             </label>
                         </div>
-                        <div class="col-xs-4 col-sm-4 col-md-2 hidden fsam-hidden">
+                        <div class="col-xs-4 col-sm-4 col-md-2">
                             <select class="fsam-filter multiselect" multiple="multiple" name="fsam[]">
                             </select>
                         </div>
