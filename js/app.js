@@ -1118,10 +1118,12 @@ $(function () {
                 }
                 $('.fsa-filter').html(html.join(''));
                 $('.fsa-filter').multiselect('rebuild');
-
+                $('.fsam-filter').html('');
             },
             error: function(e){
                 alert(e.responseText);
+                $('.fsam-filter').html('');
+                $('.fsa-filter').html('');
             }
         })
 
