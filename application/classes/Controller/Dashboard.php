@@ -373,13 +373,13 @@ class Controller_Dashboard extends Controller {
 
                         switch ($separate) {
                             case 'm':
-                                $date = date('Y-m', $item['t']);
+                                $date = strtotime(date('01-m-Y', $item['t']));
                                 break;
                             case 'w':
-                                $date = date('Y-W', $item['t']);
+                                $date = strtotime('first day of ' . date('W', $item['t']) . ' week', $item['t']);
                                 break;
                             case 'd':
-                                $date = date('Y-m-d', $item['t']);
+                                $date = strtotime('midnight', $item['t']);
                                 break;
                             default:
                                 $date = false;
