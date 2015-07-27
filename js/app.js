@@ -1078,11 +1078,16 @@ $(function () {
             $('#filterModal').modal('hide');
             try {
                 data = $.parseJSON(data);
-                var filters = '';
+                var filters = [];
                 for (var i in data.filters)
-                    filters += '<span class="filter-item">' + data.filters[i].name + ': <label class="filter_value">' + data.filters[i].value + '</label></span>';
+                    filters.push(
+                        '<span class="filter-item">' ,
+                            data.filters[i].name ,
+                            ': <label class="filter_value">' ,
+                            data.filters[i].value ,
+                        '</label></span>');
 
-                $('div.text-info-filters>div').html(filters);
+                $('div.text-info-filters>div').html(filters.join(''));
                 $('#lifd-report').html(data.html);
             } catch (e) {
                 alert(data);
