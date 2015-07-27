@@ -17,7 +17,6 @@ class Controller_Api_Jobs extends Kohana_Controller {
         if ($regs) $query['region'] = array('$in' => $regs);
 
         $result = Database_Mongo::collection('jobs')->find($query, array('created' => '1', 'last_update' => 1));
-        //$result = Database_Mongo::collection('jobs')->find($query, array('assigned' => 0, 'companies' => 0, 'ex' => 0));
 
         $jobs = array();
 
@@ -189,6 +188,7 @@ class Controller_Api_Jobs extends Kohana_Controller {
                     'job_key' => $id,
                     'user_id' => User::current('id'),
                     'update_time' => time(),
+                    'version' => Arr::get($_REQUEST, 'version'),
                 );
                 if ($location)
                     $submission['location'] = $location;
