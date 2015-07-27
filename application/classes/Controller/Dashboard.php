@@ -4,14 +4,11 @@ class Controller_Dashboard extends Controller {
 
     private function group_jobs($key, $query) {
         $result = Database_Mongo::collection('jobs')->find($query, array($key => 1, 'data.44' => 1));
-
         $query = array(
             'data.44' => array('$exists' => 1),
         );
-
         if (Arr::get($_GET, 'start')) $query['update_time']['$gt'] = strtotime($_GET['start']);
         if (Arr::get($_GET, 'end')) $query['update_time']['$lt'] = strtotime($_GET['end']) + 86399;
-
         $total = array();
         $jobs = array();
         $statuses = array();
@@ -23,14 +20,10 @@ class Controller_Dashboard extends Controller {
             if (!in_array($status, array('dirty', 'deferred', 'heldnbn')))
                 $total[$fsam] = Arr::get($total, $fsam, 0) + 1;
         }
-
         $query['job_key'] = array('$in' => array_keys($jobs));
-
         $result = Database_Mongo::collection('archive')->find($query, array('_id' => 0, 'job_key' => 1, 'data.44' => 1, 'update_time' => 1))->sort(array('update_time' => 1));
-
         foreach ($result as $job)
             $statuses[$job['job_key']] = strtolower(preg_replace('/[^a-z]/i', '', Arr::path($job, 'data.44.new_value')));
-
         $built = array();
         $tested = array();
         foreach ($jobs as $id => $fsam) {
@@ -43,7 +36,6 @@ class Controller_Dashboard extends Controller {
                     break;
             }
         }
-
         $fsam = array();
         foreach ($total as $key => $value)
             $fsam[$key ? : 'Unknown'] = array(
@@ -51,90 +43,8 @@ class Controller_Dashboard extends Controller {
                 'built' => Arr::get($built, $key, 0),
                 'tested' => Arr::get($tested, $key, 0),
             );
-
         ksort($fsam);
-
         return $fsam;
-    }
-
-    public function action_fda() {
-        $query = array();
-
-        $companies = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
-        $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
-
-        if (!Group::current('show_all_jobs')) {
-            $query['$or'] = array(
-                array('companies' => intval(User::current('company_id'))),
-                array('ex' => intval(User::current('company_id'))),
-            );
-        } else {
-            if (Arr::get($_GET, 'company') && isset($companies[$_GET['company']]))
-                $query['$or'] = array(
-                    array('companies' => intval($_GET['company'])),
-                    array('ex' => intval($_GET['company'])),
-                );
-
-        }
-
-        $fsas = Database_Mongo::collection('jobs')->distinct('data.12', $query ? : NULL);
-        $fsas = array_combine($fsas, $fsas);
-
-        if (Arr::get($_GET, 'fsa') && (isset($fsas[$_GET['fsa']]) || $_GET['fsa'] == 'Unknown'))
-            $query['data.12'] = $_GET['fsa'] == 'Unknown' ? array('$exists' => false) : strval($_GET['fsa']);
-
-        $fsam = Database_Mongo::collection('jobs')->distinct('data.13', $query ? : NULL);
-        $fsam = array_combine($fsam, $fsam);
-
-        if (Arr::get($_GET, 'fsam') && isset($fsam[$_GET['fsam']]))
-            $query['data.13'] = strval($_GET['fsam']);
-
-        $fdas = $this->group_jobs('data.14', $query);
-
-        $view = View::factory('Dashboard/Fda')
-            ->bind('fsam', $fsam)
-            ->bind('fsas', $fsas)
-            ->bind('fdas', $fdas)
-            ->bind('companies', $companies)
-            ->bind('regions', $regions);
-
-        $this->response->body($view);
-    }
-
-    public function action_fsam() {
-        $query = array();
-
-        $companies = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
-        $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
-
-        if (!Group::current('allow_assign')) {
-            $query['$or'] = array(
-                array('companies' => intval(User::current('company_id'))),
-                array('ex' => intval(User::current('company_id'))),
-            );
-        } else {
-            if (Arr::get($_GET, 'company') && isset($companies[$_GET['company']]))
-                $query['$or'] = array(
-                    array('companies' => intval($_GET['company'])),
-                    array('ex' => intval($_GET['company'])),
-                );
-        }
-
-        $fsas = Database_Mongo::collection('jobs')->distinct('data.12', $query ? : NULL);
-        $fsas = array_combine($fsas, $fsas);
-
-        if (Arr::get($_GET, 'fsa') && (isset($fsas[$_GET['fsa']]) || $_GET['fsa'] == 'Unknown'))
-            $query['data.12'] = $_GET['fsa'] == 'Unknown' ? array('$exists' => false) : strval($_GET['fsa']);
-
-        $fsam = $this->group_jobs('data.13', $query);
-
-        $view = View::factory('Dashboard/Fsam')
-            ->bind('fsam', $fsam)
-            ->bind('fsas', $fsas)
-            ->bind('companies', $companies)
-            ->bind('regions', $regions);
-
-        $this->response->body($view);
     }
 
     public function action_fsa() {
@@ -156,13 +66,164 @@ class Controller_Dashboard extends Controller {
                 );
             if (Arr::get($_GET, 'region') && isset($regions[$_GET['region']]))
                 $query['region'] = strval($_GET['region']);
-
         }
 
-        $fsa = $this->group_jobs('data.12', $query);
+        $result = Database_Mongo::collection('jobs')->find($query, array('data.12' => 1, 'data.13' => 1, 'data.14' => 1, 'data.44' => 1, 'created' => 1));
+        $query = array(
+            'data.44' => array('$exists' => 1),
+        );
+
+        $start = strtotime(Arr::get($_GET, 'start'));
+        $end = strtotime(Arr::get($_GET, 'end'));
+        if ($end) $end += 86399;
+
+        if ($start) $query['update_time']['$gt'] = $start;
+        if ($end) $query['update_time']['$lt'] = $end;
+
+        $jobs = array();
+        foreach ($result as $job) {
+            $jobs[$job['_id']] = array(
+                'fsa' => Arr::path($job, 'data.12', 'Unknown'),
+                'fsam' => Arr::path($job, 'data.13', 'Unknown'),
+                'fda' => Arr::path($job, 'data.14', 'Unknown'),
+                'date' => $job['created'],
+                'status' => strtolower(preg_replace('/[^a-z]/i', '', Arr::path($job, 'data.44'))),
+            );
+        }
+
+        $query['job_key'] = array('$in' => array_keys($jobs));
+
+        $result = Database_Mongo::collection('archive')->find($query, array('_id' => 0, 'job_key' => 1, 'data.44' => 1, 'update_time' => 1))->sort(array('update_time' => 1));
+
+        foreach ($result as $job) {
+            $jobs[$job['job_key']]['status'] = strtolower(preg_replace('/[^a-z]/i', '', Arr::path($job, 'data.44.new_value')));
+            $jobs[$job['job_key']]['date'] = $job['update_time'];
+        }
+
+        usort($jobs, function($a, $b) {
+            return strcmp($a['fsa'], $b['fsa']) ? : (strcmp($a['fsam'], $b['fsam']) ? : strcmp($a['fsam'], $b['fsam']));
+        });
+
+        $total = array();
+        $fsam = array();
+        foreach ($jobs as $job) if ((!$start || $start <= $job['date']) && (!$end || $end >= $job['date'])) {
+            $status = $job['status'];
+            if (!in_array($status, array('dirty', 'deferred', 'heldnbn', 'built', 'tested')))
+                $status = 'total';
+
+            if (in_array($status, array('total', 'built', 'tested'))) {
+                $total[$status] = Arr::get($total, $status) + 1;
+                $fsam[$job['fsa']]['total'][$status] = Arr::path($fsam, array($job['fsa'], 'total', $status), 0) + 1;
+                $fsam[$job['fsa']][$job['fsam']]['total'][$status] = Arr::path($fsam, array($job['fsa'], $job['fsam'], 'total', $status), 0) + 1;
+                $fsam[$job['fsa']][$job['fsam']][$job['fda']][$status] = Arr::path($fsam, array($job['fsa'], $job['fsam'], $job['fda'], $status), 0) + 1;
+
+                if ($status != 'total') {
+                    $status = 'total';
+                    $total[$status] = Arr::get($total, $status) + 1;
+                    $fsam[$job['fsa']]['total'][$status] = Arr::path($fsam, array($job['fsa'], 'total', $status), 0) + 1;
+                    $fsam[$job['fsa']][$job['fsam']]['total'][$status] = Arr::path($fsam, array($job['fsa'], $job['fsam'], 'total', $status), 0) + 1;
+                    $fsam[$job['fsa']][$job['fsam']][$job['fda']][$status] = Arr::path($fsam, array($job['fsa'], $job['fsam'], $job['fda'], $status), 0) + 1;
+                }
+            }
+        }
 
         $view = View::factory('Dashboard/Fsa')
-            ->bind('fsa', $fsa)
+            ->bind('total', $total)
+            ->bind('fsam', $fsam)
+            ->bind('companies', $companies)
+            ->bind('regions', $regions);
+
+        $this->response->body($view);
+    }
+
+    public function action_lifd() {
+        $companies = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
+        $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
+
+
+        if ($this->request->is_ajax()) {
+
+            $query = array();
+
+            if (!Group::current('allow_assign')) {
+                $query['$or'] = array(
+                    array('companies' => intval(User::current('company_id'))),
+                    array('ex' => intval(User::current('company_id'))),
+                );
+            } else {
+                if (Arr::get($_GET, 'company') && is_array($_GET['company'])) {
+                    $company = array_map('intval', $_GET['company']);
+                    if (count($company) == 1) $company = array_shift($company);
+                    $query['$or'] = array(
+                        array('companies' => is_array($company) ? array('$in' => $company) : $company),
+                        array('ex' => is_array($company) ? array('$in' => $company) : $company),
+                    );
+                }
+                if (Arr::get($_GET, 'region') && isset($regions[$_GET['region']]))
+                    $query['region'] = strval($_GET['region']);
+
+            }
+
+            $result = Database_Mongo::collection('jobs')->find($query, array('data.12' => 1, 'data.13' => 1, 'data.14' => 1, 'data.17' => 1, 'data.18' => 1, 'data.44' => 1, 'created' => 1, 'companies' => 1, 'ex' => 1));
+
+            $jobs = array();
+            foreach ($result as $job) {
+                $jobs[$job['_id']] = array(
+                    'fsa' => Arr::path($job, 'data.12', 'Unknown'),
+                    'fsam' => Arr::path($job, 'data.13', 'Unknown'),
+                    'lifd' => Arr::path($job, 'data.17', 0) . '|' . Arr::path($job, 'data.18', 0),
+                    'fda' => Arr::path($job, 'data.14', 'Unknown'),
+                    'status' => strtolower(preg_replace('/[^a-z]/i', '', Arr::path($job, 'data.44'))),
+                    'companies' => array_merge(Arr::get($job, 'companies', array()), Arr::get($job, 'ex', array())),
+                );
+            }
+
+            usort($jobs, function ($a, $b) {
+                foreach ($a as $key => $v) {
+                    $v2 = $b[$key];
+                    if ($key == 'lifd') {
+                        $v = explode('|', $v);
+                        $v2 = explode('|', $v2);
+                        if ($v[0] < $v2[0]) return -1;
+                        elseif ($v[0] > $v2[0]) return 1;
+                        elseif ($v[1] < $v2[1]) return -1;
+                        elseif ($v[1] > $v2[1]) return 1;
+                    } elseif (!is_array($v)) {
+                        if ($v < $v2) return -1;
+                        elseif ($v > $v2) return 1;
+                    }
+                }
+                return 0;
+            });
+
+            $list = array();
+
+            foreach ($jobs as $job) {
+                $comp = $job['companies'];
+                unset($job['companies']);
+                Arr::set_path($list, $job, Arr::path($list, $job, 0) + 1);
+                $job['status'] = 'companies';
+                Arr::set_path($list, $job, array_merge(Arr::path($list, $job, array()), $comp));
+            }
+
+            $view = View::factory('Dashboard/LifdReport')
+                ->bind('list', $list)
+                ->bind('companies', $companies);
+
+            $filters = array();
+            if (Arr::get($_GET, 'region'))
+                $filters[] = array('name' => 'Region', 'value' => Arr::get($regions, $_GET['region'], 'Unknown'));
+
+            if (Arr::get($_GET, 'company') && is_array($_GET['company']))
+                $filters[] = array('name' => 'Contractor', 'value' => implode(', ', array_intersect_key($companies, array_flip($_GET['company']))));
+
+            die(json_encode(array(
+                'filters' => $filters,
+                'html' => strval($view),
+            )));
+        }
+
+        $view = View::factory('Dashboard/Lifd')
             ->bind('companies', $companies)
             ->bind('regions', $regions);
 

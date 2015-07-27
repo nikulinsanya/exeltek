@@ -4,11 +4,32 @@ class Controller_Test extends Controller {
 
     public function before() {
         if (!Group::current('is_admin')) throw new HTTP_Exception_403('Forbidden');
-        die();
+        //die();
     }
 
     public function action_index() {
         $start = microtime(true);
+
+        $total = 0;
+        $jobs = Database_Mongo::collection('jobs')->find();
+        foreach ($jobs as $job) {
+            $new = array();
+            if (isset($job['assigned']))
+                foreach ($job['assigned'] as $key => $company) if ($company !== intval($company))
+                    $new['$set']['assigned.' . $key] = intval($company);
+
+            if (isset($job['ex']))
+                foreach ($job['ex'] as $key => $company) if ($company !== intval($company))
+                    $new['$set']['ex.' . $key] = intval($company);
+
+            if ($new) {
+                Database_Mongo::collection('jobs')->update(array('_id' => $job['_id']), $new);
+                $total++;
+            }
+        }
+
+        echo $total;
+        die();
 
         header("Content-type: text/plain");
         $jobs = Database_Mongo::collection('jobs')->find(array(), array('data.245' => 1, 'data.43' => 1, 'data.190' => 1, 'data.191' => 1, 'data.192' => 1, 'created' => 1));
