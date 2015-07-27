@@ -188,7 +188,7 @@ class Controller_Api_Jobs extends Kohana_Controller {
                     'job_key' => $id,
                     'user_id' => User::current('id'),
                     'update_time' => time(),
-                    'version' => Arr::get($_REQUEST, 'version'),
+                    'version' => Arr::get($_REQUEST, 'ver'),
                 );
                 if ($location)
                     $submission['location'] = $location;
@@ -259,7 +259,8 @@ class Controller_Api_Jobs extends Kohana_Controller {
                 Database::instance()->rollback();
                 die(json_encode(array('success' => false, 'error' => 'signature problem')));
             }
-            Database_Mongo::collection('api')->insert($_REQUEST);
+            if (Kohana::$environment == Kohana::DEVELOPMENT)
+                Database_Mongo::collection('api')->insert($_REQUEST);
             die(json_encode(array('success' => true)));
         }
 
