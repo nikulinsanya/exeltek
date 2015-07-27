@@ -1098,10 +1098,12 @@ $(function () {
         return false;
     });
 
-    $('.company-filter').on('change',function(){
+    $('.company-filter, .region-filter').on('change',function(){
         $.ajax({
             url:utils.baseUrl() + "json/fsa?company="+
-                ($(this).val() ? $(this).val().join(','): ''),
+                ($('.company-filter').val() ? $('.company-filter').val().join(','): '') +
+                '&region='+
+                $('.region-filter').val(),
             type:'get',
             dataType:'JSON',
             success: function(data){
