@@ -30,13 +30,13 @@
                     ?>
                     <tr class="text-center <?=($odd_fda = !$odd_fda) ? 'green' : 'lgreen'?>">
                         <?php if ($old_fsa !== $fsa): $old_fsa = $fsa; $old_fsam = false; $old_lifd = false;?>
-                            <td rowspan="<?=Utils::count($fsams, 2)?>" class="<?=($odd_fsa = !$odd_fsa) ? 'green' : 'lgreen'?>"><?=$fsa?></td>
+                            <td rowspan="<?=Utils::count($fsams, 2)?>" class="top-aligned fsa-cell <?=($odd_fsa = !$odd_fsa) ? 'odd' : 'even'?>"><?=$fsa?></td>
                         <?php endif;?>
                         <?php if ($old_fsam !== $fsam): $old_fsam = $fsam; $old_lifd = false;?>
-                            <td rowspan="<?=Utils::count($lifds, 1)?>" class="<?=($odd_fsam = !$odd_fsam) ? 'green' : 'lgreen'?>"><?=$fsam?></td>
+                            <td rowspan="<?=Utils::count($lifds, 1)?>" class="top-aligned fsam-cell <?=($odd_fsam = !$odd_fsam) ? 'odd' : 'even'?>"><?=$fsam?></td>
                         <?php endif;?>
                         <?php if ($old_lifd !== $lifd): $old_lifd = $lifd; $dates = explode('|', $lifd); $days = Utils::working_days($dates[1]);?>
-                            <td rowspan="<?=count($fdas)?>" class="<?=($odd_lifd = !$odd_lifd) ? 'green' : 'lgreen'?>">
+                            <td rowspan="<?=count($fdas)?>" class="top-aligned fsam-cell <?=($odd_lifd = !$odd_lifd) ? 'odd' : 'even'?>">
                                 <?=($dates[0] ? date('d-m-Y', $dates[0]) : '') . '-' . ($dates[1] ? date('d-m-Y', $dates[1]) . ' [' . $days . ' day' . ($days != 1 ? 's ' : ' ') . ($dates[1] < time() ? 'passed' : 'left') . ']' : '')?>
                             </td>
                         <?php endif;?>

@@ -649,3 +649,22 @@ table.table>tbody>tr>td{
     color: #BBB;
 }
 
+.odd.fsa-cell,
+.even.fsa-cell,
+.even.fsam-cell,
+.odd.fsam-cell{
+    font-weight: bold;
+    vertical-align: top!important;
+}
+
+.odd.fsa-cell,.odd.fsam-cell{
+    background: rgb(198, 255, 198);
+}
+.even.fsa-cell,.even.fsam-cell{
+    background: rgb(227, 255, 227);
+}
+
+.text-center td.top-aligned {
+    vertical-align: top!important;
+    padding-top: 15px;
+}
