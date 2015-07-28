@@ -82,7 +82,7 @@
                   <ul class="dropdown-menu">
                       <li class="<?=Request::current()->controller() == 'Dashboard' && Request::current()->action() == 'reports' ? 'active' : ''?>"><a href="<?=URL::base()?>dashboard/reports">Reports</a></li>
                       <li class="<?=Request::current()->controller() == 'Dashboard' && Request::current()->action() == 'fsa' ? 'active' : ''?>"><a href="<?=URL::base()?>dashboard/fsa">FSA progress</a></li>
-                      <li class="<?=Request::current()->controller() == 'Dashboard' && Request::current()->action() == 'fsam' ? 'active' : ''?>"><a href="<?=URL::base()?>dashboard/fsam">FSAM progress</a></li>
+                      <li class="<?=Request::current()->controller() == 'Dashboard' && Request::current()->action() == 'lifd' ? 'active' : ''?>"><a href="<?=URL::base()?>dashboard/lifd">LIFD progress</a></li>
                   </ul>
               </li>
               <li class="dropdown">

@@ -7,8 +7,8 @@ class Controller_Search_Assign extends Controller {
             throw new HTTP_Exception_403('Forbidden');
 
         $ids = array_keys(Arr::get($_POST, 'job', array()));
-        $type = Arr::get($_POST, 'type');
-        $company = Arr::get($_POST, 'company');
+        $type = intval(Arr::get($_POST, 'type'));
+        $company = intval(Arr::get($_POST, 'company'));
 
         if (!$ids)
             Messages::save('Please, select at least one job!');

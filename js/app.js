@@ -354,11 +354,15 @@ $(function () {
             $(e).prepend('<input type="hidden" name="' + $(e).attr('name') + '" value="0"/>');
         });
         var select = $(this).find('select[name="company"]');
-        $(this).append('<input type="hidden" name="company" value="'+($(select).val() && $(select).val().join(',') || '') +'">');
-        $(select).remove();
+        if (select) {
+            $(this).append('<input type="hidden" name="company" value="' + ($(select).val() && $(select).val().join(',') || '') + '">');
+            $(select).remove();
+        }
         select = $(this).find('select[name="ex"]');
-        $(this).append('<input type="hidden" name="ex" value="'+($(select).val() && $(select).val().join(',') || '') +'">');
-        $(select).remove();
+        if (select) {
+            $(this).append('<input type="hidden" name="ex" value="' + ($(select).val() && $(select).val().join(',') || '') + '">');
+            $(select).remove();
+        }
     });
 
 
@@ -873,7 +877,9 @@ $(function () {
 
     function setMultiselect(self){
         if(self){
-            $(self).multiselect({});
+            $(self).multiselect({
+                maxHeight: 200,
+            });
         }
     }
     function setFilterDateRangePickers(){
@@ -1056,6 +1062,101 @@ $(function () {
             $('#preloaderModal').modal('hide');
         })
     });
+
+    $('#lifd-report-form').submit(function() {
+        var data = $(this).serialize();
+        $('#filterModal').modal('hide');
+        $('#preloaderModal').modal('show');
+        if (data) {
+            $('label.no-filters').hide();
+            $('#clear-filters').removeClass('hidden');
+        } else {
+            $('div.text-info-filters>div').html('');
+            $('label.no-filters').show();
+            $('#clear-filters').addClass('hidden');
+        }
+        $.get('?' + data, function(data) {
+            $('#filterModal').modal('hide');
+            try {
+                data = $.parseJSON(data);
+                var filters = [];
+                for (var i in data.filters)
+                    filters.push(
+                        '<span class="filter-item">' ,
+                            data.filters[i].name ,
+                            ': <label class="filter_value">' ,
+                            data.filters[i].value ,
+                        '</label></span>');
+
+                $('div.text-info-filters>div').html(filters.join(''));
+                $('#lifd-report').html(data.html);
+            } catch (e) {
+                alert(data);
+            }
+            $('#preloaderModal').modal('hide');
+        });
+        return false;
+    });
+
+    $('.company-filter, .region-filter').on('change',function(){
+        $.ajax({
+            url:utils.baseUrl() + "json/fsa?company="+
+                ($('.company-filter').val() ? $('.company-filter').val().join(','): '') +
+                '&region='+
+                $('.region-filter').val(),
+            type:'get',
+            dataType:'JSON',
+            success: function(data){
+                var i = data.length,
+                    html = [];
+                while(i--){
+                    html.push('<option value="',
+                        data[i],
+                        '">',
+                        data[i],
+                        '</option>')
+                }
+                $('.fsa-filter').html(html.join(''));
+                $('.fsa-filter').multiselect('rebuild');
+                $('.fsam-filter').html('');
+            },
+            error: function(e){
+                alert(e.responseText);
+                $('.fsam-filter').html('');
+                $('.fsa-filter').html('');
+            }
+        })
+
+    });
+
+    $('.fsa-filter').on('change',function(){
+            $.ajax({
+                url:utils.baseUrl() + "json/fsam?company="+
+                    ($('.company-filter').val() ? $('.company-filter').val().join(',') : '') +
+                    '&fsa='+
+                    ($(this).val() ? $(this).val().join(',') : ''),
+                type:'get',
+                dataType:'JSON',
+                success: function(data){
+                    var i = data.length,
+                        html = [];
+                    while(i--){
+                        html.push('<option value="',
+                            data[i],
+                            '">',
+                            data[i],
+                            '</option>')
+                    }
+                    $('.fsam-filter').html(html.join(''));
+                    $('.fsam-filter').multiselect('rebuild');
+                },
+                error: function(e){
+                    alert(e.responseText);
+                }
+            })
+    });
+
+
 
     function collectDataToBatch(){
         var data = [],
