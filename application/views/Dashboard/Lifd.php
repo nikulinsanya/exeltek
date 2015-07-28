@@ -44,8 +44,7 @@
                             </label>
                         </div>
                         <div class="col-xs-4 col-sm-4 col-md-2">
-                            <select class="fsa-filter multiselect" multiple="multiple" name="fsa[]">
-                            </select>
+                            <?=Form::select('fsa[]', $fsa, NULL, array('class' => 'fsa-filter multiselect', 'multiple' => 'multiple'))?>
                         </div>
                         <div class="col-xs-2 col-sm-2 col-md-1">
                             <label class="control-label">
@@ -53,8 +52,7 @@
                             </label>
                         </div>
                         <div class="col-xs-4 col-sm-4 col-md-2">
-                            <select class="fsam-filter multiselect" multiple="multiple" name="fsam[]">
-                            </select>
+                            <?=Form::select('fsam[]', $fsam, NULL, array('class' => 'fsam-filter multiselect', 'multiple' => 'multiple'))?>
                         </div>
 
                     </div>
