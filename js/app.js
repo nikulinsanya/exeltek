@@ -1111,7 +1111,7 @@ $(function () {
                 var i = data.length,
                     html = [];
                 while(i--){
-                    html.push('<option value="',
+                    html.unshift('<option value="',
                         data[i],
                         '">',
                         data[i],
@@ -1142,7 +1142,7 @@ $(function () {
                     var i = data.length,
                         html = [];
                     while(i--){
-                        html.push('<option value="',
+                        html.unshift('<option value="',
                             data[i],
                             '">',
                             data[i],
