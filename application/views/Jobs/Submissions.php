@@ -7,6 +7,7 @@
     <tr>
         <th>Date</th>
         <th>User</th>
+        <th>Source</th>
         <th>Status</th>
         <th>Processed</th>
         <th>Company</th>
@@ -21,6 +22,7 @@
         <tr>
             <td><?=date('d-m-Y H:i:s', $submission['update_time'])?></td>
             <td><?=User::get($submission['user_id'], 'login')?></td>
+            <td><?=isset($submission['version']) ? 'Mobile app (' . ($submission['version'] ? : 'Unknown') . ')' : 'Web-app'?></td>
             <td><span class="glyphicon glyphicon-<?=Arr::get($submission, 'active') ? ($submission['active'] < 0 ? 'ok text-success' : 'edit text-info') : 'remove text-danger'?>"></span></td>
             <td><?=Arr::get($submission, 'process_time') ? date('d-m-Y H:i:s', $submission['process_time']) . ' by ' . User::get(Arr::get($submission, 'admin_id'), 'login') : ''?></td>
             <td><?=Arr::get($companies, User::get($submission['user_id'], 'company_id'))?></td>

@@ -101,12 +101,15 @@
                     $user_id = $submission['user_id'];
                     $time = $submission['time'];
                     ?>
-                    <tr>
-                        <td>
+                    <tr class="text-center">
+                        <th>
                         <label>
-                            <?=date('d-m-Y H:i', $submission['time']) . ' - ' . Arr::get($user, 'login', 'Unknown user') . ' / ' . Arr::get($companies, Arr::get($user, 'company_id'), 'Unknown company')?>
+                            <?=date('d-m-Y H:i', $submission['time']) . ' - ' .
+                                Arr::get($user, 'login', 'Unknown user') . '@' . (isset($submission['version']) ? 'Mobile app (' . ($submission['version'] ? : 'Unknown') . ')' : 'Web-app') .
+                                ' / ' . Arr::get($companies, Arr::get($user, 'company_id'), 'Unknown company')?>
+
                         </label>
-                        </td>
+                        </th>
                     </tr>
                 <?php endif;?>
 

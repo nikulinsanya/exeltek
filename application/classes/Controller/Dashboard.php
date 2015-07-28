@@ -159,9 +159,18 @@ class Controller_Dashboard extends Controller {
                         array('ex' => is_array($company) ? array('$in' => $company) : $company),
                     );
                 }
-                if (Arr::get($_GET, 'region') && isset($regions[$_GET['region']]))
-                    $query['region'] = strval($_GET['region']);
+            }
+            if (Arr::get($_GET, 'region') && isset($regions[$_GET['region']]))
+                $query['region'] = strval($_GET['region']);
 
+            if (Arr::get($_GET, 'fsa')) {
+                $fsa = is_array($_GET['fsa']) ? array_map('strval', $_GET['fsa']) : explode(', ', $_GET['fsa']);
+                $query['data.12'] = count($fsa) > 1 ? array('$in' => $fsa) : array_shift($fsa);
+            }
+
+            if (Arr::get($_GET, 'fsam')) {
+                $fsam = is_array($_GET['fsam']) ? array_map('strval', $_GET['fsam']) : explode(', ', $_GET['fsam']);
+                $query['data.13'] = count($fsam) > 1 ? array('$in' => $fsam) : array_shift($fsam);
             }
 
             $result = Database_Mongo::collection('jobs')->find($query, array('data.12' => 1, 'data.13' => 1, 'data.14' => 1, 'data.17' => 1, 'data.18' => 1, 'data.44' => 1, 'created' => 1, 'companies' => 1, 'ex' => 1));
@@ -223,7 +232,24 @@ class Controller_Dashboard extends Controller {
             )));
         }
 
+        $query = array();
+
+        if (!Group::current('allow_assign')) {
+            $query['$or'] = array(
+                array('companies' => intval(User::current('company_id'))),
+                array('ex' => intval(User::current('company_id'))),
+            );
+        }
+
+        $fsa = Database_Mongo::collection('jobs')->distinct('data.12', $query ? : NULL);
+        $fsam = Database_Mongo::collection('jobs')->distinct('data.13', $query ? : NULL);
+
+        sort($fsa);
+        sort($fsam);
+
         $view = View::factory('Dashboard/Lifd')
+            ->bind('fsa', $fsa)
+            ->bind('fsam', $fsam)
             ->bind('companies', $companies)
             ->bind('regions', $regions);
 

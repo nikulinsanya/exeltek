@@ -82,6 +82,8 @@ class Controller_Search_View extends Controller {
                 'active' => Arr::get($submission, 'active'),
                 'value' => $submission['value'],
             );
+            if (isset($submission['version']))
+                $data['version'] = $submission['version'];
 
             if (Group::current('allow_assign') && Arr::get($submission, 'active') == 1) {
                 $tabs[Columns::get_tab($key)]['submissions'][$key] = 1;
