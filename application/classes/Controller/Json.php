@@ -25,7 +25,7 @@ class Controller_Json extends Controller {
                     array('ex' => is_array($company) ? array('$in' => $company) : $company),
                 );
             }
-            if (Arr::get($_GET, 'region') && isset($regions[$_GET['region']]))
+            if (Arr::get($_GET, 'region'))
                 $query['region'] = strval($_GET['region']);
         }
 
@@ -54,7 +54,7 @@ class Controller_Json extends Controller {
                     array('ex' => is_array($company) ? array('$in' => $company) : $company),
                 );
             }
-            if (Arr::get($_GET, 'region') && isset($regions[$_GET['region']]))
+            if (Arr::get($_GET, 'region'))
                 $query['region'] = strval($_GET['region']);
         }
 
