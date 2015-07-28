@@ -507,6 +507,9 @@ form.view-form  label.checkbox{
     margin-bottom: -5px;
 }
 
+#lifd-report-form .multiselect .multiselect-selected-text{
+    width: 240px;
+}
 
 
 

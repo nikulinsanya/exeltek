@@ -1098,6 +1098,7 @@ $(function () {
         return false;
     });
 
+
     $('.company-filter, .region-filter').on('change',function(){
         $.ajax({
             url:utils.baseUrl() + "json/fsa?company="+
