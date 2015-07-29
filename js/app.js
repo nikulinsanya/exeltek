@@ -1231,5 +1231,9 @@ $(function () {
         });
     }
 
+    function handleScrollOnLifdReport(){
+        $(window).on('scroll')
+    }
+
     initPlugins();
 });
