@@ -22,7 +22,7 @@ class Controller_Search_Search extends Controller {
             '>',
             '>=',
             '<>',
-            'empty', 
+            'empty',
             'not empty',
         );
         $actions_mongo = array(
@@ -95,7 +95,11 @@ class Controller_Search_Search extends Controller {
             $q = array();
             foreach ($tickets as $ticket) {
                 $ticket = preg_replace('/[^a-z0-9]/i', '', strval($ticket));
-                if ($ticket) $q[] = new MongoRegex('/.*' . $ticket . '.*/i');
+                if (!$ticket) continue;
+                if (preg_match('/^T1W[0-9]{12}$/', $ticket))
+                    $q[] = $ticket;
+                else
+                    $q[] = new MongoRegex('/.*' . $ticket . '.*/i');
             }
             if (count($q) > 1)
                 $query['_id'] = array('$in' => $q);

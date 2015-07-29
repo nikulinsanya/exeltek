@@ -462,13 +462,26 @@ class Controller_Search_View extends Controller {
                 $job['discrepancies'][] = $discr;
         }
 
+        if (Group::current('time_machine')) {
+            $result = Database_Mongo::collection('archive')->find(array('job_key' => $job['_id']))->sort(array('update_time' => -1));
+
+            $archive = array();
+            $ids = array();
+            foreach ($result as $item) {
+                $archive[] = $item;
+                $ids[Arr::get($item, 'user_id', 0)] = 1;
+            }
+            User::get(array_keys($ids));
+        }
+
         $view = View::factory('Jobs/View')
             ->bind('job', $job)
             ->bind('tabs', $tabs)
             ->bind('job_types', $job_types)
             ->bind('companies', $companies)
             ->bind('submissions', $submissions)
-            ->bind('values', $values);
+            ->bind('values', $values)
+            ->bind('archive', $archive);
         $this->response->body($view);
     }
 

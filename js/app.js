@@ -1157,6 +1157,33 @@ $(function () {
             })
     });
 
+    $('.time-machine-item').click(function () {
+        var val = $(this).prev('tr').attr('data-id');
+        if (val) {
+            $('#time-machine-start').removeClass('disabled').attr('data-id', $(this).attr('data-id'));
+            $('tr.time-machine-item').each(function (i, e) {
+                $(e).removeClass($(e).attr('data-saved')).addClass('active');
+            });
+            $('tr.time-machine-item[data-id=' + val + '] ~ tr').each(function (i, e) {
+                $(e).removeClass('active').addClass($(e).attr('data-saved'));
+            });
+        } else {
+            $('#time-machine-start').addClass('disabled');
+            $('tr.time-machine-item.active').each(function (i, e) {
+                $(e).addClass($(e).attr('data-saved')).removeClass('active');
+            });
+        }
+    });
+
+    $('#time-machine-start').click(function() {
+        var id = $('#ticket-id').text().trim();
+        var val = $(this).attr('data-id');
+
+        $.get(utils.baseUrl() + 'timemachine?id=' + id + '&point=' + val, function(data) {
+            document.location = document.location;
+        });
+    })
+
 
 
     function collectDataToBatch(){

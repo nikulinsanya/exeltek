@@ -301,6 +301,9 @@ class Controller_Dashboard extends Controller {
                 $result = array();
                 foreach ($list as $key => $values)
                     $result[Arr::get($companies, $key, 'Unknown')] = $values;
+
+                ksort($result);
+
                 $list = array(
                     'total' => $total,
                     'companies' => $result,
@@ -376,7 +379,7 @@ class Controller_Dashboard extends Controller {
                                 $date = strtotime(date('01-m-Y', $item['t']));
                                 break;
                             case 'w':
-                                $date = strtotime('first day of ' . date('W', $item['t']) . ' week', $item['t']);
+                                $date = strtotime('last monday', strtotime('+1 day', strtotime('midnight', $item['t'])));
                                 break;
                             case 'd':
                                 $date = strtotime('midnight', $item['t']);
