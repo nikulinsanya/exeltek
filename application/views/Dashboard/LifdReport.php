@@ -40,24 +40,24 @@
                                 <?=($dates[0] ? date('d-m-Y', $dates[0]) : '') . '-' . ($dates[1] ? date('d-m-Y', $dates[1]) . ' [' . $days . ' day' . ($days != 1 ? 's ' : ' ') . ($dates[1] < time() ? 'passed' : 'left') . ']' : '')?>
                             </td>
                         <?php endif;?>
-                        <td><?=$fda?></td>
-                        <td><?=implode('<br/>', array_intersect_key($companies, array_flip(Arr::get($data, 'companies', array()))))?></td>
-                        <td><?=array_sum($data)?></td>
-                        <td><?=Arr::get($data, 'assigned')?></td>
-                        <td><?=Arr::get($data, 'notify')?></td>
-                        <td><?=Arr::get($data, 'planned')?></td>
-                        <td><strong><?=Arr::get($data, 'assigned') + Arr::get($data, 'notify') + Arr::get($data, 'planned')?></strong></td>
-                        <td><?=Arr::get($data, 'scheduled')?></td>
-                        <td><?=Arr::get($data, 'inprogress')?></td>
-                        <td><?=Arr::get($data, 'heldcontractor')?></td>
-                        <td><strong><?=Arr::get($data, 'scheduled') + Arr::get($data, 'inprogress') + Arr::get($data, 'heldcontractor')?></strong></td>
-                        <td><?=Arr::get($data, 'built')?></td>
-                        <td><?=Arr::get($data, 'tested')?></td>
-                        <td><strong><?=Arr::get($data, 'built') + Arr::get($data, 'tested')?></strong></td>
-                        <td><?=Arr::get($data, 'deferred')?></td>
-                        <td><?=Arr::get($data, 'dirty')?></td>
-                        <td><?=Arr::get($data, 'heldnbn')?></td>
-                        <td><strong><?=Arr::get($data, 'deferred') + Arr::get($data, 'dirty') + Arr::get($data, 'heldnbn')?></strong></td>
+                        <td class="fsa-cell"><?=$fda?></td>
+                        <td class="fsa-cell"><?=implode('<br/>', array_intersect_key($companies, array_flip(Arr::get($data, 'companies', array()))))?></td>
+                        <td class="lightcyan"><?=array_sum($data)?></td>
+                        <td class="lightcyan"><?=Arr::get($data, 'assigned')?></td>
+                        <td class="lightcyan"><?=Arr::get($data, 'notify')?></td>
+                        <td class="lightcyan"><?=Arr::get($data, 'planned')?></td>
+                        <td class="lightcyan"><strong><?=Arr::get($data, 'assigned') + Arr::get($data, 'notify') + Arr::get($data, 'planned')?></strong></td>
+                        <td class="yellow"><?=Arr::get($data, 'scheduled')?></td>
+                        <td class="yellow"><?=Arr::get($data, 'inprogress')?></td>
+                        <td class="yellow"><?=Arr::get($data, 'heldcontractor')?></td>
+                        <td class="yellow"><strong><?=Arr::get($data, 'scheduled') + Arr::get($data, 'inprogress') + Arr::get($data, 'heldcontractor')?></strong></td>
+                        <td class="lgreen"><?=Arr::get($data, 'built')?></td>
+                        <td class="lgreen"><?=Arr::get($data, 'tested')?></td>
+                        <td class="lgreen"><strong><?=Arr::get($data, 'built') + Arr::get($data, 'tested')?></strong></td>
+                        <td class="rose"><?=Arr::get($data, 'deferred')?></td>
+                        <td class="rose"><?=Arr::get($data, 'dirty')?></td>
+                        <td class="rose"><?=Arr::get($data, 'heldnbn')?></td>
+                        <td class="rose"><strong><?=Arr::get($data, 'deferred') + Arr::get($data, 'dirty') + Arr::get($data, 'heldnbn')?></strong></td>
                     </tr>
                 <?php endforeach;?>
 </table>
