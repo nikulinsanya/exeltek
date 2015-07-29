@@ -909,7 +909,7 @@ $(function () {
                },
                    function(start, end, label) {
                        $('#preloaderModal').modal('show');
-                       this.element.find('span').html((start.isValid() ? start.format(format) : '') + ' - ' + (end.isValid() ? end.format(format) : ''));
+                       this.element.find('span').html((start.isValid() ? start.format(format) : '') + ' - ' + (end.isValid() ? end.format(format) : moment().format(format)));
                        $('#'+this.element.attr('data-start')).val(start.isValid() ? start.format(format) : '' );
                        $('#'+this.element.attr('data-end')).val(end.isValid() ? end.format(format) : moment().format(format));
                        $(this.element).parents('form').submit();
