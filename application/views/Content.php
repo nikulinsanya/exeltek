@@ -15,6 +15,7 @@
 
     <!-- Bootstrap -->
     <link href="<?=URL::base()?>css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?=URL::base()?>css/dashboard.css" rel="stylesheet">
     <link href="<?=URL::base()?>css/style.css" rel="stylesheet">
     <script src="<?=URL::base()?>js/lib/bootstrap/bootstrap.min.js"></script>
 
