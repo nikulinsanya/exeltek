@@ -222,10 +222,10 @@ table td .multiselect-container input[type=checkbox]{
     background: #8c8!important;
 }
 
-#lifd-report  tr:nth-child(even) .lightcyan{
+#lifd-report  tr:nth-child(odd) .lightcyan{
     background: lightcyan;
 }
-#lifd-report  tr:nth-child(odd) .lightcyan{
+#lifd-report  tr:nth-child(even) .lightcyan{
     background: rgb(210, 253, 253);
 }
 #lifd-report tr:nth-child(odd):hover .lightcyan{
