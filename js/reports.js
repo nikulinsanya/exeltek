@@ -505,7 +505,7 @@ $(function () {
             chartContainer,
             rawSeries,
             series;
-
+        $('#tickets-companies').html('');
         for(i in tickets.companies){
             chartContainer = $('<div class="width-1-3 height-300"></div>');
             series = [];
