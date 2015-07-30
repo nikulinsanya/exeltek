@@ -288,7 +288,7 @@
                                     <td><?=HTML::chars(Columns::get_name($id))?></td>
                                     <td <?=strlen($value['old_value']) > 100 ? 'class="shorten"' : ''?>><?=Columns::output($value['old_value'], $type)?></td>
                                     <td <?=strlen($value['new_value']) > 100 ? 'class="shorten"' : ''?>><?=Columns::output($value['new_value'], $type)?></td>
-                                    <td><?=Columns::output(Arr::get($job['data'], $id), $type)?></td>
+                                    <td <?=strlen(Arr::get($job['data'], $id)) > 100 ? 'class="shorten"' : ''?>><?=Columns::output(Arr::get($job['data'], $id), $type)?></td>
                                 </tr>
                             <?php endforeach;?>
                         </table>

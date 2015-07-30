@@ -1157,7 +1157,9 @@ $(function () {
             })
     });
 
-    $('.time-machine-item').click(function () {
+    $('.time-machine-item').click(function (e) {
+        if(e.target.nodeName == 'INPUT' || e.target.nodeName == 'A') return;
+
         var val = $(this).prev('tr').attr('data-id');
         if (val) {
             $('#time-machine-start').removeClass('disabled').attr('data-id', $(this).attr('data-id'));
@@ -1176,6 +1178,8 @@ $(function () {
     });
 
     $('#time-machine-start').click(function() {
+        if (!confirm('Rolling back can\'t be undone! Are you really want to continue?')) return;
+
         var id = $('#ticket-id').text().trim();
         var val = $(this).attr('data-id');
 
