@@ -274,11 +274,32 @@ class Controller_Dashboard extends Controller {
 
         $filter = array();
 
-        if (!Group::current('show_all_jobs')) {
-            $filter = array('$or' => array(
+        if (!Group::current('allow_assign')) {
+            $filter['$or'] = array(
                 array('companies' => intval(User::current('company_id'))),
                 array('ex' => intval(User::current('company_id'))),
-            ));
+            );
+        } else {
+            if (Arr::get($_GET, 'company') && is_array($_GET['company'])) {
+                $company = array_map('intval', $_GET['company']);
+                if (count($company) == 1) $company = array_shift($company);
+                $filter['$or'] = array(
+                    array('companies' => is_array($company) ? array('$in' => $company) : $company),
+                    array('ex' => is_array($company) ? array('$in' => $company) : $company),
+                );
+            }
+        }
+        if (Arr::get($_GET, 'region') && isset($regions[$_GET['region']]))
+            $filter['region'] = strval($_GET['region']);
+
+        if (Arr::get($_GET, 'fsa')) {
+            $fsa = is_array($_GET['fsa']) ? array_map('strval', $_GET['fsa']) : explode(', ', $_GET['fsa']);
+            $filter['data.12'] = count($fsa) > 1 ? array('$in' => $fsa) : array_shift($fsa);
+        }
+
+        if (Arr::get($_GET, 'fsam')) {
+            $fsam = is_array($_GET['fsam']) ? array_map('strval', $_GET['fsam']) : explode(', ', $_GET['fsam']);
+            $filter['data.13'] = count($fsam) > 1 ? array('$in' => $fsam) : array_shift($fsam);
         }
 
         switch ($type) {
