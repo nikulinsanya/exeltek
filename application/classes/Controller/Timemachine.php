@@ -34,7 +34,7 @@ class Controller_TimeMachine extends Controller
 
         foreach ($values as $key => $value)
                 if ($value)
-                    $new['$set']['data.' . $key] = $data['old_value'];
+                    $new['$set']['data.' . $key] = $value;
                 else
                     $new['$unset']['data.' . $key] = 1;
             }
