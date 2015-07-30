@@ -261,8 +261,8 @@ class Controller_Dashboard extends Controller {
 
         $companies = Group::current('allow_assign') ? DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name') : array();
         $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
-        $fsa = Database_Mongo::collection('jobs')->distinct('data.12', $query ? : NULL);
-        $fsam = Database_Mongo::collection('jobs')->distinct('data.13', $query ? : NULL);
+        $fsa = Database_Mongo::collection('jobs')->distinct('data.12');
+        $fsam = Database_Mongo::collection('jobs')->distinct('data.13');
 
         $this->response->body($view)
             ->bind('fsa', $fsa)
