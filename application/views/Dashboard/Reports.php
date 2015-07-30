@@ -8,7 +8,7 @@
         <div class="row" id="report-container">
             <div class="col-sm-3 col-md-2 sidebar">
                 <ul class="nav nav-sidebar">
-                    <li data-id="main" class="active"><a class="switcher" href="#main">Overview</a></li>
+                    <li data-id="main" class="active"><a class="switcher selected_switcher" href="#main">Overview</a></li>
                     <li data-id="company"><a class="switcher" href="#company">Company progress</a></li>
                     <li data-id="time"><a class="switcher" href="#time">Time progress</a></li>
                     <li data-id="stacked"><a class="switcher" href="#stacked">Stacked</a></li>
@@ -26,7 +26,17 @@
                             </span>
                             <?=Form::hidden('start-overview', Arr::get($_GET, 'start'), array('id'=>'start-overview'))?>
                             <?=Form::hidden('end-overview', Arr::get($_GET, 'end'), array('id'=>'end-overview'))?>
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#filterModal">
+                                <span class="glyphicon glyphicon-filter"></span>
+                                Modify filters
+                            </button>
                         </form>
+                        <label  class="filter_value" style="float: left;">Filters:</label>
+                        <div class="text-info-filters">
+                            <div>
+                                <span class="filter-item"> <label class="filter_value">Empty</label></span>
+                            </div>
+                        </div>
                         <div class="report-block">
                             <div class="chart_with_list">
                                 <div class="chart-container full-width height-400" id="pie-total-tickets-assigned"></div>
@@ -43,7 +53,17 @@
                             </span>
                             <?=Form::hidden('start-company', Arr::get($_GET, 'start'), array('id'=>'start-company'))?>
                             <?=Form::hidden('end-company', Arr::get($_GET, 'end'), array('id'=>'end-company'))?>
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#filterModal">
+                                <span class="glyphicon glyphicon-filter"></span>
+                                Modify filters
+                            </button>
                         </form>
+                        <label  class="filter_value" style="float: left;">Filters:</label>
+                        <div class="text-info-filters">
+                            <div>
+                                <span class="filter-item"> <label class="filter_value">Empty</label></span>
+                            </div>
+                        </div>
                         <div class="report-block">
                             <div class="chart_with_list">
                                 <div class="chart-container full-width height-400" id="pie-total-tickets"></div>
@@ -68,7 +88,17 @@
                             </span>
                             <?=Form::hidden('start-time', Arr::get($_GET, 'start'), array('id'=>'start-time'))?>
                             <?=Form::hidden('end-time', Arr::get($_GET, 'end'), array('id'=>'end-time'))?>
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#filterModal">
+                                <span class="glyphicon glyphicon-filter"></span>
+                                Modify filters
+                            </button>
                         </form>
+                        <label  class="filter_value" style="float: left;">Filters:</label>
+                        <div class="text-info-filters">
+                            <div>
+                                <span class="filter-item"> <label class="filter_value">Empty</label></span>
+                            </div>
+                        </div>
                         <div class="report-block history-container" style="padding-top: 0px;">
                             <div class="btn-group" role="group">
                                 <button type="button" data-attr="d" data-format="YYYY-MM-DD" class="btn btn-default">Daily</button>
@@ -88,7 +118,17 @@
                             </span>
                             <?=Form::hidden('start-stacked', Arr::get($_GET, 'start'), array('id'=>'start-stacked'))?>
                             <?=Form::hidden('end-stacked', Arr::get($_GET, 'end'), array('id'=>'end-stacked'))?>
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#filterModal">
+                                <span class="glyphicon glyphicon-filter"></span>
+                                Modify filters
+                            </button>
                         </form>
+                        <label  class="filter_value" style="float: left;">Filters:</label>
+                        <div class="text-info-filters">
+                            <div>
+                                <span class="filter-item"> <label class="filter_value">Empty</label></span>
+                            </div>
+                        </div>
                         <div class="report-block">
                             <div class="chart-container full-width" id="tickets-stacked"></div>
                         </div>
@@ -123,7 +163,7 @@
         <div class="row" id="report-container">
             <div class="col-sm-3 col-md-2 sidebar">
                 <ul class="nav nav-sidebar">
-                    <li data-id="main" class="active"><a class="switcher" href="#main">Overview</a></li>
+                    <li data-id="main" class="active"><a class="switcher selected_switcher" href="#main">Overview</a></li>
                     <li data-id="time"><a class="switcher" href="#time">Time progress</a></li>
                     <li data-id="fsa-fsam"><a class="switcher" href="#fsa-fsam">Fsa/Fsam</a></li>
                 </ul>
@@ -139,7 +179,17 @@
                             </span>
                         <?=Form::hidden('start-overview', Arr::get($_GET, 'start'), array('id'=>'start-overview'))?>
                         <?=Form::hidden('end-overview', Arr::get($_GET, 'end'), array('id'=>'end-overview'))?>
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#filterModal">
+                            <span class="glyphicon glyphicon-filter"></span>
+                            Modify filters
+                        </button>
                     </form>
+                    <label  class="filter_value" style="float: left;">Filters:</label>
+                    <div class="text-info-filters">
+                        <div>
+                            <span class="filter-item"> <label class="filter_value">Empty</label></span>
+                        </div>
+                    </div>
                     <div class="report-block">
                         <div class="chart_with_list">
                             <div class="chart-container full-width height-400" id="pie-total-tickets-assigned"></div>
@@ -156,7 +206,17 @@
                             </span>
                         <?=Form::hidden('start-time', Arr::get($_GET, 'start'), array('id'=>'start-time'))?>
                         <?=Form::hidden('end-time', Arr::get($_GET, 'end'), array('id'=>'end-time'))?>
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#filterModal">
+                            <span class="glyphicon glyphicon-filter"></span>
+                            Modify filters
+                        </button>
                     </form>
+                    <label  class="filter_value" style="float: left;">Filters:</label>
+                    <div class="text-info-filters">
+                        <div>
+                            <span class="filter-item"> <label class="filter_value">Empty</label></span>
+                        </div>
+                    </div>
                     <div class="report-block history-container" style="padding-top: 0px;">
                         <div class="btn-group" role="group">
                             <button type="button" data-attr="d" data-format="YYYY-MM-DD" class="btn btn-default">Daily</button>
@@ -190,7 +250,64 @@
 
                 </div>
             </div>
+
         </div>
 
 
 <?php endif;?>
+
+    <div class="modal fade" id="filterModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width:800px;">
+            <div class="modal-content">
+                <form id="dashboard-report-form" class="" action="" method="get">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Modify filters</h4>
+                    </div>
+
+                    <div class="modal-body" id="filter-form" style="min-height: 300px;">
+                        <div class="col-xs-2">
+                            <label class="control-label">Region: </label>
+                        </div>
+                        <div class="col-xs-3">
+                            <?=Form::select('region', array('' => 'All regions') + $regions, Arr::get($_GET, 'region'), array('class' => 'form-control region-filter multiselect'))?>
+
+                        </div>
+                        <div class="clearfix">&nbsp;</div>
+
+                        <?php if (Group::current('show_all_jobs')):?>
+                            <div class="col-xs-2">
+                                <label class="control-label">Contractor: </label>
+                            </div>
+                            <div class="col-xs-3">
+                                <?=Form::select('company[]', $companies, isset($_GET['company']) ? explode(',',$_GET['company']) : [], array('class' => 'multiselect form-control company-filter', 'multiple'=>'multiple'))?>
+                            </div>
+                            <div class="clearfix">&nbsp;</div>
+                        <?php endif;?>
+
+                        <div class="col-xs-2">
+                            <label class="control-label">FSA: </label>
+                        </div>
+                        <div class="col-xs-3">
+                            <?=Form::select('fsa[]', $fsa, NULL, array('class' => 'fsa-filter multiselect', 'multiple' => 'multiple'))?>
+                        </div>
+                        <div class="clearfix">&nbsp;</div>
+
+                        <div class="col-xs-2">
+                            <label class="control-label">FSAM: </label>
+                        </div>
+                        <div class="col-xs-3">
+                            <?=Form::select('fsam[]', $fsam, NULL, array('class' => 'fsam-filter multiselect', 'multiple' => 'multiple'))?>
+                        </div>
+                        <div class="clearfix">&nbsp;</div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <a href="javascript:;" class="btn btn-warning clear-filters"><span class="glyphicon glyphicon-remove"></span> Clear</a>
+                        <button type="submit" class="btn btn-success" id="hideModalFilters">Apply filters</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
