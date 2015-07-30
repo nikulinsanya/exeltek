@@ -341,6 +341,8 @@ class Controller_Dashboard extends Controller {
                 );
                 break;
             case 'fsa':
+                unset($filter['data.12']);
+                unset($filter['data.13']);
                 $result = Database_Mongo::collection('jobs')->find($filter, array('data.44' => 1, 'data.12' => 1));
                 $list = array();
                 foreach ($result as $job) {
@@ -352,6 +354,7 @@ class Controller_Dashboard extends Controller {
             case 'fsam':
                 $fsa = strval(Arr::get($_GET, 'fsa', ''));
                 $filter['data.12'] = $fsa;
+                unset($filter['data.13']);
                 $result = Database_Mongo::collection('jobs')->find($filter, array('data.44' => 1, 'data.13' => 1));
                 $list = array();
                 foreach ($result as $job) {
