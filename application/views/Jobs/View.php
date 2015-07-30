@@ -246,6 +246,7 @@
                 <?php endforeach;?>
             </table>
         </div>
+        <?php if (Group::current('time_machine')):?>
         <div data-id="time-machine" class="panel-body hidden">
             <button id="time-machine-start" type="button" class="btn btn-danger pull-right disabled">Rollback</button>
             <table class="table">
@@ -300,6 +301,7 @@
             <?php endforeach;?>
             </table>
         </div>
+        <?php endif;?>
     </div>
     <!--    tabs-->
     <ul class="nav nav-tabs status-filter upsidedown">
