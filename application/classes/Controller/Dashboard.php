@@ -300,7 +300,7 @@ class Controller_Dashboard extends Controller {
                 );
             }
         }
-        if (Arr::get($_GET, 'region') && isset($regions[$_GET['region']]))
+        if (Arr::get($_GET, 'region'))
             $filter['region'] = strval($_GET['region']);
 
         if (Arr::get($_GET, 'fsa')) {
@@ -343,6 +343,8 @@ class Controller_Dashboard extends Controller {
                 break;
             case 'fsa':
                 $result = Database_Mongo::collection('jobs')->find($filter, array('data.44' => 1, 'data.12' => 1));
+                unset($filter['data.12']);
+                unset($filter['data.13']);
                 $list = array();
                 foreach ($result as $job) {
                     $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', strtolower(Arr::path($job, 'data.44'))))) ? : 'Unknown';
@@ -353,6 +355,7 @@ class Controller_Dashboard extends Controller {
             case 'fsam':
                 $fsa = strval(Arr::get($_GET, 'fsa', ''));
                 $filter['data.12'] = $fsa;
+                unset($filter['data.13']);
                 $result = Database_Mongo::collection('jobs')->find($filter, array('data.44' => 1, 'data.13' => 1));
                 $list = array();
                 foreach ($result as $job) {
