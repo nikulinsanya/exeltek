@@ -45,9 +45,11 @@ class Controller_TimeMachine extends Controller
         foreach ($result as $item) if (Arr::path($job, $item['key'], '') != $item['value'])
             $submissions[] = $item['_id'];
 
-        Database_Mongo::collection('submissions')->update(array('_id' => array('$in' => $submissions)), array('$unset' => array('process_time' => 1), '$set' => array('active' => 1)));
-        Database_Mongo::collection('jobs')->update(array('_id' => $id), $new);
-        Database_Mongo::collection('archive')->remove(array('_id' => array('$in' => $ids)));
+        if ($new) {
+            Database_Mongo::collection('submissions')->update(array('_id' => array('$in' => $submissions)), array('$unset' => array('process_time' => 1), '$set' => array('active' => 1)));
+            Database_Mongo::collection('jobs')->update(array('_id' => $id), $new);
+            Database_Mongo::collection('archive')->remove(array('_id' => array('$in' => $ids)));
+        }
 
         $message = '';
         if (count($ids)) $message .= count($ids) . ' changes were removed. ';
