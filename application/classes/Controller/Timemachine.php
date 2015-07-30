@@ -33,12 +33,11 @@ class Controller_TimeMachine extends Controller
         }
 
         foreach ($values as $key => $value)
-                if ($value)
-                    $new['$set']['data.' . $key] = $value;
-                else
-                    $new['$unset']['data.' . $key] = 1;
-            }
-        }
+            if ($value)
+                $new['$set']['data.' . $key] = $value;
+            else
+                $new['$unset']['data.' . $key] = 1;
+
 
         if ($new) $new['$set']['last_update'] = $archive['update_time'];
 
