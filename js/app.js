@@ -909,7 +909,7 @@ $(function () {
                },
                    function(start, end, label) {
                        $('#preloaderModal').modal('show');
-                       this.element.find('span').html((start.isValid() ? start.format(format) : '') + ' - ' + (end.isValid() ? end.format(format) : ''));
+                       this.element.find('span').html((start.isValid() ? start.format(format) : '') + ' - ' + (end.isValid() ? end.format(format) : moment().format(format)));
                        $('#'+this.element.attr('data-start')).val(start.isValid() ? start.format(format) : '' );
                        $('#'+this.element.attr('data-end')).val(end.isValid() ? end.format(format) : moment().format(format));
                        $(this.element).parents('form').submit();
@@ -1098,6 +1098,7 @@ $(function () {
         return false;
     });
 
+
     $('.company-filter, .region-filter').on('change',function(){
         $.ajax({
             url:utils.baseUrl() + "json/fsa?company="+
@@ -1110,7 +1111,7 @@ $(function () {
                 var i = data.length,
                     html = [];
                 while(i--){
-                    html.push('<option value="',
+                    html.unshift('<option value="',
                         data[i],
                         '">',
                         data[i],
@@ -1141,7 +1142,7 @@ $(function () {
                     var i = data.length,
                         html = [];
                     while(i--){
-                        html.push('<option value="',
+                        html.unshift('<option value="',
                             data[i],
                             '">',
                             data[i],
@@ -1155,6 +1156,37 @@ $(function () {
                 }
             })
     });
+
+    $('.time-machine-item').click(function (e) {
+        if(e.target.nodeName == 'INPUT' || e.target.nodeName == 'A') return;
+
+        var val = $(this).prev('tr').attr('data-id');
+        if (val) {
+            $('#time-machine-start').removeClass('disabled').attr('data-id', $(this).attr('data-id'));
+            $('tr.time-machine-item').each(function (i, e) {
+                $(e).removeClass($(e).attr('data-saved')).addClass('active');
+            });
+            $('tr.time-machine-item[data-id=' + val + '] ~ tr').each(function (i, e) {
+                $(e).removeClass('active').addClass($(e).attr('data-saved'));
+            });
+        } else {
+            $('#time-machine-start').addClass('disabled');
+            $('tr.time-machine-item.active').each(function (i, e) {
+                $(e).addClass($(e).attr('data-saved')).removeClass('active');
+            });
+        }
+    });
+
+    $('#time-machine-start').click(function() {
+        if (!confirm('Rolling back can\'t be undone! Are you really want to continue?')) return;
+
+        var id = $('#ticket-id').text().trim();
+        var val = $(this).attr('data-id');
+
+        $.get(utils.baseUrl() + 'timemachine?id=' + id + '&point=' + val, function(data) {
+            document.location = document.location;
+        });
+    })
 
 
 
@@ -1228,6 +1260,10 @@ $(function () {
             dataType:'JSON',
             type:'GET'
         });
+    }
+
+    function handleScrollOnLifdReport(){
+        $(window).on('scroll')
     }
 
     initPlugins();

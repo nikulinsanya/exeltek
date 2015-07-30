@@ -141,10 +141,10 @@ table td .multiselect-container input[type=checkbox]{
 
 
 .green:nth-child(even){
-    background: #8c8;
+    background: #93d893;
 }
 .green:nth-child(odd) {
-    background: #93d893;
+    background: #8c8;
 }
 
 .green:hover{
@@ -180,6 +180,90 @@ table td .multiselect-container input[type=checkbox]{
     background: #f5ffcf;
 }
 
+.lgreen:nth-child(even){
+    background: #B8FDB8;
+}
+.lgreen:nth-child(odd){
+    background: #cfffcc;
+}
+.lgreen:hover{
+    background: #bdf3bd!important;
+}
+
+
+
+
+/*lifd-report row colors*/
+#lifd-report tr:nth-child(even) .rose{
+    background: #FFCCCC;
+}
+#lifd-report tr:nth-child(odd) .rose{
+    background: #FFD7D7;
+}
+#lifd-report tr:nth-child(odd) .rose:hover{
+    background: #FFD7D7;
+}
+#lifd-report tr:nth-child(even) .rose:hover{
+    background: #FFCCCC;
+}
+
+
+#lifd-report  tr:nth-child(even) .green{
+    background: #8c8;
+}
+#lifd-report  tr:nth-child(odd) .green {
+    background: #93d893;
+}
+
+#lifd-report  tr:nth-child(odd):hover .green{
+    background: #9dd89e!important;
+}
+#lifd-report  tr:nth-child(even):hover .green{
+    background: #8c8!important;
+}
+
+#lifd-report  tr:nth-child(odd) .lightcyan{
+    background: lightcyan;
+}
+#lifd-report  tr:nth-child(even) .lightcyan{
+    background: rgb(210, 253, 253);
+}
+#lifd-report tr:nth-child(odd):hover .lightcyan{
+    background: rgb(198, 245, 253)!important;
+}
+#lifd-report tr:nth-child(even):hover .lightcyan{
+    background: lightcyan!important;
+}
+
+#lifd-report tr:nth-child(even) .yellow{
+    background: #ffc;
+}
+#lifd-report tr:nth-child(odd) .yellow{
+    background: #f5ffcf;
+}
+#lifd-report tr:nth-child(odd):hover .yellow{
+    background: #fafac7!important;
+}
+#lifd-report tr:nth-child(even):hover .yellow{
+    background: #f5ffcf!important;
+}
+
+#lifd-report tr:nth-child(even) .lgreen{
+    background: #B8FDB8;
+}
+#lifd-report tr:nth-child(odd) .lgreen{
+    background: #cfffcc;
+}
+#lifd-report tr:nth-child(odd) .lgreen:hover{
+    background: #cfffcc;
+}
+#lifd-report tr:nth-child(even) .lgreen:hover{
+    background: #B8FDB8;
+}
+
+
+
+
 .table>tbody>tr.same-yellow:first-child{
     border:1px solid #fff!important;
 }
@@ -195,15 +279,6 @@ table.subtable{
 }
 
 
-.lgreen:nth-child(even){
-    background: #B8FDB8;
-}
-.lgreen:nth-child(odd){
-    background: #cfffcc;
-}
-.lgreen:hover{
-    background: #bdf3bd!important;
-}
 
 
 .nav.nav-tabs.status-filter{
@@ -507,6 +582,16 @@ form.view-form  label.checkbox{
     margin-bottom: -5px;
 }
 
+#lifd-report-form .multiselect .multiselect-selected-text{
+    width: 240px;
+}
+
+#lifd-report .table-header.fixed{
+    position: fixed;
+    top: 50px;
+}
+
+
 
 
 
@@ -646,3 +731,22 @@ table.table>tbody>tr>td{
     color: #BBB;
 }
 
+.odd.fsa-cell,
+.even.fsa-cell,
+.even.fsam-cell,
+.odd.fsam-cell{
+    font-weight: bold;
+    vertical-align: top!important;
+}
+
+.odd.fsa-cell,.odd.fsam-cell{
+    background: rgb(198, 255, 198);
+}
+.even.fsa-cell,.even.fsam-cell{
+    background: rgb(227, 255, 227);
+}
+
+.text-center td.top-aligned {
+    vertical-align: top!important;
+    padding-top: 15px;
+}

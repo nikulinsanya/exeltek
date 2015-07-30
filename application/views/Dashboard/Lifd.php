@@ -15,7 +15,7 @@
     </div>
 
     <div class="modal fade" id="filterModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog" role="document" style="width:800px;">
             <div class="modal-content">
                 <form id="lifd-report-form" class="" action="" method="get">
                     <div class="modal-header">
@@ -24,37 +24,40 @@
                     </div>
 
                     <div class="modal-body" id="filter-form" style="min-height: 300px;">
-                        <div class="col-xs-4 col-sm-4 col-md-2">
-                            <?=Form::select('region', array('' => 'All regions') + $regions, Arr::get($_GET, 'region'), array('class' => 'form-control region-filter'))?>
+                        <div class="col-xs-2">
+                            <label class="control-label">Region: </label>
                         </div>
+                        <div class="col-xs-3">
+                            <?=Form::select('region', array('' => 'All regions') + $regions, Arr::get($_GET, 'region'), array('class' => 'form-control region-filter multiselect'))?>
+
+                        </div>
+                        <div class="clearfix">&nbsp;</div>
+
                         <?php if (Group::current('show_all_jobs')):?>
-                            <div class="col-xs-2 col-sm-2 col-md-1">
-                                <label class="control-label">
-                                    Contractor:
-                                </label>
+                            <div class="col-xs-2">
+                                <label class="control-label">Contractor: </label>
                             </div>
-                            <div class="col-xs-4 col-sm-4 col-md-2">
-                                <?=Form::select('company[]', $companies, isset($_GET['company']) ? explode(',',$_GET['company']) : [], array('class' => 'multiselect form-control width-140 company-filter', 'multiple'=>'multiple'))?>
+                            <div class="col-xs-3">
+                                <?=Form::select('company[]', $companies, isset($_GET['company']) ? explode(',',$_GET['company']) : [], array('class' => 'multiselect form-control company-filter', 'multiple'=>'multiple'))?>
                             </div>
+                            <div class="clearfix">&nbsp;</div>
                         <?php endif;?>
 
-                        <div class="col-xs-2 col-sm-2 col-md-1">
-                            <label class="control-label">
-                                FSA:
-                            </label>
+                        <div class="col-xs-2">
+                            <label class="control-label">FSA: </label>
                         </div>
-                        <div class="col-xs-4 col-sm-4 col-md-2">
+                        <div class="col-xs-3">
                             <?=Form::select('fsa[]', $fsa, NULL, array('class' => 'fsa-filter multiselect', 'multiple' => 'multiple'))?>
                         </div>
-                        <div class="col-xs-2 col-sm-2 col-md-1">
-                            <label class="control-label">
-                                FSAM:
-                            </label>
+                        <div class="clearfix">&nbsp;</div>
+
+                        <div class="col-xs-2">
+                            <label class="control-label">FSAM: </label>
                         </div>
-                        <div class="col-xs-4 col-sm-4 col-md-2">
+                        <div class="col-xs-3">
                             <?=Form::select('fsam[]', $fsam, NULL, array('class' => 'fsam-filter multiselect', 'multiple' => 'multiple'))?>
                         </div>
-
+                        <div class="clearfix">&nbsp;</div>
                     </div>
 
                     <div class="modal-footer">

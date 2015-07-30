@@ -3,7 +3,7 @@
         <div class="col-xs-1">
             <label class="control-label">Ticket ID: </label>
         </div>
-        <div class="col-xs-3">
+        <div class="col-xs-3" id="ticket-id">
             <?=$job['_id']?>
         </div>
         <div class="clearfix">&nbsp;</div>
@@ -45,7 +45,10 @@
         <?php endif; ?>
         <li role="presentation" data-id="attachments"><a href="javascript:;">Attachments</a></li>
         <?php if ($job['discrepancies']):?>
-            <li role="presentation" class="bg-danger" data-id="discrepancies"><a href="javascript:;">Discrepancies</a></li>
+            <li role="presentation" class="rose" data-id="discrepancies"><a href="javascript:;">Discrepancies</a></li>
+        <?php endif;?>
+        <?php if (Group::current('time_machine')):?>
+            <li role="presentation" class="yellow" data-id="time-machine"><a href="javascript:;">Time Machine</a></li>
         <?php endif;?>
     </ul>
     
@@ -243,6 +246,60 @@
                 <?php endforeach;?>
             </table>
         </div>
+        <div data-id="time-machine" class="panel-body hidden">
+            <button id="time-machine-start" type="button" class="btn btn-danger pull-right disabled">Rollback</button>
+            <table class="table">
+                <tr>
+                    <th>Date</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>File name</th>
+                    <th colspan="3">Column</th>
+                </tr>
+                <?php
+                $actions = array(
+                    '1' => 'Created',
+                    '2' => 'Updated',
+                    '3' => 'Removed',
+                );
+                $classes = array(
+                    '1' => 'lgreen',
+                    '2' => 'yellow',
+                    '3' => 'rose',
+                );
+                foreach ($archive as $history):?>
+                <tr class="time-machine-item <?=Arr::get($classes, $history['update_type'])?>" data-saved="<?=Arr::get($classes, $history['update_type'])?>" data-id="<?=$history['_id']?>">
+                    <td nowrap="nowrap"><?=date('d-m-Y H:i', $history['update_time'])?></td>
+                    <td><?=User::get(Arr::get($history, 'user_id'), 'login') ? : 'Unknown'?></td>
+                    <td><?=Arr::get($actions, $history['update_type'])?></td>
+                    <td><a href="<?=URL::base() . 'imex/reports?file=' . urlencode($history['filename'])?>"><?=HTML::chars($history['filename'])?></a></td>
+
+                    <td colspan="3">
+                        <?php if ($history['update_type'] == 2):?>
+                        <table class="table subtable">
+                            <tr>
+                                <th>Name</th>
+                                <th>Old value:</th>
+                                <th>New value:</th>
+                                <th>Current value</th>
+                            </tr>
+                            <?php foreach($history['data'] as $id => $value): $type = Columns::get_type($id);?>
+                                <tr class="same-yellow">
+                                    <td><?=HTML::chars(Columns::get_name($id))?></td>
+                                    <td <?=strlen($value['old_value']) > 100 ? 'class="shorten"' : ''?>><?=Columns::output($value['old_value'], $type)?></td>
+                                    <td <?=strlen($value['new_value']) > 100 ? 'class="shorten"' : ''?>><?=Columns::output($value['new_value'], $type)?></td>
+                                    <td <?=strlen(Arr::get($job['data'], $id)) > 100 ? 'class="shorten"' : ''?>><?=Columns::output(Arr::get($job['data'], $id), $type)?></td>
+                                </tr>
+                            <?php endforeach;?>
+                        </table>
+                        <?php else:?>
+                            N/A
+                        <?php endif;?>
+                    </td>
+                </tr>
+            <?php endforeach;?>
+            </table>
+        </div>
     </div>
     <!--    tabs-->
     <ul class="nav nav-tabs status-filter upsidedown">
@@ -264,7 +321,10 @@
         <?php endif; ?>
         <li role="presentation" data-id="attachments"><a href="javascript:;">Attachments</a></li>
         <?php if ($job['discrepancies']):?>
-            <li role="presentation" class="bg-danger" data-id="discrepancies"><a href="javascript:;">Discrepancies</a></li>
+            <li role="presentation" class="rose" data-id="discrepancies"><a href="javascript:;">Discrepancies</a></li>
+        <?php endif;?>
+        <?php if (Group::current('time_machine')):?>
+            <li role="presentation" class="yellow" data-id="time-machine"><a href="javascript:;">Time Machine</a></li>
         <?php endif;?>
     </ul>
 </form>

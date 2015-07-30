@@ -34,8 +34,9 @@ class Controller_Security_Groups extends Controller {
             ->add('allow_reports', 'Allow tracking changes', Form::BOOL)
             ->add('allow_submissions', 'Allow tracking submissions', Form::BOOL)
             ->add('allow_finance', 'Financial reports', Form::BOOL)
-            ->add('allow_forms', 'Forms submission', Form::BOOL);
-            
+            ->add('allow_forms', 'Forms submission', Form::BOOL)
+            ->add('time_machine', 'Time Machine', Form::BOOL);
+
         $form->add('columns', 'Show columns in job search', Form::INFO);
         
         foreach (Columns::$fixed as $key => $value)
@@ -62,6 +63,7 @@ class Controller_Security_Groups extends Controller {
                 $value['allow_submissions'] = 1;
                 $value['allow_finance'] = 1;
                 $value['allow_forms'] = 0;
+                $value['time_machine'] = 1;
                 $value['columns'] = implode(',', array_keys(Columns::$fixed));
             } else {
                 $columns = array();

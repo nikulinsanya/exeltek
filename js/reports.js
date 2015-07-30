@@ -45,42 +45,115 @@ $(function () {
         }
     });
 
+    function dashboardHandlers(){
+        $('#report-container').on('click','.switcher',function(e){
+            var id = $(this).attr('href').replace('#','');
+            $('#report-container .tab-pane.active').removeClass('active');
+            $('[data-id="'+id+'"]').addClass('active');
+            refreshTabData(id);
+        });
+    }
 
-    function initData(){
-        var defs = [];
-        $('#preloaderModal').modal('show');
-        defs.push(
-            getAllTicketsByCompanies(),
-            getAllStatuses(),
-            getAllFSAStatuses(),
-            getHistoryChanges()
-        );
+    (function(){
+        var id = window.location.hash.replace('#','');
+        if(id){
+            $('#report-container .tab-pane.active').removeClass('active');
+            $('[data-id="'+id+'"]').addClass('active');
+            $('.sidebar .active').removeClass('active');
+            $('.sidebar [data-id="'+id+'"]').addClass('active');
+        }
+        refreshTabData(id);
+    })();
 
-        $.when.apply($, defs).then(function(results){
-            var result = Array.prototype.slice.call(arguments);
-            window.REPORTDATA.allTickets = result[0][0];
-            window.REPORTDATA.allStatuses = result[1][0];
-            window.REPORTDATA.allFSAStatuses = result[2][0];
-            window.REPORTDATA.historyChanges = result[3][0];
-
-            showAllReports();
+    function handleCompanyTab(){
+        var start = $('#start-company').val(),
+            end = $('#end-company').val();
+        getAllTicketsByCompanies(start,end).then(function(data){
+            showAllTickets(data);
+            showTicketsByCompanies(data);
             $('#preloaderModal').modal('hide');
         });
     }
 
-    function showAllReports(){
-        if(window.REPORTDATA.isAdmin){
-            showAllAssignedTickets(window.REPORTDATA.allStatuses);
-            showAllTickets(window.REPORTDATA.allTickets);
-            showTicketsByCompanies(window.REPORTDATA.allTickets);
-            showHistoryProgress(window.REPORTDATA.historyChanges,utils.dateRangeFormats['m']
-            );
-            showTicketsInStacked(window.REPORTDATA.allTickets);
-            showFSADrillDown(window.REPORTDATA.allFSAStatuses);
-        }else{
-            showAllAssignedTickets(window.REPORTDATA.allStatuses);
-            showFSADrillDown(window.REPORTDATA.allFSAStatuses);
+    function handleOverviewTab(){
+        var start = $('#start-overview').val(),
+            end = $('#end-overview').val();
+        getAllStatuses(start, end).then(function(data){
+            showAllAssignedTickets(data);
+            $('#preloaderModal').modal('hide');
+        });
+    }
+
+    function handleTimeTab(format){
+        var start = $('#start-time').val(),
+            end = $('#end-time').val();
+        getHistoryChanges(format, start, end).then(function(data){
+            showHistoryProgress(data,utils.dateRangeFormats[format])
+            $('#preloaderModal').modal('hide');
+        });
+    }
+
+    function handleStackedTab(){
+        var start = $('#start-stacked').val(),
+            end = $('#end-stacked').val();
+        getAllTicketsByCompanies(start, end).then(function(data){
+            showTicketsInStacked(data);
+            $('#preloaderModal').modal('hide');
+        });
+    }
+
+    function handleFsaTab(){
+        var start = $('#start-fsa').val(),
+            end = $('#end-fsa').val();
+        getAllFSAStatuses(start,end).then(function(data){
+            showFSADrillDown(data);
+            $('#preloaderModal').modal('hide');
+        });
+    }
+
+
+
+    function refreshTabData(id){
+        $('#preloaderModal').modal('show');
+        switch (id){
+            case 'company':
+                handleCompanyTab();
+                $('#company-report').off('submit').on('submit',function(e){
+                    e.preventDefault();
+                    handleCompanyTab();
+                });
+                break;
+            case 'time':
+                handleTimeTab($('.history-container .active').attr('data-attr'));
+                $('#time-report').off('submit').on('submit',function(e){
+                    e.preventDefault();
+                    handleTimeTab($('.history-container .active').attr('data-attr'));
+                });
+                break;
+            case 'stacked':
+                handleStackedTab();
+                $('#stacked-report').off('submit').on('submit',function(e){
+                    e.preventDefault();
+                    handleStackedTab();
+                });
+                break;
+            case 'fsa-fsam':
+                handleFsaTab();
+                $('#fsa-report').off('submit').on('submit',function(e){
+                    e.preventDefault();
+                    handleFsaTab();
+                });
+                break;
+
+            default:
+                handleOverviewTab();
+                $('#overview-report').off('submit').on('submit',function(e){
+                    e.preventDefault();
+                    handleOverviewTab();
+                });
+                break;
         }
+
     }
 
     function uppStatuses(statuses){
@@ -106,7 +179,9 @@ $(function () {
 
     function showFSAMChart(fsa){
         var def = $.Deferred();
-        getFSAMStatus(fsa).then(function(data){
+        var start = $('#start-fsa').val(),
+            end = $('#end-fsa').val();
+        getFSAMStatus(fsa,start, end).then(function(data){
             var series = [],
                 name,
                 i,
@@ -430,7 +505,7 @@ $(function () {
             chartContainer,
             rawSeries,
             series;
-
+        $('#tickets-companies').html('');
         for(i in tickets.companies){
             chartContainer = $('<div class="width-1-3 height-300"></div>');
             series = [];
@@ -576,42 +651,57 @@ $(function () {
         return 'start='+$('#start').val()+'&end='+$('#end').val();
     }
 
-    function getAllStatuses(callback){
+    function getAllStatuses(start,end){
         return $.ajax({
-            url:utils.baseUrl() + "dashboard/api?"+dateParams(),
+            url:[utils.baseUrl(),
+                "dashboard/api?",
+                (start ? 'start='+start : ''),
+                (end ? 'end='+end : '')].join(''),
             type:'get',
             dataType:'JSON'
         })
     }
-    function getAllFSAStatuses(callback){
+    function getAllFSAStatuses(start, end){
         return $.ajax({
-            url:utils.baseUrl() + "dashboard/api?type=fsa&"+dateParams(),
+            url:[utils.baseUrl(),
+                "dashboard/api?type=fsa",
+                (start ? '&start='+start : ''),
+                (end ? '&end='+end : '')].join(''),
             type:'get',
             dataType:'JSON'
         })
     }
-    function getHistoryChanges(format){
+    function getHistoryChanges(format,start, end){
         if(!format){
             //montly by default
             format = window.localStorage && window.localStorage['_history_format_'] || 'm';
         }
         return $.ajax({
-            url:utils.baseUrl() + "dashboard/api?sep=" + format,
+            url:[utils.baseUrl() , "dashboard/api?sep=" ,format,
+                (start ? '&start='+start : ''),
+                (end ? '&end='+end : '')].join(''),
             type:'get',
             dataType:'JSON'
         })
     }
 
-    function getFSAMStatus(fsa){
+    function getFSAMStatus(fsa, start, end ){
         return $.ajax({
-            url:utils.baseUrl() + "dashboard/api?type=fsam&fsa="+fsa+"&"+dateParams(),
+            url:[utils.baseUrl(), "dashboard/api?type=fsam&fsa=",fsa,
+                (start ? '&start='+start : ''),
+                (end ? '&end='+end : '')].join(''),
             type:'get',
             dataType:'JSON'
         })
     }
-    function getAllTicketsByCompanies(id){
+    function getAllTicketsByCompanies(start,end){
         return $.ajax({
-            url:utils.baseUrl() + "dashboard/api?type=companies&"+dateParams(),
+            url:[
+                utils.baseUrl(),
+                "dashboard/api?type=companies",
+                (start ? '&start='+start : ''),
+                (end ? '&end='+end : '')
+            ].join(''),
             type:'get',
             dataType:'JSON'
         })
@@ -634,12 +724,14 @@ $(function () {
     function initDateRangeSwitcher(){
         $('.history-container').on('click','button[data-attr]', function(e){
             var self = this;
+            var start = $('#start-time').val(),
+                end = $('#end-time').val();
             e.preventDefault();
             $('#preloaderModal').modal('show');
 
             $('.history-container').find('.active').removeClass('active');
             $(self).addClass('active');
-            getHistoryChanges($(self).attr('data-attr')).then(function(data){
+            getHistoryChanges($(self).attr('data-attr'),start, end).then(function(data){
                 showHistoryProgress(data,utils.dateRangeFormats[$(self).attr('data-attr')]);
                 $('#preloaderModal').modal('hide');
             });
@@ -648,8 +740,7 @@ $(function () {
     }
 
 
-
-    initData();
+    dashboardHandlers();
     initExpandCollapse();
     initDateRangeSwitcher();
 

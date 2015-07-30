@@ -257,33 +257,7 @@ class Controller_Dashboard extends Controller {
     }
 
     public function action_reports() {
-        $query = array();
-
-        $companies = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
-        $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
-
-        if (!Group::current('allow_assign')) {
-            $query['$or'] = array(
-                array('companies' => intval(User::current('company_id'))),
-                array('ex' => intval(User::current('company_id'))),
-            );
-        } else {
-            if (Arr::get($_GET, 'company') && isset($companies[$_GET['company']]))
-                $query['$or'] = array(
-                    array('companies' => intval($_GET['company'])),
-                    array('ex' => intval($_GET['company'])),
-                );
-            if (Arr::get($_GET, 'region') && isset($regions[$_GET['region']]))
-                $query['region'] = strval($_GET['region']);
-
-        }
-
-        $fsa = $this->group_jobs('data.12', $query);
-
-        $view = View::factory('Dashboard/Reports')
-            ->bind('fsa', $fsa)
-            ->bind('companies', $companies)
-            ->bind('regions', $regions);
+        $view = View::factory('Dashboard/Reports');
 
         $this->response->body($view);
     }
@@ -327,6 +301,9 @@ class Controller_Dashboard extends Controller {
                 $result = array();
                 foreach ($list as $key => $values)
                     $result[Arr::get($companies, $key, 'Unknown')] = $values;
+
+                ksort($result);
+
                 $list = array(
                     'total' => $total,
                     'companies' => $result,
@@ -402,7 +379,7 @@ class Controller_Dashboard extends Controller {
                                 $date = strtotime(date('01-m-Y', $item['t']));
                                 break;
                             case 'w':
-                                $date = strtotime('first day of ' . date('W', $item['t']) . ' week', $item['t']);
+                                $date = strtotime('last monday', strtotime('+1 day', strtotime('midnight', $item['t'])));
                                 break;
                             case 'd':
                                 $date = strtotime('midnight', $item['t']);
