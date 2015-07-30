@@ -124,6 +124,7 @@
             <div class="col-sm-3 col-md-2 sidebar">
                 <ul class="nav nav-sidebar">
                     <li data-id="main" class="active"><a class="switcher" href="#main">Overview</a></li>
+                    <li data-id="time"><a class="switcher" href="#time">Time progress</a></li>
                     <li data-id="fsa-fsam"><a class="switcher" href="#fsa-fsam">Fsa/Fsam</a></li>
                 </ul>
             </div>
@@ -143,6 +144,26 @@
                         <div class="chart_with_list">
                             <div class="chart-container full-width height-400" id="pie-total-tickets-assigned"></div>
                         </div>
+                    </div>
+                </div>
+                <div class="tab-pane" data-id="time">
+                    <form id="time-report" style="float: left; margin-right: 10px;">
+                            <span class="date-range-container">
+                                <div class="daterange" class="pull-right" data-start="start-time" data-end="end-time" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+                                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                    <span></span> <b class="caret"></b>
+                                </div>
+                            </span>
+                        <?=Form::hidden('start-time', Arr::get($_GET, 'start'), array('id'=>'start-time'))?>
+                        <?=Form::hidden('end-time', Arr::get($_GET, 'end'), array('id'=>'end-time'))?>
+                    </form>
+                    <div class="report-block history-container" style="padding-top: 0px;">
+                        <div class="btn-group" role="group">
+                            <button type="button" data-attr="d" data-format="YYYY-MM-DD" class="btn btn-default">Daily</button>
+                            <button type="button" data-attr="w" data-format="YYYY-WW" class="btn btn-default">Weekly</button>
+                            <button type="button" data-attr="m" data-format="YYYY-MM" class="active btn btn-default">Monthly</button>
+                        </div>
+                        <div class="chart-container full-width" id="history-block"></div>
                     </div>
                 </div>
                 <div class="tab-pane" data-id="fsa-fsam">
