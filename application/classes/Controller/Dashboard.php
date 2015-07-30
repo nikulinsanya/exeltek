@@ -257,17 +257,18 @@ class Controller_Dashboard extends Controller {
     }
 
     public function action_reports() {
-
         $companies = Group::current('allow_assign') ? DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name') : array();
         $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
         $fsa = Database_Mongo::collection('jobs')->distinct('data.12');
         $fsam = Database_Mongo::collection('jobs')->distinct('data.13');
+
 
         $view = View::factory('Dashboard/Reports')
             ->bind('fsa', $fsa)
             ->bind('fsam', $fsam)
             ->bind('companies', $companies)
             ->bind('regions', $regions);
+
 
         $this->response->body($view);
     }
@@ -341,8 +342,6 @@ class Controller_Dashboard extends Controller {
                 );
                 break;
             case 'fsa':
-                unset($filter['data.12']);
-                unset($filter['data.13']);
                 $result = Database_Mongo::collection('jobs')->find($filter, array('data.44' => 1, 'data.12' => 1));
                 $list = array();
                 foreach ($result as $job) {
@@ -354,7 +353,6 @@ class Controller_Dashboard extends Controller {
             case 'fsam':
                 $fsa = strval(Arr::get($_GET, 'fsa', ''));
                 $filter['data.12'] = $fsa;
-                unset($filter['data.13']);
                 $result = Database_Mongo::collection('jobs')->find($filter, array('data.44' => 1, 'data.13' => 1));
                 $list = array();
                 foreach ($result as $job) {
