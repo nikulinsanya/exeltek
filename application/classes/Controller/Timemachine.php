@@ -21,21 +21,23 @@ class Controller_TimeMachine extends Controller
 
         $result = Database_Mongo::collection('archive')->find(array('job_key' => $id, 'update_time' => array('$gt' => $archive['update_time'])))->sort(array('update_time' => -1));
 
-        $new = array();
-
         $ids = array();
+
+        $values = array();
 
         foreach ($result as $item) {
             $ids[] = $item['_id'];
-            foreach (Arr::get($item, 'data', array()) as $key => $data) {
-                $job['data'][$key] = $data['old_value'];
+            foreach (Arr::get($item, 'data', array()) as $key => $data)
+                $job['data'][$key] = $values[$key] = $data['old_value'];
 
-                if ($data['old_value'])
-                    $new['$set']['data.' . $key] = $data['old_value'];
-                else
-                    $new['$unset']['data.' . $key] = 1;
-            }
         }
+
+        foreach ($values as $key => $value)
+            if ($value)
+                $new['$set']['data.' . $key] = $value;
+            else
+                $new['$unset']['data.' . $key] = 1;
+
 
         if ($new) $new['$set']['last_update'] = $archive['update_time'];
 
