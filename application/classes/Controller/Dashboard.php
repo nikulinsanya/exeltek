@@ -257,18 +257,19 @@ class Controller_Dashboard extends Controller {
     }
 
     public function action_reports() {
-        $view = View::factory('Dashboard/Reports');
 
         $companies = Group::current('allow_assign') ? DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name') : array();
         $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
         $fsa = Database_Mongo::collection('jobs')->distinct('data.12');
         $fsam = Database_Mongo::collection('jobs')->distinct('data.13');
 
-        $this->response->body($view)
+        $view = View::factory('Dashboard/Reports')
             ->bind('fsa', $fsa)
             ->bind('fsam', $fsam)
             ->bind('companies', $companies)
             ->bind('regions', $regions);
+
+        $this->response->body($view);
     }
 
     public function action_api() {
