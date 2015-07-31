@@ -29,7 +29,7 @@
 
     <?php $fl = true; foreach ($tabs as $id => $tab) if (isset($tab['columns'])):?>
         <li role="presentation" data-id="<?=$id?>" class="<?=$fl ? 'active':''?>">
-            <a href="javascript:;"><?=HTML::chars($tab['name'])?>
+            <a class="refreshClick" href="#<?=strtolower(str_replace(' ', '_', $tab['name']));?>"><?=HTML::chars($tab['name'])?>
             <?php if (Arr::get($tab, 'submissions')):?>
                 <span class="badge"><?=count($tab['submissions'])?></span>
             <?php endif;?>
@@ -37,18 +37,18 @@
         </li>
     <?php $fl = false; endif;?>
         <?php if (Group::current('allow_assign')):?>
-        <li role="presentation" data-id="assigned"><a href="javascript:;">Assiged companies</a></li>
-        <li role="presentation" data-id="settings"><a href="javascript:;">Settings</a></li>
+        <li role="presentation" data-id="assigned"><a class="refreshClick" href="#companies">Assiged companies</a></li>
+        <li role="presentation" data-id="settings"><a class="refreshClick" href="#settings">Settings</a></li>
         <?php endif;?>
         <?php if ($submissions):?>
-        <li role="presentation" data-id="submissions"><a href="javascript:;">Submissions</a></li>
+        <li role="presentation" data-id="submissions"><a class="refreshClick" href="#submissions">Submissions</a></li>
         <?php endif; ?>
-        <li role="presentation" data-id="attachments"><a href="javascript:;">Attachments</a></li>
+        <li role="presentation" data-id="attachments"><a class="refreshClick" href="#attachments">Attachments</a></li>
         <?php if ($job['discrepancies']):?>
-            <li role="presentation" class="rose" data-id="discrepancies"><a href="javascript:;">Discrepancies</a></li>
+            <li role="presentation" class="rose" data-id="discrepancies"><a class="refreshClick" href="#discrepancies">Discrepancies</a></li>
         <?php endif;?>
         <?php if (Group::current('time_machine')):?>
-            <li role="presentation" class="yellow" data-id="time-machine"><a href="javascript:;">Time Machine</a></li>
+            <li role="presentation" class="yellow" data-id="time-machine"><a class="refreshClick" href="#time">Time Machine</a></li>
         <?php endif;?>
     </ul>
     
