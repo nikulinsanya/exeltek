@@ -58,10 +58,18 @@
         <div data-id="<?=$id?>" class="panel-body <?=!$fl ? 'hidden' : 'active'?>">
             <table class="col-container">
             <?php  $index = 0; foreach ($tab['columns'] as $id => $name): $value = isset($values['data' . $id]) ? $values['data' . $id]: Arr::path($job, 'data.' . $id, '');?>
-                <?php if (0 == $index++ % 2) :?>
-                    <tr>
-                <?php endif; ?>
-                <td  class="<?=Arr::get($submissions, 'data.' . $id) ? 'bg-danger' : ''?>">
+                <?php
+                    if (0 == $index++ % 2) echo '<tr>';
+                    if (Arr::get($submissions, 'data.' . $id))
+                        $class =  'bg-danger';
+                    elseif ($id > 161 && $id < 182 && $value != (isset($values['data' . ($id + 28)]) ? $values['data' . ($id+28)]: Arr::path($job, 'data.' . ($id+28), '')))
+                        $class = 'bg-warning';
+                    elseif ($id > 189 && $id < 210 && $value != (isset($values['data' . ($id - 28)]) ? $values['data' . ($id-28)]: Arr::path($job, 'data.' . ($id-28), '')))
+                        $class = 'bg-warning';
+                    else $class = '';
+
+                ?>
+                <td  class="<?=$class?>">
 
                         <label  class="left-label"><?=HTML::chars($name)?><?=isset($values['data' . $id]) ? '*' : ''?>: </label>
                         <div class="">
@@ -95,6 +103,8 @@
 
         </div>
         <?php $fl = false; endif;?>
+
+
         <?php if ($submissions):?>
         <div data-id="submissions" class="panel-body hidden">
             <table class="col-container">

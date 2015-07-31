@@ -49,9 +49,73 @@ $(function () {
         $('#report-container').on('click','.switcher',function(e){
             var id = $(this).attr('href').replace('#','');
             $('#report-container .tab-pane.active').removeClass('active');
+            $('.selected_switcher').removeClass('selected_switcher');
+            $(this).addClass('selected_switcher');
             $('[data-id="'+id+'"]').addClass('active');
             refreshTabData(id);
         });
+        $('#dashboard-report-form').submit(function(e) {
+            e.preventDefault();
+            var data = $(this).serialize(),
+                serialized = $(this).serializeArray(),
+                id = $('.selected_switcher').attr('href').replace('#','');
+            $('#filterModal').modal('hide');
+            $('#preloaderModal').modal('show');
+            if (data) {
+                $('label.no-filters').hide();
+                $('#clear-filters').removeClass('hidden');
+                var filters = [],
+                    existentName = [],
+                    text;
+                for (var i in serialized){
+                    text = [];
+                    if(existentName.indexOf(serialized[i].name) != -1){
+                        continue;
+                    }
+                    existentName.push(serialized[i].name);
+                    $(this).find('[name="'+serialized[i].name+'"]').find(':selected').each(function(){
+                        text.push($(this).text());
+                    })
+                    filters.push(
+                        '<span class="filter-item">' ,
+                        serialized[i].name.replace('[]','').toUpperCase() ,
+                        ': <label class="filter_value">' ,
+                        text ,
+                        '</label></span>');
+                }
+
+                $('div.text-info-filters>div').html(filters.join(''));
+
+            } else {
+                $('div.text-info-filters>div').html('<span class="filter-item"> <label class="filter_value">Empty</label></span>');
+                $('label.no-filters').show();
+                $('#clear-filters').addClass('hidden');
+            }
+
+            window.REPORTDATA.filterParams = data;
+
+            refreshTabData(id);
+            return false;
+        });
+
+        $('.clear-filters').on('click',function(e){
+            e.preventDefault();
+            $(this).parents('form').first()[0].reset();
+            $('#filterModal .multiselect').multiselect('rebuild');
+            $(this).parents('form').trigger('submit');
+
+        });
+        $('#filterModal').on('show.bs.modal', function (e) {
+            var id = $('.selected_switcher').attr('href').replace('#','');
+            console.log(id);
+            if(id == 'fsa-fsam'){
+                $('.fsa-fsam-hidden').addClass('hidden');
+            }
+            else{
+                $('.fsa-fsam-hidden').removeClass('hidden');
+            }
+        })
+
     }
 
     (function(){
@@ -61,6 +125,8 @@ $(function () {
             $('[data-id="'+id+'"]').addClass('active');
             $('.sidebar .active').removeClass('active');
             $('.sidebar [data-id="'+id+'"]').addClass('active');
+            $('.selected_switcher').removeClass('selected_switcher');
+            $('[data-id="'+id+'"] .switcher').addClass('selected_switcher');
         }
         refreshTabData(id);
     })();
@@ -647,16 +713,14 @@ $(function () {
         });
     }
 
-    function dateParams(){
-        return 'start='+$('#start').val()+'&end='+$('#end').val();
-    }
-
     function getAllStatuses(start,end){
         return $.ajax({
             url:[utils.baseUrl(),
                 "dashboard/api?",
                 (start ? 'start='+start : ''),
-                (end ? 'end='+end : '')].join(''),
+                (end ? 'end='+end : ''),
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : '')
+            ].join(''),
             type:'get',
             dataType:'JSON'
         })
@@ -666,7 +730,9 @@ $(function () {
             url:[utils.baseUrl(),
                 "dashboard/api?type=fsa",
                 (start ? '&start='+start : ''),
-                (end ? '&end='+end : '')].join(''),
+                (end ? '&end='+end : ''),
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : '')
+            ].join(''),
             type:'get',
             dataType:'JSON'
         })
@@ -679,7 +745,9 @@ $(function () {
         return $.ajax({
             url:[utils.baseUrl() , "dashboard/api?sep=" ,format,
                 (start ? '&start='+start : ''),
-                (end ? '&end='+end : '')].join(''),
+                (end ? '&end='+end : ''),
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : '')
+            ].join(''),
             type:'get',
             dataType:'JSON'
         })
@@ -689,7 +757,9 @@ $(function () {
         return $.ajax({
             url:[utils.baseUrl(), "dashboard/api?type=fsam&fsa=",fsa,
                 (start ? '&start='+start : ''),
-                (end ? '&end='+end : '')].join(''),
+                (end ? '&end='+end : ''),
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : '')
+            ].join(''),
             type:'get',
             dataType:'JSON'
         })
@@ -700,7 +770,8 @@ $(function () {
                 utils.baseUrl(),
                 "dashboard/api?type=companies",
                 (start ? '&start='+start : ''),
-                (end ? '&end='+end : '')
+                (end ? '&end='+end : ''),
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : '')
             ].join(''),
             type:'get',
             dataType:'JSON'

@@ -257,7 +257,18 @@ class Controller_Dashboard extends Controller {
     }
 
     public function action_reports() {
-        $view = View::factory('Dashboard/Reports');
+        $companies = Group::current('allow_assign') ? DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name') : array();
+        $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
+        $fsa = Database_Mongo::collection('jobs')->distinct('data.12');
+        $fsam = Database_Mongo::collection('jobs')->distinct('data.13');
+
+
+        $view = View::factory('Dashboard/Reports')
+            ->bind('fsa', $fsa)
+            ->bind('fsam', $fsam)
+            ->bind('companies', $companies)
+            ->bind('regions', $regions);
+
 
         $this->response->body($view);
     }
@@ -274,11 +285,32 @@ class Controller_Dashboard extends Controller {
 
         $filter = array();
 
-        if (!Group::current('show_all_jobs')) {
-            $filter = array('$or' => array(
+        if (!Group::current('allow_assign')) {
+            $filter['$or'] = array(
                 array('companies' => intval(User::current('company_id'))),
                 array('ex' => intval(User::current('company_id'))),
-            ));
+            );
+        } else {
+            if (Arr::get($_GET, 'company') && is_array($_GET['company'])) {
+                $company = array_map('intval', $_GET['company']);
+                if (count($company) == 1) $company = array_shift($company);
+                $filter['$or'] = array(
+                    array('companies' => is_array($company) ? array('$in' => $company) : $company),
+                    array('ex' => is_array($company) ? array('$in' => $company) : $company),
+                );
+            }
+        }
+        if (Arr::get($_GET, 'region'))
+            $filter['region'] = strval($_GET['region']);
+
+        if (Arr::get($_GET, 'fsa')) {
+            $fsa = is_array($_GET['fsa']) ? array_map('strval', $_GET['fsa']) : explode(', ', $_GET['fsa']);
+            $filter['data.12'] = count($fsa) > 1 ? array('$in' => $fsa) : array_shift($fsa);
+        }
+
+        if (Arr::get($_GET, 'fsam')) {
+            $fsam = is_array($_GET['fsam']) ? array_map('strval', $_GET['fsam']) : explode(', ', $_GET['fsam']);
+            $filter['data.13'] = count($fsam) > 1 ? array('$in' => $fsam) : array_shift($fsam);
         }
 
         switch ($type) {
@@ -311,6 +343,8 @@ class Controller_Dashboard extends Controller {
                 break;
             case 'fsa':
                 $result = Database_Mongo::collection('jobs')->find($filter, array('data.44' => 1, 'data.12' => 1));
+                unset($filter['data.12']);
+                unset($filter['data.13']);
                 $list = array();
                 foreach ($result as $job) {
                     $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', strtolower(Arr::path($job, 'data.44'))))) ? : 'Unknown';
@@ -321,6 +355,7 @@ class Controller_Dashboard extends Controller {
             case 'fsam':
                 $fsa = strval(Arr::get($_GET, 'fsa', ''));
                 $filter['data.12'] = $fsa;
+                unset($filter['data.13']);
                 $result = Database_Mongo::collection('jobs')->find($filter, array('data.44' => 1, 'data.13' => 1));
                 $list = array();
                 foreach ($result as $job) {
