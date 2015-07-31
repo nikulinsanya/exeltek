@@ -1186,7 +1186,12 @@ $(function () {
         $.get(utils.baseUrl() + 'timemachine?id=' + id + '&point=' + val, function(data) {
             document.location = document.location;
         });
-    })
+    });
+
+    (function refreshRoute(){
+        var path = window.location.hash;
+        $('.refreshClick[href="'+path+'"]').trigger('click');
+    })();
 
 
 
