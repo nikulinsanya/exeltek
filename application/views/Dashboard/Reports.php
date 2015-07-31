@@ -143,7 +143,17 @@
                             </span>
                             <?=Form::hidden('start-fsa', Arr::get($_GET, 'start'), array('id'=>'start-fsa'))?>
                             <?=Form::hidden('end-fsa', Arr::get($_GET, 'end'), array('id'=>'end-fsa'))?>
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#filterModal">
+                                <span class="glyphicon glyphicon-filter"></span>
+                                Modify filters
+                            </button>
                         </form>
+                        <label  class="filter_value" style="float: left;">Filters:</label>
+                        <div class="text-info-filters">
+                            <div>
+                                <span class="filter-item"> <label class="filter_value">Empty</label></span>
+                            </div>
+                        </div>
                         <div class="report-block">
                             <div class="chart_with_list">
                                 <div class="chart-container full-width" id="fsa-statuses"></div>
@@ -236,7 +246,17 @@
                             </span>
                         <?=Form::hidden('start-fsa', Arr::get($_GET, 'start'), array('id'=>'start-fsa'))?>
                         <?=Form::hidden('end-fsa', Arr::get($_GET, 'end'), array('id'=>'end-fsa'))?>
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#filterModal">
+                            <span class="glyphicon glyphicon-filter"></span>
+                            Modify filters
+                        </button>
                     </form>
+                    <label  class="filter_value" style="float: left;">Filters:</label>
+                    <div class="text-info-filters">
+                        <div>
+                            <span class="filter-item"> <label class="filter_value">Empty</label></span>
+                        </div>
+                    </div>
                     <div class="report-block">
                         <div class="chart_with_list">
                             <div class="chart-container full-width" id="fsa-statuses"></div>
@@ -285,21 +305,21 @@
                             <div class="clearfix">&nbsp;</div>
                         <?php endif;?>
 
-                        <div class="col-xs-2">
+                        <div class="col-xs-2 fsa-fsam-hidden">
                             <label class="control-label">FSA: </label>
                         </div>
-                        <div class="col-xs-3">
+                        <div class="col-xs-3  fsa-fsam-hidden">
                             <?=Form::select('fsa[]', $fsa, NULL, array('class' => 'fsa-filter multiselect', 'multiple' => 'multiple'))?>
                         </div>
-                        <div class="clearfix">&nbsp;</div>
+                        <div class="clearfix"  fsa-fsam-hidden>&nbsp;</div>
 
-                        <div class="col-xs-2">
+                        <div class="col-xs-2  fsa-fsam-hidden">
                             <label class="control-label">FSAM: </label>
                         </div>
-                        <div class="col-xs-3">
+                        <div class="col-xs-3  fsa-fsam-hidden">
                             <?=Form::select('fsam[]', $fsam, NULL, array('class' => 'fsam-filter multiselect', 'multiple' => 'multiple'))?>
                         </div>
-                        <div class="clearfix">&nbsp;</div>
+                        <div class="clearfix  fsa-fsam-hidden">&nbsp;</div>
                     </div>
 
                     <div class="modal-footer">

@@ -104,6 +104,16 @@ $(function () {
             $('#filterModal .multiselect').multiselect('rebuild');
             $(this).parents('form').trigger('submit');
 
+        });
+        $('#filterModal').on('show.bs.modal', function (e) {
+            var id = $('.selected_switcher').attr('href').replace('#','');
+            console.log(id);
+            if(id == 'fsa-fsam'){
+                $('.fsa-fsam-hidden').addClass('hidden');
+            }
+            else{
+                $('.fsa-fsam-hidden').removeClass('hidden');
+            }
         })
 
     }
@@ -115,6 +125,8 @@ $(function () {
             $('[data-id="'+id+'"]').addClass('active');
             $('.sidebar .active').removeClass('active');
             $('.sidebar [data-id="'+id+'"]').addClass('active');
+            $('.selected_switcher').removeClass('selected_switcher');
+            $('[data-id="'+id+'"] .switcher').addClass('selected_switcher');
         }
         refreshTabData(id);
     })();
