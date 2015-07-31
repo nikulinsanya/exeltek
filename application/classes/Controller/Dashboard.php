@@ -342,9 +342,9 @@ class Controller_Dashboard extends Controller {
                 );
                 break;
             case 'fsa':
-                $result = Database_Mongo::collection('jobs')->find($filter, array('data.44' => 1, 'data.12' => 1));
                 unset($filter['data.12']);
                 unset($filter['data.13']);
+                $result = Database_Mongo::collection('jobs')->find($filter, array('data.44' => 1, 'data.12' => 1));
                 $list = array();
                 foreach ($result as $job) {
                     $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', strtolower(Arr::path($job, 'data.44'))))) ? : 'Unknown';
