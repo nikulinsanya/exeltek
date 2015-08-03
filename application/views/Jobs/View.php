@@ -28,7 +28,7 @@
     <ul class="nav nav-tabs status-filter topsideup">
 
     <?php $fl = true; foreach ($tabs as $id => $tab) if (isset($tab['columns'])):?>
-        <li role="presentation" data-id="<?=$id?>" class="<?=$fl ? 'active':''?>">
+        <li role="presentation" data-id="<?=$id?>" class="<?=$fl ? 'active':''?> <?=strtolower(str_replace(' ', '_', $tab['name']));?>">
             <a class="refreshClick" href="#<?=strtolower(str_replace(' ', '_', $tab['name']));?>"><?=HTML::chars($tab['name'])?>
             <?php if (Arr::get($tab, 'submissions')):?>
                 <span class="badge"><?=count($tab['submissions'])?></span>
@@ -67,7 +67,6 @@
                     elseif ($id > 189 && $id < 210 && $value != (isset($values['data' . ($id - 28)]) ? $values['data' . ($id-28)]: Arr::path($job, 'data.' . ($id-28), '')))
                         $class = 'bg-warning';
                     else $class = '';
-
                 ?>
                 <td  class="<?=$class?>">
 

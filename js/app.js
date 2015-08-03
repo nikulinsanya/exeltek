@@ -1188,6 +1188,19 @@ $(function () {
         });
     });
 
+    $('#lifd-report').on('click','.collapse-container', function(e){
+        e.preventDefault();
+        var target = $(this).attr('data-target');
+        target = $('#lifd-report').find('tr[data-row="'+target+'"]');
+        if(!$(this).hasClass('expanded')){
+            $(target).removeClass('collapse');
+            $(this).addClass('expanded');
+        }else{
+            $(target).addClass('collapse');
+            $(this).removeClass('expanded');
+        }
+    });
+
     (function refreshRoute(){
         var path = window.location.hash;
         $('.refreshClick[href="'+path+'"]').trigger('click');
