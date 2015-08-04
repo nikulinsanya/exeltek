@@ -1201,6 +1201,21 @@ $(function () {
         }
     });
 
+    $('.approve-submission').click(function() {
+        var id = $(this).attr('data-id');
+        var parent = $(this).parent('td').parent('tr');
+        if (confirm('Warning: current job data will be overwritten! Are you really want to approve this submission?')) {
+            $.get(utils.baseUrl() + 'submissions/approve?id=' + id, function(data) {
+                var elm = parent.find('td');
+                elm.last().html('');
+                elm = elm.last().prev();
+                elm.html(elm.prev().html());
+                parent.removeClass('bg-danger').addClass('bg-success');
+                parent.find('span.glyphicon').removeClass('glyphicon-remove').addClass('glyphicon-ok').removeClass('text-danger').addClass('text-success');
+            })
+        }
+    });
+
     (function refreshRoute(){
         var path = window.location.hash;
         $('.refreshClick[href="'+path+'"]').trigger('click');
