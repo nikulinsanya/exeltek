@@ -1090,6 +1090,7 @@ $(function () {
 
                 $('div.text-info-filters>div').html(filters.join(''));
                 $('#lifd-report').html(data.html);
+                initTreeView();
             } catch (e) {
                 alert(data);
             }
@@ -1188,18 +1189,26 @@ $(function () {
         });
     });
 
-    $('#lifd-report').on('click','.collapse-container', function(e){
-        e.preventDefault();
-        var target = $(this).attr('data-target');
-        target = $('#lifd-report').find('tr[data-row="'+target+'"]');
-        if(!$(this).hasClass('expanded')){
-            $(target).removeClass('collapse');
-            $(this).addClass('expanded');
-        }else{
-            $(target).addClass('collapse');
-            $(this).removeClass('expanded');
-        }
-    });
+
+    function initTreeView(){
+        var table1 = $('#fda_table').tabelize({
+            /*onRowClick : function(){
+             alert('test');
+             }*/
+            fullRowClickable : true,
+            onReady : function(){
+                console.log('ready');
+            },
+            onBeforeRowClick :  function(){
+                console.log('onBeforeRowClick');
+            },
+            onAfterRowClick :  function(){
+                console.log('onAfterRowClick');
+            },
+        });
+
+    }
+
 
     (function refreshRoute(){
         var path = window.location.hash;
