@@ -213,9 +213,9 @@ class Controller_Dashboard extends Controller {
                 $comp = $job['companies'];
                 unset($job['companies']);
                 Arr::set_path($list, $job, Arr::path($list, $job, 0) + 1);
-                $total[$job['fsa']] = Arr::get($total, $job['fsa']) + 1;
-                $total[$job['fsam']] = Arr::get($total, $job['fsam']) + 1;
-                $total[$job['fsam'] . $job['lifd']] = Arr::get($total, $job['fsam'] . $job['lifd']) + 1;
+                $total[$job['fsa']][$job['status']] = Arr::path($total, array($job['fsa'], $job['status'])) + 1;
+                $total[$job['fsam']][$job['status']] = Arr::path($total, array($job['fsam'], $job['status'])) + 1;
+                $total[$job['fsam'] . $job['lifd']][$job['status']] = Arr::path($total, array($job['fsam'] . $job['lifd'], $job['status'])) + 1;
                 $job['status'] = 'companies';
                 Arr::set_path($list, $job, array_merge(Arr::path($list, $job, array()), $comp));
             }
