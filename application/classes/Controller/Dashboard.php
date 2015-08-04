@@ -207,15 +207,21 @@ class Controller_Dashboard extends Controller {
 
             $list = array();
 
+            $total = array();
+
             foreach ($jobs as $job) {
                 $comp = $job['companies'];
                 unset($job['companies']);
                 Arr::set_path($list, $job, Arr::path($list, $job, 0) + 1);
+                $total[$job['fsa']] = Arr::get($total, $job['fsa']) + 1;
+                $total[$job['fsam']] = Arr::get($total, $job['fsam']) + 1;
+                $total[$job['fsam'] . $job['lifd']] = Arr::get($total, $job['fsam'] . $job['lifd']) + 1;
                 $job['status'] = 'companies';
                 Arr::set_path($list, $job, array_merge(Arr::path($list, $job, array()), $comp));
             }
 
             $view = View::factory('Dashboard/LifdReport')
+                ->bind('total', $total)
                 ->bind('list', $list)
                 ->bind('companies', $companies);
 
