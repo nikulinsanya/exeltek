@@ -358,11 +358,6 @@ $(function () {
             $(this).append('<input type="hidden" name="company" value="' + ($(select).val() && $(select).val().join(',') || '') + '">');
             $(select).remove();
         }
-        select = $(this).find('select[name="ex"]');
-        if (select) {
-            $(this).append('<input type="hidden" name="ex" value="' + ($(select).val() && $(select).val().join(',') || '') + '">');
-            $(select).remove();
-        }
     });
 
 
