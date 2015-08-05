@@ -183,7 +183,7 @@ class Controller_Dashboard extends Controller {
                     'lifd' => Arr::path($job, 'data.17', 0) . '|' . Arr::path($job, 'data.18', 0),
                     'fda' => Arr::path($job, 'data.14', 'Unknown'),
                     'status' => strtolower(preg_replace('/[^a-z]/i', '', Arr::path($job, 'data.44'))),
-                    'companies' => array_merge(Arr::get($job, 'companies', array()), Arr::get($job, 'ex', array())),
+                    'companies' => array('now' => Arr::get($job, 'companies', array()), 'ex' => Arr::get($job, 'ex', array())),
                 );
             }
 
@@ -207,15 +207,24 @@ class Controller_Dashboard extends Controller {
 
             $list = array();
 
+            $total = array();
+
             foreach ($jobs as $job) {
                 $comp = $job['companies'];
                 unset($job['companies']);
                 Arr::set_path($list, $job, Arr::path($list, $job, 0) + 1);
+                $total[$job['fsa']][$job['status']] = Arr::path($total, array($job['fsa'], $job['status'])) + 1;
+                $total[$job['fsam']][$job['status']] = Arr::path($total, array($job['fsam'], $job['status'])) + 1;
+                $total[$job['fsam'] . $job['lifd']][$job['status']] = Arr::path($total, array($job['fsam'] . $job['lifd'], $job['status'])) + 1;
                 $job['status'] = 'companies';
-                Arr::set_path($list, $job, array_merge(Arr::path($list, $job, array()), $comp));
+                $job['comp'] = 'now';
+                Arr::set_path($list, $job, array_merge(Arr::path($list, $job, array()), $comp['now']));
+                $job['comp'] = 'ex';
+                Arr::set_path($list, $job, array_merge(Arr::path($list, $job, array()), $comp['ex']));
             }
 
             $view = View::factory('Dashboard/LifdReport')
+                ->bind('total', $total)
                 ->bind('list', $list)
                 ->bind('companies', $companies);
 

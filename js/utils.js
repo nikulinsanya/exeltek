@@ -134,6 +134,9 @@ window.utils = (function() {
         },
         isArray: function(variable){
             return variable instanceof Array;
+        },
+        simplifyString: function(str){
+            return str.replace(/ /g,"_").toLowerCase();
         }
     };
     return utils;

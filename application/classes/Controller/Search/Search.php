@@ -65,16 +65,17 @@ class Controller_Search_Search extends Controller {
             if (Arr::get($_GET, 'company')) {
                 $companies = explode(',', $_GET['company']);
                 if (count($companies) > 1) {
-                    $list_query['companies'] = $query['companies'] = array('$in' => array_map("intval", $companies));
+                    $companies = array('$in' => array_map("intval", $companies));
                 } else
-                    $list_query['companies'] = $query['companies'] = intval($_GET['company']);
-            }
-            if (Arr::get($_GET, 'ex')) {
-                $companies = explode(',', $_GET['ex']);
-                if (count($companies) > 1) {
-                    $list_query['ex'] = $query['ex'] = array('$in' => array_map("intval", $companies));
+                    $companies = intval($_GET['company']);
+
+                if (Arr::get($_GET, 'ex')) {
+                    $list_query['$or'] = $query['$or'] = array(
+                        array('companies' => $companies),
+                        array('ex' => $companies),
+                    );
                 } else
-                    $list_query['ex'] = $query['ex'] = intval($_GET['ex']);
+                    $list_query['companies'] = $query['companies'] = $companies;
             }
         } else {
             if (Arr::get($_GET, 'status', -1) == 0) {
@@ -187,7 +188,7 @@ class Controller_Search_Search extends Controller {
                 $query['data.' . $column] = array($op => $value);
         }
 
-        foreach ($query as $key => $ops) if (is_array($ops))
+        foreach ($query as $key => $ops) if ($key != '$or' && is_array($ops))
             foreach ($ops as $op => $value)
                 if ($op == '$eq' && is_array($value)) {
                     $query[$key]['$in'] = $value;

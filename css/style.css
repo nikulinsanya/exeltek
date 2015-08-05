@@ -187,80 +187,147 @@ table td .multiselect-container input[type=checkbox]{
     background: #cfffcc;
 }
 .lgreen:hover{
-    background: #bdf3bd!important;
+    background: #bdf3bd;
 }
 
 
 
 
 /*lifd-report row colors*/
+#lifd-report tr:nth-child(even){
+    background: #cfffcc;
+}
+#lifd-report  tr:nth-child(odd){
+    background: #cfffcc;
+}
+
+#lifd-report  tr:hover{
+    background: #bdf3bd;
+}
+
+
+
 #lifd-report tr:nth-child(even) .rose{
-    background: #FFCCCC;
+    background: #FFD7D7;
 }
 #lifd-report tr:nth-child(odd) .rose{
     background: #FFD7D7;
 }
-#lifd-report tr:nth-child(odd) .rose:hover{
-    background: #FFD7D7;
-}
-#lifd-report tr:nth-child(even) .rose:hover{
+#lifd-report tr:hover .rose{
     background: #FFCCCC;
 }
 
 
 #lifd-report  tr:nth-child(even) .green{
-    background: #8c8;
+    background: #93d893;
 }
 #lifd-report  tr:nth-child(odd) .green {
     background: #93d893;
 }
 
-#lifd-report  tr:nth-child(odd):hover .green{
+#lifd-report  tr:hover .green{
     background: #9dd89e!important;
-}
-#lifd-report  tr:nth-child(even):hover .green{
-    background: #8c8!important;
 }
 
 #lifd-report  tr:nth-child(odd) .lightcyan{
     background: lightcyan;
 }
 #lifd-report  tr:nth-child(even) .lightcyan{
-    background: rgb(210, 253, 253);
+    background: lightcyan;
 }
-#lifd-report tr:nth-child(odd):hover .lightcyan{
+#lifd-report tr:hover .lightcyan{
     background: rgb(198, 245, 253)!important;
 }
-#lifd-report tr:nth-child(even):hover .lightcyan{
-    background: lightcyan!important;
+
+#lifd-report  tr:nth-child(odd) .purple{
+    background: #F8EBFD;
+}
+#lifd-report  tr:nth-child(even) .purple{
+    background: #F8EBFD;
+}
+#lifd-report tr:hover .purple{
+    background: #f8e0ff !important;
 }
 
+
 #lifd-report tr:nth-child(even) .yellow{
-    background: #ffc;
+    background: #f5ffcf;
 }
 #lifd-report tr:nth-child(odd) .yellow{
     background: #f5ffcf;
 }
-#lifd-report tr:nth-child(odd):hover .yellow{
-    background: #fafac7!important;
-}
-#lifd-report tr:nth-child(even):hover .yellow{
-    background: #f5ffcf!important;
+#lifd-report tr:hover .yellow{
+    background: #fafac7;
 }
 
+
 #lifd-report tr:nth-child(even) .lgreen{
-    background: #B8FDB8;
+    background: #cfffcc;
 }
 #lifd-report tr:nth-child(odd) .lgreen{
     background: #cfffcc;
 }
-#lifd-report tr:nth-child(odd) .lgreen:hover{
-    background: #cfffcc;
+#lifd-report tr:nth-child(odd):hover .lgreen{
+    background: #acffbd;
 }
-#lifd-report tr:nth-child(even) .lgreen:hover{
-    background: #B8FDB8;
+#lifd-report tr:hover .lgreen{
+    background: #acffbd;
 }
 
+#lifd-report .collapsing{
+    -webkit-transition: none;
+    transition: none;
+}
+
+#lifd-report tr[data-row]{
+    border-bottom: 1px solid #ccc;
+}
+
+#lifd-report .collapse-container{
+    border: 2px solid #35E244;
+}
+#lifd-report table{
+    margin-top:10px;
+}
+
+#lifd-report .blank{
+    opacity: 0;
+}
+
+#lifd-report .table>tbody>tr{
+    border-bottom: 1px solid #ccc;
+}
+#lifd-report .table>tbody>tr>td{
+    border-top: none;
+}
+#lifd-report tr.text-center td{
+    cursor: default;
+}
+#lifd-report tr.collapse-container td{
+    cursor: pointer;
+}
+
+#lifd-report .table>tbody>tr>th {
+    border-right: 1px solid #ededed;
+    height: 160px;
+    white-space: nowrap;
+    width: 50px;
+}
+#lifd-report .table>tbody>tr>th>div {
+    transform: translate(15px, 135px) rotate(270deg);
+    width: 0px;
+}
+
+
+#lifd-report .label {
+    display: inline;
+    font-size: 100%;
+    font-weight: normal;
+    color: #333;
+    text-align: left;
+    white-space: normal;
+    vertical-align: baseline;
+}
 
 
 
