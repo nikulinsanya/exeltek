@@ -24,7 +24,8 @@
 <!--    </tr>-->
         <tr>
             <th  style="width: 340px;"></th>
-            <th style="width: 250px;"><div style="transform: translate(122px, 135px) rotate(270deg);"><span>Contractors</span></div></th>
+            <th style="width: 200px;"><div style="transform: translate(122px, 135px) rotate(270deg);"><span>Current contractors</span></div></th>
+            <th style="width: 200px;"><div style="transform: translate(122px, 135px) rotate(270deg);"><span>Previous contractors</span></div></th>
             <th class="purple"><div><span>Total tickets</span></div></th>
             <th class="lightcyan"><div><span>ASSIGNED</span></div></th>
             <th class="lightcyan"><div><span>NOTIFY</span></div></th>
@@ -47,7 +48,7 @@
     <?php foreach ($list as $fsa => $fsams):   ?>
         <?php $fsa_c++?>
         <tr  data-level="1" id="level_1_<?=$fsa_c?>" class="text-center">
-            <td colspan="2"><?=$fsa?></td>
+            <td colspan="3"><?=$fsa?></td>
             <td class="data purple"><strong><?=array_sum(Arr::get($total, $fsa))?></strong></td>
             <td class="data lightcyan"><?=Arr::path($total, array($fsa, 'assigned'))?></td>
             <td class="data lightcyan"><?=Arr::path($total, array($fsa, 'notify'))?></td>
@@ -68,7 +69,7 @@
         <?php foreach ($fsams as $fsam => $lifds):?>
             <?php $fsam_c++?>
             <tr  data-level="2" id="level_2_<?=$fsam_c?>" class="text-center">
-                <td colspan="2"><?=$fsam?></td>
+                <td colspan="3"><?=$fsam?></td>
                 <td class="data purple"><strong><?=array_sum(Arr::get($total, $fsam))?></strong></td>
                 <td class="data lightcyan"><?=Arr::path($total, array($fsam, 'assigned'))?></td>
                 <td class="data lightcyan"><?=Arr::path($total, array($fsam, 'notify'))?></td>
@@ -90,7 +91,7 @@
                 <?php $lifd_c++?>
                 <?php $dates = explode('|', $lifd); $days = Utils::working_days($dates[1]);?>
                 <tr  data-level="3" id="level_3_<?=$lifd_c?>" class="text-center">
-                    <td colspan="2"><?=($dates[0] ? date('d-m-Y', $dates[0]) : '') . '-' . ($dates[1] ? date('d-m-Y', $dates[1]) . ' [' . $days . ' day' . ($days != 1 ? 's ' : ' ') . ($dates[1] < time() ? 'passed' : 'left') . ']' : '')?></td>
+                    <td colspan="3"><?=($dates[0] ? date('d-m-Y', $dates[0]) : '') . '-' . ($dates[1] ? date('d-m-Y', $dates[1]) . ' [' . $days . ' day' . ($days != 1 ? 's ' : ' ') . ($dates[1] < time() ? 'passed' : 'left') . ']' : '')?></td>
                     <td class="data purple"><strong><?=array_sum(Arr::get($total, $fsam . $lifd))?></strong></td>
                     <td class="data lightcyan"><?=Arr::path($total, array($fsam . $lifd, 'assigned'))?></td>
                     <td class="data lightcyan"><?=Arr::path($total, array($fsam . $lifd, 'notify'))?></td>
@@ -112,7 +113,8 @@
                     <?php $fda_c++?>
                     <tr data-level="4" id="level_4_<?=$fda_c?>" class="text-center">
                         <td><?=$fda?></td>
-                        <td class="data"><?=implode('<br/>', array_intersect_key($companies, array_flip(Arr::get($data, 'companies', array()))))?></td>
+                        <td class="data"><?=implode('<br/>', array_intersect_key($companies, array_flip(Arr::path($data, 'companies.now', array()))))?></td>
+                        <td class="data"><?=implode('<br/>', array_intersect_key($companies, array_flip(Arr::path($data, 'companies.ex', array()))))?></td>
                         <td class="data purple"><?=array_sum($data)?></td>
                         <td class="data lightcyan"><?=Arr::get($data, 'assigned')?></td>
                         <td class="data lightcyan"><?=Arr::get($data, 'notify')?></td>
