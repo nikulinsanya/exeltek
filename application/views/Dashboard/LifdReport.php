@@ -48,65 +48,65 @@
         <?php $fsa_c++?>
         <tr  data-level="1" id="level_1_<?=$fsa_c?>" class="text-center">
             <td colspan="2"><?=$fsa?></td>
-            <td class="data purple"><strong>0</strong></td>
-            <td class="data lightcyan">0</td>
-            <td class="data lightcyan">0</td>
-            <td class="data lightcyan">0</td>
-            <td class="data lightcyan"><strong>0</strong></td>
-            <td class="data yellow">0</td>
-            <td class="data yellow">0</td>
-            <td class="data yellow">0</td>
-            <td class="data yellow"><strong>0</strong></td>
-            <td class="data lgreen">0</td>
-            <td class="data lgreen">0</td>
-            <td class="data lgreen"><strong>0</strong></td>
-            <td class="data rose">0</td>
-            <td class="data rose">0</td>
-            <td class="data rose">0</td>
-            <td class="data rose"><strong>0</strong></td>
+            <td class="data purple"><strong><?=array_sum(Arr::get($total, $fsa))?></strong></td>
+            <td class="data lightcyan"><?=Arr::path($total, array($fsa, 'assigned'))?></td>
+            <td class="data lightcyan"><?=Arr::path($total, array($fsa, 'notify'))?></td>
+            <td class="data lightcyan"><?=Arr::path($total, array($fsa, 'planned'))?></td>
+            <td class="data lightcyan"><strong><?=Arr::path($total, array($fsa, 'assigned')) + Arr::path($total, array($fsa, 'notify')) + Arr::path($total, array($fsa, 'planned')) ? : ''?></strong></td>
+            <td class="data yellow"><?=Arr::path($total, array($fsa, 'scheduled'))?></td>
+            <td class="data yellow"><?=Arr::path($total, array($fsa, 'inprogress'))?></td>
+            <td class="data yellow"><?=Arr::path($total, array($fsa, 'heldcontractor'))?></td>
+            <td class="data yellow"><strong><?=Arr::path($total, array($fsa, 'scheduled')) + Arr::path($total, array($fsa, 'inprogress')) + Arr::path($total, array($fsa, 'heldcontractor')) ? : ''?></strong></td>
+            <td class="data lgreen"><?=Arr::path($total, array($fsa, 'built'))?></td>
+            <td class="data lgreen"><?=Arr::path($total, array($fsa, 'tested'))?></td>
+            <td class="data lgreen"><strong><?=Arr::path($total, array($fsa, 'built')) + Arr::path($total, array($fsa, 'tested')) ? : ''?></strong></td>
+            <td class="data rose"><?=Arr::path($total, array($fsa, 'deferred'))?></td>
+            <td class="data rose"><?=Arr::path($total, array($fsa, 'dirty'))?></td>
+            <td class="data rose"><?=Arr::path($total, array($fsa, 'heldnbn'))?></td>
+            <td class="data rose"><strong><?=Arr::path($total, array($fsa, 'deferred')) + Arr::path($total, array($fsa, 'dirty')) + Arr::path($total, array($fsa, 'heldnbn')) ? : ''?></strong></td>
         </tr>
         <?php foreach ($fsams as $fsam => $lifds):?>
             <?php $fsam_c++?>
             <tr  data-level="2" id="level_2_<?=$fsam_c?>" class="text-center">
                 <td colspan="2"><?=$fsam?></td>
-                <td class="data purple"><strong>0</strong></td>
-                <td class="data lightcyan">0</td>
-                <td class="data lightcyan">0</td>
-                <td class="data lightcyan">0</td>
-                <td class="data lightcyan"><strong>0</strong></td>
-                <td class="data yellow">0</td>
-                <td class="data yellow">0</td>
-                <td class="data yellow">0</td>
-                <td class="data yellow"><strong>0</strong></td>
-                <td class="data lgreen">0</td>
-                <td class="data lgreen">0</td>
-                <td class="data lgreen"><strong>0</strong></td>
-                <td class="data rose">0</td>
-                <td class="data rose">0</td>
-                <td class="data rose">0</td>
-                <td class="data rose"><strong>0</strong></td>
+                <td class="data purple"><strong><?=array_sum(Arr::get($total, $fsam))?></strong></td>
+                <td class="data lightcyan"><?=Arr::path($total, array($fsam, 'assigned'))?></td>
+                <td class="data lightcyan"><?=Arr::path($total, array($fsam, 'notify'))?></td>
+                <td class="data lightcyan"><?=Arr::path($total, array($fsam, 'planned'))?></td>
+                <td class="data lightcyan"><strong><?=Arr::path($total, array($fsam, 'assigned')) + Arr::path($total, array($fsam, 'notify')) + Arr::path($total, array($fsam, 'planned')) ? : ''?></strong></td>
+                <td class="data yellow"><?=Arr::path($total, array($fsam, 'scheduled'))?></td>
+                <td class="data yellow"><?=Arr::path($total, array($fsam, 'inprogress'))?></td>
+                <td class="data yellow"><?=Arr::path($total, array($fsam, 'heldcontractor'))?></td>
+                <td class="data yellow"><strong><?=Arr::path($total, array($fsam, 'scheduled')) + Arr::path($total, array($fsam, 'inprogress')) + Arr::path($total, array($fsam, 'heldcontractor')) ? : ''?></strong></td>
+                <td class="data lgreen"><?=Arr::path($total, array($fsam, 'built'))?></td>
+                <td class="data lgreen"><?=Arr::path($total, array($fsam, 'tested'))?></td>
+                <td class="data lgreen"><strong><?=Arr::path($total, array($fsam, 'built')) + Arr::path($total, array($fsam, 'tested')) ? : ''?></strong></td>
+                <td class="data rose"><?=Arr::path($total, array($fsam, 'deferred'))?></td>
+                <td class="data rose"><?=Arr::path($total, array($fsam, 'dirty'))?></td>
+                <td class="data rose"><?=Arr::path($total, array($fsam, 'heldnbn'))?></td>
+                <td class="data rose"><strong><?=Arr::path($total, array($fsam, 'deferred')) + Arr::path($total, array($fsam, 'dirty')) + Arr::path($total, array($fsam, 'heldnbn')) ? : ''?></strong></td>
             </tr>
             <?php   foreach ($lifds as $lifd => $fdas):?>
                 <?php $lifd_c++?>
                 <?php $dates = explode('|', $lifd); $days = Utils::working_days($dates[1]);?>
                 <tr  data-level="3" id="level_3_<?=$lifd_c?>" class="text-center">
                     <td colspan="2"><?=($dates[0] ? date('d-m-Y', $dates[0]) : '') . '-' . ($dates[1] ? date('d-m-Y', $dates[1]) . ' [' . $days . ' day' . ($days != 1 ? 's ' : ' ') . ($dates[1] < time() ? 'passed' : 'left') . ']' : '')?></td>
-                    <td class="data purple"><strong>0</strong></td>
-                    <td class="data lightcyan">0</td>
-                    <td class="data lightcyan">0</td>
-                    <td class="data lightcyan">0</td>
-                    <td class="data lightcyan"><strong>0</strong></td>
-                    <td class="data yellow">0</td>
-                    <td class="data yellow">0</td>
-                    <td class="data yellow">0</td>
-                    <td class="data yellow"><strong>0</strong></td>
-                    <td class="data lgreen">0</td>
-                    <td class="data lgreen">0</td>
-                    <td class="data lgreen"><strong>0</strong></td>
-                    <td class="data rose">0</td>
-                    <td class="data rose">0</td>
-                    <td class="data rose">0</td>
-                    <td class="data rose"><strong>0</strong></td>
+                    <td class="data purple"><strong><?=array_sum(Arr::get($total, $fsam . $lifd))?></strong></td>
+                    <td class="data lightcyan"><?=Arr::path($total, array($fsam . $lifd, 'assigned'))?></td>
+                    <td class="data lightcyan"><?=Arr::path($total, array($fsam . $lifd, 'notify'))?></td>
+                    <td class="data lightcyan"><?=Arr::path($total, array($fsam . $lifd, 'planned'))?></td>
+                    <td class="data lightcyan"><strong><?=Arr::path($total, array($fsam . $lifd, 'assigned')) + Arr::path($total, array($fsam . $lifd, 'notify')) + Arr::path($total, array($fsam . $lifd, 'planned')) ? : ''?></strong></td>
+                    <td class="data yellow"><?=Arr::path($total, array($fsam . $lifd, 'scheduled'))?></td>
+                    <td class="data yellow"><?=Arr::path($total, array($fsam . $lifd, 'inprogress'))?></td>
+                    <td class="data yellow"><?=Arr::path($total, array($fsam . $lifd, 'heldcontractor'))?></td>
+                    <td class="data yellow"><strong><?=Arr::path($total, array($fsam . $lifd, 'scheduled')) + Arr::path($total, array($fsam . $lifd, 'inprogress')) + Arr::path($total, array($fsam . $lifd, 'heldcontractor')) ? : ''?></strong></td>
+                    <td class="data lgreen"><?=Arr::path($total, array($fsam . $lifd, 'built'))?></td>
+                    <td class="data lgreen"><?=Arr::path($total, array($fsam . $lifd, 'tested'))?></td>
+                    <td class="data lgreen"><strong><?=Arr::path($total, array($fsam . $lifd, 'built')) + Arr::path($total, array($fsam . $lifd, 'tested')) ? : ''?></strong></td>
+                    <td class="data rose"><?=Arr::path($total, array($fsam . $lifd, 'deferred'))?></td>
+                    <td class="data rose"><?=Arr::path($total, array($fsam . $lifd, 'dirty'))?></td>
+                    <td class="data rose"><?=Arr::path($total, array($fsam . $lifd, 'heldnbn'))?></td>
+                    <td class="data rose"><strong><?=Arr::path($total, array($fsam . $lifd, 'deferred')) + Arr::path($total, array($fsam . $lifd, 'dirty')) + Arr::path($total, array($fsam . $lifd, 'heldnbn')) ? : ''?></strong></td>
                 </tr>
                 <?php foreach ($fdas as $fda => $data):?>
                     <?php $fda_c++?>
@@ -117,18 +117,18 @@
                         <td class="data lightcyan"><?=Arr::get($data, 'assigned')?></td>
                         <td class="data lightcyan"><?=Arr::get($data, 'notify')?></td>
                         <td class="data lightcyan"><?=Arr::get($data, 'planned')?></td>
-                        <td class="data lightcyan"><strong><?=Arr::get($data, 'assigned') + Arr::get($data, 'notify') + Arr::get($data, 'planned')?></strong></td>
+                        <td class="data lightcyan"><strong><?=Arr::get($data, 'assigned') + Arr::get($data, 'notify') + Arr::get($data, 'planned') ? : ''?></strong></td>
                         <td class="data yellow"><?=Arr::get($data, 'scheduled')?></td>
                         <td class="data yellow"><?=Arr::get($data, 'inprogress')?></td>
                         <td class="data yellow"><?=Arr::get($data, 'heldcontractor')?></td>
-                        <td class="data yellow"><strong><?=Arr::get($data, 'scheduled') + Arr::get($data, 'inprogress') + Arr::get($data, 'heldcontractor')?></strong></td>
+                        <td class="data yellow"><strong><?=Arr::get($data, 'scheduled') + Arr::get($data, 'inprogress') + Arr::get($data, 'heldcontractor') ? : ''?></strong></td>
                         <td class="data lgreen"><?=Arr::get($data, 'built')?></td>
                         <td class="data lgreen"><?=Arr::get($data, 'tested')?></td>
-                        <td class="data lgreen"><strong><?=Arr::get($data, 'built') + Arr::get($data, 'tested')?></strong></td>
+                        <td class="data lgreen"><strong><?=Arr::get($data, 'built') + Arr::get($data, 'tested') ? : ''?></strong></td>
                         <td class="data rose"><?=Arr::get($data, 'deferred')?></td>
                         <td class="data rose"><?=Arr::get($data, 'dirty')?></td>
                         <td class="data rose"><?=Arr::get($data, 'heldnbn')?></td>
-                        <td class="data rose"><strong><?=Arr::get($data, 'deferred') + Arr::get($data, 'dirty') + Arr::get($data, 'heldnbn')?></strong></td>
+                        <td class="data rose"><strong><?=Arr::get($data, 'deferred') + Arr::get($data, 'dirty') + Arr::get($data, 'heldnbn') ? : ''?></strong></td>
                     </tr>
 
                 <?php endforeach;?>
