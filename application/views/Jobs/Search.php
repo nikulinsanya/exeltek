@@ -42,23 +42,10 @@
                                 <?php $compa[]= Arr::get($companies, $c)?>
                             <?php endforeach; ?>
                             <?=implode(', ',$compa)?>
+                            <?=Arr::get($_GET, 'ex') ? ' (Include previously assigned)' : ''?>
                         </label>
                     </span>
                     <br/>
-                <?php endif; ?>
-                <?php if(Arr::get($_GET, 'ex')):
-                    $hasFilters = true;
-                ?>
-                    <span class="filter-item">
-                        Previous:
-                        <label class="filter_value">
-                            <?php $comps = explode(',',$_GET['ex']);$compa = array();?>
-                            <?php foreach ($comps as $id => $c):?>
-                                <?php $compa[]= Arr::get($companies, $c)?>
-                            <?php endforeach; ?>
-                            <?=implode(', ',$compa)?>
-                        </label>
-                    </span>
                 <?php endif; ?>
                 <?php $cols = Arr::get($_GET, 'columns', array()); foreach ($cols as $id => $column):?>
                     <span class="filter-item">
@@ -180,13 +167,11 @@
                             <div class="col-xs-4 col-sm-4 col-md-2">
                                 <?=Form::select('company', $companies, isset($_GET['company']) ? explode(',',$_GET['company']) : [], array('class' => 'multiselect form-control width-140', 'multiple'=>'multiple'))?>
                             </div>
-                            <div class="col-xs-2 col-sm-2 col-md-1">
+                            <div class="col-xs-6 col-sm-6 col-md-3">
                                 <label class="control-label">
-                                    Previous:
+                                    <input type="checkbox" <?=Arr::get($_GET, 'ex') ? 'checked' : ''?> name="ex" value="1" />
+                                    Include previously assigned
                                 </label>
-                            </div>
-                            <div class="col-xs-4 col-sm-4 col-md-2">
-                                <?=Form::select('ex', $companies, isset($_GET['ex']) ? explode(',',$_GET['ex']) : [], array('class' => 'form-control multiselect width-140', 'multiple'=>'multiple'))?>
                             </div>
                         <?php endif;?>
                         <div class="clearfix">&nbsp;</div>
