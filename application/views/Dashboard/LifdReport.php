@@ -23,9 +23,9 @@
 <!--        <th class="bg-danger">Total</th>-->
 <!--    </tr>-->
         <tr>
-            <th  style="width: auto;"></th>
+            <th  style="width: 340px;"></th>
             <th style="width: 250px;"><div style="transform: translate(122px, 135px) rotate(270deg);"><span>Contractors</span></div></th>
-            <th class="rose"><div><span>Total tickets</span></div></th>
+            <th class="purple"><div><span>Total tickets</span></div></th>
             <th class="lightcyan"><div><span>ASSIGNED</span></div></th>
             <th class="lightcyan"><div><span>NOTIFY</span></div></th>
             <th class="lightcyan"><div><span>PLANNED</span></div></th>
@@ -48,65 +48,65 @@
         <?php $fsa_c++?>
         <tr  data-level="1" id="level_1_<?=$fsa_c?>" class="text-center">
             <td colspan="2"><?=$fsa?></td>
-            <td class="data rose">0</td>
+            <td class="data purple"><strong>0</strong></td>
             <td class="data lightcyan">0</td>
             <td class="data lightcyan">0</td>
             <td class="data lightcyan">0</td>
-            <td class="data lightcyan">0</td>
+            <td class="data lightcyan"><strong>0</strong></td>
             <td class="data yellow">0</td>
             <td class="data yellow">0</td>
             <td class="data yellow">0</td>
-            <td class="data yellow">0</td>
+            <td class="data yellow"><strong>0</strong></td>
             <td class="data lgreen">0</td>
             <td class="data lgreen">0</td>
-            <td class="data lgreen">0</td>
+            <td class="data lgreen"><strong>0</strong></td>
             <td class="data rose">0</td>
             <td class="data rose">0</td>
             <td class="data rose">0</td>
-            <td class="data rose">0</td>
+            <td class="data rose"><strong>0</strong></td>
         </tr>
         <?php foreach ($fsams as $fsam => $lifds):?>
             <?php $fsam_c++?>
             <tr  data-level="2" id="level_2_<?=$fsam_c?>" class="text-center">
                 <td colspan="2"><?=$fsam?></td>
-                <td class="data rose">0</td>
+                <td class="data purple"><strong>0</strong></td>
                 <td class="data lightcyan">0</td>
                 <td class="data lightcyan">0</td>
                 <td class="data lightcyan">0</td>
-                <td class="data lightcyan">0</td>
+                <td class="data lightcyan"><strong>0</strong></td>
                 <td class="data yellow">0</td>
                 <td class="data yellow">0</td>
                 <td class="data yellow">0</td>
-                <td class="data yellow">0</td>
+                <td class="data yellow"><strong>0</strong></td>
                 <td class="data lgreen">0</td>
                 <td class="data lgreen">0</td>
-                <td class="data lgreen">0</td>
+                <td class="data lgreen"><strong>0</strong></td>
                 <td class="data rose">0</td>
                 <td class="data rose">0</td>
                 <td class="data rose">0</td>
-                <td class="data rose">0</td>
+                <td class="data rose"><strong>0</strong></td>
             </tr>
             <?php   foreach ($lifds as $lifd => $fdas):?>
                 <?php $lifd_c++?>
                 <?php $dates = explode('|', $lifd); $days = Utils::working_days($dates[1]);?>
                 <tr  data-level="3" id="level_3_<?=$lifd_c?>" class="text-center">
                     <td colspan="2"><?=($dates[0] ? date('d-m-Y', $dates[0]) : '') . '-' . ($dates[1] ? date('d-m-Y', $dates[1]) . ' [' . $days . ' day' . ($days != 1 ? 's ' : ' ') . ($dates[1] < time() ? 'passed' : 'left') . ']' : '')?></td>
-                    <td class="data rose">0</td>
+                    <td class="data purple"><strong>0</strong></td>
                     <td class="data lightcyan">0</td>
                     <td class="data lightcyan">0</td>
                     <td class="data lightcyan">0</td>
-                    <td class="data lightcyan">0</td>
+                    <td class="data lightcyan"><strong>0</strong></td>
                     <td class="data yellow">0</td>
                     <td class="data yellow">0</td>
                     <td class="data yellow">0</td>
-                    <td class="data yellow">0</td>
+                    <td class="data yellow"><strong>0</strong></td>
                     <td class="data lgreen">0</td>
                     <td class="data lgreen">0</td>
-                    <td class="data lgreen">0</td>
+                    <td class="data lgreen"><strong>0</strong></td>
                     <td class="data rose">0</td>
                     <td class="data rose">0</td>
                     <td class="data rose">0</td>
-                    <td class="data rose">0</td>
+                    <td class="data rose"><strong>0</strong></td>
                 </tr>
                 <?php foreach ($fdas as $fda => $data):?>
                     <?php $fda_c++?>
