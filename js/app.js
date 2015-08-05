@@ -1186,20 +1186,8 @@ $(function () {
 
 
     function initTreeView(){
-        var table1 = $('#fda_table').tabelize({
-            /*onRowClick : function(){
-             alert('test');
-             }*/
-            fullRowClickable : true,
-            onReady : function(){
-                console.log('ready');
-            },
-            onBeforeRowClick :  function(){
-                console.log('onBeforeRowClick');
-            },
-            onAfterRowClick :  function(){
-                console.log('onAfterRowClick');
-            },
+        $('#fda_table').tabelize({
+            fullRowClickable : true
         });
 
     }
