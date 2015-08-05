@@ -113,7 +113,7 @@
                     <tr data-level="4" id="level_4_<?=$fda_c?>" class="text-center">
                         <td><?=$fda?></td>
                         <td class="data"><?=implode('<br/>', array_intersect_key($companies, array_flip(Arr::get($data, 'companies', array()))))?></td>
-                        <td class="data rose"><?=array_sum($data)?></td>
+                        <td class="data purple"><?=array_sum($data)?></td>
                         <td class="data lightcyan"><?=Arr::get($data, 'assigned')?></td>
                         <td class="data lightcyan"><?=Arr::get($data, 'notify')?></td>
                         <td class="data lightcyan"><?=Arr::get($data, 'planned')?></td>
