@@ -195,11 +195,16 @@ table td .multiselect-container input[type=checkbox]{
 
 /*lifd-report row colors*/
 #lifd-report  tr:nth-child(even){
-    background: #cfffcc;
+    background: #B8FDB8;
 }
 #lifd-report  tr:nth-child(odd){
     background: #cfffcc;
 }
+
+#lifd-report  tr:hover{
+    background: #bdf3bd;
+}
+
 
 
 #lifd-report tr:nth-child(even) .rose{
@@ -235,6 +240,16 @@ table td .multiselect-container input[type=checkbox]{
 }
 #lifd-report tr:hover .lightcyan{
     background: rgb(198, 245, 253)!important;
+}
+
+#lifd-report  tr:nth-child(odd) .purple{
+    background: #F8EBFD;
+}
+#lifd-report  tr:nth-child(even) .purple{
+    background: #F4D6FF;
+}
+#lifd-report tr:hover .purple{
+    background: #f8e0ff !important;
 }
 
 
@@ -299,10 +314,10 @@ table td .multiselect-container input[type=checkbox]{
     border-right: 1px solid #ededed;
     height: 160px;
     white-space: nowrap;
-    width: 30px;
+    width: 50px;
 }
 #lifd-report .table>tbody>tr>th>div {
-    transform: translate(5px, 135px) rotate(270deg);
+    transform: translate(15px, 135px) rotate(270deg);
     width: 0px;
 }
 
