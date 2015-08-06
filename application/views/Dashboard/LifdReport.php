@@ -1,6 +1,15 @@
 <table id="fda_table" class="table small controller">
-        <tr>
-            <th  style="width: 340px;"></th>
+        <tr class="header">
+            <th  style="width: 340px; vertical-align: bottom;">
+                <button type="button" class="btn btn-success expandAll " onclick="expandCollapseTreeView(true);">
+                    <span class="glyphicon glyphicon-menu-down"></span>
+                    Expand all
+                </button>
+                <button type="button" class="btn btn-success collapseAll" style="display: none;" onclick="expandCollapseTreeView(false);">
+                    <span class="glyphicon glyphicon-menu-up"></span>
+                    Collapse all
+                </button>
+            </th>
             <th style="width: 180px;"><div style="transform: translate(75px, 135px) rotate(270deg);"><span>Current contractors</span></div></th>
             <th style="width: 180px;"><div style="transform: translate(75px, 135px) rotate(270deg);"><span>Previous contractors</span></div></th>
             <th class="purple"><div><span>Total tickets</span></div></th>
@@ -25,7 +34,7 @@
     <?php foreach ($list as $fsa => $fsams):   ?>
         <?php $fsa_c++?>
         <tr  data-level="1" id="level_1_<?=$fsa_c?>" class="text-center">
-            <td colspan="3"><a href="<?=URL::base()?>/search?region=&type=&status=&company="><?=$fsa?></a></td>
+            <td colspan="3"><?=$fsa?></td>
             <td class="data purple"><strong><a href="<?=URL::base()?>/search?region=&type=&status=&company="><?=array_sum(Arr::get($total, $fsa))?></a></strong></td>
             <td class="data lightcyan"><a href="<?=URL::base()?>/search?region=&type=&status=&company="><?=Arr::path($total, array($fsa, 'assigned'))?></a></td>
             <td class="data lightcyan"><a href="<?=URL::base()?>/search?region=&type=&status=&company="><?=Arr::path($total, array($fsa, 'notify'))?></a></td>
@@ -46,7 +55,7 @@
         <?php foreach ($fsams as $fsam => $lifds):?>
             <?php $fsam_c++?>
             <tr  data-level="2" id="level_2_<?=$fsam_c?>" class="text-center">
-                <td colspan="3"><a href="<?=URL::base()?>/search?region=&type=&status=&company="><?=$fsam?></a></td>
+                <td colspan="3"><?=$fsam?></td>
                 <td class="data purple"><strong><a href="<?=URL::base()?>/search?region=&type=&status=&company="><?=array_sum(Arr::get($total, $fsam))?></a></strong></td>
                 <td class="data lightcyan"><a href="<?=URL::base()?>/search?region=&type=&status=&company="><?=Arr::path($total, array($fsam, 'assigned'))?></a></td>
                 <td class="data lightcyan"><a href="<?=URL::base()?>/search?region=&type=&status=&company="><?=Arr::path($total, array($fsam, 'notify'))?></a></td>
@@ -68,7 +77,7 @@
                 <?php $lifd_c++?>
                 <?php $dates = explode('|', $lifd); $days = Utils::working_days($dates[1]);?>
                 <tr  data-level="3" id="level_3_<?=$lifd_c?>" class="text-center">
-                    <td colspan="3"><a href="<?=URL::base()?>/search?region=&type=&status=&company="><?=($dates[0] ? date('d-m-Y', $dates[0]) : '') . '-' . ($dates[1] ? date('d-m-Y', $dates[1]) . ' [' . $days . ' day' . ($days != 1 ? 's ' : ' ') . ($dates[1] < time() ? 'passed' : 'left') . ']' : '')?></a></td>
+                    <td colspan="3"><?=($dates[0] ? date('d-m-Y', $dates[0]) : '') . '-' . ($dates[1] ? date('d-m-Y', $dates[1]) . ' [' . $days . ' day' . ($days != 1 ? 's ' : ' ') . ($dates[1] < time() ? 'passed' : 'left') . ']' : '')?></td>
                     <td class="data purple"><strong><?=array_sum(Arr::get($total, $fsam . $lifd))?></a></strong></td>
                     <td class="data lightcyan"><a href="<?=URL::base()?>/search?region=&type=&status=&company="><?=Arr::path($total, array($fsam . $lifd, 'assigned'))?></a></td>
                     <td class="data lightcyan"><a href="<?=URL::base()?>/search?region=&type=&status=&company="><?=Arr::path($total, array($fsam . $lifd, 'notify'))?></a></td>
@@ -89,7 +98,7 @@
                 <?php foreach ($fdas as $fda => $data):?>
                     <?php $fda_c++?>
                     <tr data-level="4" id="level_4_<?=$fda_c?>" class="text-center">
-                        <td><a href="<?=URL::base()?>/search?region=&type=&status=&company="><?=$fda?></a></td>
+                        <td><?=$fda?></td>
                         <td class="data"><a href="<?=URL::base()?>/search?region=&type=&status=&company="><?=implode('<br/>', array_intersect_key($companies, array_flip(Arr::path($data, 'companies.now', array()))))?></a></td>
                         <td class="data"><a href="<?=URL::base()?>/search?region=&type=&status=&company="><?=implode('<br/>', array_intersect_key($companies, array_flip(Arr::path($data, 'companies.ex', array()))))?></a></td>
                         <td class="data purple"><a href="<?=URL::base()?>/search?region=&type=&status=&company="><?=array_sum($data)?></a></td>
