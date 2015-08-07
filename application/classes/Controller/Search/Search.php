@@ -4,14 +4,13 @@ class Controller_Search_Search extends Controller {
 
     public function action_index()
     {
-        if (!isset($_GET['ticket']) && !isset($_GET['clear']) && Session::instance()->get('search-settings')) {
+        if (!$_GET && Session::instance()->get('search-settings')) {
             $this->redirect(URL::query(Session::instance()->get('search-settings'), false));
-        } elseif (isset($_GET['ticket']) || isset($_GET['clear'])) {
+        } elseif ($_GET)
             if (isset($_GET['clear']))
                 Session::instance()->delete('search-settings');
             else
                 Session::instance()->set('search-settings', $_GET);
-        }
 
         $actions = array(
             'contain',
@@ -154,7 +153,7 @@ class Controller_Search_Search extends Controller {
                     $op = '<>';
 
             if ($op === 'contain') {
-                $op = '$regex';
+                $op = '$eq';
                 $value = new MongoRegex('/.*' . preg_replace('/[^a-z0-9,.+:;!? -]/i', '', $value) . '.*/i');
             } elseif ($op === 'does not contain') {
                 $op = '$not';
@@ -169,31 +168,23 @@ class Controller_Search_Search extends Controller {
                 $op = Arr::get($actions_mongo, $op, '$eq');
             }
 
-            if (isset($query['data.' . $column])) {
-                if (isset($query['data.' . $column][$op])) {
-                    if ($op == '$regex') {
-                        $query['data.' . $column][$op] = $value;
-                    } else {
-                        if (is_array($query['data.' . $column][$op]))
-                            $query['data.' . $column][$op][] = $value;
-                        else
-                            $query['data.' . $column][$op] = array($query['data.' . $column][$op], $value);
-                    }
-                } elseif (isset($query['data.' . $column]['$or'][$op])) {
-
+            if (isset($query['data.' . $column]) && $op == '$eq') {
+                if (isset($query['data.' . $column]['$in'])) {
+                    $query['data.' . $column]['$in'][] = $value;
+                } elseif (isset($query['data.' . $column]['$eq'])) {
+                    $query['data.' . $column] = array('$in' => array(
+                        $query['data.' . $column]['$eq'],
+                        $value,
+                    ));
                 }
                 else
-                    $query['data.' . $column][$op] = $value;
+                    $query['data.' . $column]['$in'] = array($value);
             } else
                 $query['data.' . $column] = array($op => $value);
         }
 
-        foreach ($query as $key => $ops) if ($key != '$or' && is_array($ops))
-            foreach ($ops as $op => $value)
-                if ($op == '$eq' && is_array($value)) {
-                    $query[$key]['$in'] = $value;
-                    unset($query[$key]['$eq']);
-                }
+        foreach ($query as $key => $ops) if (substr($key, 0, 5) == 'data.' && count($ops) == 1 && key($ops) == '$eq')
+            $query[$key] = array_shift($ops);
 
         $jobs = Database_Mongo::collection('jobs');
 

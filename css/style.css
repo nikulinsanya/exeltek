@@ -329,6 +329,10 @@ table td .multiselect-container input[type=checkbox]{
     vertical-align: baseline;
 }
 
+#lifd-report table tr td a{
+    color:#333;
+}
+
 
 
 .table>tbody>tr.same-yellow:first-child{

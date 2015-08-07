@@ -35,6 +35,18 @@ function inArray(needle, haystack) {
     return false;
 }
 
+function expandCollapseTreeView(expand){
+    if(expand){
+        $().tabelize(false,'expandAll');
+        $('.expandAll').hide();
+        $('.collapseAll').show();
+    }else{
+        $().tabelize(false,'collapseAll');
+        $('.expandAll').show();
+        $('.collapseAll').hide();
+    }
+}
+
 $(function () {
     function bytesToSize(bytes) {
        if(bytes == 0) return '0 B';
@@ -1186,20 +1198,8 @@ $(function () {
 
 
     function initTreeView(){
-        var table1 = $('#fda_table').tabelize({
-            /*onRowClick : function(){
-             alert('test');
-             }*/
-            fullRowClickable : true,
-            onReady : function(){
-                console.log('ready');
-            },
-            onBeforeRowClick :  function(){
-                console.log('onBeforeRowClick');
-            },
-            onAfterRowClick :  function(){
-                console.log('onAfterRowClick');
-            },
+        $('#fda_table').tabelize({
+            fullRowClickable : true
         });
 
     }
@@ -1302,6 +1302,5 @@ $(function () {
     function handleScrollOnLifdReport(){
         $(window).on('scroll')
     }
-
     initPlugins();
 });
