@@ -496,7 +496,8 @@ $(function () {
     $('a.remove-link').click(remove_link);
     
     $('.back-button').click(function() {
-        history.go(-1);
+        history.go(historyStateCount ? (historyStateCount+1) * -1 : -1);
+
     });
     
     $('.table-filter').click(function() {
@@ -1220,11 +1221,19 @@ $(function () {
         }
     });
 
+
+    var historyStateCount = 0;
+
     (function refreshRoute(){
+        historyStateCount = 0;
         var path = window.location.hash;
         $('.refreshClick[href="'+path+'"]').trigger('click');
     })();
 
+
+    $('.refreshClick').on('click',function(){
+        historyStateCount++;
+    })
 
 
     function collectDataToBatch(){
