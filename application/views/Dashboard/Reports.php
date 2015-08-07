@@ -105,8 +105,8 @@
                                 <button type="button" data-attr="w" data-format="YYYY-WW" class="btn btn-default">Weekly</button>
                                 <button type="button" data-attr="m" data-format="YYYY-MM" class="active btn btn-default">Monthly</button>
                             </div>
-                            <button type="button" class="btn btn-default">
-                                <span class="glyphicon glyphicon-cog" data-toggle="modal" data-target="#startDayModal"></span>
+                            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#startDayModal">
+                                <span class="glyphicon glyphicon-cog"></span>
                             </button>
                             <div class="chart-container full-width" id="history-block"></div>
                         </div>
@@ -236,6 +236,9 @@
                             <button type="button" data-attr="w" data-format="YYYY-WW" class="btn btn-default">Weekly</button>
                             <button type="button" data-attr="m" data-format="YYYY-MM" class="active btn btn-default">Monthly</button>
                         </div>
+                        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#startDayModal">
+                            <span class="glyphicon glyphicon-cog"></span>
+                        </button>
                         <div class="chart-container full-width" id="history-block"></div>
                     </div>
                 </div>
