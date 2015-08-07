@@ -145,6 +145,8 @@ class Controller_Dashboard extends Controller {
 
             $query = array();
 
+            $url = array();
+
             if (!Group::current('allow_assign')) {
                 $query['$or'] = array(
                     array('companies' => intval(User::current('company_id'))),
@@ -158,10 +160,13 @@ class Controller_Dashboard extends Controller {
                         array('companies' => is_array($company) ? array('$in' => $company) : $company),
                         array('ex' => is_array($company) ? array('$in' => $company) : $company),
                     );
+                    $url['company'] = is_array($company) ? implode(',', $company) : $company;
+                    $url['ex'] = '1';
                 }
             }
-            if (Arr::get($_GET, 'region') && isset($regions[$_GET['region']]))
+            if (Arr::get($_GET, 'region') && isset($regions[$_GET['region']])) {
                 $query['region'] = strval($_GET['region']);
+            }
 
             if (Arr::get($_GET, 'fsa')) {
                 $fsa = is_array($_GET['fsa']) ? array_map('strval', $_GET['fsa']) : explode(', ', $_GET['fsa']);
@@ -224,6 +229,7 @@ class Controller_Dashboard extends Controller {
             }
 
             $view = View::factory('Dashboard/LifdReport')
+                ->set('url', URL::query($url, false))
                 ->bind('total', $total)
                 ->bind('list', $list)
                 ->bind('companies', $companies);
