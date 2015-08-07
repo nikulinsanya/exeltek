@@ -105,6 +105,9 @@
                                 <button type="button" data-attr="w" data-format="YYYY-WW" class="btn btn-default">Weekly</button>
                                 <button type="button" data-attr="m" data-format="YYYY-MM" class="active btn btn-default">Monthly</button>
                             </div>
+                            <button type="button" class="btn btn-default">
+                                <span class="glyphicon glyphicon-cog" data-toggle="modal" data-target="#startDayModal"></span>
+                            </button>
                             <div class="chart-container full-width" id="history-block"></div>
                         </div>
                     </div>
@@ -275,6 +278,44 @@
 
 
 <?php endif;?>
+    <div class="modal fade" id="startDayModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width:800px;">
+            <div class="modal-content">
+                <form id="dashboard-report-form" class="" action="" method="get">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Calendar configuration</h4>
+                    </div>
+
+                    <div class="modal-body" id="filter-form" style="min-height: 300px;">
+                        <div class="col-xs-3">
+                            <label class="control-label">Start day of week: </label>
+                        </div>
+                        <div class="col-xs-3">
+                            <?=Form::select('weekStart',
+                                array('1' => 'Monday','2'=>'Tuesday','3'=>'Wednesday','4'=>'Thursday','5'=>'Friday','6'=>'Saturday','7'=>'Sunday'),
+                                '', array('class' => 'form-control multiselect','id'=>'weekStart'))?>
+
+                        </div>
+                        <div class="clearfix">&nbsp;</div>
+
+                        <div class="col-xs-3">
+                            <label class="control-label">Start day of month: </label>
+                        </div>
+                        <div class="col-xs-3">
+                            <?=Form::select('monthStart',
+                                array_combine(range(1,30),range(1,30)),'', array('class' => 'form-control multiselect', 'id'=>'monthStart'))?>
+
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" data-dismiss="modal"  class="btn btn-success" id="saveDateConfig">Apply</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="filterModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document" style="width:800px;">

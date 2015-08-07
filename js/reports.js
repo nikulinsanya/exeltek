@@ -54,6 +54,9 @@ $(function () {
             $('[data-id="'+id+'"]').addClass('active');
             refreshTabData(id);
         });
+        $('#saveDateConfig').on('click',function(){
+            $('#dashboard-report-form').trigger('submit');
+        });
         $('#dashboard-report-form').submit(function(e) {
             e.preventDefault();
             var data = $(this).serialize(),
@@ -713,25 +716,41 @@ $(function () {
         });
     }
 
+    function getDateConfiguration(){
+        var res = [];
+        res.push(
+            'weekStart=',
+            localStorage && localStorage._week_start_ || $('#weekStart').val() || 0,
+            '&monthStart=',
+            localStorage && localStorage._month_start_ || $('#monthStart').val() || 1);
+
+        localStorage._week_start_ =  $('#weekStart').val() || localStorage._week_start_  || 0;
+        localStorage._month_start_ =  $('#monthStart').val() || localStorage._month_start_  || 1;
+        return res.join('');
+    }
+
     function getAllStatuses(start,end){
         return $.ajax({
             url:[utils.baseUrl(),
                 "dashboard/api?",
                 (start ? 'start='+start : ''),
                 (end ? 'end='+end : ''),
-                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : '')
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : ''),
+                '&',getDateConfiguration()
             ].join(''),
             type:'get',
             dataType:'JSON'
         })
     }
+
     function getAllFSAStatuses(start, end){
         return $.ajax({
             url:[utils.baseUrl(),
                 "dashboard/api?type=fsa",
                 (start ? '&start='+start : ''),
                 (end ? '&end='+end : ''),
-                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : '')
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : ''),
+                '&',getDateConfiguration()
             ].join(''),
             type:'get',
             dataType:'JSON'
@@ -746,7 +765,8 @@ $(function () {
             url:[utils.baseUrl() , "dashboard/api?sep=" ,format,
                 (start ? '&start='+start : ''),
                 (end ? '&end='+end : ''),
-                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : '')
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : ''),
+                '&',getDateConfiguration()
             ].join(''),
             type:'get',
             dataType:'JSON'
@@ -758,7 +778,8 @@ $(function () {
             url:[utils.baseUrl(), "dashboard/api?type=fsam&fsa=",fsa,
                 (start ? '&start='+start : ''),
                 (end ? '&end='+end : ''),
-                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : '')
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : ''),
+                '&',getDateConfiguration()
             ].join(''),
             type:'get',
             dataType:'JSON'
@@ -771,7 +792,8 @@ $(function () {
                 "dashboard/api?type=companies",
                 (start ? '&start='+start : ''),
                 (end ? '&end='+end : ''),
-                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : '')
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : ''),
+                '&',getDateConfiguration()
             ].join(''),
             type:'get',
             dataType:'JSON'
