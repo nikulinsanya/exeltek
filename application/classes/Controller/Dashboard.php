@@ -503,25 +503,39 @@ class Controller_Dashboard extends Controller {
             );
         }
 
-        $result = Database_Mongo::collection('jobs')->find($query, array('data.44' => 1));
+        $types = array();
+
+        $result = Database_Mongo::collection('jobs')->find($query, array('data.44' => 1, 'created' => 1, 'data.190' => 1, 'data.191' => 1, 'data.192' => 1));
+
+        $start = Arr::get($_GET, 'start', 0) ? strtotime($_GET['start']) : 0;
+        $end = Arr::get($_GET, 'end', 0) ? strtotime($_GET['end']) : 0;
+
         $jobs = array();
-        foreach ($result as $job)
-            $jobs[$job['_id']] = strtolower(preg_replace('/[^a-z]/i', '', Arr::path($job, 'data.44')));
+        foreach ($result as $job) {
+            $status = strtolower(preg_replace('/[^a-z]/i', '', Arr::path($job, 'data.44')));
+            $jobs[$job['_id']] = $status;
+            if ($job['created'] >= $start && (!$end || $job['created'] <= $end) && !in_array($status, array('dirty', 'heldnbn', 'deferred'), true)) {
+                if (Arr::path($job, 'data.192'))
+                    $types[$job['_id']] = 3;
+                elseif (Arr::path($job, 'data.191'))
+                    $types[$job['_id']] = 2;
+                elseif (Arr::path($job, 'data.190'))
+                    $types[$job['_id']] = 1;
+            }
+        }
 
         $query = array(
             'job_key' => array('$in' => array_keys($jobs)),
             'key' => array('$in' => array('data.190', 'data.191', 'data.192')),
         );
 
-        if (Arr::get($_GET, 'start'))
-            $query['update_time']['$gte'] = strtotime($_GET['start']);
+        if ($start)
+            $query['update_time']['$gte'] = $start;
 
-        if (Arr::get($_GET, 'end'))
-            $query['update_time']['$lte'] = strtotime($_GET['end']);
+        if ($end)
+            $query['update_time']['$lte'] = $end;
 
         $items = Database_Mongo::collection('submissions')->find($query)->sort(array('update_time' => 1));
-
-        $types = array();
 
         foreach ($items as $item)
             switch ($item['key']) {
