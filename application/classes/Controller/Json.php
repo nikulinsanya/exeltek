@@ -69,4 +69,38 @@ class Controller_Json extends Controller {
 
         die(json_encode($list));
     }
+
+    public function action_fda()
+    {
+        $query = array();
+        if (!Group::current('allow_assign')) {
+            $query['$or'] = array(
+                array('companies' => intval(User::current('company_id'))),
+                array('ex' => intval(User::current('company_id'))),
+            );
+        } else {
+            if (Arr::get($_GET, 'company')) {
+                $company = is_array($_GET['company']) ? $_GET['company'] : explode(',', $_GET['company']);
+                $company = array_map('intval', $company);
+                if (count($company) == 1) $company = array_shift($company);
+                $query['$or'] = array(
+                    array('companies' => is_array($company) ? array('$in' => $company) : $company),
+                    array('ex' => is_array($company) ? array('$in' => $company) : $company),
+                );
+            }
+            if (Arr::get($_GET, 'region'))
+                $query['region'] = strval($_GET['region']);
+        }
+
+        if (Arr::get($_GET, 'fsam')) {
+            $fsam = is_array($_GET['fsam']) ? array_map('strval', $_GET['fsam']) : explode(',', $_GET['fsam']);
+            $query['data.13'] = count($fsam) == 1 ? array_shift($fsam) : array('$in' => $fsam);
+        }
+
+        $list = Database_Mongo::collection('jobs')->distinct('data.14', $query ?: NULL);
+
+        sort($list);
+
+        die(json_encode($list));
+    }
 }

@@ -487,6 +487,9 @@ class Controller_Dashboard extends Controller {
             $query[$key] = count($values) > 1 ? array('$in' => $values) : array_shift($values);
         }
 
+        if (Arr::get($_GET, 'region'))
+            $query['region'] = $_GET['region'];
+
         if (Arr::get($_GET, 'company')) {
             $company = $_GET['company'];
             if (!is_array($company))
