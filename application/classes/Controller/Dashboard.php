@@ -463,4 +463,93 @@ class Controller_Dashboard extends Controller {
         }
         die(json_encode($list));
     }
+
+    public function action_mixed() {
+        $query = array();
+
+        $key = false;
+        if (Arr::get($_GET, 'fda')) {
+            $key = 'data.14';
+            $values = $_GET['fda'];
+        } elseif (Arr::get($_GET, 'fsam')) {
+            $key = 'data.13';
+            $values = $_GET['fsam'];
+        } elseif (Arr::get($_GET, 'fsa')) {
+            $key = 'data.12';
+            $values = $_GET['fsa'];
+        }
+
+        if ($key) {
+            if (!is_array($values))
+                $values = explode(',', $values);
+
+            $values = array_map('strval', $values);
+            $query[$key] = count($values) > 1 ? array('$in' => $values) : array_shift($values);
+        }
+
+        if (Arr::get($_GET, 'company')) {
+            $company = $_GET['company'];
+            if (!is_array($company))
+                $company = explode(',', $company);
+
+            $company = array_map('intval', $company);
+
+            $query['$or'] = array(
+                array('companies' => count($company) > 1 ? array('$in' => $company) : array_shift($company)),
+                array('ex' => count($company) > 1 ? array('$in' => $company) : array_shift($company)),
+            );
+        }
+
+        $result = Database_Mongo::collection('jobs')->find($query, array('data.44' => 1));
+        $jobs = array();
+        foreach ($result as $job)
+            $jobs[$job['_id']] = strtolower(preg_replace('/[^a-z]/i', '', Arr::path($job, 'data.44')));
+
+        $query = array(
+            'job_key' => array('$in' => array_keys($jobs)),
+            'key' => array('$in' => array('data.190', 'data.191', 'data.192')),
+        );
+        $items = Database_Mongo::collection('submissions')->find($query)->sort(array('update_time' => 1));
+
+        $types = array();
+
+        foreach ($items as $item)
+            switch ($item['key']) {
+                case 'data.190':
+                    $types[$item['job_key']] = 1;
+                    break;
+                case 'data.191':
+                    $types[$item['job_key']] = 2;
+                    break;
+                case 'data.192':
+                    $types[$item['job_key']] = 3;
+                    break;
+            }
+
+        $jobs = array_diff_key($jobs, $types);
+
+        $result = array(
+            'Type A' => 0,
+            'Type B' => 0,
+            'Type C' => 0,
+            'Not Buildable' => 0,
+            'Tickets Left' => 0,
+        );
+
+        foreach ($types as $type)
+            switch ($type) {
+                case 1: $result['Type A']++; break;
+                case 2: $result['Type B']++; break;
+                case 3: $result['Type C']++; break;
+            }
+
+        foreach ($jobs as $status)
+            if (in_array($status, array('dirty', 'heldnbn', 'deferred'), true))
+                $result['Not Buildable']++;
+            elseif (in_array($status, array('scheduled', 'inprogress', 'heldcontractor'), true))
+                $result['Tickets Left']++;
+
+        header('Content-type: application/json');
+        die(json_encode($result));
+    }
 }
