@@ -512,6 +512,13 @@ class Controller_Dashboard extends Controller {
             'job_key' => array('$in' => array_keys($jobs)),
             'key' => array('$in' => array('data.190', 'data.191', 'data.192')),
         );
+
+        if (Arr::get($_GET, 'start'))
+            $query['update_time']['$gte'] = strtotime($_GET['start']);
+
+        if (Arr::get($_GET, 'end'))
+            $query['update_time']['$lte'] = strtotime($_GET['end']);
+
         $items = Database_Mongo::collection('submissions')->find($query)->sort(array('update_time' => 1));
 
         $types = array();
