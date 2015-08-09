@@ -15,6 +15,14 @@ $(function () {
             'HEC': '#FC5356',
             'HELD-NBN': '#FA6466'
         },
+
+        colorByTypeMix:{
+            'TYPE_A': '#00E061',
+            'TYPE_B': '#00B54E',
+            'TYPE_C':'#008A3C',
+            'NOT_BUILDABLE':'#F01A1A',
+            'TICKETS_LEFT': '#E0D100'
+        },
         order:[
             'TESTED',
             'BUILT',
@@ -54,7 +62,13 @@ $(function () {
             $('[data-id="'+id+'"]').addClass('active');
             refreshTabData(id);
         });
-        $('#dashboard-report-form').submit(function(e) {
+        $('#saveDateConfig').on('click',function(){
+            $('#dashboard-report-form').trigger('submit');
+        });
+
+
+
+        $('#dashboard-report-form').on('submit',function(e) {
             e.preventDefault();
             var data = $(this).serialize(),
                 serialized = $(this).serializeArray(),
@@ -108,11 +122,23 @@ $(function () {
         $('#filterModal').on('show.bs.modal', function (e) {
             var id = $('.selected_switcher').attr('href').replace('#','');
             console.log(id);
-            if(id == 'fsa-fsam'){
-                $('.fsa-fsam-hidden').addClass('hidden');
-            }
-            else{
-                $('.fsa-fsam-hidden').removeClass('hidden');
+            switch (id){
+                case 'fsa-fsam':
+                    $('.fsa-fsam-hidden').addClass('hidden');
+                    $('.fda-hidden').addClass('hidden');
+                    $('.fda-hidden, .fsa-fsam-hidden').val('');
+//                    $('#filterModal .multiselect').multiselect('rebuild');
+                    break
+                case 'built-type-mix':
+                    $('.fsa-fsam-hidden').removeClass('hidden');
+                    $('.fda-hidden').removeClass('hidden');
+                    break;
+
+                default:
+                    $('.fsa-fsam-hidden').removeClass('hidden');
+                    $('.fda-hidden').addClass('hidden');
+//                    $('#filterModal .multiselect').multiselect('rebuild');
+                    break
             }
         })
 
@@ -140,6 +166,17 @@ $(function () {
             $('#preloaderModal').modal('hide');
         });
     }
+
+
+    function handleBuiltTypeMixTab(){
+        var start = $('#start-built-type-mix').val(),
+            end = $('#end-built-type-mix').val();
+        getBuiltTypeMixed(start, end).then(function(data){
+            showBuiltTypeMix(data);
+            $('#preloaderModal').modal('hide');
+        });
+    }
+
 
     function handleOverviewTab(){
         var start = $('#start-overview').val(),
@@ -209,6 +246,14 @@ $(function () {
                     e.preventDefault();
                     handleFsaTab();
                 });
+                break;
+            case 'built-type-mix':
+                handleBuiltTypeMixTab();
+                $('#built-type-mix-report').off('submit').on('submit',function(e){
+                    e.preventDefault();
+                    handleBuiltTypeMixTab();
+                });
+                break;
                 break;
 
             default:
@@ -667,6 +712,47 @@ $(function () {
 
 
 
+
+    function showBuiltTypeMix(types){
+        var total = {}, i, j, name,
+            categories = [],
+            statuses = uppStatuses(types),
+            series=[];
+
+        for(i in statuses){
+            if(statuses[i]){
+                series.push({
+                    name: i,
+                    y:statuses[i],
+                    color: window.REPORTDATA.allocation.colorByTypeMix[utils.simplifyString(i).toUpperCase()]
+                })
+            }
+        }
+        $('#tickets-built-type-mix').highcharts({
+            chart: {
+                type: 'pie'
+            },
+            title: {
+                text: 'Built type mix'
+            },
+            plotOptions: {
+                column: {
+                    allowPointSelect: true,
+                    showInLegend: false
+                }
+            },
+            legend:{
+                enabled:false
+            },
+            exporting: {
+                enabled: true
+            },
+            series: [{
+                data: series
+            }]
+        });
+    }
+
     function showAllAssignedTickets(tickets){
         var total = {}, i, j, name,
             categories = [],
@@ -713,25 +799,55 @@ $(function () {
         });
     }
 
+    function getDateConfiguration(){
+        var res = [];
+        res.push(
+            'weekStart=',
+            localStorage && localStorage._week_start_ || $('#weekStart').val() || 0,
+            '&monthStart=',
+            localStorage && localStorage._month_start_ || $('#monthStart').val() || 1);
+
+        localStorage._week_start_ =  $('#weekStart').val() || localStorage._week_start_  || 0;
+        localStorage._month_start_ =  $('#monthStart').val() || localStorage._month_start_  || 1;
+        return res.join('');
+    }
+
     function getAllStatuses(start,end){
         return $.ajax({
             url:[utils.baseUrl(),
                 "dashboard/api?",
                 (start ? 'start='+start : ''),
                 (end ? 'end='+end : ''),
-                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : '')
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : ''),
+                '&',getDateConfiguration()
             ].join(''),
             type:'get',
             dataType:'JSON'
         })
     }
+
+    function getBuiltTypeMixed(start,end){
+        return $.ajax({
+            url:[utils.baseUrl(),
+                "dashboard/mixed?",
+                (start ? 'start='+start : ''),
+                (end ? 'end='+end : ''),
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : ''),
+                '&',getDateConfiguration()
+            ].join(''),
+            type:'get',
+            dataType:'JSON'
+        })
+    }
+
     function getAllFSAStatuses(start, end){
         return $.ajax({
             url:[utils.baseUrl(),
                 "dashboard/api?type=fsa",
                 (start ? '&start='+start : ''),
                 (end ? '&end='+end : ''),
-                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : '')
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : ''),
+                '&',getDateConfiguration()
             ].join(''),
             type:'get',
             dataType:'JSON'
@@ -746,7 +862,8 @@ $(function () {
             url:[utils.baseUrl() , "dashboard/api?sep=" ,format,
                 (start ? '&start='+start : ''),
                 (end ? '&end='+end : ''),
-                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : '')
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : ''),
+                '&',getDateConfiguration()
             ].join(''),
             type:'get',
             dataType:'JSON'
@@ -758,7 +875,8 @@ $(function () {
             url:[utils.baseUrl(), "dashboard/api?type=fsam&fsa=",fsa,
                 (start ? '&start='+start : ''),
                 (end ? '&end='+end : ''),
-                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : '')
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : ''),
+                '&',getDateConfiguration()
             ].join(''),
             type:'get',
             dataType:'JSON'
@@ -771,7 +889,8 @@ $(function () {
                 "dashboard/api?type=companies",
                 (start ? '&start='+start : ''),
                 (end ? '&end='+end : ''),
-                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : '')
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : ''),
+                '&',getDateConfiguration()
             ].join(''),
             type:'get',
             dataType:'JSON'

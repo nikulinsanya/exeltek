@@ -14,7 +14,13 @@ class Controller_Search_Reset extends Controller
             $jobs = Database_Mongo::collection('jobs');
             $result = $jobs->find(array('_id' => array('$in' => $ids)));
             $count = 0;
-            foreach ($result as $job) if (Arr::get($job, 'status') == Enums::STATUS_ARCHIVE || Arr::get($job, 'status') == Enums::STATUS_COMPLETE) {
+            foreach ($result as $job) if (Arr::get($job, 'status') == Enums::STATUS_ARCHIVE || Arr::get($job, 'status') == Enums::STATUS_COMPLETE || Arr::get($job, 'status') == Enums::STATUS_PENDING) {
+                if ($job['status'] == Enums::STATUS_PENDING) {
+                    $submissions = Database_Mongo::collection('submissions')->find(array('job_key' => $job['_id'], 'active' => 1))->count();
+
+                    if ($submissions) continue;
+                }
+
                 $update = array('$set' => array('last_update' => time()));
 
                 if (Arr::get($job, 'assigned'))

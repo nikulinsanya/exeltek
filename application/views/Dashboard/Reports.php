@@ -13,6 +13,7 @@
                     <li data-id="time"><a class="switcher" href="#time">Time progress</a></li>
                     <li data-id="stacked"><a class="switcher" href="#stacked">Stacked</a></li>
                     <li data-id="fsa-fsam"><a class="switcher" href="#fsa-fsam">Fsa/Fsam</a></li>
+                    <li data-id="built-type-mix"><a class="switcher" href="#built-type-mix">Built type mix</a></li>
                 </ul>
             </div>
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 dashboard tab-content">
@@ -105,6 +106,9 @@
                                 <button type="button" data-attr="w" data-format="YYYY-WW" class="btn btn-default">Weekly</button>
                                 <button type="button" data-attr="m" data-format="YYYY-MM" class="active btn btn-default">Monthly</button>
                             </div>
+                            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#startDayModal">
+                                <span class="glyphicon glyphicon-cog"></span>
+                            </button>
                             <div class="chart-container full-width" id="history-block"></div>
                         </div>
                     </div>
@@ -166,6 +170,31 @@
                         </div>
 
                     </div>
+                <div class="tab-pane" data-id="built-type-mix">
+                    <form id="built-type-mix-report">
+                            <span class="date-range-container">
+                                <div class="daterange" class="pull-right" data-start="start-built-type-mix" data-end="end-built-type-mix" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+                                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                    <span></span> <b class="caret"></b>
+                                </div>
+                            </span>
+                        <?=Form::hidden('start-built-type-mix', Arr::get($_GET, 'start'), array('id'=>'start-built-type-mix'))?>
+                        <?=Form::hidden('end-built-type-mix', Arr::get($_GET, 'end'), array('id'=>'end-built-type-mix'))?>
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#filterModal">
+                            <span class="glyphicon glyphicon-filter"></span>
+                            Modify filters
+                        </button>
+                    </form>
+                    <label  class="filter_value" style="float: left;">Filters:</label>
+                    <div class="text-info-filters">
+                        <div>
+                            <span class="filter-item"> <label class="filter_value">Empty</label></span>
+                        </div>
+                    </div>
+                    <div class="report-block">
+                        <div class="chart-container full-width" id="tickets-built-type-mix"></div>
+                    </div>
+                </div>
             </div>
         </div>
 <?php else:?>
@@ -233,6 +262,9 @@
                             <button type="button" data-attr="w" data-format="YYYY-WW" class="btn btn-default">Weekly</button>
                             <button type="button" data-attr="m" data-format="YYYY-MM" class="active btn btn-default">Monthly</button>
                         </div>
+                        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#startDayModal">
+                            <span class="glyphicon glyphicon-cog"></span>
+                        </button>
                         <div class="chart-container full-width" id="history-block"></div>
                     </div>
                 </div>
@@ -275,6 +307,44 @@
 
 
 <?php endif;?>
+    <div class="modal fade" id="startDayModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width:800px;">
+            <div class="modal-content">
+                <form id="dashboard-week-start-report-form" class="" action="" method="get">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Calendar configuration</h4>
+                    </div>
+
+                    <div class="modal-body" id="filter-form" style="min-height: 300px;">
+                        <div class="col-xs-3">
+                            <label class="control-label">Start day of week: </label>
+                        </div>
+                        <div class="col-xs-3">
+                            <?=Form::select('weekStart',
+                                array('1' => 'Monday','2'=>'Tuesday','3'=>'Wednesday','4'=>'Thursday','5'=>'Friday','6'=>'Saturday','7'=>'Sunday'),
+                                '', array('class' => 'form-control multiselect','id'=>'weekStart'))?>
+
+                        </div>
+                        <div class="clearfix">&nbsp;</div>
+
+                        <div class="col-xs-3">
+                            <label class="control-label">Start day of month: </label>
+                        </div>
+                        <div class="col-xs-3">
+                            <?=Form::select('monthStart',
+                                array_combine(range(1,30),range(1,30)),'', array('class' => 'form-control multiselect', 'id'=>'monthStart'))?>
+
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" data-dismiss="modal"  class="btn btn-success" id="saveDateConfig">Apply</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="filterModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document" style="width:800px;">
@@ -300,7 +370,7 @@
                                 <label class="control-label">Contractor: </label>
                             </div>
                             <div class="col-xs-3">
-                                <?=Form::select('company[]', $companies, isset($_GET['company']) ? explode(',',$_GET['company']) : [], array('class' => 'multiselect form-control company-filter', 'multiple'=>'multiple'))?>
+                                <?=Form::select('company[]', $companies, isset($_GET['company']) ? $_GET['company'] : [], array('class' => 'multiselect form-control company-filter', 'multiple'=>'multiple'))?>
                             </div>
                             <div class="clearfix">&nbsp;</div>
                         <?php endif;?>
@@ -319,7 +389,15 @@
                         <div class="col-xs-3  fsa-fsam-hidden">
                             <?=Form::select('fsam[]', $fsam, NULL, array('class' => 'fsam-filter multiselect', 'multiple' => 'multiple'))?>
                         </div>
-                        <div class="clearfix  fsa-fsam-hidden">&nbsp;</div>
+                        <div class="clearfix fsa-fsam-hidden">&nbsp;</div>
+
+                        <div class="col-xs-2  fda-hidden">
+                            <label class="control-label">FDA: </label>
+                        </div>
+                        <div class="col-xs-3  fda-hidden">
+                            <?=Form::select('fda[]', [], NULL, array('class' => 'fda-filter multiselect', 'multiple' => 'multiple'))?>
+                        </div>
+                        <div class="clearfix  fda-hidden">&nbsp;</div>
                     </div>
 
                     <div class="modal-footer">

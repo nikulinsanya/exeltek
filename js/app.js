@@ -1166,6 +1166,34 @@ $(function () {
             })
     });
 
+    $('.fsam-filter').on('change',function(){
+        if(!$('.fda-filter').length){
+            return false;
+        }
+        $.ajax({
+            url:utils.baseUrl() + "json/fda?fsam="+
+                ($('.fsam-filter').val() ? $('.fsam-filter').val().join(',') : ''),
+            type:'get',
+            dataType:'JSON',
+            success: function(data){
+                var i = data.length,
+                    html = [];
+                while(i--){
+                    html.unshift('<option value="',
+                        data[i],
+                        '">',
+                        data[i],
+                        '</option>')
+                }
+                $('.fda-filter').html(html.join(''));
+                $('.fda-filter').multiselect('rebuild');
+            },
+            error: function(e){
+                alert(e.responseText);
+            }
+        })
+    });
+
     $('.time-machine-item').click(function (e) {
         if(e.target.nodeName == 'INPUT' || e.target.nodeName == 'A') return;
 
