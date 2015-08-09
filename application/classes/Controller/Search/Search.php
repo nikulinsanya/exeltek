@@ -168,6 +168,9 @@ class Controller_Search_Search extends Controller {
                 $op = Arr::get($actions_mongo, $op, '$eq');
             }
 
+            if ($op == '$eq' && !$value)
+                $value = null;
+
             if (isset($query['data.' . $column]) && $op == '$eq') {
                 if (isset($query['data.' . $column]['$in'])) {
                     $query['data.' . $column]['$in'][] = $value;
