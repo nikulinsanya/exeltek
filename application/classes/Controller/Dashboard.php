@@ -276,14 +276,14 @@ class Controller_Dashboard extends Controller {
         $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
         $fsa = Database_Mongo::collection('jobs')->distinct('data.12');
         $fsam = Database_Mongo::collection('jobs')->distinct('data.13');
-
+        $fsa = array_combine($fsa, $fsa);
+        $fsam = array_combine($fsam, $fsam);
 
         $view = View::factory('Dashboard/Reports')
             ->bind('fsa', $fsa)
             ->bind('fsam', $fsam)
             ->bind('companies', $companies)
             ->bind('regions', $regions);
-
 
         $this->response->body($view);
     }
