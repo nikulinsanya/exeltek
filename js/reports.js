@@ -121,13 +121,11 @@ $(function () {
         });
         $('#filterModal').on('show.bs.modal', function (e) {
             var id = $('.selected_switcher').attr('href').replace('#','');
-            console.log(id);
             switch (id){
                 case 'fsa-fsam':
                     $('.fsa-fsam-hidden').addClass('hidden');
                     $('.fda-hidden').addClass('hidden');
                     $('.fda-hidden, .fsa-fsam-hidden').val('');
-//                    $('#filterModal .multiselect').multiselect('rebuild');
                     break
                 case 'built-type-mix':
                     $('.fsa-fsam-hidden').removeClass('hidden');
@@ -137,7 +135,6 @@ $(function () {
                 default:
                     $('.fsa-fsam-hidden').removeClass('hidden');
                     $('.fda-hidden').addClass('hidden');
-//                    $('#filterModal .multiselect').multiselect('rebuild');
                     break
             }
         })
@@ -730,11 +727,30 @@ $(function () {
         }
         $('#tickets-built-type-mix').highcharts({
             chart: {
-                type: 'pie'
+                type: 'pie',
+                events: {
+                    load: function(event) {
+                        var total = 0;
+                        for(var i=0, len=this.series[0].yData.length; i<len; i++){
+                            total += this.series[0].yData[i];
+                        }
+
+                        var text = this.renderer.html(
+                                '<h4>'+
+                                'Total: <b>' + total +
+                                '</b></h4>',
+                                this.plotLeft - 10,
+                                this.plotTop - 30
+                            ).attr({
+                                zIndex: 5
+                            }).add()
+                    }
+                }
             },
             title: {
                 text: 'Built type mix'
             },
+
             plotOptions: {
                 column: {
                     allowPointSelect: true,
