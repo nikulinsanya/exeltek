@@ -514,7 +514,7 @@ class Controller_Dashboard extends Controller {
         foreach ($result as $job) {
             $status = strtolower(preg_replace('/[^a-z]/i', '', Arr::path($job, 'data.44')));
             $jobs[$job['_id']] = $status;
-            if ($job['created'] >= $start && (!$end || $job['created'] <= $end) && !in_array($status, array('dirty', 'heldnbn', 'deferred'), true)) {
+            if ($job['created'] >= $start && (!$end || $job['created'] <= $end) && in_array($status, array('built', 'tested'), true)) {
                 if (Arr::path($job, 'data.192'))
                     $types[$job['_id']] = 3;
                 elseif (Arr::path($job, 'data.191'))
@@ -537,7 +537,7 @@ class Controller_Dashboard extends Controller {
 
         $items = Database_Mongo::collection('submissions')->find($query)->sort(array('update_time' => 1));
 
-        foreach ($items as $item)
+        foreach ($items as $item) if ($jobs[$item['job_key']] == 'built' || $jobs[$item['job_key']] == 'tested')
             switch ($item['key']) {
                 case 'data.190':
                     $types[$item['job_key']] = 1;
