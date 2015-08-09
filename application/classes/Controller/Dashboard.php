@@ -498,8 +498,8 @@ class Controller_Dashboard extends Controller {
             $company = array_map('intval', $company);
 
             $query['$or'] = array(
-                array('companies' => count($company) > 1 ? array('$in' => $company) : array_shift($company)),
-                array('ex' => count($company) > 1 ? array('$in' => $company) : array_shift($company)),
+                array('companies' => count($company) > 1 ? array('$in' => $company) : current($company)),
+                array('ex' => count($company) > 1 ? array('$in' => $company) : current($company)),
             );
         }
 
