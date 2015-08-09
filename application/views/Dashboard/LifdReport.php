@@ -10,8 +10,10 @@
                     Collapse all
                 </button>
             </th>
+            <?php if (Group::current('allow_assign')): $count = 3;?>
             <th style="width: 180px;"><div style="transform: translate(75px, 135px) rotate(270deg);"><span>Current contractors</span></div></th>
             <th style="width: 180px;"><div style="transform: translate(75px, 135px) rotate(270deg);"><span>Previous contractors</span></div></th>
+            <?php else: $count = 1; endif;?>
             <th class="purple"><div><span>Total tickets</span></div></th>
             <th class="lightcyan"><div><span>ASSIGNED</span></div></th>
             <th class="lightcyan"><div><span>NOTIFY</span></div></th>
@@ -34,7 +36,7 @@
     <?php foreach ($list as $fsa => $fsams):   ?>
         <?php $fsa_c++?>
         <tr  data-level="1" id="level_1_<?=$fsa_c?>" class="text-center">
-            <td colspan="3"><?=$fsa?></td>
+            <td colspan="<?=$count?>"><?=$fsa?></td>
             <td class="data purple"><strong><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=12&actions[]=2&values[]=<?=$fsa?>"><?=array_sum(Arr::get($total, $fsa))?></a></strong></td>
             <td class="data lightcyan"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=12&actions[]=2&values[]=<?=$fsa?>&columns[]=44&actions[]=0&values[]=assigned"><?=Arr::path($total, array($fsa, 'assigned'))?></a></td>
             <td class="data lightcyan"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=12&actions[]=2&values[]=<?=$fsa?>&columns[]=44&actions[]=0&values[]=notify"><?=Arr::path($total, array($fsa, 'notify'))?></a></td>
@@ -55,7 +57,7 @@
         <?php foreach ($fsams as $fsam => $lifds):?>
             <?php $fsam_c++?>
             <tr  data-level="2" id="level_2_<?=$fsam_c?>" class="text-center">
-                <td colspan="3"><?=$fsam?></td>
+                <td colspan="<?=$count?>"><?=$fsam?></td>
                 <td class="data purple"><strong><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>"><?=array_sum(Arr::get($total, $fsam))?></a></strong></td>
                 <td class="data lightcyan"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=44&actions[]=0&values[]=assigned"><?=Arr::path($total, array($fsam, 'assigned'))?></a></td>
                 <td class="data lightcyan"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=44&actions[]=0&values[]=notify"><?=Arr::path($total, array($fsam, 'notify'))?></a></td>
@@ -77,7 +79,7 @@
                 <?php $lifd_c++?>
                 <?php $dates = explode('|', $lifd); $days = Utils::working_days($dates[1]);?>
                 <tr  data-level="3" id="level_3_<?=$lifd_c?>" class="text-center">
-                    <td colspan="3"><?=($dates[0] ? date('d-m-Y', $dates[0]) : '') . '-' . ($dates[1] ? date('d-m-Y', $dates[1]) . ' [' . $days . ' day' . ($days != 1 ? 's ' : ' ') . ($dates[1] < time() ? 'passed' : 'left') . ']' : '')?></td>
+                    <td colspan="<?=$count?>"><?=($dates[0] ? date('d-m-Y', $dates[0]) : '') . '-' . ($dates[1] ? date('d-m-Y', $dates[1]) . ' [' . $days . ' day' . ($days != 1 ? 's ' : ' ') . ($dates[1] < time() ? 'passed' : 'left') . ']' : '')?></td>
                     <td class="data purple"><strong><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=17&actions[]=2&values[]=<?=$dates[0] ? date('d-m-Y', $dates[0]) : ''?>&columns[]=18&actions[]=2&values[]=<?=$dates[1] ? date('d-m-Y', $dates[1]) : ''?>"><?=array_sum(Arr::get($total, $fsam . $lifd))?></a></strong></td>
                     <td class="data lightcyan"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=17&actions[]=2&values[]=<?=$dates[0] ? date('d-m-Y', $dates[0]) : ''?>&columns[]=18&actions[]=2&values[]=<?=$dates[1] ? date('d-m-Y', $dates[1]) : ''?>&columns[]=44&actions[]=0&values[]=assigned"><?=Arr::path($total, array($fsam . $lifd, 'assigned'))?></a></td>
                     <td class="data lightcyan"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=17&actions[]=2&values[]=<?=$dates[0] ? date('d-m-Y', $dates[0]) : ''?>&columns[]=18&actions[]=2&values[]=<?=$dates[1] ? date('d-m-Y', $dates[1]) : ''?>&columns[]=44&actions[]=0&values[]=notify"><?=Arr::path($total, array($fsam . $lifd, 'notify'))?></a></td>
@@ -99,8 +101,10 @@
                     <?php $fda_c++?>
                     <tr data-level="4" id="level_4_<?=$fda_c?>" class="text-center">
                         <td><?=$fda?></td>
+                        <?php if (Group::current('allow_assign')):?>
                         <td class="data"><?=implode('<br/>', array_intersect_key($companies, array_flip(Arr::path($data, 'companies.now', array()))))?></td>
                         <td class="data"><?=implode('<br/>', array_intersect_key($companies, array_flip(Arr::path($data, 'companies.ex', array()))))?></td>
+                        <?php endif;?>
                         <td class="data purple"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=14&actions[]=2&values[]=<?=$fda?>&columns[]=17&actions[]=2&values[]=<?=$dates[0] ? date('d-m-Y', $dates[0]) : ''?>&columns[]=18&actions[]=2&values[]=<?=$dates[1] ? date('d-m-Y', $dates[1]) : ''?>"><?=array_sum($data)?></a></td>
                         <td class="data lightcyan"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=14&actions[]=2&values[]=<?=$fda?>&columns[]=17&actions[]=2&values[]=<?=$dates[0] ? date('d-m-Y', $dates[0]) : ''?>&columns[]=18&actions[]=2&values[]=<?=$dates[1] ? date('d-m-Y', $dates[1]) : ''?>&columns[]=44&actions[]=0&values[]=assigned"><?=Arr::get($data, 'assigned') ?></a></td>
                         <td class="data lightcyan"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=14&actions[]=2&values[]=<?=$fda?>&columns[]=17&actions[]=2&values[]=<?=$dates[0] ? date('d-m-Y', $dates[0]) : ''?>&columns[]=18&actions[]=2&values[]=<?=$dates[1] ? date('d-m-Y', $dates[1]) : ''?>&columns[]=44&actions[]=0&values[]=notify"><?=Arr::get($data, 'notify') ?></a></td>
