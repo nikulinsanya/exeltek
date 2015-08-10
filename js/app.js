@@ -1221,7 +1221,7 @@ $(function () {
         var val = $(this).attr('data-id');
 
         $.get(utils.baseUrl() + 'timemachine?id=' + id + '&point=' + val, function(data) {
-            document.location = document.location;
+            document.location.reload(true);
         });
     });
 
