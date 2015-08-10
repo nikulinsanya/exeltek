@@ -291,6 +291,8 @@ class Controller_Dashboard extends Controller {
     public function action_api() {
         header('Content-type: application/json');
 
+        Database_Mongo::collection('api')->insert($_GET);
+
         $type = Arr::get($_GET, 'type');
         $range = array();
         if (Arr::get($_GET, 'start')) $range['$gte'] = strtotime($_GET['start']);
@@ -429,7 +431,8 @@ class Controller_Dashboard extends Controller {
                                 $date = strtotime(date('01-m-Y', $item['t']));
                                 break;
                             case 'w':
-                                $date = strtotime('last monday', strtotime('+1 day', strtotime('midnight', $item['t'])));
+                                $day = Arr::get(array('', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'), Arr::get($_GET, 'weekStart', 1)) ? : 'monday';
+                                $date = strtotime('last ' . $day, strtotime('+1 day', strtotime('midnight', $item['t'])));
                                 break;
                             case 'd':
                                 $date = strtotime('midnight', $item['t']);
