@@ -575,7 +575,7 @@ $(function () {
                     data:[],
                     name:'',
                     color:window.REPORTDATA.allocation.colorByType[name.toUpperCase()]};
-                rawSeries[name].data.push([moment.unix(i).startOf(startOf).valueOf(),statuses[i][j]]);
+                rawSeries[name].data.push([moment.unix(i).valueOf(),statuses[i][j]]);
             }
         }
 
@@ -595,6 +595,10 @@ $(function () {
             },
             xAxis: {
                 type: 'datetime',
+                dateTimeLabelFormats: { // don't display the dummy year
+                    month: '%e. %b',
+                    year: '%b'
+                }
 //                tickPositioner: function () {
 //                    var positions = [],
 //                        tick = Math.floor(this.dataMin),
@@ -847,9 +851,9 @@ $(function () {
         var res = [];
         res.push(
             'weekStart=',
-            localStorage && localStorage._week_start_ || $('#weekStart').val() || 0,
+            $('#weekStart').val() || localStorage && localStorage._week_start_ || 0,
             '&monthStart=',
-            localStorage && localStorage._month_start_ || $('#monthStart').val() || 1);
+            $('#monthStart').val()|| localStorage && localStorage._month_start_ || 1);
 
         localStorage._week_start_ =  $('#weekStart').val() || localStorage._week_start_  || 0;
         localStorage._month_start_ =  $('#monthStart').val() || localStorage._month_start_  || 1;
