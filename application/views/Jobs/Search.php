@@ -505,6 +505,7 @@
                         <?php if (isset($columns['status']) && Group::current('show_all_jobs') && $_GET['status'] == -1):?><th class="hidden-sm hidden-xs">Job status</th><?php endif;?>
                         <?php if (isset($columns['types'])):?><th class="hidden-xs">Assigned works</th><?php endif;?>
                         <?php if (isset($columns['companies'])):?><th class="hidden-sm hidden-xs">Assigned companies</th><?php endif;?>
+                        <?php if (isset($columns['ex'])):?><th class="hidden-sm hidden-xs">Previously assigned companies</th><?php endif;?>
                         <?php if (isset($columns['settings'])):?><th class="hidden-sm hidden-xs">Settings</th><?php endif;?>
                         <?php if (isset($columns['pending'])):?><th class="hidden-sm hidden-xs">Pending submissions</th><?php endif;?>
                         <?php if (isset($columns['attachments'])):?><th class="hidden-xs">Attachments</th><?php endif;?>
