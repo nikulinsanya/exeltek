@@ -4,12 +4,12 @@ class Controller_Test extends Controller {
 
     public function before() {
         if (!Group::current('is_admin')) throw new HTTP_Exception_403('Forbidden');
-        $time = mktime(0, 0, 0, 1, 1, 2011);
-        echo date('d-m-Y H:i:s', strtotime('last sunday', strtotime('+1 day', $time)));
-        die();
     }
 
     public function action_index() {
+        header('Content-type: application/json');
+        die(json_encode(Database_Mongo::collection('jobs')->distinct('data.8')));
+
         $start = microtime(true);
 
         $total = 0;

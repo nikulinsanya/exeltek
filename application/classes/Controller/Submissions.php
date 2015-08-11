@@ -17,12 +17,10 @@ class Controller_Submissions extends Controller {
 
         $filter = array('_id' => $id);
 
-        $company = User::current('company_id');
-
         if (!Group::current('allow_assign'))
             $filter['$or'] = array(
-                array('companies' => is_array($company) ? array('$in' => $company) : $company),
-                array('ex' => is_array($company) ? array('$in' => $company) : $company),
+                array('companies' => intval(User::current('company_id'))),
+                array('ex' => intval(User::current('company_id'))),
             );
 
         $job = Database_Mongo::collection('jobs')->findOne($filter);
