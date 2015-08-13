@@ -106,7 +106,7 @@
 
         <?php if ($submissions):?>
         <div data-id="submissions" class="panel-body hidden">
-            <table class="col-container">
+            <table class="table">
                 <?php $time = false; $user_id = false; foreach ($submissions['list'] as $submission):?>
                 <?php if ($time != $submission['time'] || $user_id != $submission['user_id']):
                     $user = User::get($submission['user_id']);
@@ -126,7 +126,7 @@
                 <?php endif;?>
 
 
-                    <tr>
+                    <tr class="<?=$submission['active'] == 1 ? 'yellow' : ($submission['active']? 'rose' : 'lgreen')?>">
                         <td>
                             <?php if ($submission['active'] == 1):?>
                                 <span id="submission-<?=$submission['id']?>" class="pending-<?=$submission['key']?> text-info glyphicon glyphicon-edit"></span>

@@ -14,7 +14,7 @@ class Controller_Search_Prepare extends Controller
         if (!$job)
             throw new HTTP_Exception_404('Not found');
 
-        if (!Group::current('show_all_jobs') && !in_array((int)User::current('company_id'), Arr::get($job, 'companies', array()), true))
+        if (!Group::current('show_all_jobs') && !in_array((int)User::current('company_id'), Arr::get($job, 'companies', array()), true) && !in_array((int)User::current('company_id'), Arr::get($job, 'ex', array()), true))
             throw new HTTP_Exception_403('Forbidden');
 
         switch ($type) {

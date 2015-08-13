@@ -654,12 +654,10 @@ $(function () {
         },
         done: function (e, data) {
             $('#upload-count').val(parseInt($('#upload-count').val()) + 1);
-            var parent = $('.files-container').find('tr').first();
-            if (parent) {
-                var link = $('<tr><td>' + data.result.attachment.content + '</td></tr>');
-                link.find('.remove-link').click(confirm_link).click(remove_link);
-                parent.before(link);
-            }
+            //var parent = $('.files-container').find('tr').first();
+            var link = $('<tr><td>' + data.result.attachment.content + '</td></tr>');
+            link.find('.remove-link').click(confirm_link).click(remove_link);
+            $('.files-container').prepend(link);
             $('.modal-footer').find('button.btn-success').before(data.result.attachment.message);
             $('#file-content').val('');
         },

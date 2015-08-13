@@ -8,7 +8,11 @@ class Controller_Test extends Controller {
 
     public function action_index() {
         header('Content-type: application/json');
-        die(json_encode(Database_Mongo::collection('jobs')->distinct('data.8')));
+        $result = Database_Mongo::collection('jobs')->find(array(), array('data.8' => 1));
+        $jobs = array();
+        foreach ($result as $job)
+            $jobs[$job['_id']] = $job['data'][8];
+        die(json_encode($jobs));
 
         $start = microtime(true);
 
