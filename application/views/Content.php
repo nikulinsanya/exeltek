@@ -38,6 +38,9 @@
     <script src="<?=URL::base()?>js/lib/highcharts/no-data-to-display.js"></script>
     <script src="<?=URL::base()?>js/lib/highcharts/drilldown.js"></script>
 
+    <script src="http://www.mapquestapi.com/sdk/js/v7.2.s/mqa.toolkit.js?key=Xb82MnnrASWT7vN6QaQ19Y8srqgAfWL8"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWDqGAI0Zbb5kiwRG2-NkonZxnIUmYBeU"></script>
+    <script src="<?=URL::base()?>js/maps.js"></script>
     <script src="<?=URL::base()?>js/utils.js"></script>
     <script src="<?=URL::base()?>js/app.js"></script>
     <script src="<?=URL::base()?>js/reports.js"></script>
