@@ -20,13 +20,14 @@ class Controller_Api_Jobs extends Kohana_Controller {
 
         $jobs = array();
 
+        Form::$static_title[] = 245;
+
         $columns = array_flip(array_merge(array_keys(Columns::get_static()), Form::$static_title));
 
         $columns[8] = 1;
         $columns[12] = 1;
         $columns[13] = 1;
         $columns[14] = 1;
-        $columns[245] = 1;
 
         foreach (Form::$columns as $type => $list) foreach ($list as $keys => $name) foreach (explode(',', $keys) as $key)
             if (is_numeric($key)) $columns[$key] = 1;
@@ -84,13 +85,14 @@ class Controller_Api_Jobs extends Kohana_Controller {
 
         $id = Arr::get($_REQUEST, 'id');
 
+        Form::$static_title[] = 245;
+
         $columns = array_flip(array_merge(array_keys(Columns::get_static()), Form::$static_title));
 
         $columns[8] = 1;
         $columns[12] = 1;
         $columns[13] = 1;
         $columns[14] = 1;
-        $columns[245] = 1;
 
         foreach (Form::$columns as $type => $list) foreach ($list as $key => $name)
             if (is_numeric($key)) $columns[$key] = 1;
