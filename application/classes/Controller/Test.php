@@ -7,6 +7,12 @@ class Controller_Test extends Controller {
     }
 
     public function action_index() {
+        $jobs = Database_Mongo::collection('jobs');
+        $coords = json_decode(file_get_contents(DOCROOT . 'coords.json'), true);
+        foreach ($coords as $key => $value)
+            $jobs->update(array('_id' => $key), array('$set' => array('lng' => $value['lng'], 'lat' => $value['lat'])));
+        die();
+
         header('Content-type: application/json');
         $result = Database_Mongo::collection('jobs')->find(array(), array('data.8' => 1));
         $jobs = array();

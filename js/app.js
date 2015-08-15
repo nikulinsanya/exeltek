@@ -585,6 +585,10 @@ $(function () {
         $(this).parents('form').attr('action', './search/export');
     });
 
+    $('.export-map').click(function() {
+        $(this).parents('form').attr('action', './search/map');
+    });
+
     $('.assign-jobs').click(function() {
         $(this).parents('form').attr('action', './search/assign');
     });
