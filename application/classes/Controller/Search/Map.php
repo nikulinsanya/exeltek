@@ -107,7 +107,10 @@ class Controller_Search_Map extends Controller {
             foreach (Columns::get_search() as $id => $type)
                 $row[] = Arr::path($ticket, array('data', $id)) ? Columns::output($ticket['data'][$id], Columns::get_type($id), true) : '';
 
-            $list[$ticket['lat'] . ',' . $ticket['lng']] = array_combine($header, $row);
+            $row = array_combine($header, $row);
+            $row['lat'] = $ticket['lat'];
+            $row['lng'] = $ticket['lng'];
+            $list[] = $row;
         }
 
         if (!$list) throw new HTTP_Exception_404('Not found');
@@ -124,8 +127,11 @@ class Controller_Search_Map extends Controller {
 
         $query = DB::insert('maps', array('map_id', 'job_key', 'lng', 'lat', 'info', 'expire'));
 
-        foreach ($list as $key => $values) {
-            list($lat, $lng) = explode(',', $key);
+        foreach ($list as $values) {
+            $lat = $values['lat'];
+            $lng = $values['lng'];
+            unset($values['lng']);
+            unset($values['lat']);
             $query->values(array($id, $values['Ticket ID'], $lng, $lat, json_encode($values), $expire));
         }
 
