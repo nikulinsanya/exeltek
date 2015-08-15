@@ -250,6 +250,10 @@ window.maps = (function() {
                 self.infowindow.close();
             }
             this.map.setCenter(latLng);
+        },
+
+        zoomMap: function(zoom){
+            this.map.setZoom(zoom || 16);
         }
 
 

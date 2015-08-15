@@ -98,7 +98,7 @@
                 var lat, lon;
                 lat = $(e.target).attr('data-lat');
                 lon = $(e.target).attr('data-lon');
-                centerMap(lat,lon)
+                centerMap(lat,lon);
             })
         }
 
@@ -119,6 +119,7 @@
 
         function centerMap(lat, lon){
             window.maps.GoogleMaps.centerMap(lat,lon);
+            window.maps.GoogleMaps.zoomMap(20);
         }
 
         function iconMaper(status){
