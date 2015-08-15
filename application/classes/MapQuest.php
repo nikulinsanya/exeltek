@@ -11,7 +11,7 @@ class MapQuest
         if (!is_array($address))
             $address = array($address);
 
-        $address = array_flip(array_map(function($value) { return str_replace("\n", ', ', $value) . ', AU'; }, $address));
+        $address = array_flip(array_map(function($value) { return str_replace("\n", ', ', $value) . ', Australia'; }, $address));
 
         reset($address);
         $list = array();
