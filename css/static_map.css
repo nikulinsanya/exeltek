@@ -1,0 +1,12 @@
+html, body {
+    height: 100%;
+}
+
+.left_panel{
+    width:200px;
+    border-right: 1px solid #ccc;
+    height: 100%;
+}
+.right_panel{
+    box-shadow: -1px -1px 3px #ccc;
+}

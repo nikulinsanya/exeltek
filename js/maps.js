@@ -155,27 +155,47 @@ window.maps = (function() {
             });
 
             this.geocoder = new google.maps.Geocoder();
+        },
 
-//            var infoWindow = new google.maps.InfoWindow({map: this.map});
+        addMarker: function(data){
+            var self = this;
+            data = data || {
+                lat:-25.363882,
+                lon:131.044922,
+                status: 'Tested'
+            };
+            var html = '<table id="map-infowindow-attribute-table"><tbody>' +
+                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
+                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
+                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
+                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
+                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
+                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
+                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
+                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
+                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
+                '</tbody></table>';
 
-//            // Try HTML5 geolocation.
-//            if (navigator.geolocation) {
-//                navigator.geolocation.getCurrentPosition(function(position) {
-//                    var pos = {
-//                        lat: position.coords.latitude,
-//                        lng: position.coords.longitude
-//                    };
-//
-//                    infoWindow.setPosition(pos);
-//                    infoWindow.setContent('Location found.');
-//                    this.map.setCenter(pos);
-//                }, function() {
-//                    self.handleLocationError(true, infoWindow, map.getCenter());
-//                });
-//            } else {
-//                // Browser doesn't support Geolocation
-//                self.handleLocationError(false, infoWindow, this.map.getCenter());
-//            }
+            var infowindow = new google.maps.InfoWindow({
+                content: html
+            });
+
+            var myLatlng = new google.maps.LatLng(data.lat,data.lon);
+            var marker = new google.maps.Marker({
+                position: myLatlng,
+                animation: google.maps.Animation.DROP,
+                icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+                title:"Hello World!"
+            });
+
+            marker.addListener('click', function() {
+                infowindow.open(this.map, marker);
+            });
+
+
+            marker.setMap(self.map);
+            self.bounds.extend(myLatlng);
+            self.map.fitBounds(self.bounds);
         },
 
         batchGeocode: function(addresses,callback){
@@ -201,7 +221,6 @@ window.maps = (function() {
             resultsMap = resultsMap || this.map;
             this.geocoder.geocode({'address': address}, function(results, status) {
                 if (status === google.maps.GeocoderStatus.OK) {
-//                    resultsMap.setCenter(results[0].geometry.location);
                     self.bounds.extend(results[0].geometry.location);
                     resultsMap.fitBounds(self.bounds);
                     var marker = new google.maps.Marker({
