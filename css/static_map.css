@@ -3,10 +3,27 @@ html, body {
 }
 
 .left_panel{
-    width:200px;
-    border-right: 1px solid #ccc;
+    min-width:200px;
+    width: 20%;
     height: 100%;
+    float: left;
 }
 .right_panel{
     box-shadow: -1px -1px 3px #ccc;
+    background: #ccc;
+    height: 100%;
+    width: 79%;
+    float: left;
+}
+
+.left_panel ul{
+    list-style: none;
+    padding-left: 15px;
+}
+.left_panel ul a{
+    cursor: pointer;
+}
+
+.left_panel ul li{
+    margin: 3px 0px ;
 }

@@ -147,56 +147,54 @@ window.maps = (function() {
 
 
         initMap: function (container) {
-                var self = this;
-
             this.map = new google.maps.Map(document.getElementById(container), {
-                center: {lat: -34.397, lng: 150.644},
+                center: {lat: -33.871799, lng: 151.206951},
                 zoom: 13
             });
 
             this.geocoder = new google.maps.Geocoder();
         },
+        addMarker: function(lat, lon, data, icon){
+            var latLng = new google.maps.LatLng(lat,lon),
+                infoContent = [],
+                infowindow = this.infowindow,
+                self = this;
 
-        addMarker: function(data){
-            var self = this;
-            data = data || {
-                lat:-25.363882,
-                lon:131.044922,
-                status: 'Tested'
-            };
-            var html = '<table id="map-infowindow-attribute-table"><tbody>' +
-                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
-                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
-                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
-                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
-                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
-                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
-                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
-                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
-                '<tr id="map-infowindow-attr-Ticket ID-container"><td class="i4ewOd-TaUzNb-p83tee-V1ur5d-haAclf"><div id="map-infowindow-attr-Ticket ID-name data-tooltip="Ticket ID" aria-label="Ticket ID">Ticket ID</div></td><td><div data-attribute-name="Ticket ID" data-placeholder="Значение не задано">T1W000042606173</div></td></tr>' +
-                '</tbody></table>';
-
-            var infowindow = new google.maps.InfoWindow({
-                content: html
-            });
-
-            var myLatlng = new google.maps.LatLng(data.lat,data.lon);
             var marker = new google.maps.Marker({
-                position: myLatlng,
-                animation: google.maps.Animation.DROP,
-                icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
-                title:"Hello World!"
+                map: this.map,
+                icon:icon,
+                position: latLng
             });
+            this.bounds.extend(latLng);
 
-            marker.addListener('click', function() {
-                infowindow.open(this.map, marker);
-            });
+            this.map.fitBounds(this.bounds);
 
+            if(data){
+                infoContent.push('<table>');
+                for(i in data){
+                    infoContent.push('<tr>',
+                        '<td style="padding-right: 5px;">',
+                        i,
+                        '</td>',
+                        '<td><b>',
+                        data[i],
+                        '</b></td>',
+                        '</tr>');
+                }
 
-            marker.setMap(self.map);
-            self.bounds.extend(myLatlng);
-            self.map.fitBounds(self.bounds);
+                marker.addListener('click', function() {
+                    if (self.infowindow) {
+                        self.infowindow.close();
+                    }
+                    self.infowindow = new google.maps.InfoWindow({
+                        content: infoContent.join('')
+                    });
+                    self.infowindow.open(self.map, marker);
+                });
+            }
+            return marker;
         },
+
 
         batchGeocode: function(addresses,callback){
             var self = this;
@@ -242,7 +240,19 @@ window.maps = (function() {
             infoWindow.setContent(browserHasGeolocation ?
                 'Error: The Geolocation service failed.' :
                 'Error: Your browser doesn\'t support geolocation.');
+        },
+
+
+        centerMap: function(lat,lon){
+            var latLng = new google.maps.LatLng(lat,lon),
+                self = this;
+            if (self.infowindow) {
+                self.infowindow.close();
+            }
+            this.map.setCenter(latLng);
         }
+
+
 
 
     };
