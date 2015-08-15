@@ -481,6 +481,7 @@
     <button type="submit" class="btn btn-info export-jobs"><span class="glyphicon glyphicon-export"></span>Export jobs</button>
     <?php endif;?>
     <button type="submit" class="btn btn-info export-result"><span class="glyphicon glyphicon-export"></span>Export search result</button>
+    <button type="submit" class="btn btn-info export-map"><span class="glyphicon glyphicon-export"></span>Export map</button>
 
 
 </div>
