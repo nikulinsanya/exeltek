@@ -147,36 +147,54 @@ window.maps = (function() {
 
 
         initMap: function (container) {
-                var self = this;
-
             this.map = new google.maps.Map(document.getElementById(container), {
-                center: {lat: -34.397, lng: 150.644},
+                center: {lat: -33.871799, lng: 151.206951},
                 zoom: 13
             });
 
             this.geocoder = new google.maps.Geocoder();
-
-//            var infoWindow = new google.maps.InfoWindow({map: this.map});
-
-//            // Try HTML5 geolocation.
-//            if (navigator.geolocation) {
-//                navigator.geolocation.getCurrentPosition(function(position) {
-//                    var pos = {
-//                        lat: position.coords.latitude,
-//                        lng: position.coords.longitude
-//                    };
-//
-//                    infoWindow.setPosition(pos);
-//                    infoWindow.setContent('Location found.');
-//                    this.map.setCenter(pos);
-//                }, function() {
-//                    self.handleLocationError(true, infoWindow, map.getCenter());
-//                });
-//            } else {
-//                // Browser doesn't support Geolocation
-//                self.handleLocationError(false, infoWindow, this.map.getCenter());
-//            }
         },
+        addMarker: function(lat, lon, data, icon){
+            var latLng = new google.maps.LatLng(lat,lon),
+                infoContent = [],
+                infowindow = this.infowindow,
+                self = this;
+
+            var marker = new google.maps.Marker({
+                map: this.map,
+                icon:icon,
+                position: latLng
+            });
+            this.bounds.extend(latLng);
+
+            this.map.fitBounds(this.bounds);
+
+            if(data){
+                infoContent.push('<table>');
+                for(i in data){
+                    infoContent.push('<tr>',
+                        '<td style="padding-right: 5px;">',
+                        i,
+                        '</td>',
+                        '<td><b>',
+                        data[i],
+                        '</b></td>',
+                        '</tr>');
+                }
+
+                marker.addListener('click', function() {
+                    if (self.infowindow) {
+                        self.infowindow.close();
+                    }
+                    self.infowindow = new google.maps.InfoWindow({
+                        content: infoContent.join('')
+                    });
+                    self.infowindow.open(self.map, marker);
+                });
+            }
+            return marker;
+        },
+
 
         batchGeocode: function(addresses,callback){
             var self = this;
@@ -201,7 +219,6 @@ window.maps = (function() {
             resultsMap = resultsMap || this.map;
             this.geocoder.geocode({'address': address}, function(results, status) {
                 if (status === google.maps.GeocoderStatus.OK) {
-//                    resultsMap.setCenter(results[0].geometry.location);
                     self.bounds.extend(results[0].geometry.location);
                     resultsMap.fitBounds(self.bounds);
                     var marker = new google.maps.Marker({
@@ -223,7 +240,19 @@ window.maps = (function() {
             infoWindow.setContent(browserHasGeolocation ?
                 'Error: The Geolocation service failed.' :
                 'Error: Your browser doesn\'t support geolocation.');
+        },
+
+
+        centerMap: function(lat,lon){
+            var latLng = new google.maps.LatLng(lat,lon),
+                self = this;
+            if (self.infowindow) {
+                self.infowindow.close();
+            }
+            this.map.setCenter(latLng);
         }
+
+
 
 
     };

@@ -789,7 +789,11 @@ $(function () {
             $('#tickets-map').show();
             $('#mq-tickets-map').hide();
             window.maps.GoogleMaps.initMap('tickets-map');
+            window.maps.GoogleMaps.addMarker();
         }
+
+
+
     }
 
     function showBuiltTypeMix(types){
