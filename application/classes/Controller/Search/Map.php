@@ -125,7 +125,7 @@ class Controller_Search_Map extends Controller {
         $query = DB::insert('maps', array('map_id', 'job_key', 'lng', 'lat', 'info', 'expire'));
 
         foreach ($list as $key => $values) {
-            list($lng, $lat) = explode(',', $key);
+            list($lat, $lng) = explode(',', $key);
             $query->values(array($id, $values['Ticket ID'], $lng, $lat, json_encode($values), $expire));
         }
 
