@@ -2,7 +2,7 @@
 </div>
 <div id="upload">
     <h2>Please, select file</h2>
-    <input id="fileupload" type="file" name="files[]" data-url="<?=URL::base()?>imex/upload"> <br/>
+    <input id="fileupload" type="file" name="files[]" accept="text/csv" data-url="<?=URL::base()?>imex/upload"> <br/>
 </div>
 <div id="div-progress" class="hidden">
     <h2>Upload progress: <span id="progress">0%</span></h2>

@@ -12,9 +12,16 @@ class Controller_Search_Complete extends Controller
             Messages::save('Please, select at least one job!');
         else {
             $jobs = Database_Mongo::collection('jobs');
-            $result = $jobs->find(array('_id' => array('$in' => $ids)));
+            $submissions = Database_Mongo::collection('submissions')->distinct('job_key', array('job_key' => array('$in' => $ids), 'active' => 1));
+
+            $ids = array_values(array_diff($ids, $submissions));
+
+
+            $result = Database_Mongo::collection('jobs')->find(array('_id' => array('$in' => $ids)));
+            print_r($result->explain());
+
             $count = 0;
-            foreach ($result as $job) if (!in_array(Arr::get($job, 'status'), array(Enums::STATUS_PENDING, Enums::STATUS_ARCHIVE, Enums::STATUS_COMPLETE))) {
+            foreach ($result as $job) if (!in_array(Arr::get($job, 'status'), array(Enums::STATUS_ARCHIVE, Enums::STATUS_COMPLETE))) {
                 $jobs->update(array('_id' => $job['_id']), array('$set' => array('last_update' => time(), 'status' => Enums::STATUS_COMPLETE)));
                 $count++;
             }

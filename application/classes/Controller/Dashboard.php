@@ -428,11 +428,18 @@ class Controller_Dashboard extends Controller {
 
                         switch ($separate) {
                             case 'm':
-                                $date = strtotime(date('01-m-Y', $item['t']));
+                                $day = Arr::get($_GET, 'monthStart');
+
+                                $date = strtotime(date($day . '-m-Y', $item['t'])) - 1;
+                                if ($item['t'] > $date)
+                                    $item['t'] = strtotime('+1 month', $item['t']);
+
+                                $date = strtotime(date($day . '-m-Y', $item['t'])) - 86400;
                                 break;
                             case 'w':
-                                $day = Arr::get(array('', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'), Arr::get($_GET, 'weekStart', 1)) ? : 'monday';
-                                $date = strtotime('last ' . $day, strtotime('+1 day', strtotime('midnight', $item['t'])));
+                                $day = Arr::get(array('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'), Arr::get($_GET, 'weekStart', 1) - 1) ? : 'sunday';
+                                $date = strtotime('next ' . $day, strtotime('-1 day', strtotime('midnight', $item['t'])));
+                                if ($end && $date > $end) $date = $end;
                                 break;
                             case 'd':
                                 $date = strtotime('midnight', $item['t']);

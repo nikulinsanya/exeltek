@@ -14,6 +14,7 @@
                     <li data-id="stacked"><a class="switcher" href="#stacked">Stacked</a></li>
                     <li data-id="fsa-fsam"><a class="switcher" href="#fsa-fsam">Fsa/Fsam</a></li>
                     <li data-id="built-type-mix"><a class="switcher" href="#built-type-mix">Built type mix</a></li>
+                    <li data-id="map"><a class="switcher" href="#map">Map report</a></li>
                 </ul>
             </div>
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 dashboard tab-content">
@@ -195,6 +196,32 @@
                         <div class="chart-container full-width" id="tickets-built-type-mix"></div>
                     </div>
                 </div>
+                    <div class="tab-pane" data-id="map">
+                        <form id="map-report">
+                            <span class="date-range-container">
+                                <div class="daterange" class="pull-right" data-start="start-map" data-end="end-map" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+                                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                    <span></span> <b class="caret"></b>
+                                </div>
+                            </span>
+                            <?=Form::hidden('start-map', Arr::get($_GET, 'start'), array('id'=>'start-map'))?>
+                            <?=Form::hidden('end-map', Arr::get($_GET, 'end'), array('id'=>'end-map'))?>
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#filterModal">
+                                <span class="glyphicon glyphicon-filter"></span>
+                                Modify filters
+                            </button>
+                        </form>
+                        <label  class="filter_value" style="float: left;">Filters:</label>
+                        <div class="text-info-filters">
+                            <div>
+                                <span class="filter-item"> <label class="filter_value">Empty</label></span>
+                            </div>
+                        </div>
+                        <div class="report-block">
+                            <div class="chart-container full-width" id="mq-tickets-map"></div>
+                            <div class="chart-container full-width" id="tickets-map"></div>
+                        </div>
+                    </div>
             </div>
         </div>
 <?php else:?>
@@ -408,4 +435,3 @@
             </div>
         </div>
     </div>
-

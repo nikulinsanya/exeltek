@@ -137,6 +137,9 @@ window.utils = (function() {
         },
         simplifyString: function(str){
             return str.replace(/ /g,"_").toLowerCase();
+        },
+        objectLength: function(o){
+            return Object.keys(o).length;
         }
     };
     return utils;

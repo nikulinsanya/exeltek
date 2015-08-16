@@ -191,6 +191,19 @@ $(function () {
         });
     }
 
+    function handleMapTab(){
+        var start = $('#start-map').val(),
+            end = $('#end-map').val();
+        showMap();
+        $('#preloaderModal').modal('hide');
+//        getAddresses(start, end).then(function(data){
+//            geocodeAddresses(data);
+//            replaceAddressesWithTicketIDs(data);
+//            showMap(data);
+//            $('#preloaderModal').modal('hide');
+//        });
+    }
+
 
     function handleOverviewTab(){
         var start = $('#start-overview').val(),
@@ -268,6 +281,12 @@ $(function () {
                     handleBuiltTypeMixTab();
                 });
                 break;
+            case 'map':
+                handleMapTab();
+                $('#map-report').off('submit').on('submit',function(e){
+                    e.preventDefault();
+                    handleMapTab();
+                });
                 break;
 
             default:
@@ -728,8 +747,54 @@ $(function () {
         });
     }
 
+    function replaceAddressesWithTicketIDs(addresses){
+        getGeocodedResults().then(function(geocoded){
+            var i,res = {};
+            for(i in addresses){
+                res[i] = geocoded[addresses[i]]
+            }
+            localStorage.temporaryGeocoded = res;
+        })
+    }
+
+    function geocodeAddresses(addresses){
+        var limit = utils.objectLength(addresses),//500,
+            i = 0,
+            j,
+            limitedAddresses = {},
+            store = {},
+            geocoded = {};
+        for(j in addresses){
+            if(++i<limit){
+                limitedAddresses[j] = addresses[j];
+            }
+        }
+
+        window.maps.MQMaps.batchGeocode(limitedAddresses,function(data){
+            geocoded = data;
+            for(j in geocoded){
+                store[j] = geocoded[j].coords;
+            }
+            localStorage.geocoded = JSON.stringify(store);
+        });
+
+    }
+
+    function showMap(mapName){
+        if(mapName == 'mapquest'){
+            $('#mq-tickets-map').show();
+            $('#tickets-map').hide();
+            window.maps.MQMaps.initMap('mq-tickets-map');
+        }else{
+            $('#tickets-map').show();
+            $('#mq-tickets-map').hide();
+            window.maps.GoogleMaps.initMap('tickets-map');
+            window.maps.GoogleMaps.addMarker();
+        }
 
 
+
+    }
 
     function showBuiltTypeMix(types){
         var total = {}, i, j, name,
@@ -882,6 +947,44 @@ $(function () {
                 (end ? 'end='+end : ''),
                 (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : ''),
                 '&',getDateConfiguration()
+            ].join(''),
+            type:'get',
+            dataType:'JSON'
+        })
+    }
+
+    function getMap(start,end){
+        return $.ajax({
+            url:[utils.baseUrl(),
+                "address.json?",
+                (start ? 'start='+start : ''),
+                (end ? 'end='+end : ''),
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : ''),
+                '&',getDateConfiguration()
+            ].join(''),
+            type:'get',
+            dataType:'JSON'
+        })
+    }
+
+    function getAddresses(start,end){
+        return $.ajax({
+            url:[utils.baseUrl(),
+                "tickets.json?",
+                (start ? 'start='+start : ''),
+                (end ? 'end='+end : ''),
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : ''),
+                '&',getDateConfiguration()
+            ].join(''),
+            type:'get',
+            dataType:'JSON'
+        })
+    }
+
+    function getGeocodedResults(){
+        return $.ajax({
+            url:[utils.baseUrl(),
+                "result.json?"
             ].join(''),
             type:'get',
             dataType:'JSON'

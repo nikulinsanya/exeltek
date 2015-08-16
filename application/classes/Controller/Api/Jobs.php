@@ -20,6 +20,8 @@ class Controller_Api_Jobs extends Kohana_Controller {
 
         $jobs = array();
 
+        Form::$static_title[] = 245;
+
         $columns = array_flip(array_merge(array_keys(Columns::get_static()), Form::$static_title));
 
         $columns[8] = 1;
@@ -82,6 +84,8 @@ class Controller_Api_Jobs extends Kohana_Controller {
             die(json_encode(array('success' => false, 'error' => 'forbidden')));
 
         $id = Arr::get($_REQUEST, 'id');
+
+        Form::$static_title[] = 245;
 
         $columns = array_flip(array_merge(array_keys(Columns::get_static()), Form::$static_title));
 
