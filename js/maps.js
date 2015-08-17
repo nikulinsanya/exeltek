@@ -192,6 +192,7 @@ window.maps = (function() {
                     self.infowindow.open(self.map, marker);
                 });
             }
+            this.markers.push(marker);
             return marker;
         },
 
@@ -254,6 +255,12 @@ window.maps = (function() {
 
         zoomMap: function(zoom){
             this.map.setZoom(zoom || 16);
+        },
+
+        clearMarkers: function(){
+            for(var i in this.markers){
+                this.markers[i].setMap(null);
+            }
         }
 
 

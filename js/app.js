@@ -348,7 +348,16 @@ $(function () {
         $('#filterModal').modal('hide');
         $('#preloaderModal').modal('show');
     });
-    
+
+
+
+    $('#export-map').on('click',function (e) {
+        if(!$('#search-table').find('[type="checkbox"]:checked').length){
+            e.preventDefault();
+            alert('Please, select at least one ticket to export');
+        }
+    });
+
     $('.filters-form').submit(function (e) {
         $('#filterModal').modal('hide');
         $('#preloaderModal').modal('show');
