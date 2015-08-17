@@ -42,7 +42,9 @@
     <h1 style="margin-left: 15px;">Export tickets</h1>
 </div>
 <div class="left_panel">
-    <h4 style="margin-left: 15px;">Tickets:</h4>
+    <div style="text-align: center; padding: 10px 10px;">
+        <input type="text" value="" id="search_address" placeholder="address" style="padding: 5px;width:250px;">
+    </div>
     <ul id="ticket_list">
 
     </ul>
@@ -54,17 +56,38 @@
 <script type="application/javascript">
     $(document).on('ready',function(){
         window.maps.GoogleMaps.initMap('map');
+        var tickets;
         getMap().then(function(data){
             buildList(data);
             showMarkers(data);
+            tickets = data;
         });
 
 
 
+        (function initHanlders(){
+            $('#search_address').on('keyup', filterTickers);
+        })();
+
+        function filterTickers(){
+            var query = $(this).val(),
+                i,
+                filtered = [];
+            for(i in tickets){
+                if(tickets[i].data.Address.indexOf(query.toUpperCase()) != -1){
+                    filtered.push(tickets[i]);
+                }
+            }
+            buildList(filtered);
+            showMarkers(filtered);
+        }
+
+
         function showMarkers(data){
+            window.maps.GoogleMaps.clearMarkers();
             var markers = [],
-                icon;
-            var i = 0,
+                icon,
+                i,
                 current,
                 l = data.length;
             for (i = 0; i < l; i++) {
@@ -85,7 +108,11 @@
                             '<img src="',
                                 iconMaper(data[i].data.Status),
                             '">',
+                            '<div><div>',
                             data[i].id,
+                            '</div><div>',
+                                data[i].data['Address'],
+                            '</div></div>',
                         '</a>',
                     '</li>'
                 );
@@ -96,8 +123,8 @@
             $('.marker-name').on('click', function(e){
                 e.preventDefault();
                 var lat, lon;
-                lat = $(e.target).attr('data-lat');
-                lon = $(e.target).attr('data-lon');
+                lat = $(e.currentTarget).attr('data-lat');
+                lon = $(e.currentTarget).attr('data-lon');
                 centerMap(lat,lon);
             })
         }
@@ -123,7 +150,6 @@
         }
 
         function iconMaper(status){
-            console.log(status);
             var icons = {
                 'TESTED': 'http://maps.google.com/mapfiles/ms/micons/green-dot.png',
                 'BUILT': 'http://maps.google.com/mapfiles/ms/micons/green-dot.png',
