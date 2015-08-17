@@ -104,16 +104,16 @@
             for (i = 0; i < l; i++) {
                 html.push(
                     '<li>',
-                        '<a class="marker-name" data-lat="',data[i].lat,'" data-lon="',data[i].lng,'">',
+                        '<div class="marker-name" data-lat="',data[i].lat,'" data-lon="',data[i].lng,'">',
                             '<img src="',
                                 iconMaper(data[i].data.Status),
                             '">',
-                            '<div><div>',
+                            '<span>',
                             data[i].id,
-                            '</div><div>',
-                                data[i].data['Address'],
-                            '</div></div>',
-                        '</a>',
+                            '&nbsp;',
+                            data[i].data['Address'],
+                            '</span>',
+                        '</div>',
                     '</li>'
                 );
             }
