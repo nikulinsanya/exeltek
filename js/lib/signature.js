@@ -19,8 +19,6 @@ $(function () {
                 $('#signature-checked').prop('checked', true);
                 $('#signature-checked').parents('label').removeClass('text-danger');
                 $('#signature').val(signature.toDataURL());
-                alert(signature.toDataURL());
-                return false;
             }
         } else {
             $('#signature-checked').parent('label').addClass('text-danger');
