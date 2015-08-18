@@ -256,7 +256,7 @@
     <li role="presentation" <?=$_GET['status'] === $key ? 'class="active"' : ''?>><a href="javascript:;" data-id="<?=$key?>"><?=$status?></a></li>
     <?php endforeach;?>
 </ul>
-<form action="<?=URL::base()?>search/assign" method="post">
+<form action="<?=URL::base()?>search/assign" method="post" id="search-form">
 <?php $columns = array_flip(explode(',', Group::current('columns')));?>
 <table class="table small" id="search-table">
     <tr class="text-center table-header">
@@ -481,7 +481,7 @@
     <button type="submit" class="btn btn-info export-jobs"><span class="glyphicon glyphicon-export"></span>Export jobs</button>
     <?php endif;?>
     <button type="submit" class="btn btn-info export-result"><span class="glyphicon glyphicon-export"></span>Export search result</button>
-    <button type="submit" class="btn btn-info export-map"><span class="glyphicon glyphicon-export"></span>Export map</button>
+    <button type="submit" class="btn btn-info export-map" id="export-map"><span class="glyphicon glyphicon-export"></span>Export map</button>
 
 
 </div>

@@ -474,6 +474,16 @@ class Controller_Search_View extends Controller {
             User::get(array_keys($ids));
         }
 
+        if (Group::current('allow_quality')) {
+            $result = Database_Mongo::collection('quality')->find(array('job_key' => $job['_id']), array('prepared' => 1, 'requestdate' => 1, 'revision' => 1))->sort(array('date' => -1));
+
+            $quality = array();
+            foreach ($result as $item)
+                $quality[] = $item;
+
+        }
+
+
         $view = View::factory('Jobs/View')
             ->bind('job', $job)
             ->bind('tabs', $tabs)
@@ -481,7 +491,8 @@ class Controller_Search_View extends Controller {
             ->bind('companies', $companies)
             ->bind('submissions', $submissions)
             ->bind('values', $values)
-            ->bind('archive', $archive);
+            ->bind('archive', $archive)
+            ->bind('quality', $quality);
         $this->response->body($view);
     }
 
