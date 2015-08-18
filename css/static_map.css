@@ -7,6 +7,7 @@ html, body {
     width: 20%;
     height: 100%;
     float: left;
+    overflow-y: auto;
 }
 .right_panel{
     box-shadow: -1px -1px 3px #ccc;
@@ -20,8 +21,12 @@ html, body {
     list-style: none;
     padding-left: 0px;
 }
-.left_panel ul a{
+.left_panel ul .marker-name{
     cursor: pointer;
+    padding: 5px 10px;
+    max-height: 55px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .left_panel ul li{
@@ -31,13 +36,9 @@ html, body {
 
 
 .left_panel ul li img{
-    margin-top: -25px;
 
 }
-.left_panel ul li a>div{
-    display: inline-block;
-}
 
-.left_panel ul li a:hover div{
+.left_panel ul li .marker-name:hover div{
     text-decoration: underline;
 }
