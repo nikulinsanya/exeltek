@@ -1260,6 +1260,90 @@ $(function () {
         }
     });
 
+    $.fn.wPaint.menus.main.img ='js/lib/wpaint/plugins/main/img/icons-menu-main.png';
+    $("#wPaint").wPaint({
+        path:utils.baseUrl(),
+              // auto center images (fg and bg, default is left/top corner)
+        menuHandle:      false,               // setting to false will means menus cannot be dragged around
+        menuOrientation: 'horizontal',       // menu alignment (horizontal,vertical)
+        menuOffsetLeft:  5,                  // left offset of primary menu
+        menuOffsetTop:   5
+    });
+
+    $('.image-attachments').on('click',function(e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        $("#wPaint").wPaint('clear');
+        var canvas=$('.wPaint-canvas-bg').get(0);
+        var drawCanvas=$('.wPaint-canvas').get(0);
+
+        var ctx=canvas.getContext("2d");
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        var img=new Image();
+        img.onload=function(){
+            var x, y, w, h,xR,yR,ratio,
+                initWidth = 800,
+                initHeight = 500;
+
+            if (img.width > initWidth || img.height > initHeight) {
+                xR = initWidth / img.width;
+                yR = initHeight / img.height;
+
+                ratio = xR < yR ? xR : yR;
+
+                w = img.width * ratio;
+                h = img.height * ratio;
+            }
+
+            // get left/top (centering)
+            x = (initWidth - w) / 2;
+            y = (initHeight - h) / 2;
+            drawCanvas.width = w;
+            drawCanvas.height = h;
+            $(drawCanvas).css({
+                top:y,
+                left:x
+            });
+
+
+
+            ctx.drawImage(img,x, y, w, h);
+
+        }
+        img.src=url;
+
+
+        $('#editImage .new-window-open').attr('data-url', url);
+        $('#editImage .update-image').attr('data-id', $(this).attr('data-id'));
+
+        $('#editImage').modal('show');
+    });
+
+    $('#editImage .new-window-open').on('click', function(){
+        window.open($(this).attr('data-url'));
+    });
+    $('#editImage .update-image').on('click', function(){
+        var base64 = $('.wPaint-canvas').get(0).toDataURL();
+        $('#editImage').modal('hide');
+        $('#preloaderModal').modal('show');
+        $.ajax({
+            type:'post',
+            url:utils.baseUrl() + 'editimage/',
+            data:{
+                image: base64,
+                id:$(this).attr('data-id')
+            },
+            success: function(){
+                window.location.reload();
+            },
+            error: function(){
+                window.location.reload();
+            }
+        });
+    });
+
 
     var historyStateCount = 0;
 
