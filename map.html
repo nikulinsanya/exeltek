@@ -57,17 +57,43 @@
     $(document).on('ready',function(){
         window.maps.GoogleMaps.initMap('map');
         var tickets;
-        getMap().then(function(data){
-            buildList(data);
-            showMarkers(data);
-            tickets = data;
-        });
-
-
+        function init(){
+            getMap().then(function(data){
+                buildList(data);
+                showMarkers(data);
+                tickets = data;
+            });
+        }
+        init();
 
         (function initHanlders(){
             $('#search_address').on('keyup', filterTickers);
+            $('#map').on('click','.update-info',handlerEditInfoWindow);
         })();
+
+        function handlerEditInfoWindow(){
+            var form = $('form#info-window-form'),
+                values = $(form).serializeArray(),
+                toSend = {},
+                ticketID = form.attr('data-id'),
+                i;
+            for(i in values){
+                toSend[values[i].name] = values[i].value;
+            }
+            $.ajax({
+                url:  "map/save?id="+ ticketID,
+                type: "post",
+                dataType: 'json',
+                success: function(data){
+                    init();
+                },
+                error: function(e){
+                    alert(e.responseText);
+                }
+
+            });
+
+        }
 
         function filterTickers(){
             var query = $(this).val(),
@@ -81,7 +107,6 @@
             buildList(filtered);
             showMarkers(filtered);
         }
-
 
         function showMarkers(data){
             window.maps.GoogleMaps.clearMarkers();
