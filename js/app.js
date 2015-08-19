@@ -1330,16 +1330,14 @@ $(function () {
         $('#preloaderModal').modal('show');
         $.ajax({
             type:'post',
-            url:utils.baseUrl() + 'editimage/',
-            data:{
-                image: base64,
-                id:$(this).attr('data-id')
-            },
+            url:utils.baseUrl() + 'search/update/'+$(this).attr('data-id'),
+            data: base64,
             success: function(){
                 window.location.reload();
             },
-            error: function(){
-                window.location.reload();
+            error: function(e){
+                alert('Internal server error');
+                console.log(e);
             }
         });
     });
