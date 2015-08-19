@@ -47,6 +47,9 @@
         <?php if ($job['discrepancies']):?>
             <li role="presentation" class="rose" data-id="discrepancies"><a class="refreshClick" href="#discrepancies">Discrepancies</a></li>
         <?php endif;?>
+        <?php if (Group::current('allow_quality')):?>
+            <li role="presentation" data-id="quality"><a class="refreshClick" href="#quality">Quality Reports</a></li>
+        <?php endif;?>
         <?php if (Group::current('time_machine')):?>
             <li role="presentation" class="yellow" data-id="time-machine"><a class="refreshClick" href="#time">Time Machine</a></li>
         <?php endif;?>
@@ -255,6 +258,16 @@
                 <?php endforeach;?>
             </table>
         </div>
+        <?php if (Group::current('allow_quality')):?>
+            <div data-id="quality" class="panel-body hidden">
+                <table class="table">
+                <?php foreach ($quality as $item):?>
+                    <tr><td><a href="<?=URL::base()?>search/quality?id=<?=$item['_id']?>"><?=Arr::get($item, 'requestdate')?> by <?=Arr::get($item, 'prepared', 'Unknown')?>, Rev. <?=Arr::get($item, 'revision', 1)?></a></td></tr>
+                <?php endforeach;?>
+                <tr><td><a href="<?=URL::base()?>search/quality?job=<?=$job['_id']?>" class="btn btn-success">Create new report</a></td></tr>
+                </table>
+            </div>
+        <?php endif;?>
         <?php if (Group::current('time_machine')):?>
         <div data-id="time-machine" class="panel-body hidden">
             <button id="time-machine-start" type="button" class="btn btn-danger pull-right disabled">Rollback</button>
@@ -333,6 +346,9 @@
         <li role="presentation" data-id="attachments"><a href="javascript:;">Attachments</a></li>
         <?php if ($job['discrepancies']):?>
             <li role="presentation" class="rose" data-id="discrepancies"><a href="javascript:;">Discrepancies</a></li>
+        <?php endif;?>
+        <?php if (Group::current('allow_quality')):?>
+            <li role="presentation" data-id="quality"><a href="javascript:;">Quality Reports</a></li>
         <?php endif;?>
         <?php if (Group::current('time_machine')):?>
             <li role="presentation" class="yellow" data-id="time-machine"><a href="javascript:;">Time Machine</a></li>
