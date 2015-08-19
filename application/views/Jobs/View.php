@@ -206,7 +206,7 @@
                                    confirm="Do you really want to delete this attachment? This action can't be undone!!!"
                                    class="text-danger glyphicon glyphicon-remove remove-link"></a>
                             <?php endif;?>
-                            <a target="_blank" href="<?=URL::base()?>download/attachment/<?=$attachment['id']?>">
+                            <a data-id="<?=$attachment['id']?>" class="image-attachments" href="<?=URL::base()?>download/attachment/<?=$attachment['id']?>">
                                 <img src="http://stdicon.com/<?=$attachment['mime']?>?size=32&default=http://stdicon.com/text" />
                                 <?=HTML::chars($attachment['folder'] . ' / ' . $attachment['fda_id'] . ' / ' . $attachment['address'] . ' / ' . $attachment['filename'])?>
                             </a>
@@ -355,3 +355,26 @@
         <?php endif;?>
     </ul>
 </form>
+
+
+<div class="modal fade" id="editImage" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit attachment </h4>
+            </div>
+            <div class="modal-body text-center">
+                <div id="wpaintContainer">
+                    <div id="wPaint" style="position:relative; width:800px; height:500px; margin:0px auto"></div>
+                </div>
+
+            </div>
+            <div class="modal-footer" class="tableRowButtons">
+                <button class="btn btn-info new-window-open" style="float: left;">Open in new window</button>
+                <button class="btn btn-warning" data-dismiss="modal">Close</button>
+                <button class="btn btn-success update-image">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
