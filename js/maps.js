@@ -147,6 +147,9 @@ window.maps = (function() {
 
 
         initMap: function (container) {
+            if (this.infowindow) {
+                this.infowindow.close();
+            }
             this.map = new google.maps.Map(document.getElementById(container), {
                 center: {lat: -33.871799, lng: 151.206951},
                 zoom: 13
@@ -158,7 +161,8 @@ window.maps = (function() {
             var latLng = new google.maps.LatLng(lat,lon),
                 infoContent = [],
                 infowindow = this.infowindow,
-                self = this;
+                self = this,
+                i;
 
             var marker = new google.maps.Marker({
                 map: this.map,
@@ -170,7 +174,7 @@ window.maps = (function() {
             this.map.fitBounds(this.bounds);
 
             if(data){
-                infoContent.push('<table>');
+                infoContent.push('<form data-id="'+data['Ticket ID']+'" id="info-window-form"><table>');
                 for(i in data){
                     infoContent.push('<tr>',
                         '<td style="padding-right: 5px;">',
@@ -181,6 +185,8 @@ window.maps = (function() {
                         '</b></td>',
                         '</tr>');
                 }
+                infoContent.push('<tr class="editable"><td style="padding-right: 5px;">Comments</td><td><input name="Comment" value=""></td></tr>');
+                infoContent.push('<tr><td colspan="2"><input class="update-info" type="button" value="Update"></td></tr>');
 
                 marker.addListener('click', function() {
                     if (self.infowindow) {
