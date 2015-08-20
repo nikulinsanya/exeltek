@@ -1343,6 +1343,61 @@ $(function () {
     });
 
 
+    $('.job-details-table [data-has-variation-relation] .form-control').on('change', function(e){
+        var relation = $(this).parents('td').attr('data-has-variation-relation'),
+            relationElement = $('[name="data['+relation+']"]'),
+            activeTabId = $('.view-tab-header').find('li.active').attr('data-id');
+
+        if(relationElement.length){
+            if($(this).val() != ''){
+                relationElement.parents('td').addClass('bg-warning');
+                $(this).parents('td').addClass('bg-warning');
+            }else{
+                relationElement.parents('td').removeClass('bg-warning');
+                $(this).parents('td').removeClass('bg-warning');
+            }
+            recalcBadges();
+            recalcBadges($('.view-tab-header').find('li[data-id="'+(activeTabId-1)+'"]'));
+        }
+    });
+
+    $('.job-details-table [data-has-actual-relation] .form-control').on('change', function(e){
+        var relation = $(this).parents('td').attr('data-has-actual-relation'),
+            relationElement = $('[name="data['+relation+']"]'),
+            activeTabId = $('.view-tab-header').find('li.active').attr('data-id');
+
+        if(relationElement.length){
+            if($(this).val() != ''){
+                relationElement.parents('td').addClass('bg-warning');
+                $(this).parents('td').addClass('bg-warning');
+            }else{
+                relationElement.parents('td').removeClass('bg-warning');
+                $(this).parents('td').removeClass('bg-warning');
+            }
+            recalcBadges();
+            recalcBadges($('.view-tab-header').find('li[data-id="'+(parseInt(activeTabId,10)+1)+'"]'));
+        }
+    });
+
+    function recalcBadges(tab){
+        tab = tab || $('.view-tab-header').find('li.active');
+        var tabId = tab.attr('data-id'),
+            container = $('.panel-body[data-id="'+tabId+'"]'),
+            items = container.find('.bg-danger, .bg-warning');
+
+        if(tab.find('a .badge').length){
+            items.length ?
+                tab.find('a .badge').text(items.length):
+                tab.find('a .badge').remove();
+        }else{
+            if(items.length){
+                tab.find('a').html(tab.find('a').html() + '<span class="badge">'+items.length+'</span>');
+            }
+        }
+    }
+
+
+
     var historyStateCount = 0;
 
     (function refreshRoute(){
