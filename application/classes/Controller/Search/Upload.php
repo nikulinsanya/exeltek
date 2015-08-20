@@ -92,7 +92,7 @@ class Controller_Search_Upload extends Controller
                             'content' => (Group::current('allow_assign') ? '<a href="' . URL::base() . 'search/view/' . $id . '?delete=' . $id . '"
                                 confirm="Do you really want to delete this attachment? This action can\'t be undone!!!"
                                 class="text-danger glyphicon glyphicon-remove remove-link"></a>' : '') .
-                                '<a href="' . URL::base() . 'download/attachment/' . $id . '">
+                                '<a class="image-attachments" href="' . URL::base() . 'download/attachment/' . $id . '">
                                 <img target="_blank" src="http://stdicon.com/' . $file['type'] . '?size=32&default=http://stdicon.com/text" />' .
                                 HTML::chars($data['filename']) . '</a>
                                 - Uploaded ' . date('d-m-Y H:i', $data['uploaded']) . ' by ' . User::current('login'),

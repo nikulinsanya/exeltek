@@ -669,6 +669,7 @@ $(function () {
             $('#upload-count').val(parseInt($('#upload-count').val()) + 1);
             //var parent = $('.files-container').find('tr').first();
             var link = $('<tr><td>' + data.result.attachment.content + '</td></tr>');
+
             link.find('.remove-link').click(confirm_link).click(remove_link);
             $('.files-container').prepend(link);
             $('.modal-footer').find('button.btn-success').before(data.result.attachment.message);
@@ -1270,7 +1271,7 @@ $(function () {
         menuOffsetTop:   5
     });
 
-    $('.image-attachments').on('click',function(e) {
+    $('.files-container').on('click','.image-attachments',function(e) {
         e.preventDefault();
         var url = $(this).attr('href');
         $("#wPaint").wPaint('clear');
