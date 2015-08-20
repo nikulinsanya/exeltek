@@ -211,11 +211,13 @@ class Columns {
             return $value;
     }
     
-    public static function input($name, $id, $type, $value, $title = '') {
+    public static function input($name, $id, $type, $value, $title = '', $required = false) {
         if (strpos($type, 'enum') !== false) {
             $enum = substr($type, 5);
             if (Enums::is_multi($enum)) {
-                return Form::select($name . ($id ? '[' . $id . '][]' : '[]'),Enums::get_values($enum), explode(', ', $value), array('class' => 'form-control multiselect', 'multiple'=>'multiple'));
+                $class = array('class' => 'form-control multiselect', 'multiple'=>'multiple');
+                if ($required) $class['data-validation'] = 'required';
+                return Form::select($name . ($id ? '[' . $id . '][]' : '[]'),Enums::get_values($enum), explode(', ', $value), $class);
 
 //                $values = explode(', ', $value);
 //                $result = '';

@@ -13,8 +13,9 @@
     <script src="<?=URL::base()?>js/lib/jquery/jquery-ui.min.js"></script>
     <script src="<?=URL::base()?>js/lib/jquery/jquery.shorten.js"></script>
     <script src="<?=URL::base()?>js/lib/jquery/jquery.tabelizer.min.js"></script>
+    <script src="<?=URL::base()?>js/lib/jquery/jquery.form-validator.min.js"></script>
 
-    <link href="<?=URL::base()?>css/tabelizer.css" rel="stylesheet">
+      <link href="<?=URL::base()?>css/tabelizer.css" rel="stylesheet">
 
     <!-- Bootstrap -->
     <link href="<?=URL::base()?>css/bootstrap.min.css" rel="stylesheet">
