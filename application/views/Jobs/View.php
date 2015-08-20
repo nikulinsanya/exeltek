@@ -25,7 +25,7 @@
     </div>
 
 <!--    tabs-->
-    <ul class="nav nav-tabs status-filter topsideup">
+    <ul class="nav nav-tabs status-filter topsideup view-tab-header">
 
     <?php $fl = true; foreach ($tabs as $id => $tab) if (isset($tab['columns'])):?>
         <li role="presentation" data-id="<?=$id?>" class="<?=$fl ? 'active':''?> <?=strtolower(str_replace(' ', '_', $tab['name']));?>">
@@ -59,9 +59,10 @@
         <?php $fl = true; foreach ($tabs as $id => $tab) if (isset($tab['columns'])):?>
     
         <div data-id="<?=$id?>" class="panel-body <?=!$fl ? 'hidden' : 'active'?>">
-            <table class="col-container">
+            <table class="col-container job-details-table">
             <?php  $index = 0; foreach ($tab['columns'] as $id => $name): $value = isset($values['data' . $id]) ? $values['data' . $id]: Arr::path($job, 'data.' . $id, '');?>
                 <?php
+                    $relation_id = ($id > 161 && $id < 182 ? $relation_id = $id+28 : ($id > 189 && $id < 210 ? $relation_id = $id-28 : false));
                     if (0 == $index++ % 2) echo '<tr>';
                     if (Arr::get($submissions, 'data.' . $id))
                         $class =  'bg-danger';
@@ -71,7 +72,7 @@
                         $class = 'bg-warning';
                     else $class = '';
                 ?>
-                <td  class="<?=$class?>">
+                <td  class="<?=$class?>" <?= $id > 161 && $id < 182 ? "data-has-actual-relation='$relation_id'" : ''?> <?= $id > 189 && $id < 210 ? "data-has-variation-relation='$relation_id'" : ''?>>
 
                         <label  class="left-label"><?=HTML::chars($name)?><?=isset($values['data' . $id]) ? '*' : ''?>: </label>
                         <div class="">
@@ -326,7 +327,7 @@
         <?php endif;?>
     </div>
     <!--    tabs-->
-    <ul class="nav nav-tabs status-filter upsidedown">
+    <ul class="nav nav-tabs status-filter upsidedown view-tab-header">
         <?php $fl = true; foreach ($tabs as $id => $tab) if (isset($tab['columns'])):?>
             <li role="presentation" data-id="<?=$id?>" class="<?=$fl ? 'active':''?>">
                 <a href="javascript:;"><?=HTML::chars($tab['name'])?>
