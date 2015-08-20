@@ -1350,7 +1350,7 @@ $(function () {
             activeTabId = $('.view-tab-header').find('li.active').attr('data-id');
 
         if(relationElement.length){
-            if($(this).val() != ''){
+            if($(this).val() != relationElement.val()){
                 relationElement.parents('td').addClass('bg-warning');
                 $(this).parents('td').addClass('bg-warning');
             }else{
@@ -1368,7 +1368,7 @@ $(function () {
             activeTabId = $('.view-tab-header').find('li.active').attr('data-id');
 
         if(relationElement.length){
-            if($(this).val() != ''){
+            if($(this).val() != relationElement.val()){
                 relationElement.parents('td').addClass('bg-warning');
                 $(this).parents('td').addClass('bg-warning');
             }else{
