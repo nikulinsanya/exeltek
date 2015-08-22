@@ -122,27 +122,25 @@ class Controller_Search_Export extends Controller {
                         if (!file_exists(DOCROOT . 'storage/' . $image)) continue;
 
                         $data = file_get_contents(DOCROOT . 'storage/' . $image);
-                        try {
-                            $img = imagecreatefromstring($data);
+                        $er = error_reporting(~E_WARNING);
+                        $img = imagecreatefromstring($data);
+                        error_reporting($er);
 
-                            if (!$img) continue;
+                        if (!$img) continue;
 
-                            $x = imagesx($img);
-                            $y = imagesy($img);
-                            $size = max($x, $y);
-                            $x = round($x / $size * 128);
-                            $y = round($y / $size * 128);
+                        $x = imagesx($img);
+                        $y = imagesy($img);
+                        $size = max($x, $y);
+                        $x = round($x / $size * 128);
+                        $y = round($y / $size * 128);
 
-                            $thumb = imagecreatetruecolor($x, $y);
-                            imagealphablending($thumb, false);
-                            imagesavealpha($thumb, true);
+                        $thumb = imagecreatetruecolor($x, $y);
+                        imagealphablending($thumb, false);
+                        imagesavealpha($thumb, true);
 
-                            imagecopyresampled($thumb, $img, 0, 0, 0, 0, $x, $y, imagesx($img), imagesy($img));
+                        imagecopyresampled($thumb, $img, 0, 0, 0, 0, $x, $y, imagesx($img), imagesy($img));
 
-                            imagepng($thumb, DOCROOT . 'storage/' . $image . '.thumb', 9);
-                        } catch (ErrorException $e) {
-                            continue;
-                        }
+                        imagepng($thumb, DOCROOT . 'storage/' . $image . '.thumb', 9);
                     }
 
                     $data = file_get_contents(DOCROOT . 'storage/' . $image . '.thumb');
