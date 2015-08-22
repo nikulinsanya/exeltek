@@ -90,17 +90,17 @@ class Controller_Search_Upload extends Controller
                         'attachment' => array(
                             'name' => $file['name'],
                             'size' => $size,
-                            'content' => (Group::current('allow_assign') ? '<a href="' . URL::base() . 'search/view/' . $id . '?delete=' . $id . '"
+                            'content' => '<table><tr>' . (Group::current('allow_assign') ? '<td><a href="' . URL::base() . 'search/view/' . $id . '?delete=' . $id . '"
                                 confirm="Do you really want to delete this attachment? This action can\'t be undone!!!"
-                                class="text-danger glyphicon glyphicon-remove remove-link"></a>' : '') .
-                                '<a target="_blank" class="' . ($is_image ? 'image-attachments' : '') . ' href="' . URL::base() . 'download/attachment/' . $id . '">' .
+                                class="text-danger glyphicon glyphicon-remove remove-link"></a></td>' : '') . '<td>' .
                                 ($is_image ?
                                     '<img src="' . URL::base() . 'download/thumb/' . $id . '" alt="Thumbnail" />'
                                 :
                                     '<img src="http://stdicon.com/' . $file['type'] . '?size=96&default=http://stdicon.com/text" />'
                                 ) .
-                                HTML::chars($data['filename']) . '</a>
-                                - Uploaded ' . date('d-m-Y H:i', $data['uploaded']) . ' by ' . User::current('login'),
+                                '</td><td><a target="_blank" class="' . ($is_image ? 'image-attachments' : '') . ' href="' . URL::base() . 'download/attachment/' . $id . '">' .
+                                HTML::chars($attachment['folder']) . '<br/>' . HTML::chars($attachment['fda_id']) . '<br/>' . HTML::chars($attachment['address']) . '<br/>' . HTML::chars($data['filename']) . '</a><br/>
+                                - Uploaded ' . date('d-m-Y H:i', $data['uploaded']) . ' by ' . User::current('login') . '</td></tr></table>',
                             'message' => Messages::render(),
                         ),
                     )));

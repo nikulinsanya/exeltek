@@ -7,7 +7,7 @@ $(function () {
         signature.clear();
     });
     
-    $('form').submit(function() {
+    $('form').submit(function(e) {
         var fl = false;
         $('.custom-jobs-container:not(.hidden)').find('[data-validation="required"]').each(function(i,e) {
             if (!$(e).val()) {
@@ -18,7 +18,7 @@ $(function () {
                 fl = true;
             }
         });
-        if ($fl) return false;
+        if (fl) return false;
         if ($('#signature-checked').prop('checked')) {
             $('#signature-checked').prop('checked');
             $('#signature-checked').parent('label').removeClass('text-danger')
