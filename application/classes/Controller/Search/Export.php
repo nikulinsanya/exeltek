@@ -123,7 +123,9 @@ class Controller_Search_Export extends Controller {
 
                         $data = file_get_contents(DOCROOT . 'storage/' . $image);
                         try {
-                            $img = imagecreatefromstring($data);
+                            $img = @imagecreatefromstring($data);
+
+                            if (!$img) continue;
 
                             $x = imagesx($img);
                             $y = imagesy($img);
