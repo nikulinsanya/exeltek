@@ -495,7 +495,7 @@ $(function () {
     $('[confirm]').click(confirm_link);
     
     function remove_link(e) {
-        var target = $(this).parent();
+        var target = $(this).parents('table').parent('div');
         $.get($(this).attr('href'), function() {
             target.remove();
         });

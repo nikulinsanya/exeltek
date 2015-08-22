@@ -49,6 +49,7 @@ class Controller_Search_Export extends Controller {
                 ->from('attachments')
                 ->where('job_id', 'IN', $ids)
                 ->and_where('uploaded', '>', 0)
+                ->and_where('folder', '<>', 'Signatures')
                 ->group_by('job_id')
                 ->execute()->as_array('job_id', 'cnt');
         else $attachments = array();
@@ -85,6 +86,9 @@ class Controller_Search_Export extends Controller {
             foreach (range('A', $sheet->getHighestDataColumn()) as $col) {
                 $sheet->getColumnDimension($col)->setAutoSize(true);
             }
+            $x = max(array_map('count', $attachments_list));
+            foreach (range(0, $x - 1) as $col)
+                $sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(count($header) + $col))->setWidth(14);
         } else {
             $file = tmpfile();
 
@@ -117,6 +121,9 @@ class Controller_Search_Export extends Controller {
                 $i++;
                 $sheet->fromArray($row, NULL, 'A' . $i);
                 $x = count($row);
+                if (isset($attachments_list[$ticket['_id']])) {
+                    $sheet->getRowDimension($i)->setRowHeight(80);
+                }
                 foreach (Arr::get($attachments_list, $ticket['_id'], array()) as $image) {
                     if (!file_exists(DOCROOT . 'storage/' . $image . '.thumb')) {
                         if (!file_exists(DOCROOT . 'storage/' . $image)) continue;
@@ -131,8 +138,8 @@ class Controller_Search_Export extends Controller {
                         $x = imagesx($img);
                         $y = imagesy($img);
                         $size = max($x, $y);
-                        $x = round($x / $size * 128);
-                        $y = round($y / $size * 128);
+                        $x = round($x / $size * 96);
+                        $y = round($y / $size * 96);
 
                         $thumb = imagecreatetruecolor($x, $y);
                         imagealphablending($thumb, false);
@@ -151,12 +158,11 @@ class Controller_Search_Export extends Controller {
 
                     $coord = PHPExcel_Cell::stringFromColumnIndex($x++);
                     $objDrawing->setCoordinates($coord . $i);
+                    $objDrawing->setOffsetY(5);
                     $objDrawing->setResizeProportional(true);
                     $objDrawing->setRenderingFunction(PHPExcel_Worksheet_MemoryDrawing::RENDERING_PNG);
                     $objDrawing->setMimeType(PHPExcel_Worksheet_MemoryDrawing::MIMETYPE_DEFAULT);
                     $objDrawing->setWorksheet($sheet);
-                    $sheet->getRowDimension($i)->setRowHeight(100);
-                    $sheet->getColumnDimension($coord)->setWidth(20);
                     //$sheet->getCell($coord . $i)->setHyperlink(new PHPExcel_Cell_Hyperlink(URL::site('download/attachment/' . $image, 'http'), 'Show Image'));
                 }
             } else {

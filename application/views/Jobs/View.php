@@ -210,19 +210,19 @@
                     <?php endif;
                         $is_image = preg_match('/^image\/.*$/i', $attachment['mime']);
                     ?>
-                    <td>
+                    <td><div style="width:100px; height: 100px;">
                     <?php if ($is_image):?>
                         <img class="pull-left" src="<?=URL::base()?>download/thumb/<?=$attachment['id']?>" alt="Thumbnail" />
                     <?php else:?>
                         <img class="pull-left" src="http://stdicon.com/<?=$attachment['mime']?>?size=96&default=http://stdicon.com/text" />
                     <?php endif;?>
-                    </td><td>
+                    </div></td><td>
                     <a target="_blank" data-id="<?=$attachment['id']?>" class="<?=$is_image ? 'image-attachments' : ''?>" href="<?=URL::base()?>download/attachment/<?=$attachment['id']?>">
                         <?=HTML::chars($attachment['folder'])?><br/><?=HTML::chars($attachment['fda_id'])?><br/><?=HTML::chars($attachment['address'])?><br/><?=HTML::chars($attachment['filename'])?>
                     </a><br/>
                     Uploaded <?=date('d-m-Y H:i', $attachment['uploaded'])?> by <?=User::get($attachment['user_id'], 'login')?>
                     <?php if ($attachment['location']):?>
-                        <br/><a target="_blank" href="https://www.google.com/maps/@<?=$attachment['location']?>,19z">(Location)</a>
+                        <a target="_blank" href="https://www.google.com/maps/@<?=$attachment['location']?>,19z">(Location)</a>
                     <?php endif;?>
                     </td>
                     </tr></table>
