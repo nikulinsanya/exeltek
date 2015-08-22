@@ -122,7 +122,7 @@ class Controller_Search_Export extends Controller {
                         if (!file_exists(DOCROOT . 'storage/' . $image)) continue;
 
                         $data = file_get_contents(DOCROOT . 'storage/' . $image);
-                        $er = error_reporting(~E_WARNING);
+                        $er = error_reporting(0);
                         $img = imagecreatefromstring($data);
                         error_reporting($er);
 
