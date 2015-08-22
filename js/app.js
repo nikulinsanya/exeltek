@@ -594,6 +594,10 @@ $(function () {
         $(this).parents('form').attr('action', './search/export');
     });
 
+    $('.export-excel').click(function() {
+        $(this).parents('form').attr('action', './search/export/excel');
+    });
+
     $('.export-map').click(function() {
         $(this).parents('form').attr('action', './search/map');
     });

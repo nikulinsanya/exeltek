@@ -198,28 +198,30 @@
         </div>
         <?php endif;?>
         <div data-id="attachments" class="panel-body hidden">
-            <table class="col-container files-container">
-                <?php foreach ($job['attachments'] as $attachment):?>
-                    <tr>
-                        <td>
-                            <?php if (Group::current('allow_assign')):?>
-                                <a href="<?=URL::base()?>search/view/<?=$job['_id']?>?delete=<?=$attachment['id']?>"
-                                   confirm="Do you really want to delete this attachment? This action can't be undone!!!"
-                                   class="text-danger glyphicon glyphicon-remove remove-link"></a>
-                            <?php endif;?>
-                            <a data-id="<?=$attachment['id']?>" class="image-attachments" href="<?=URL::base()?>download/attachment/<?=$attachment['id']?>">
-                                <img src="http://stdicon.com/<?=$attachment['mime']?>?size=32&default=http://stdicon.com/text" />
-                                <?=HTML::chars($attachment['folder'] . ' / ' . $attachment['fda_id'] . ' / ' . $attachment['address'] . ' / ' . $attachment['filename'])?>
-                            </a>
-                            - Uploaded <?=date('d-m-Y H:i', $attachment['uploaded'])?> by <?=User::get($attachment['user_id'], 'login')?>
-                            <?php if ($attachment['location']):?>
-                                <a target="_blank" href="https://www.google.com/maps/@<?=$attachment['location']?>,19z">(Location)</a>
-                            <?php endif;?>
-                        </td>
-                    </tr>
-                <?php endforeach;?>
-            </table>
-
+            <?php $fl = false; foreach ($job['attachments'] as $attachment):?>
+                <div class="col-xs-4 <?=($fl = !$fl) ? 'bg-warning' : 'yellow'?>">
+                    <?php if (Group::current('allow_assign')):?>
+                        <a href="<?=URL::base()?>search/view/<?=$job['_id']?>?delete=<?=$attachment['id']?>"
+                           confirm="Do you really want to delete this attachment? This action can't be undone!!!"
+                           class="pull-left text-danger glyphicon glyphicon-remove remove-link"></a>
+                    <?php endif;
+                        $is_image = preg_match('/^image\/.*$/i', $attachment['mime']);
+                    ?>
+                    <?php if ($is_image):?>
+                        <img class="pull-left" src="<?=URL::base()?>download/thumb/<?=$attachment['id']?>" alt="Thumbnail" />
+                    <?php else:?>
+                        <img class="pull-left" src="http://stdicon.com/<?=$attachment['mime']?>?size=128&default=http://stdicon.com/text" />
+                    <?php endif;?>
+                    <a target="_blank" data-id="<?=$attachment['id']?>" class="<?=$is_image ? 'image-attachments' : ''?>" href="<?=URL::base()?>download/attachment/<?=$attachment['id']?>">
+                        <?=HTML::chars($attachment['folder'])?><br/><?=HTML::chars($attachment['fda_id'])?><br/><?=HTML::chars($attachment['address'])?><br/><?=HTML::chars($attachment['filename'])?>
+                    </a><br/>
+                    Uploaded <?=date('d-m-Y H:i', $attachment['uploaded'])?> by <?=User::get($attachment['user_id'], 'login')?>
+                    <?php if ($attachment['location']):?>
+                        <br/><a target="_blank" href="https://www.google.com/maps/@<?=$attachment['location']?>,19z">(Location)</a>
+                    <?php endif;?>
+                </div>
+            <?php endforeach;?>
+            <div class="clearfix"></div>
 
             <div class="upload-buttons">
                 <button type="button" class="btn btn-primary upload" data-target="<?=URL::base()?>search/" data-id="<?=$job['_id']?>">Upload</button>
