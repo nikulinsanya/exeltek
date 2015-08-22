@@ -123,7 +123,6 @@ class Controller_Search_Export extends Controller {
 
                         $data = file_get_contents(DOCROOT . 'storage/' . $image);
                         try {
-                            echo $image . "<br/>";
                             $img = imagecreatefromstring($data);
 
                             if (!$img) continue;
@@ -141,7 +140,7 @@ class Controller_Search_Export extends Controller {
                             imagecopyresampled($thumb, $img, 0, 0, 0, 0, $x, $y, imagesx($img), imagesy($img));
 
                             imagepng($thumb, DOCROOT . 'storage/' . $image . '.thumb', 9);
-                        } catch (Exception $e) {
+                        } catch (ErrorException $e) {
                             continue;
                         }
                     }
