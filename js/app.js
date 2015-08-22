@@ -672,7 +672,8 @@ $(function () {
         done: function (e, data) {
             $('#upload-count').val(parseInt($('#upload-count').val()) + 1);
             //var parent = $('.files-container').find('tr').first();
-            var link = $('<tr><td>' + data.result.attachment.content + '</td></tr>');
+
+            var link = $('<div class="col-xs-4 ' + ($('.files-container').find('div').first().hasClass('bg-warning') ? 'yellow' : 'bg-warning') + '">' + data.result.attachment.content + '</div>');
 
             link.find('.remove-link').click(confirm_link).click(remove_link);
             $('.files-container').prepend(link);
