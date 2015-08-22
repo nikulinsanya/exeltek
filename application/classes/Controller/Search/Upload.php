@@ -97,7 +97,7 @@ class Controller_Search_Upload extends Controller
                                 ($is_image ?
                                     '<img src="' . URL::base() . 'download/thumb/' . $id . '" alt="Thumbnail" />'
                                 :
-                                    '<img src="http://stdicon.com/' . $file['type'] . '?size=32&default=http://stdicon.com/text" />'
+                                    '<img src="http://stdicon.com/' . $file['type'] . '?size=96&default=http://stdicon.com/text" />'
                                 ) .
                                 HTML::chars($data['filename']) . '</a>
                                 - Uploaded ' . date('d-m-Y H:i', $data['uploaded']) . ' by ' . User::current('login'),

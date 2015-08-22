@@ -28,7 +28,7 @@ class Controller_Download extends Controller {
 
         if (!file_exists(DOCROOT . 'storage/' . $this->attachment['id'] . '.thumb')) {
             if (!file_exists(DOCROOT . 'storage/' . $this->attachment['id']))
-                $this->redirect('http://stdicon.com/' . $this->attachment['mime'] . '?size=128&default=http://stdicon.com/text');
+                $this->redirect('http://stdicon.com/' . $this->attachment['mime'] . '?size=96&default=http://stdicon.com/text');
 
             $data = file_get_contents(DOCROOT . 'storage/' . $this->attachment['id']);
             $image = imagecreatefromstring($data);
@@ -36,8 +36,8 @@ class Controller_Download extends Controller {
             $x = imagesx($image);
             $y = imagesy($image);
             $size = max($x, $y);
-            $x = round($x / $size * 128);
-            $y = round($y / $size * 128);
+            $x = round($x / $size * 96);
+            $y = round($y / $size * 96);
 
             $thumb = imagecreatetruecolor($x, $y);
             imagealphablending($thumb, false);

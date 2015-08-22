@@ -197,21 +197,26 @@
             </table>
         </div>
         <?php endif;?>
-        <div data-id="attachments" class="panel-body hidden">
+        <div data-id="attachments" class="panel-body hidden files-container">
             <?php $fl = false; foreach ($job['attachments'] as $attachment):?>
                 <div class="col-xs-4 <?=($fl = !$fl) ? 'bg-warning' : 'yellow'?>">
+                    <table><tr>
                     <?php if (Group::current('allow_assign')):?>
+                        <td>
                         <a href="<?=URL::base()?>search/view/<?=$job['_id']?>?delete=<?=$attachment['id']?>"
                            confirm="Do you really want to delete this attachment? This action can't be undone!!!"
                            class="pull-left text-danger glyphicon glyphicon-remove remove-link"></a>
+                        </td>
                     <?php endif;
                         $is_image = preg_match('/^image\/.*$/i', $attachment['mime']);
                     ?>
+                    <td>
                     <?php if ($is_image):?>
                         <img class="pull-left" src="<?=URL::base()?>download/thumb/<?=$attachment['id']?>" alt="Thumbnail" />
                     <?php else:?>
-                        <img class="pull-left" src="http://stdicon.com/<?=$attachment['mime']?>?size=128&default=http://stdicon.com/text" />
+                        <img class="pull-left" src="http://stdicon.com/<?=$attachment['mime']?>?size=96&default=http://stdicon.com/text" />
                     <?php endif;?>
+                    </td><td>
                     <a target="_blank" data-id="<?=$attachment['id']?>" class="<?=$is_image ? 'image-attachments' : ''?>" href="<?=URL::base()?>download/attachment/<?=$attachment['id']?>">
                         <?=HTML::chars($attachment['folder'])?><br/><?=HTML::chars($attachment['fda_id'])?><br/><?=HTML::chars($attachment['address'])?><br/><?=HTML::chars($attachment['filename'])?>
                     </a><br/>
@@ -219,6 +224,8 @@
                     <?php if ($attachment['location']):?>
                         <br/><a target="_blank" href="https://www.google.com/maps/@<?=$attachment['location']?>,19z">(Location)</a>
                     <?php endif;?>
+                    </td>
+                    </tr></table>
                 </div>
             <?php endforeach;?>
             <div class="clearfix"></div>

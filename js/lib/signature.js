@@ -8,15 +8,17 @@ $(function () {
     });
     
     $('form').submit(function() {
+        var fl = false;
         $('.custom-jobs-container:not(.hidden)').find('[data-validation="required"]').each(function(i,e) {
             if (!$(e).val()) {
                 $(e).focus();
                 var name = $(e).parent().parent().find('label').first().text();
                 name = name.substring(0, name.length - 1);
                 alert(name + ' is required. Please, enter some value!');
-                return false;
+                fl = true;
             }
         });
+        if ($fl) return false;
         if ($('#signature-checked').prop('checked')) {
             $('#signature-checked').prop('checked');
             $('#signature-checked').parent('label').removeClass('text-danger')
