@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Tickets Management Portal</title>
 
     <script src="<?=URL::base()?>js/lib/jquery/jquery-1.11.3.min.js"></script>
@@ -38,7 +39,8 @@
     <script src="<?=URL::base()?>js/lib/highcharts/no-data-to-display.js"></script>
     <script src="<?=URL::base()?>js/lib/highcharts/drilldown.js"></script>
 
-      <script src="<?=URL::base()?>js/lib/wpaint/wPaint.min.js"></script>
+      <script src="<?=URL::base()?>js/lib/wpaint/wPaint.utils.js"></script>
+      <script src="<?=URL::base()?>js/lib/wpaint/wPaint.js"></script>
       <link href="<?=URL::base()?>css/wPaint.css" rel="stylesheet">
       <link href="<?=URL::base()?>css/wColorPicker.min.css" rel="stylesheet">
       <script src="<?=URL::base()?>js/lib/wpaint/wColorPicker.min.js"></script>

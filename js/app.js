@@ -1293,8 +1293,8 @@ $(function () {
         var img=new Image();
         img.onload=function(){
             var x, y, w, h,xR,yR,ratio,
-                initWidth = 800,
-                initHeight = 500;
+                initWidth = $(window).width() > 800 ? 800 : $(window).width(),
+                initHeight = $(window).height() > 500 ? 500 : $(window).height();
 
             if (img.width > initWidth || img.height > initHeight) {
                 xR = initWidth / img.width;
