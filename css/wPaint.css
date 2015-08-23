@@ -359,3 +359,16 @@
 .wPaint-menu-icon-name-rectangle{
     display: none!important;
 }
+
+#wPaint{
+    width: 800px;
+    height: 500px;
+}
+
+
+@media (max-width:1070px){
+    #wPaint{
+        width: 600px;
+        height: 400px;
+    }
+}

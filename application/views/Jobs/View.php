@@ -376,7 +376,7 @@
             </div>
             <div class="modal-body text-center">
                 <div id="wpaintContainer">
-                    <div id="wPaint" style="position:relative; width:800px; height:500px; margin:0px auto"></div>
+                    <div id="wPaint" style="position:relative;margin:0px auto"></div>
                 </div>
 
             </div>
