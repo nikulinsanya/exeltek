@@ -176,7 +176,7 @@ class Controller_Attachments extends Controller {
         else
             $query = array('_id' => $ids);
 
-        Database_Mongo::collection('jobs')->update($query, array('$set' => array('downloaded' => '1')), array('multiple' => 1));
+        Database_Mongo::collection('jobs')->update($query, array('$set' => array('downloaded' => '1', 'download-by' => User::current('id'), 'download-at' => time())), array('multiple' => 1));
 
         die();
     }
