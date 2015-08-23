@@ -199,7 +199,7 @@
         <?php endif;?>
         <div data-id="attachments" class="panel-body hidden files-container">
             <?php $fl = false; foreach ($job['attachments'] as $attachment):?>
-                <div class=" <?=($fl = !$fl) ? 'bg-warning' : 'yellow'?>">
+                <div style="overflow: hidden;" class="col-xs-6 <?=($fl = !$fl) ? 'bg-warning' : 'yellow'?>">
                     <table><tr>
                     <?php if (Group::current('allow_assign')):?>
                         <td>

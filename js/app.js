@@ -676,7 +676,7 @@ $(function () {
             $('#upload-count').val(parseInt($('#upload-count').val()) + 1);
             //var parent = $('.files-container').find('tr').first();
 
-            var link = $('<div class="' + ($('.files-container').find('div').first().hasClass('bg-warning') ? 'yellow' : 'bg-warning') + '">' + data.result.attachment.content + '</div>');
+            var link = $('<div style="overflow: hidden;" class="col-xs-6 ' + ($('.files-container').find('div').first().hasClass('bg-warning') ? 'yellow' : 'bg-warning') + '">' + data.result.attachment.content + '</div>');
 
             link.find('.remove-link').click(confirm_link).click(remove_link);
             $('.files-container').prepend(link);
