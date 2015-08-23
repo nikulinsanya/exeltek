@@ -8,6 +8,9 @@ class Controller_Search_Update extends Controller
 
         $attachment = DB::select()->from('attachments')->where('id', '=', $id)->execute()->current();
 
+        if (!preg_match('/^image\/.*$/i', $attachment['mime']) || $attachment['folder'] == 'Signatures')
+            throw new HTTP_Exception_403('Forbidden');
+
         $job = Database_Mongo::collection('jobs')->findOne(array('_id' => strval($attachment['job_id'])));
 
         if (!$job)

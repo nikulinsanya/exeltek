@@ -99,7 +99,7 @@ class Controller_Search_Upload extends Controller
                                 :
                                     '<img src="http://stdicon.com/' . $file['type'] . '?size=96&default=http://stdicon.com/text" />'
                                 ) .
-                                '</td><td><a target="_blank" class="' . ($is_image ? 'image-attachments' : '') . ' href="' . URL::base() . 'download/attachment/' . $id . '">' .
+                                '</td><td><a target="_blank" class="' . ($is_image && $attachment['folder'] != 'Signatures'? 'image-attachments' : '') . ' href="' . URL::base() . 'download/attachment/' . $id . '">' .
                                 HTML::chars($attachment['folder']) . '<br/>' . HTML::chars($attachment['fda_id']) . '<br/>' . HTML::chars($attachment['address']) . '<br/>' . HTML::chars($filename) . '</a><br/>
                                 - Uploaded ' . date('d-m-Y H:i', $data['uploaded']) . ' by ' . User::current('login') . '</td></tr></table>',
                             'message' => Messages::render(),
