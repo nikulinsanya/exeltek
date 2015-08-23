@@ -141,6 +141,9 @@
                             <?php endif;?>
                             <strong><?=$submission['name']?>: </strong>
                             <?=Columns::output($submission['value'], $submission['type'])?>
+                            <?php if (!$submission['active'] && Group::current('allow_assign')):?>
+                            <button type="button" class="btn btn-warning approve-submission pull-right" data-id="<?=$submission['id']?>">Approve</button>
+                            <?php endif;?>
                         </td>
                     </tr>
 
@@ -199,26 +202,26 @@
         <?php endif;?>
         <div data-id="attachments" class="panel-body hidden files-container">
             <?php $fl = false; foreach ($job['attachments'] as $attachment):?>
-                <div class="col-xs-4 <?=($fl = !$fl) ? 'bg-warning' : 'yellow'?>">
+                <div class="col-xs-12 col-md-6 col-lg-4 <?=($fl = !$fl) ? 'bg-warning' : 'yellow'?>" style="overflow-x: hidden;">
                     <table><tr>
                     <?php if (Group::current('allow_assign')):?>
                         <td>
                         <a href="<?=URL::base()?>search/view/<?=$job['_id']?>?delete=<?=$attachment['id']?>"
                            confirm="Do you really want to delete this attachment? This action can't be undone!!!"
-                           class="pull-left text-danger glyphicon glyphicon-remove remove-link"></a>
+                           class="text-danger glyphicon glyphicon-remove remove-link"></a>
                         </td>
                     <?php endif;
                         $is_image = preg_match('/^image\/.*$/i', $attachment['mime']);
                     ?>
-                    <td><div style="width:100px; height: 100px;">
+                    <td><div class="td-image-center">
                     <?php if ($is_image):?>
-                        <img class="pull-left" src="<?=URL::base()?>download/thumb/<?=$attachment['id']?>" alt="Thumbnail" />
+                        <img  src="<?=URL::base()?>download/thumb/<?=$attachment['id']?>" alt="Thumbnail" />
                     <?php else:?>
-                        <img class="pull-left" src="http://stdicon.com/<?=$attachment['mime']?>?size=96&default=http://stdicon.com/text" />
+                        <img  src="http://stdicon.com/<?=$attachment['mime']?>?size=96&default=http://stdicon.com/text" />
                     <?php endif;?>
                     </div></td><td>
                     <a target="_blank" data-id="<?=$attachment['id']?>" class="<?=$is_image && $attachment['folder'] != 'Signatures' ? 'image-attachments' : ''?>" href="<?=URL::base()?>download/attachment/<?=$attachment['id']?>">
-                        <?=HTML::chars($attachment['folder'])?><br/><?=HTML::chars($attachment['fda_id'])?><br/><?=HTML::chars($attachment['address'])?><br/><?=HTML::chars($attachment['filename'])?>
+                        <?=HTML::chars($attachment['folder'])?><br/><?=HTML::chars($attachment['filename'])?>
                     </a><br/>
                     Uploaded <?=date('d-m-Y H:i', $attachment['uploaded'])?> by <?=User::get($attachment['user_id'], 'login')?>
                     <?php if ($attachment['location']):?>
@@ -386,5 +389,14 @@
                 <button class="btn btn-success update-image">Update</button>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="wpaintContainer">
+    <div id="wPaintMobile" style="position:relative; margin:0px auto"></div>
+    <div class="modal-footer" class="tableRowButtons" style="background-color: #fff;border-bottom: 1px solid #ccc;border-top: 0px;">
+        <button class="btn btn-info new-window-open" style="float: left;">Open in new window</button>
+        <button class="btn btn-warning close-wpaint" style="float: left;">Close</button>
+        <button class="btn btn-success update-image" style="float: left;">Update</button>
     </div>
 </div>

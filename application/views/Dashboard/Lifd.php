@@ -10,14 +10,15 @@
             <span class="glyphicon glyphicon-filter"></span>
             Modify filters
         </button>
-        <a href="javascript:;" class="btn btn-warning hidden clear-filters"><span class="glyphicon glyphicon-remove"></span> Clear</a>
+        <button type="button" class="btn btn-warning hidden clear-filters"><span class="glyphicon glyphicon-remove"></span> Clear</button>
+        <button type="button" class="btn btn-success hidden" id="export-lifd">Export to Excel</button>
         <label class="filter_value no-filters">None</label>
     </div>
 
     <div class="modal fade" id="filterModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document" style="width:800px;">
             <div class="modal-content">
-                <form id="lifd-report-form" class="" action="" method="get">
+                <form id="lifd-report-form" class="" action="<?=URL::base()?>dashboard/lifd/export" method="post">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title" id="myModalLabel">Modify filters</h4>

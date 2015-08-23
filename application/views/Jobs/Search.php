@@ -424,7 +424,18 @@
         <?php endif;?>
 
         <?php if (isset($columns['attachments'])):?>
-        <td class="hidden-xs"><?=Arr::get($attachments, $ticket['_id'])?></td>
+        <td class="hidden-xs">
+            <strong><?=Arr::get($attachments, $ticket['_id'])?></strong>
+            <?php if (Group::current('allow_assign') && isset($ticket['download-by'])):?>
+                <small><br/>Last&nbsp;download:<br/>
+                <?=User::get($ticket['download-by'], 'login')?><br/>
+                <?=Arr::get($companies, User::get($ticket['download-by'], 'company_id'))?>
+                <?php if (isset($ticket['download-at'])):?>
+                    <br/><?=date('d-m-Y H:i', $ticket['download-at'])?>
+                <?php endif;?>
+                </small>
+            <?php endif;?>
+        </td>
         <?php endif;?>
 
         <?php foreach (Columns::get_search() as $id => $name): $value = Columns::output(Arr::path($ticket, 'data.'.$id), Columns::get_type($id));?>
@@ -523,8 +534,6 @@
         </div>
     </div>
 </div>
-
-
 
 <div class="modal fade" id="batchEditModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">

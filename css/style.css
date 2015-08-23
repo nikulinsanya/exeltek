@@ -821,3 +821,28 @@ table.table>tbody>tr>td{
     vertical-align: top!important;
     padding-top: 15px;
 }
+
+.files-container>.col-xs-12{
+    height:100px;
+}
+
+
+.td-image-center{
+    width: 100px;
+    padding: 1px 1px;
+    text-align: center;
+    max-width: 100%;
+    margin-right: 15px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+
+td a.text-danger{
+    margin-left: -5px;
+    margin-right: 10px;
+}
+
+
+.col-xs-12.col-md-6.col-lg-4 table{
+    height: 100px;
+}
