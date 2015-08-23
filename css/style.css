@@ -829,8 +829,8 @@ table.table>tbody>tr>td{
     text-align: center;
     max-width: 100%;
     margin-right: 15px;
-    margin-top: 2px;
-    margin-bottom: 2px;
+    margin-top: 1px;
+    margin-bottom: 1px;
 }
 
 td a.text-danger{
