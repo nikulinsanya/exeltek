@@ -141,7 +141,7 @@ class Controller_Dashboard extends Controller {
         $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
 
 
-        if ($this->request->is_ajax()) {
+        if ($this->request->is_ajax() || $this->request->param('id') == 'export') {
 
             $query = array();
 
@@ -153,8 +153,8 @@ class Controller_Dashboard extends Controller {
                     array('ex' => intval(User::current('company_id'))),
                 );
             } else {
-                if (Arr::get($_GET, 'company') && is_array($_GET['company'])) {
-                    $company = array_map('intval', $_GET['company']);
+                if (Arr::get($_POST, 'company') && is_array($_POST['company'])) {
+                    $company = array_map('intval', $_POST['company']);
                     if (count($company) == 1) $company = array_shift($company);
                     $query['$or'] = array(
                         array('companies' => is_array($company) ? array('$in' => $company) : $company),
@@ -164,17 +164,17 @@ class Controller_Dashboard extends Controller {
                     $url['ex'] = '1';
                 }
             }
-            if (Arr::get($_GET, 'region') && isset($regions[$_GET['region']])) {
-                $query['region'] = strval($_GET['region']);
+            if (Arr::get($_POST, 'region') && isset($regions[$_POST['region']])) {
+                $query['region'] = strval($_POST['region']);
             }
 
-            if (Arr::get($_GET, 'fsa')) {
-                $fsa = is_array($_GET['fsa']) ? array_map('strval', $_GET['fsa']) : explode(', ', $_GET['fsa']);
+            if (Arr::get($_POST, 'fsa')) {
+                $fsa = is_array($_POST['fsa']) ? array_map('strval', $_POST['fsa']) : explode(', ', $_POST['fsa']);
                 $query['data.12'] = count($fsa) > 1 ? array('$in' => $fsa) : array_shift($fsa);
             }
 
-            if (Arr::get($_GET, 'fsam')) {
-                $fsam = is_array($_GET['fsam']) ? array_map('strval', $_GET['fsam']) : explode(', ', $_GET['fsam']);
+            if (Arr::get($_POST, 'fsam')) {
+                $fsam = is_array($_POST['fsam']) ? array_map('strval', $_POST['fsam']) : explode(', ', $_POST['fsam']);
                 $query['data.13'] = count($fsam) > 1 ? array('$in' => $fsam) : array_shift($fsam);
             }
 
@@ -228,6 +228,188 @@ class Controller_Dashboard extends Controller {
                 Arr::set_path($list, $job, array_merge(Arr::path($list, $job, array()), $comp['ex']));
             }
 
+            if ($this->request->param('id') == 'export') {
+                $excel = new PHPExcel();
+                $sheet = $excel->getActiveSheet();
+                $sheet->setTitle('LIFD Report');
+                $header = array(
+                    'FSA ID',
+                    'FSAM ID',
+                    'LIFD',
+                    'FDA ID',
+                );
+                if (Group::current('allow_assign')) {
+                    $header[] = 'Current contractors';
+                    $header[] = 'Previous contractors';
+                }
+                $header = array_merge($header, array(
+                    'Total tickets',
+                    'ASSIGNED',
+                    'NOTIFY',
+                    'PLANNED',
+                    'Total',
+                    'SCHEDULED',
+                    'IN-PROGRESS',
+                    'HELD-CONTRACTOR',
+                    'Total',
+                    'BUILT',
+                    'TESTED',
+                    'Total',
+                    'DEFERRED',
+                    'DIRTY',
+                    'HELD-NBN',
+                    'Total',
+                ));
+
+                $sheet->fromArray($header);
+                $end = $sheet->getHighestDataColumn();
+                $sheet->getStyle('A1:' . $end . '1')
+                    ->getFont()->setBold(true);
+                $sheet->getStyle('A1:' . $end . '1')
+                    ->getFill()
+                    ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setARGB('FFF0F0F0');
+
+                $i = 2;
+                $fill = function($companies, $data) {
+                    $result = array();
+                    if (Group::current('allow_assign')) {
+                        $result[] = '';
+                        $result[] = '';
+                    }
+                    $result[] = array_sum($data);
+                    $result[] = Arr::get($data, 'assigned');
+                    $result[] = Arr::get($data, 'notify');
+                    $result[] = Arr::get($data, 'planned');
+                    $result[] = Arr::get($data, 'assigned') + Arr::get($data, 'notify') + Arr::get($data, 'planned');
+                    $result[] = Arr::get($data, 'scheduled');
+                    $result[] = Arr::get($data, 'inprogress');
+                    $result[] = Arr::get($data, 'heldcontractor');
+                    $result[] = Arr::get($data, 'scheduled') + Arr::get($data, 'inprogress') + Arr::get($data, 'heldcontractor');
+                    $result[] = Arr::get($data, 'built');
+                    $result[] = Arr::get($data, 'tested');
+                    $result[] = Arr::get($data, 'built') + Arr::get($data, 'tested');
+                    $result[] = Arr::get($data, 'deferred');
+                    $result[] = Arr::get($data, 'dirty');
+                    $result[] = Arr::get($data, 'heldnbn');
+                    $result[] = Arr::get($data, 'deferred') + Arr::get($data, 'dirty') + Arr::get($data, 'heldnbn');
+                    return $result;
+                };
+                foreach ($list as $fsa => $fsams) {
+                    $first = $i;
+                    $row = array_merge(array(
+                        $fsa,
+                        '',
+                        '',
+                        '',
+                    ), $fill(array(), $total[$fsa]));
+                    $sheet->fromArray($row, NULL, 'A' . $i);
+                    $sheet->getRowDimension($i++)->setOutlineLevel(0)->setCollapsed(true)->setVisible(true);
+                    foreach ($fsams as $fsam => $lifds) {
+                        $row = array_merge(array(
+                            $fsa,
+                            $fsam,
+                            '',
+                            '',
+                        ), $fill(array(), $total[$fsam]));
+                        $sheet->fromArray($row, NULL, 'A' . $i);
+                        $sheet->getRowDimension($i++)->setOutlineLevel(1)->setCollapsed(true)->setVisible(false);
+                        foreach ($lifds as $lifd => $fdas) {
+                            $dates = explode('|', $lifd); $days = Utils::working_days($dates[1]);
+                            $row = array_merge(array(
+                                $fsa,
+                                $fsam,
+                                ($dates[0] ? date('d-m-Y', $dates[0]) : '') . '-' . ($dates[1] ? date('d-m-Y', $dates[1]) . ' [' . $days . ' day' . ($days != 1 ? 's ' : ' ') . ($dates[1] < time() ? 'passed' : 'left') . ']' : ''),
+                                '',
+                            ), $fill(array(), $total[$fsam . $lifd]));
+                            $sheet->fromArray($row, NULL, 'A' . $i);
+                            $sheet->getRowDimension($i++)->setOutlineLevel(2)->setCollapsed(true)->setVisible(false);
+                            foreach ($fdas as $fda => $item) {
+                                $row = array_merge(array(
+                                    $fsa,
+                                    $fsam,
+                                    ($dates[0] ? date('d-m-Y', $dates[0]) : '') . '-' . ($dates[1] ? date('d-m-Y', $dates[1]) . ' [' . $days . ' day' . ($days != 1 ? 's ' : ' ') . ($dates[1] < time() ? 'passed' : 'left') . ']' : ''),
+                                    $fda,
+                                ), $fill(array(), $item));
+                                $sheet->fromArray($row, NULL, 'A' . $i);
+                                $sheet->getRowDimension($i++)->setOutlineLevel(3)->setCollapsed(true)->setVisible(false);
+                            }
+                        }
+                    }
+                    $max = $i - 1;
+
+                    $start = 'A';
+                    $end = Group::current('allow_assign') ? 'G' : 'E';
+                    $sheet->getStyle($start . $first . ':' . $end . $max)
+                        ->getFill()
+                        ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setARGB('FFE0E7EE');
+
+                    $start = Group::current('allow_assign') ? 'H' : 'F';
+                    $end = Group::current('allow_assign') ? 'K' : 'I';
+                    $sheet->getStyle($start . $first . ':' . $end . $max)
+                        ->getFill()
+                        ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setARGB('FFE0FFFF');
+
+                    $start = Group::current('allow_assign') ? 'L' : 'J';
+                    $end = Group::current('allow_assign') ? 'O' : 'M';
+                    $sheet->getStyle($start . $first . ':' . $end . $max)
+                        ->getFill()
+                        ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setARGB('FFF5FFCF');
+
+                    $start = Group::current('allow_assign') ? 'P' : 'N';
+                    $end = Group::current('allow_assign') ? 'R' : 'P';
+                    $sheet->getStyle($start . $first . ':' . $end . $max)
+                        ->getFill()
+                        ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setARGB('FFCFFFCC');
+
+                    $start = Group::current('allow_assign') ? 'S' : 'Q';
+                    $end = Group::current('allow_assign') ? 'V' : 'T';
+                    $sheet->getStyle($start . $first . ':' . $end . $max)
+                        ->getFill()
+                        ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setARGB('FFFFD7D7');
+
+                    $sheet->getStyle('A' . $i . ':' . $end . $i)
+                        ->getFont()->setBold(true);
+                    $sheet->getStyle('A' . $i . ':' . $end . $i)
+                        ->getFill()
+                        ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setARGB('FFF0F0F0');
+                    $sheet->fromArray($header, NULL, 'A' . $i++);
+                }
+
+                foreach (range('A', $sheet->getHighestDataColumn()) as $col)
+                    $sheet->getColumnDimension($col)->setAutoSize(true);
+
+                $max = $sheet->getHighestDataRow();
+                $sheet->getStyle('A1' . ':' . $sheet->getHighestDataColumn() . $max)
+                    ->getBorders()
+                    ->getAllBorders()
+                    ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+
+                $name = tempnam(sys_get_temp_dir(), 'excel');
+
+                header('Content-type: application/xlsx');
+                header('Content-disposition: filename="LifdReport.xlsx"');
+
+                $writer = new PHPExcel_Writer_Excel2007($excel);
+                $writer->save($name);
+                readfile($name);
+                unlink($name);
+                die();
+            }
+
             $view = View::factory('Dashboard/LifdReport')
                 ->set('url', URL::query($url, false))
                 ->bind('total', $total)
@@ -235,11 +417,12 @@ class Controller_Dashboard extends Controller {
                 ->bind('companies', $companies);
 
             $filters = array();
-            if (Arr::get($_GET, 'region'))
-                $filters[] = array('name' => 'Region', 'value' => Arr::get($regions, $_GET['region'], 'Unknown'));
+            if (Arr::get($_POST, 'region'))
+                $filters[] = array('name' => 'Region', 'value' => Arr::get($regions, $_POST['region'], 'Unknown'));
 
-            if (Arr::get($_GET, 'company') && is_array($_GET['company']))
-                $filters[] = array('name' => 'Contractor', 'value' => implode(', ', array_intersect_key($companies, array_flip($_GET['company']))));
+            if (Arr::get($_POST, 'company') && is_array($_POST['company']))
+                $filters[] = array('name' => 'Contractor', 'value' => implode(', ', array_intersect_key($companies, array_flip($_POST['company']))));
+
 
             die(json_encode(array(
                 'filters' => $filters,

@@ -1091,19 +1091,33 @@ $(function () {
         })
     });
 
+    $('.clear-filters').click(function() {
+        $('.clear-filters').addClass('hidden');
+        $('#export-lifd').addClass('hidden');
+        $('#lifd-report').html('');
+    });
+
+    $('#export-lifd').click(function() {
+        $('#lifd-report-form').prop('export', true);
+        $('#lifd-report-form').submit();
+        $('#lifd-report-form').prop('export', false);
+    });
+
+
     $('#lifd-report-form').submit(function() {
+        if ($(this).prop('export')) return true;
         var data = $(this).serialize();
         $('#filterModal').modal('hide');
         $('#preloaderModal').modal('show');
         if (data) {
             $('label.no-filters').hide();
-            $('#clear-filters').removeClass('hidden');
+            $('.clear-filters').removeClass('hidden');
         } else {
             $('div.text-info-filters>div').html('');
             $('label.no-filters').show();
-            $('#clear-filters').addClass('hidden');
+            $('.clear-filters').addClass('hidden');
         }
-        $.get('?' + data, function(data) {
+        $.post('', data, function(data) {
             $('#filterModal').modal('hide');
             try {
                 data = $.parseJSON(data);
@@ -1123,6 +1137,7 @@ $(function () {
                 alert(data);
             }
             $('#preloaderModal').modal('hide');
+            $('#export-lifd').removeClass('hidden');
         });
         return false;
     });
