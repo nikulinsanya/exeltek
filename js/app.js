@@ -459,9 +459,12 @@ $(function () {
         var parent = $(this).parents('td').first();
         var id = $(this).attr('data-id');
         $('.pending-'+id).removeClass('glyphicon-edit text-info').addClass('text-danger glyphicon-remove');
+        $('.pending-'+id).parent().parent().removeClass('yellow').addClass('rose');
         
-        if ($(this).val() != 0)
+        if ($(this).val() != 0) {
             $('#submission-' + $(this).val()).removeClass('text-danger glyphicon-remove').addClass('text-success glyphicon-ok');
+            $('#submission-' + $(this).val()).parent().parent().removeClass('rose').addClass('lgreen');
+        }
         
         if (parent.hasClass('bg-danger')) {
             parent.removeClass('bg-danger');

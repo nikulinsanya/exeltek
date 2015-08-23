@@ -130,7 +130,7 @@
                 <?php endif;?>
 
 
-                    <tr class="<?=$submission['active'] == 1 ? 'yellow' : ($submission['active']? 'rose' : 'lgreen')?>">
+                    <tr class="<?=$submission['active'] == 1 ? 'yellow' : ($submission['active']? 'lgreen' : 'rose')?>">
                         <td>
                             <?php if ($submission['active'] == 1):?>
                                 <span id="submission-<?=$submission['id']?>" class="pending-<?=$submission['key']?> text-info glyphicon glyphicon-edit"></span>
