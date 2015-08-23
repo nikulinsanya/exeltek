@@ -73,6 +73,7 @@ class Controller_Search_Upload extends Controller
                     $data['filename'] = str_replace('%NUM%', $attachment['numbering'], $data['filename']);
                     Database::instance()->begin();
                     DB::update('attachments')->set($data)->where('id', '=', $id)->execute();
+                    $filename = $data['filename'];
                     $data = array(
                         'user_id' => User::current('id'),
                         'job_id' => $attachment['job_id'],
@@ -85,17 +86,22 @@ class Controller_Search_Upload extends Controller
                     Database::instance()->commit();
                     Database_Mongo::collection('jobs')->update(array('_id' => $attachment['job_id']), array('$unset' => array('downloaded' => 1), '$set' => array('last_update' => time())));
                     Messages::save("File " . $file['name'] . ' was successfully uploaded!', 'success');
+                    $is_image = preg_match('/^image\/.*$/i', $file['type']);
                     die(json_encode(array(
                         'attachment' => array(
                             'name' => $file['name'],
                             'size' => $size,
-                            'content' => (Group::current('allow_assign') ? '<a href="' . URL::base() . 'search/view/' . $id . '?delete=' . $id . '"
+                            'content' => '<table><tr>' . (Group::current('allow_assign') ? '<td><a href="' . URL::base() . 'search/view/' . $id . '?delete=' . $id . '"
                                 confirm="Do you really want to delete this attachment? This action can\'t be undone!!!"
-                                class="text-danger glyphicon glyphicon-remove remove-link"></a>' : '') .
-                                '<a href="' . URL::base() . 'download/attachment/' . $id . '">
-                                <img target="_blank" src="http://stdicon.com/' . $file['type'] . '?size=32&default=http://stdicon.com/text" />' .
-                                HTML::chars($data['filename']) . '</a>
-                                - Uploaded ' . date('d-m-Y H:i', $data['uploaded']) . ' by ' . User::current('login'),
+                                class="text-danger glyphicon glyphicon-remove remove-link"></a></td>' : '') . '<td>' .
+                                ($is_image ?
+                                    '<img src="' . URL::base() . 'download/thumb/' . $id . '" alt="Thumbnail" />'
+                                :
+                                    '<img src="http://stdicon.com/' . $file['type'] . '?size=96&default=http://stdicon.com/text" />'
+                                ) .
+                                '</td><td><a target="_blank" class="' . ($is_image ? 'image-attachments' : '') . ' href="' . URL::base() . 'download/attachment/' . $id . '">' .
+                                HTML::chars($attachment['folder']) . '<br/>' . HTML::chars($attachment['fda_id']) . '<br/>' . HTML::chars($attachment['address']) . '<br/>' . HTML::chars($filename) . '</a><br/>
+                                - Uploaded ' . date('d-m-Y H:i', $data['uploaded']) . ' by ' . User::current('login') . '</td></tr></table>',
                             'message' => Messages::render(),
                         ),
                     )));

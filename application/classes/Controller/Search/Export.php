@@ -3,6 +3,8 @@
 class Controller_Search_Export extends Controller {
 
     public function action_index() {
+        $action = $this->request->param('id');
+
         $ids = array_keys(Arr::get($_POST, 'job', array()));
         if (!$ids)
             throw new HTTP_Exception_404('Not found');
@@ -33,11 +35,21 @@ class Controller_Search_Export extends Controller {
 
         $types = DB::select('id', 'name')->from('job_types')->execute()->as_array('id', 'name');
         $companies = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
-        if ($ids)
+        if ($action == 'excel') {
+            $result = DB::select()->from('attachments')->where('job_id', 'IN', $ids)->and_where('uploaded', '>', 0)->and_where('folder', '<>', 'Signatures')->execute()->as_array();
+            $attachments = array();
+            $attachments_list = array();
+            foreach ($result as $row) {
+                $attachments[$row['job_id']] = Arr::get($attachments, $row['job_id'], 0) + 1;
+                if (preg_match('/^image\/.*$/i', $row['mime']))
+                    $attachments_list[$row['job_id']][] = $row['id'];
+            }
+        } elseif ($ids && $static['attachments'])
             $attachments = DB::select('job_id', DB::expr('COUNT(*) as cnt'))
                 ->from('attachments')
                 ->where('job_id', 'IN', $ids)
                 ->and_where('uploaded', '>', 0)
+                ->and_where('folder', '<>', 'Signatures')
                 ->group_by('job_id')
                 ->execute()->as_array('job_id', 'cnt');
         else $attachments = array();
@@ -65,9 +77,23 @@ class Controller_Search_Export extends Controller {
         foreach (Columns::get_search() as $id => $type)
             $header[] = Columns::get_name($id);
 
-        $file = tmpfile();
+        if ($action == 'excel') {
+            $excel = new PHPExcel();
+            $sheet = $excel->getActiveSheet();
+            $sheet->setTitle('Search Results');
+            $sheet->fromArray($header, NULL, 'A1');
+            $i = 1;
+            foreach (range('A', $sheet->getHighestDataColumn()) as $col) {
+                $sheet->getColumnDimension($col)->setAutoSize(true);
+            }
+            $x = max(array_map('count', $attachments_list));
+            foreach (range(0, $x - 1) as $col)
+                $sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(count($header) + $col))->setWidth(14);
+        } else {
+            $file = tmpfile();
 
-        fputcsv($file, $header);
+            fputcsv($file, $header);
+        }
 
         foreach ($jobs as $ticket) {
             $row = array($ticket['_id']);
@@ -91,17 +117,79 @@ class Controller_Search_Export extends Controller {
             foreach (Columns::get_search() as $id => $type)
                 $row[] = Arr::path($ticket, array('data', $id)) ? Columns::output($ticket['data'][$id], Columns::get_type($id), true) : '';
 
-            fputcsv($file, $row);
+            if ($action == 'excel') {
+                $i++;
+                $sheet->fromArray($row, NULL, 'A' . $i);
+                $x = count($row);
+                if (isset($attachments_list[$ticket['_id']])) {
+                    $sheet->getRowDimension($i)->setRowHeight(80);
+                }
+                foreach (Arr::get($attachments_list, $ticket['_id'], array()) as $image) {
+                    if (!file_exists(DOCROOT . 'storage/' . $image . '.thumb')) {
+                        if (!file_exists(DOCROOT . 'storage/' . $image)) continue;
+
+                        $data = file_get_contents(DOCROOT . 'storage/' . $image);
+                        $er = error_reporting(0);
+                        $img = imagecreatefromstring($data);
+                        error_reporting($er);
+
+                        if (!$img) continue;
+
+                        $x = imagesx($img);
+                        $y = imagesy($img);
+                        $size = max($x, $y);
+                        $x = round($x / $size * 96);
+                        $y = round($y / $size * 96);
+
+                        $thumb = imagecreatetruecolor($x, $y);
+                        imagealphablending($thumb, false);
+                        imagesavealpha($thumb, true);
+
+                        imagecopyresampled($thumb, $img, 0, 0, 0, 0, $x, $y, imagesx($img), imagesy($img));
+
+                        imagepng($thumb, DOCROOT . 'storage/' . $image . '.thumb', 9);
+                    }
+
+                    $data = file_get_contents(DOCROOT . 'storage/' . $image . '.thumb');
+                    $img = imagecreatefromstring($data);
+
+                    $objDrawing = new PHPExcel_Worksheet_MemoryDrawing();
+                    $objDrawing->setImageResource($img);
+
+                    $coord = PHPExcel_Cell::stringFromColumnIndex($x++);
+                    $objDrawing->setCoordinates($coord . $i);
+                    $objDrawing->setOffsetY(5);
+                    $objDrawing->setResizeProportional(true);
+                    $objDrawing->setRenderingFunction(PHPExcel_Worksheet_MemoryDrawing::RENDERING_PNG);
+                    $objDrawing->setMimeType(PHPExcel_Worksheet_MemoryDrawing::MIMETYPE_DEFAULT);
+                    $objDrawing->setWorksheet($sheet);
+                    //$sheet->getCell($coord . $i)->setHyperlink(new PHPExcel_Cell_Hyperlink(URL::site('download/attachment/' . $image, 'http'), 'Show Image'));
+                }
+            } else {
+                fputcsv($file, $row);
+            }
         }
 
-        fseek($file, 0);
+        if ($action == 'excel') {
+            $name = tempnam(sys_get_temp_dir(), 'excel');
 
-        header('Content-type: text/csv');
-        header('Content-disposition: filename="SearchResults.csv"');
+            header('Content-type: application/xlsx');
+            header('Content-disposition: filename="SearchResults.xlsx"');
 
-        fpassthru($file);
+            $writer = new PHPExcel_Writer_Excel2007($excel);
+            $writer->save($name);
+            readfile($name);
+            unlink($name);
+        } else {
+            fseek($file, 0);
 
-        fclose($file);
+            header('Content-type: text/csv');
+            header('Content-disposition: filename="SearchResults.csv"');
+
+            fpassthru($file);
+
+            fclose($file);
+        }
 
         die();
     }

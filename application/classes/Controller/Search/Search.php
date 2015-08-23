@@ -257,6 +257,7 @@ class Controller_Search_Search extends Controller {
                 ->from('attachments')
                 ->where('job_id', 'IN', $ids)
                 ->and_where('uploaded', '>', 0)
+                ->and_where('folder', '<>', 'Signatures')
                 ->group_by('job_id')
                 ->execute()->as_array('job_id', 'cnt');
         else $attachments = array();

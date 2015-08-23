@@ -25,7 +25,7 @@
     </div>
 
 <!--    tabs-->
-    <ul class="nav nav-tabs status-filter topsideup">
+    <ul class="nav nav-tabs status-filter topsideup view-tab-header">
 
     <?php $fl = true; foreach ($tabs as $id => $tab) if (isset($tab['columns'])):?>
         <li role="presentation" data-id="<?=$id?>" class="<?=$fl ? 'active':''?> <?=strtolower(str_replace(' ', '_', $tab['name']));?>">
@@ -59,9 +59,10 @@
         <?php $fl = true; foreach ($tabs as $id => $tab) if (isset($tab['columns'])):?>
     
         <div data-id="<?=$id?>" class="panel-body <?=!$fl ? 'hidden' : 'active'?>">
-            <table class="col-container">
+            <table class="col-container job-details-table">
             <?php  $index = 0; foreach ($tab['columns'] as $id => $name): $value = isset($values['data' . $id]) ? $values['data' . $id]: Arr::path($job, 'data.' . $id, '');?>
                 <?php
+                    $relation_id = ($id > 161 && $id < 182 ? $relation_id = $id+28 : ($id > 189 && $id < 210 ? $relation_id = $id-28 : false));
                     if (0 == $index++ % 2) echo '<tr>';
                     if (Arr::get($submissions, 'data.' . $id))
                         $class =  'bg-danger';
@@ -71,7 +72,7 @@
                         $class = 'bg-warning';
                     else $class = '';
                 ?>
-                <td  class="<?=$class?>">
+                <td  class="<?=$class?>" <?= $id > 161 && $id < 182 ? "data-has-actual-relation='$relation_id'" : ''?> <?= $id > 189 && $id < 210 ? "data-has-variation-relation='$relation_id'" : ''?>>
 
                         <label  class="left-label"><?=HTML::chars($name)?><?=isset($values['data' . $id]) ? '*' : ''?>: </label>
                         <div class="">
@@ -129,7 +130,7 @@
                 <?php endif;?>
 
 
-                    <tr class="<?=$submission['active'] == 1 ? 'yellow' : ($submission['active']? 'rose' : 'lgreen')?>">
+                    <tr class="<?=$submission['active'] == 1 ? 'yellow' : ($submission['active']? 'lgreen' : 'rose')?>">
                         <td>
                             <?php if ($submission['active'] == 1):?>
                                 <span id="submission-<?=$submission['id']?>" class="pending-<?=$submission['key']?> text-info glyphicon glyphicon-edit"></span>
@@ -196,29 +197,38 @@
             </table>
         </div>
         <?php endif;?>
-        <div data-id="attachments" class="panel-body hidden">
-            <table class="col-container files-container">
-                <?php foreach ($job['attachments'] as $attachment):?>
-                    <tr>
+        <div data-id="attachments" class="panel-body hidden files-container">
+            <?php $fl = false; foreach ($job['attachments'] as $attachment):?>
+                <div class="col-xs-4 <?=($fl = !$fl) ? 'bg-warning' : 'yellow'?>">
+                    <table><tr>
+                    <?php if (Group::current('allow_assign')):?>
                         <td>
-                            <?php if (Group::current('allow_assign')):?>
-                                <a href="<?=URL::base()?>search/view/<?=$job['_id']?>?delete=<?=$attachment['id']?>"
-                                   confirm="Do you really want to delete this attachment? This action can't be undone!!!"
-                                   class="text-danger glyphicon glyphicon-remove remove-link"></a>
-                            <?php endif;?>
-                            <a target="_blank" href="<?=URL::base()?>download/attachment/<?=$attachment['id']?>">
-                                <img src="http://stdicon.com/<?=$attachment['mime']?>?size=32&default=http://stdicon.com/text" />
-                                <?=HTML::chars($attachment['folder'] . ' / ' . $attachment['fda_id'] . ' / ' . $attachment['address'] . ' / ' . $attachment['filename'])?>
-                            </a>
-                            - Uploaded <?=date('d-m-Y H:i', $attachment['uploaded'])?> by <?=User::get($attachment['user_id'], 'login')?>
-                            <?php if ($attachment['location']):?>
-                                <a target="_blank" href="https://www.google.com/maps/@<?=$attachment['location']?>,19z">(Location)</a>
-                            <?php endif;?>
+                        <a href="<?=URL::base()?>search/view/<?=$job['_id']?>?delete=<?=$attachment['id']?>"
+                           confirm="Do you really want to delete this attachment? This action can't be undone!!!"
+                           class="pull-left text-danger glyphicon glyphicon-remove remove-link"></a>
                         </td>
-                    </tr>
-                <?php endforeach;?>
-            </table>
-
+                    <?php endif;
+                        $is_image = preg_match('/^image\/.*$/i', $attachment['mime']);
+                    ?>
+                    <td><div style="width:100px; height: 100px;">
+                    <?php if ($is_image):?>
+                        <img class="pull-left" src="<?=URL::base()?>download/thumb/<?=$attachment['id']?>" alt="Thumbnail" />
+                    <?php else:?>
+                        <img class="pull-left" src="http://stdicon.com/<?=$attachment['mime']?>?size=96&default=http://stdicon.com/text" />
+                    <?php endif;?>
+                    </div></td><td>
+                    <a target="_blank" data-id="<?=$attachment['id']?>" class="<?=$is_image ? 'image-attachments' : ''?>" href="<?=URL::base()?>download/attachment/<?=$attachment['id']?>">
+                        <?=HTML::chars($attachment['folder'])?><br/><?=HTML::chars($attachment['fda_id'])?><br/><?=HTML::chars($attachment['address'])?><br/><?=HTML::chars($attachment['filename'])?>
+                    </a><br/>
+                    Uploaded <?=date('d-m-Y H:i', $attachment['uploaded'])?> by <?=User::get($attachment['user_id'], 'login')?>
+                    <?php if ($attachment['location']):?>
+                        <a target="_blank" href="https://www.google.com/maps/@<?=$attachment['location']?>,19z">(Location)</a>
+                    <?php endif;?>
+                    </td>
+                    </tr></table>
+                </div>
+            <?php endforeach;?>
+            <div class="clearfix"></div>
 
             <div class="upload-buttons">
                 <button type="button" class="btn btn-primary upload" data-target="<?=URL::base()?>search/" data-id="<?=$job['_id']?>">Upload</button>
@@ -326,7 +336,7 @@
         <?php endif;?>
     </div>
     <!--    tabs-->
-    <ul class="nav nav-tabs status-filter upsidedown">
+    <ul class="nav nav-tabs status-filter upsidedown view-tab-header">
         <?php $fl = true; foreach ($tabs as $id => $tab) if (isset($tab['columns'])):?>
             <li role="presentation" data-id="<?=$id?>" class="<?=$fl ? 'active':''?>">
                 <a href="javascript:;"><?=HTML::chars($tab['name'])?>
@@ -355,3 +365,26 @@
         <?php endif;?>
     </ul>
 </form>
+
+
+<div class="modal fade" id="editImage" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit attachment </h4>
+            </div>
+            <div class="modal-body text-center">
+                <div id="wpaintContainer">
+                    <div id="wPaint" style="position:relative; width:800px; height:500px; margin:0px auto"></div>
+                </div>
+
+            </div>
+            <div class="modal-footer" class="tableRowButtons">
+                <button class="btn btn-info new-window-open" style="float: left;">Open in new window</button>
+                <button class="btn btn-warning" data-dismiss="modal">Close</button>
+                <button class="btn btn-success update-image">Update</button>
+            </div>
+        </div>
+    </div>
+</div>

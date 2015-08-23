@@ -2,17 +2,57 @@
 
 class Controller_Download extends Controller {
 
+    private $attachment = false;
+
+    public function before() {
+        $id = intval($this->request->param('id'));
+
+        $this->attachment = DB::select()->from('attachments')->where('id', '=', $id)->execute()->current();
+
+    }
+
     public function action_attachment()
     {
-        $id = intval($this->request->param('id'));
+        if (!file_exists(DOCROOT . 'storage/' . $this->attachment['id']))
+            throw new HTTP_Exception_404('Not found');
+
+        header('Content-type: '. $this->attachment['mime']);
+        header('Content-disposition: filename="' . $this->attachment['filename'] . '"');
         
-        $attachment = DB::select()->from('attachments')->where('id', '=', $id)->execute()->current();
+        readfile(DOCROOT . 'storage/' . $this->attachment['id']);
         
-        header('Content-type: '. $attachment['mime']);
-        header('Content-disposition: filename="' . $attachment['filename'] . '"');
-        
-        readfile(DOCROOT . 'storage/' . $id);
-        
+        die();
+    }
+
+    public function action_thumb() {
+
+        if (!file_exists(DOCROOT . 'storage/' . $this->attachment['id'] . '.thumb')) {
+            if (!file_exists(DOCROOT . 'storage/' . $this->attachment['id']))
+                $this->redirect('http://stdicon.com/' . $this->attachment['mime'] . '?size=96&default=http://stdicon.com/text');
+
+            $data = file_get_contents(DOCROOT . 'storage/' . $this->attachment['id']);
+            $image = imagecreatefromstring($data);
+
+            $x = imagesx($image);
+            $y = imagesy($image);
+            $size = max($x, $y);
+            $x = round($x / $size * 96);
+            $y = round($y / $size * 96);
+
+            $thumb = imagecreatetruecolor($x, $y);
+            imagealphablending($thumb, false);
+            imagesavealpha($thumb, true);
+
+            imagecopyresampled($thumb, $image, 0, 0, 0, 0, $x, $y, imagesx($image), imagesy($image));
+
+            imagepng($thumb, DOCROOT . 'storage/' . $this->attachment['id'] . '.thumb', 9);
+        }
+
+        header('Content-type: image/png');
+        header('Content-disposition: filename="thumbnail.png"');
+
+        readfile(DOCROOT . 'storage/' . $this->attachment['id'] . '.thumb');
+
         die();
     }
 }

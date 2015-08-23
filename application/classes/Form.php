@@ -75,6 +75,17 @@ class Form extends Kohana_Form {
             246 => 'Status',
         ),
     );
+
+    public static $required = array(
+        'No - job not yet finished / cannot be completed' => array(
+            246 => 'Status',
+        ),
+        'Yes - proceed to completed job submission form' => array(
+        ),
+        'Yes - submit OTDR testing data only' => array(
+            246 => 'Status',
+        ),
+    );
     
     private $elements = array();
     private $has_files = false;

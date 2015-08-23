@@ -71,7 +71,9 @@
                                             <br/><label class="old_value control-label <?=strlen($old) > 100 ? 'shorten' : ''?> " >Last submitted value: <span class=""><?=Columns::output($old, Columns::get_type(intval($id)))?></span></label>
 
                                         <?php endif;?>
-                                        <p class="column-value"><?=Columns::input('data-' . crc32($key) . '[' . $id . ']', NULL, Columns::get_type(intval($id)), $id == 242 ? Arr::path($job, 'data.242') : '')?></p>
+                                        <p class="column-value">
+                                            <?=Columns::input('data-' . crc32($key) . '[' . $id . ']', NULL, Columns::get_type(intval($id)), $id == 242 ? Arr::path($job, 'data.242') : '', '', Arr::path(Form::$required, array($key, $id)))?>
+                                        </p>
                                     </div>
                                 </td>
                                 <?php if (0 == $index % 2) :?>
