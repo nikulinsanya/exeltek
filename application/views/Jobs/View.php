@@ -210,7 +210,7 @@
                     <?php endif;
                         $is_image = preg_match('/^image\/.*$/i', $attachment['mime']);
                     ?>
-                    <td><div style="width:100px; height: 100px;">
+                    <td><div style="width:100px; height: 100px;     padding: 10px 1px;margin: 0px 5px;">
                     <?php if ($is_image):?>
                         <img class="pull-left" src="<?=URL::base()?>download/thumb/<?=$attachment['id']?>" alt="Thumbnail" />
                     <?php else:?>
@@ -386,5 +386,14 @@
                 <button class="btn btn-success update-image">Update</button>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="wpaintContainer">
+    <div id="wPaintMobile" style="position:relative; margin:0px auto"></div>
+    <div class="modal-footer" class="tableRowButtons" style="background-color: #fff;border-bottom: 1px solid #ccc;border-top: 0px;">
+        <button class="btn btn-info new-window-open" style="float: left;">Open in new window</button>
+        <button class="btn btn-warning close-wpaint" style="float: left;">Close</button>
+        <button class="btn btn-success update-image" style="float: left;">Update</button>
     </div>
 </div>
