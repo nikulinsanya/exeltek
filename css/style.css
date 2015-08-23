@@ -822,6 +822,10 @@ table.table>tbody>tr>td{
     padding-top: 15px;
 }
 
+.files-container>.col-xs-12{
+    height:100px;
+}
+
 
 .td-image-center{
     width: 100px;
