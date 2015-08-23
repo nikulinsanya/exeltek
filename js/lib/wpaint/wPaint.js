@@ -21,7 +21,7 @@
     this._init();
   }
 
-  
+
   Paint.prototype = {
     generate: function () {
       if (this.init) { return this; }
