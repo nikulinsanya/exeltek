@@ -821,3 +821,19 @@ table.table>tbody>tr>td{
     vertical-align: top!important;
     padding-top: 15px;
 }
+
+
+.td-image-center{
+    padding: 1px 1px;
+    text-align: center;
+    max-width: 100%;
+    height: auto;
+    margin-right: 15px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+td a.text-danger{
+    margin-left: -5px;
+    margin-right: 10px;
+}

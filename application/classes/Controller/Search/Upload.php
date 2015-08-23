@@ -93,7 +93,7 @@ class Controller_Search_Upload extends Controller
                             'size' => $size,
                             'content' => '<table><tr>' . (Group::current('allow_assign') ? '<td><a href="' . URL::base() . 'search/view/' . $id . '?delete=' . $id . '"
                                 confirm="Do you really want to delete this attachment? This action can\'t be undone!!!"
-                                class="text-danger glyphicon glyphicon-remove remove-link"></a></td>' : '') . '<td><div style="    padding: 10px 1px;margin: 0px 5px;">' .
+                                class="text-danger glyphicon glyphicon-remove remove-link"></a></td>' : '') . '<td><div class="td-image-center">' .
                                 ($is_image ?
                                     '<img src="' . URL::base() . 'download/thumb/' . $id . '" alt="Thumbnail" />'
                                 :
