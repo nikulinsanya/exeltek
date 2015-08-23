@@ -676,7 +676,7 @@ $(function () {
             $('#upload-count').val(parseInt($('#upload-count').val()) + 1);
             //var parent = $('.files-container').find('tr').first();
 
-            var link = $('<div style="overflow: hidden;" class="col-xs-6 ' + ($('.files-container').find('div').first().hasClass('bg-warning') ? 'yellow' : 'bg-warning') + '">' + data.result.attachment.content + '</div>');
+            var link = $('<div style="overflow: hidden;" class="col-xs-12 col-md-6 col-lg-4 ' + ($('.files-container').find('div').first().hasClass('bg-warning') ? 'yellow' : 'bg-warning') + '">' + data.result.attachment.content + '</div>');
 
             link.find('.remove-link').click(confirm_link).click(remove_link);
             $('.files-container').prepend(link);
@@ -1260,11 +1260,17 @@ $(function () {
         if (confirm('Warning: current job data will be overwritten! Are you really want to approve this submission?')) {
             $.get(utils.baseUrl() + 'submissions/approve?id=' + id, function(data) {
                 var elm = parent.find('td');
-                elm.last().html('');
-                elm = elm.last().prev();
-                elm.html(elm.prev().html());
-                parent.removeClass('bg-danger').addClass('bg-success');
-                parent.find('span.glyphicon').removeClass('glyphicon-remove').addClass('glyphicon-ok').removeClass('text-danger').addClass('text-success');
+                if (elm.length == 1) {
+                    elm.find('button').remove();
+                    parent.removeClass('rose').addClass('lgreen');
+                    parent.find('span.glyphicon').removeClass('glyphicon-remove').addClass('glyphicon-ok').removeClass('text-danger').addClass('text-success');
+                } else {
+                    elm.last().html('');
+                    elm = elm.last().prev();
+                    elm.html(elm.prev().html());
+                    parent.removeClass('bg-danger').addClass('bg-success');
+                    parent.find('span.glyphicon').removeClass('glyphicon-remove').addClass('glyphicon-ok').removeClass('text-danger').addClass('text-success');
+                }
             })
         }
     });

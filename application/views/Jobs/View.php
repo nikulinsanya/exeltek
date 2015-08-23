@@ -141,6 +141,9 @@
                             <?php endif;?>
                             <strong><?=$submission['name']?>: </strong>
                             <?=Columns::output($submission['value'], $submission['type'])?>
+                            <?php if (!$submission['active'] && Group::current('allow_assign')):?>
+                            <button type="button" class="btn btn-warning approve-submission pull-right" data-id="<?=$submission['id']?>">Approve</button>
+                            <?php endif;?>
                         </td>
                     </tr>
 
@@ -199,7 +202,7 @@
         <?php endif;?>
         <div data-id="attachments" class="panel-body hidden files-container">
             <?php $fl = false; foreach ($job['attachments'] as $attachment):?>
-                <div style="overflow: hidden;" class="col-xs-6 <?=($fl = !$fl) ? 'bg-warning' : 'yellow'?>">
+                <div class="col-xs-12 col-md-6 col-lg-4 <?=($fl = !$fl) ? 'bg-warning' : 'yellow'?>" style="overflow-x: hidden;">
                     <table><tr>
                     <?php if (Group::current('allow_assign')):?>
                         <td>
@@ -210,7 +213,7 @@
                     <?php endif;
                         $is_image = preg_match('/^image\/.*$/i', $attachment['mime']);
                     ?>
-                    <td><div style="width:100px; height: 100px;     padding: 10px 1px;margin: 0px 5px;">
+                    <td><div style="width:100px; height: 100px;     padding: 1px 1px;margin: 0px 5px;">
                     <?php if ($is_image):?>
                         <img class="pull-left" src="<?=URL::base()?>download/thumb/<?=$attachment['id']?>" alt="Thumbnail" />
                     <?php else:?>
@@ -218,7 +221,7 @@
                     <?php endif;?>
                     </div></td><td>
                     <a target="_blank" data-id="<?=$attachment['id']?>" class="<?=$is_image && $attachment['folder'] != 'Signatures' ? 'image-attachments' : ''?>" href="<?=URL::base()?>download/attachment/<?=$attachment['id']?>">
-                        <?=HTML::chars($attachment['folder'])?><br/><?=HTML::chars($attachment['fda_id'])?><br/><?=HTML::chars($attachment['address'])?><br/><?=HTML::chars($attachment['filename'])?>
+                        <?=HTML::chars($attachment['folder'])?><br/><?=HTML::chars($attachment['filename'])?>
                     </a><br/>
                     Uploaded <?=date('d-m-Y H:i', $attachment['uploaded'])?> by <?=User::get($attachment['user_id'], 'login')?>
                     <?php if ($attachment['location']):?>
