@@ -13,7 +13,6 @@
     <script src="<?=URL::base()?>js/lib/jquery/jquery-ui.min.js"></script>
     <script src="<?=URL::base()?>js/lib/jquery/jquery.shorten.js"></script>
     <script src="<?=URL::base()?>js/lib/jquery/jquery.tabelizer.min.js"></script>
-    <script src="<?=URL::base()?>js/lib/jquery/jquery.form-validator.min.js"></script>
 
       <link href="<?=URL::base()?>css/tabelizer.css" rel="stylesheet">
 
