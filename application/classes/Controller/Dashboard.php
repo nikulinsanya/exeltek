@@ -275,8 +275,8 @@ class Controller_Dashboard extends Controller {
                 $fill = function($companies, $data) {
                     $result = array();
                     if (Group::current('allow_assign')) {
-                        $result[] = '';
-                        $result[] = '';
+                        $result[] = implode("\n", array_intersect_key($companies, array_flip(Arr::path($data, 'companies.now', array()))));
+                        $result[] = implode("\n", array_intersect_key($companies, array_flip(Arr::path($data, 'companies.ex', array()))));
                     }
                     $result[] = array_sum($data);
                     $result[] = Arr::get($data, 'assigned');
@@ -303,8 +303,13 @@ class Controller_Dashboard extends Controller {
                         '',
                         '',
                         '',
-                    ), $fill(array(), $total[$fsa]));
+                    ), $fill($companies, $total[$fsa]));
                     $sheet->fromArray($row, NULL, 'A' . $i);
+                    $sheet->getStyle('A' . $i. ':' . $end . $i)
+                        ->getFill()
+                        ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setARGB('FFEEE0E7');
                     $sheet->getRowDimension($i++)->setOutlineLevel(0)->setCollapsed(true)->setVisible(true);
                     foreach ($fsams as $fsam => $lifds) {
                         $row = array_merge(array(
@@ -312,8 +317,13 @@ class Controller_Dashboard extends Controller {
                             $fsam,
                             '',
                             '',
-                        ), $fill(array(), $total[$fsam]));
+                        ), $fill($companies, $total[$fsam]));
                         $sheet->fromArray($row, NULL, 'A' . $i);
+                        $sheet->getStyle('A' . $i. ':' . $end . $i)
+                            ->getFill()
+                            ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                            ->getStartColor()
+                            ->setARGB('FFE7EEE0');
                         $sheet->getRowDimension($i++)->setOutlineLevel(1)->setCollapsed(true)->setVisible(false);
                         foreach ($lifds as $lifd => $fdas) {
                             $dates = explode('|', $lifd); $days = Utils::working_days($dates[1]);
@@ -322,30 +332,36 @@ class Controller_Dashboard extends Controller {
                                 $fsam,
                                 ($dates[0] ? date('d-m-Y', $dates[0]) : '') . '-' . ($dates[1] ? date('d-m-Y', $dates[1]) . ' [' . $days . ' day' . ($days != 1 ? 's ' : ' ') . ($dates[1] < time() ? 'passed' : 'left') . ']' : ''),
                                 '',
-                            ), $fill(array(), $total[$fsam . $lifd]));
+                            ), $fill($companies, $total[$fsam . $lifd]));
                             $sheet->fromArray($row, NULL, 'A' . $i);
+                            $sheet->getStyle('A' . $i. ':' . $end . $i)
+                                ->getFill()
+                                ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                                ->getStartColor()
+                                ->setARGB('FFEEE7E0');
                             $sheet->getRowDimension($i++)->setOutlineLevel(2)->setCollapsed(true)->setVisible(false);
+                            $start = $i;
                             foreach ($fdas as $fda => $item) {
                                 $row = array_merge(array(
                                     $fsa,
                                     $fsam,
                                     ($dates[0] ? date('d-m-Y', $dates[0]) : '') . '-' . ($dates[1] ? date('d-m-Y', $dates[1]) . ' [' . $days . ' day' . ($days != 1 ? 's ' : ' ') . ($dates[1] < time() ? 'passed' : 'left') . ']' : ''),
                                     $fda,
-                                ), $fill(array(), $item));
+                                ), $fill($companies, $item));
                                 $sheet->fromArray($row, NULL, 'A' . $i);
                                 $sheet->getRowDimension($i++)->setOutlineLevel(3)->setCollapsed(true)->setVisible(false);
                             }
+                            $end = Group::current('allow_assign') ? 'G' : 'E';
+
+                            $sheet->getStyle('A' . $start . ':' . $end . ($i-1))
+                                ->getFill()
+                                ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
+                                ->getStartColor()
+                                ->setARGB('FFE0E7EE');
                         }
+
                     }
                     $max = $i - 1;
-
-                    $start = 'A';
-                    $end = Group::current('allow_assign') ? 'G' : 'E';
-                    $sheet->getStyle($start . $first . ':' . $end . $max)
-                        ->getFill()
-                        ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
-                        ->getStartColor()
-                        ->setARGB('FFE0E7EE');
 
                     $start = Group::current('allow_assign') ? 'H' : 'F';
                     $end = Group::current('allow_assign') ? 'K' : 'I';
@@ -392,11 +408,17 @@ class Controller_Dashboard extends Controller {
                 foreach (range('A', $sheet->getHighestDataColumn()) as $col)
                     $sheet->getColumnDimension($col)->setAutoSize(true);
 
+                foreach (range(1, $sheet->getHighestDataRow()) as $row)
+                    $sheet->getRowDimension($row)->setRowHeight(-1);
+
                 $max = $sheet->getHighestDataRow();
                 $sheet->getStyle('A1' . ':' . $sheet->getHighestDataColumn() . $max)
                     ->getBorders()
                     ->getAllBorders()
                     ->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+
+                $sheet->getStyle('A1' . ':' . $sheet->getHighestDataColumn() . $max)
+                    ->getAlignment()->setWrapText(true);
 
                 $name = tempnam(sys_get_temp_dir(), 'excel');
 
