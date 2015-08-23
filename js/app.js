@@ -676,11 +676,11 @@ $(function () {
             $('#upload-count').val(parseInt($('#upload-count').val()) + 1);
             //var parent = $('.files-container').find('tr').first();
 
-            var link = $('<div class="col-xs-4 ' + ($('.files-container').find('div').first().hasClass('bg-warning') ? 'yellow' : 'bg-warning') + '">' + data.result.attachment.content + '</div>');
+            var link = $('<div class="' + ($('.files-container').find('div').first().hasClass('bg-warning') ? 'yellow' : 'bg-warning') + '">' + data.result.attachment.content + '</div>');
 
             link.find('.remove-link').click(confirm_link).click(remove_link);
             $('.files-container').prepend(link);
-            $('.modal-footer').find('button.btn-success').before(data.result.attachment.message);
+            $('.modal-footer.upload-footer').find('button.btn-success').before(data.result.attachment.message);
             $('#file-content').val('');
         },
         fail: function (e, data) {
@@ -1269,87 +1269,168 @@ $(function () {
         }
     });
 
+
     $.fn.wPaint.menus.main.img ='js/lib/wpaint/plugins/main/img/icons-menu-main.png';
-    $("#wPaint").wPaint({
-        path:utils.baseUrl(),
-              // auto center images (fg and bg, default is left/top corner)
-        menuHandle:      false,               // setting to false will means menus cannot be dragged around
-        menuOrientation: 'horizontal',       // menu alignment (horizontal,vertical)
-        menuOffsetLeft:  5,                  // left offset of primary menu
-        menuOffsetTop:   5
-    });
-
-    $('.files-container').on('click','.image-attachments',function(e) {
-        e.preventDefault();
-        var url = $(this).attr('href');
-        $("#wPaint").wPaint('clear');
-        var canvas=$('.wPaint-canvas-bg').get(0);
-        var drawCanvas=$('.wPaint-canvas').get(0);
-
-        var ctx=canvas.getContext("2d");
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        var img=new Image();
-        img.onload=function(){
-            var x, y, w, h,xR,yR,ratio,
-                initWidth = $(window).width() > 800 ? 800 : $(window).width(),
-                initHeight = $(window).height() > 500 ? 500 : $(window).height();
-
-            if (img.width > initWidth || img.height > initHeight) {
-                xR = initWidth / img.width;
-                yR = initHeight / img.height;
-
-                ratio = xR < yR ? xR : yR;
-
-                w = img.width * ratio;
-                h = img.height * ratio;
-            }
-
-            // get left/top (centering)
-            x = (initWidth - w) / 2;
-            y = (initHeight - h) / 2;
-            drawCanvas.width = w;
-            drawCanvas.height = h;
-            $(drawCanvas).css({
-                top:y,
-                left:x
-            });
-
-
-
-            ctx.drawImage(img,x, y, w, h);
-
-        }
-        img.src=url;
-
-
-        $('#editImage .new-window-open').attr('data-url', url);
-        $('#editImage .update-image').attr('data-id', $(this).attr('data-id'));
-
-        $('#editImage').modal('show');
-    });
-
-    $('#editImage .new-window-open').on('click', function(){
-        window.open($(this).attr('data-url'));
-    });
-    $('#editImage .update-image').on('click', function(){
-        var base64 = $('.wPaint-canvas').get(0).toDataURL();
-        $('#editImage').modal('hide');
-        $('#preloaderModal').modal('show');
-        $.ajax({
-            type:'post',
-            url:utils.baseUrl() + 'search/update/'+$(this).attr('data-id'),
-            data: base64,
-            success: function(){
-                window.location.reload();
-            },
-            error: function(e){
-                alert('Internal server error');
-                console.log(e);
-            }
+    if(utils.isMobileBrowser){
+        $("#wPaintMobile").wPaint({
+            path:utils.baseUrl(),
+            // auto center images (fg and bg, default is left/top corner)
+            menuHandle:      false,               // setting to false will means menus cannot be dragged around
+            menuOrientation: 'horizontal',       // menu alignment (horizontal,vertical)
+            menuOffsetLeft:  5,                  // left offset of primary menu
+            menuOffsetTop:   5
         });
-    });
+        $('.files-container').on('click','.image-attachments',function(e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            $("#wPaintMobile").wPaint('clear');
+            $(".wpaintContainer").show();
+            var canvas=$('.wPaint-canvas-bg').get(0);
+            var drawCanvas=$('.wPaint-canvas').get(0);
+            var ctx=canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            var img=new Image();
+            img.onload=function(){
+                var x, y, w, h,xR,yR,ratio,
+                    initWidth =500,
+                    initHeight = 500;
+
+                if (img.width > initWidth || img.height > initHeight) {
+                    xR = initWidth / img.width;
+                    yR = initHeight / img.height;
+
+                    ratio = xR < yR ? xR : yR;
+
+                    w = img.width * ratio;
+                    h = img.height * ratio;
+                }
+                x = (initWidth - w) / 2;
+                y = (initHeight - h) / 2;
+
+                drawCanvas.width = w;
+                drawCanvas.height = h;
+                $(drawCanvas).css({
+                    top:y,
+                    left:x
+                });
+                ctx.drawImage(img,x, y, w, h);
+            }
+            img.src=url;
+            $('.new-window-open').attr('data-url', url);
+            $('.update-image').attr('data-id', $(this).attr('data-id'));
+        });
+
+        $('.new-window-open').on('click', function(){
+            window.open($(this).attr('data-url'));
+        });
+        $('.close-wpaint').on('click', function(){
+            $(".wpaintContainer").hide();
+        });
+
+        $('.update-image').on('click', function(){
+            var base64 = $('.wPaint-canvas').get(0).toDataURL();
+            $(".wpaintContainer").show();
+            $('#preloaderModal').modal('show');
+            $.ajax({
+                type:'post',
+                url:utils.baseUrl() + 'search/update/'+$(this).attr('data-id'),
+                data: base64,
+                success: function(){
+                    window.location.reload();
+                },
+                error: function(e){
+                    alert('Internal server error');
+                    console.log(e);
+                }
+            });
+        });
+
+    }else{
+        $("#wPaint").wPaint({
+            path:utils.baseUrl(),
+            // auto center images (fg and bg, default is left/top corner)
+            menuHandle:      false,               // setting to false will means menus cannot be dragged around
+            menuOrientation: 'horizontal',       // menu alignment (horizontal,vertical)
+            menuOffsetLeft:  5,                  // left offset of primary menu
+            menuOffsetTop:   5
+        });
+
+
+
+
+        $('.files-container').on('click','.image-attachments',function(e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            $("#wPaint").wPaint('clear');
+            var canvas=$('.wPaint-canvas-bg').get(0);
+            var drawCanvas=$('.wPaint-canvas').get(0);
+
+            var ctx=canvas.getContext("2d");
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            var img=new Image();
+            img.onload=function(){
+                var x, y, w, h,xR,yR,ratio,
+                    initWidth = $(window).width() > 800 ? 800 : $(window).width(),
+                    initHeight = $(window).height() > 500 ? 500 : $(window).height();
+
+                if (img.width > initWidth || img.height > initHeight) {
+                    xR = initWidth / img.width;
+                    yR = initHeight / img.height;
+
+                    ratio = xR < yR ? xR : yR;
+
+                    w = img.width * ratio;
+                    h = img.height * ratio;
+                }
+
+                // get left/top (centering)
+                x = (initWidth - w) / 2;
+                y = (initHeight - h) / 2;
+                drawCanvas.width = w;
+                drawCanvas.height = h;
+                $(drawCanvas).css({
+                    top:y,
+                    left:x
+                });
+
+
+
+                ctx.drawImage(img,x, y, w, h);
+
+            }
+            img.src=url;
+
+
+            $('#editImage .new-window-open').attr('data-url', url);
+            $('#editImage .update-image').attr('data-id', $(this).attr('data-id'));
+
+            $('#editImage').modal('show');
+        });
+        $('.new-window-open').on('click', function(){
+            window.open($(this).attr('data-url'));
+        });
+        $('.update-image').on('click', function(){
+            var base64 = $('.wPaint-canvas').get(0).toDataURL();
+            $('#editImage').modal('hide');
+            $('#preloaderModal').modal('show');
+            $.ajax({
+                type:'post',
+                url:utils.baseUrl() + 'search/update/'+$(this).attr('data-id'),
+                data: base64,
+                success: function(){
+                    window.location.reload();
+                },
+                error: function(e){
+                    alert('Internal server error');
+                    console.log(e);
+                }
+            });
+        });
+    }
+
+
 
 
     $('.job-details-table [data-has-variation-relation] .form-control').on('change', function(e){

@@ -124,7 +124,6 @@ window.utils = (function() {
                             '</option>'
                         )
                     }
-
                     field = field.replace('%OPTIONS%',options.join(''));
 
                     break;
@@ -140,7 +139,10 @@ window.utils = (function() {
         },
         objectLength: function(o){
             return Object.keys(o).length;
-        }
+        },
+        isMobileBrowser: (function(){
+            return typeof window.orientation !== 'undefined';
+        })()
     };
     return utils;
 })(window);
