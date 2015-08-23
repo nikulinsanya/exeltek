@@ -208,16 +208,16 @@
                         <td>
                         <a href="<?=URL::base()?>search/view/<?=$job['_id']?>?delete=<?=$attachment['id']?>"
                            confirm="Do you really want to delete this attachment? This action can't be undone!!!"
-                           class="pull-left text-danger glyphicon glyphicon-remove remove-link"></a>
+                           class="text-danger glyphicon glyphicon-remove remove-link"></a>
                         </td>
                     <?php endif;
                         $is_image = preg_match('/^image\/.*$/i', $attachment['mime']);
                     ?>
-                    <td><div style="width:100px; height: 100px;     padding: 1px 1px;margin: 0px 5px;">
+                    <td><div class="td-image-center">
                     <?php if ($is_image):?>
-                        <img class="pull-left" src="<?=URL::base()?>download/thumb/<?=$attachment['id']?>" alt="Thumbnail" />
+                        <img  src="<?=URL::base()?>download/thumb/<?=$attachment['id']?>" alt="Thumbnail" />
                     <?php else:?>
-                        <img class="pull-left" src="http://stdicon.com/<?=$attachment['mime']?>?size=96&default=http://stdicon.com/text" />
+                        <img  src="http://stdicon.com/<?=$attachment['mime']?>?size=96&default=http://stdicon.com/text" />
                     <?php endif;?>
                     </div></td><td>
                     <a target="_blank" data-id="<?=$attachment['id']?>" class="<?=$is_image && $attachment['folder'] != 'Signatures' ? 'image-attachments' : ''?>" href="<?=URL::base()?>download/attachment/<?=$attachment['id']?>">
