@@ -825,7 +825,6 @@ table.table>tbody>tr>td{
 
 .td-image-center{
     width: 100px;
-    height: 100px;
     padding: 1px 1px;
     text-align: center;
     max-width: 100%;
@@ -837,4 +836,9 @@ table.table>tbody>tr>td{
 td a.text-danger{
     margin-left: -5px;
     margin-right: 10px;
+}
+
+
+.col-xs-12.col-md-6.col-lg-4 table{
+    height: 100px;
 }
