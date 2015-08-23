@@ -39,7 +39,8 @@
     <script src="<?=URL::base()?>js/lib/highcharts/no-data-to-display.js"></script>
     <script src="<?=URL::base()?>js/lib/highcharts/drilldown.js"></script>
 
-      <script src="<?=URL::base()?>js/lib/wpaint/wPaint.min.js"></script>
+      <script src="<?=URL::base()?>js/lib/wpaint/wPaint.utils.js"></script>
+      <script src="<?=URL::base()?>js/lib/wpaint/wPaint.js"></script>
       <link href="<?=URL::base()?>css/wPaint.css" rel="stylesheet">
       <link href="<?=URL::base()?>css/wColorPicker.min.css" rel="stylesheet">
       <script src="<?=URL::base()?>js/lib/wpaint/wColorPicker.min.js"></script>
