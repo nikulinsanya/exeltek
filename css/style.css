@@ -846,3 +846,13 @@ td a.text-danger{
 .col-xs-12.col-md-6.col-lg-4 table{
     height: 100px;
 }
+
+
+.report-form-container .filter-select-container .btn-group button.multiselect,
+.report-form-container .filter-select-container .btn-group{
+    width:100%;
+}
+
+.report-form-container .filter-info-container .filter-select-label{
+    top:0px;
+}

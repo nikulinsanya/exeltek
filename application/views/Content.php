@@ -49,8 +49,6 @@
       <script src="<?=URL::base()?>js/lib/wpaint/plugins/shapes/wPaint.menu.main.shapes.min.js"></script>
       <script src="<?=URL::base()?>js/lib/wpaint/plugins/file/wPaint.menu.main.file.min.js"></script>
 
-
-    <script src="http://www.mapquestapi.com/sdk/js/v7.2.s/mqa.toolkit.js?key=Xb82MnnrASWT7vN6QaQ19Y8srqgAfWL8"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWDqGAI0Zbb5kiwRG2-NkonZxnIUmYBeU"></script>
     <script src="<?=URL::base()?>js/maps.js"></script>
     <script src="<?=URL::base()?>js/utils.js"></script>
