@@ -227,11 +227,10 @@ class Controller_Search_Search extends Controller {
                 case 'status':
                     $order = 'status';
                     break;
-                /*case 'data-8':
-                    $sorting['data.119'] = $dir;
-                    $sorting['data.118'] = $dir;
+                case 'data-8':
+                    $sorting['address'] = $dir;
                     $order = false;
-                break;*/
+                break;
                 default:
                     if (substr($order, 0, 5) == 'data-')
                         $order = 'data.' . intval(substr($order, 5));

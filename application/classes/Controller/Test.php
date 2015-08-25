@@ -7,11 +7,15 @@ class Controller_Test extends Controller {
     }
 
     public function action_index() {
-        $jobs = Database_Mongo::collection('jobs');
-        $coords = json_decode(file_get_contents(DOCROOT . 'coords.json'), true);
-        foreach ($coords as $key => $value)
-            $jobs->update(array('_id' => $key), array('$set' => array('lng' => $value['lng'], 'lat' => $value['lat'])));
-        die();
+        header('Content-type: text/plain');
+        $jobs = Database_Mongo::collection('jobs')->find();
+        foreach ($jobs as $job) {
+            $address = Arr::path($job, 'data.8');
+            $address = MapQuest::parse($address);
+            Database_Mongo::collection('jobs')->update(array('_id' => $job['_id']), array('$set' => array('address' => $address)));
+        }
+
+        die('Done');
 
         header('Content-type: application/json');
         $result = Database_Mongo::collection('jobs')->find(array(), array('data.8' => 1));

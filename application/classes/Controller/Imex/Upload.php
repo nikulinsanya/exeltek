@@ -369,6 +369,10 @@ class Controller_Imex_Upload extends Controller {
                             }
                             if ($new) {
                                 $new['$set']['last_update'] = time();
+                                if (isset($new['$set']['data.8']))
+                                    $new['$set']['address'] = MapQuest::parse($new['$set']['data.8']);
+                                elseif (isset($new['$unset']['data.8']))
+                                    $new['$unset']['address'] = 1;
                                 $jobs->update(array('_id' => $id), $new);
 
                                 foreach (array_keys($diff) as $key)
@@ -399,6 +403,9 @@ class Controller_Imex_Upload extends Controller {
                             'last_update' => time(),
                             'data' => $data,
                         );
+                        if (isset($data[8]))
+                            $job['address'] = MapQuest::parse($data[8]);
+
                         $jobs->insert($job);
                         $archive->insert(array(
                             'job_key' => $id,
