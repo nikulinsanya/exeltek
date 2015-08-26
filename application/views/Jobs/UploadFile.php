@@ -38,7 +38,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="file" id="file-content" />
+                                <input type="file" id="file-content" multiple />
                             </td>
                         </tr>
                     </table>

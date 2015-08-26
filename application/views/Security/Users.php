@@ -1,5 +1,5 @@
 <table class="table table-striped">
-<tr>
+<tr class="text-center">
     <th>User name</th>
     <th>Email</th>
     <th>Group</th>
@@ -9,7 +9,7 @@
     <th><a href="<?=URL::base()?>security/users/edit" class="btn btn-success">Add</a></th>
 </tr>
 <?php foreach ($list as $item):?>
-<tr>
+<tr class="text-center">
     <td><?=HTML::chars($item['login'])?></td>
     <td><?=HTML::chars($item['email'])?></td>
     <td><?=HTML::chars($item['group'])?></td>

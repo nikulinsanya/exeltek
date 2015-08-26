@@ -1,12 +1,12 @@
 <table class="table table-striped">
-<tr>
+<tr class="text-center">
     <th>Company name</th>
     <th>Company type</th>
     <th>Users</th>
     <th><a href="<?=URL::base()?>security/companies/edit" class="btn btn-success">Add</a></th>
 </tr>
 <?php foreach ($list as $item):?>
-<tr>
+<tr class="text-center">
     <td><?=HTML::chars($item['name'])?></td>
     <td><?=HTML::chars($item['company_type'])?></td>
     <td><?=intval($item['cnt'])?></td>
