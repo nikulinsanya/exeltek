@@ -898,7 +898,8 @@ $(function () {
         if(self){
             $(self).selectize({
                 create: true,
-                sortField: 'text'
+                sortField: 'text',
+                allowEmptyOption: true
             });
         }
     }

@@ -356,15 +356,16 @@ class Controller_Imex_Upload extends Controller {
                                     $discrepancy[$key] = $diff[$key];
 
                                 if ($discrepancy) {
-                                    Database_Mongo::collection('discrepancies')->insert(array(
+                                    $discrepancy = array(
                                         'job_key' => $id,
                                         'update_time' => time(),
                                         'user_id' => User::current('id'),
                                         'filename' => $filename,
                                         'data' => $discrepancy,
                                         'fields' => array_keys($discrepancy),
-                                    ));
-
+                                    );
+                                    Database_Mongo::collection('discrepancies')->insert($discrepancy);
+                                    Database_Mongo::collection('jobs')->update(array('_id' => $id), array('$set' => array('discrepancies' => $discrepancy['_id'])));
                                 }
                             }
                             if ($new) {

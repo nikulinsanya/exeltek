@@ -286,6 +286,18 @@ class Controller_Search_View extends Controller {
                     }
 
                 if ($update) {
+                    if (isset($job['discrepancies'])) {
+                        $discrepancies = Database_Mongo::collection('discrepancies')->findOne(array('_id' => new MongoId($job['discrepancies'])));
+                        $fl = true;
+                        foreach ($discrepancies['data'] as $key => $values) {
+                            $value = $values['old_value'];
+                            if ($value != Arr::get($job['data'], $key, ''))
+                                $fl = false;
+                        }
+
+                        if ($fl)
+                            $update['$unset']['discrepancies'] = 1;
+                    }
                     $update['$set']['companies'] = array_keys($companies);
 
                     $status = Arr::get($job, 'status', Enums::STATUS_UNALLOC);

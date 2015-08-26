@@ -38,7 +38,7 @@
         <label class="date-range-label filter-select-label">Is job finished? </label>
         <span class="filter-select-container">
             <select name="finished" class="selectize">
-                <option value="">Select</option>
+                <option value="">All</option>
                 <option value="Yes" <?=Arr::get($_GET, 'finished')=='Yes' ? 'selected': ''?>>Yes</option>
                 <option value="No"  <?=Arr::get($_GET, 'finished')=='No' ? 'selected': ''?>>No</option>
             </select>
