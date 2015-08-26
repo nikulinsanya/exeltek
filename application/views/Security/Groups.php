@@ -1,5 +1,5 @@
 <table class="table table-striped">
-<tr>
+<tr class="text-center">
     <th>Group name</th>
     <th>Is admin</th>
     <th>Show all jobs</th>
@@ -15,7 +15,7 @@
     <th><a href="<?=URL::base()?>security/groups/edit" class="btn btn-success">Add</a></th>
 </tr>
 <?php foreach ($list as $item):?>
-<tr>
+<tr class="text-center">
     <td><?=HTML::chars($item['name'])?></td>
     <td><span class="glyphicon glyphicon-<?=$item['is_admin'] ? 'ok text-success' : 'remove text-danger'?>"></span></td>
     <td><span class="glyphicon glyphicon-<?=$item['show_all_jobs'] ? 'ok text-success' : 'remove text-danger'?>"></span></td>

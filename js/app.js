@@ -706,7 +706,7 @@ $(function () {
                 var location = $('#location').val();
                 
                 url = url + 'prepare/' + id + '?location=' + location + '&type=' + type + '&title=' + title;
-                
+
                 $.get(url, function(data) {
                     data = $.parseJSON(data);
                     id = data.id;
@@ -719,7 +719,7 @@ $(function () {
     
     $('.tree').jstree({
         'core' : {
-            'multiple': false,
+            'multiple': false
         },
         'search': {
             'show_only_matches': true,
@@ -885,6 +885,28 @@ $(function () {
             $('tr.discrepancy').removeClass('hidden');
         }
         $('#submissions_count').text($('.ticket-id:not(.hidden)').length);
+    });
+
+
+    $('.show-content-in-popup').on('click',function(e){
+        e.preventDefault();
+        var url = $(this).attr('href');
+        $.ajax({
+            url:url,
+            type:'get',
+            dataType:'html',
+            success: function(html){
+                var dialog = $('#modalHtmlContainer'),
+                    container = dialog.find('.modal-body');
+                container.html(html);
+            },
+            error: function(e){
+                console.log(e);
+                alert('Internal server error');
+            }
+        })
+
+        return false;
     });
 
 
