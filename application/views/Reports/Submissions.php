@@ -23,6 +23,14 @@
 
 
         <div class="clearfix">&nbsp;</div>
+
+        <label class="date-range-label">Ticket ID:</label>
+        <span class="filter-select-container">
+            <input type="text" class="form-control" id="ticket-id" placeholder="Ticket ID" name="ticket" value="<?=Arr::get($_GET, 'ticket')?>" />
+        </span>
+
+        <div class="clearfix">&nbsp;</div>
+
         <?php if (Group::current('allow_assign')):?>
         <label class="date-range-label filter-select-label">Contractors :</label>
         <span class="filter-select-container">

@@ -761,7 +761,9 @@ $(function () {
     
     var ticket_id_unfocus = function() {
         var val = $(this).val().replace(/\n/g, ',');
-        $('#ticket-id').val(val).show();
+        //if ($('#ticket-id').val() != val)
+            //$('#ticket-id').val(val);
+        $('#ticket-id').show();
         $(this).remove();
     }
     
@@ -769,7 +771,7 @@ $(function () {
         var val = $(this).val().replace(/,/g, "\n");
         var textarea = $('<textarea class="form-control" width="100%"></textarea>').val(val).focusout(ticket_id_unfocus);
         $(this).hide().before(textarea);
-        textarea.focus();
+        //textarea.focus();
     });
     
     $('.notification').click(function() {

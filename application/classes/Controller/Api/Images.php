@@ -103,6 +103,8 @@ class Controller_Api_Images extends Kohana_Controller {
         die(json_encode(array(
             'success' => true,
             'id' => $result,
+            'folder' => $type,
+            'name' => $filename,
         )));
     }
 
