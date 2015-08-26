@@ -111,7 +111,7 @@ class Controller_Api_Jobs extends Kohana_Controller {
 
         if ($regs) $query['region'] = array('$in' => $regs);
 
-        $result = Database_Mongo::collection('jobs')->find($query, array('assigned' => 0, 'companies' => 0, 'ex' => 0));
+        $result = Database_Mongo::collection('jobs')->find($query, array('assigned' => 0, 'companies' => 0, 'ex' => 0, 'address' => 0));
 
         if (!$result)
             die(json_encode(array('success' => false, 'error' => 'not found')));
@@ -119,13 +119,22 @@ class Controller_Api_Jobs extends Kohana_Controller {
         $jobs = array();
         foreach ($result as $job) {
             $job['data'] = array_intersect_key(Arr::get($job, 'data', array()), $columns);
-            $jobs[] = $job;
+            $jobs[$job['_id']] = $job;
         }
 
+        $attachments = DB::select()->from('attachments')->where('uploaded', '>', 0)->and_where('job_id', 'IN', array_keys($jobs))->execute()->as_array();
+        foreach ($attachments as $attachment)
+            $jobs[$attachment['job_id']]['attachments'][] = array(
+                'id' => $attachment['id'],
+                'folder' => $attachment['folder'],
+                'name' => $attachment['filename'],
+                'mime' => $attachment['mime'],
+            );
+
         if (isset($_GET['gzip']))
-            die(gzcompress(json_encode($jobs), 9));
+            die(gzcompress(json_encode(array_values($jobs)), 9));
         else
-            die(json_encode($jobs));
+            die(json_encode(array_values($jobs)));
     }
 
     public function action_submit() {
