@@ -26,7 +26,7 @@
         <?php if (Group::current('allow_assign')):?>
         <label class="date-range-label filter-select-label">Contractors :</label>
         <span class="filter-select-container">
-            <select name="company" class="selectize">
+            <select name="company" class="multiselect">
                 <option value="">All contractors</option>
                 <?php foreach ($companies as $key => $value):?>
                 <option value="<?=$key?>" <?=$key == Arr::get($_GET, 'company') ? 'selected' : ''?>><?=$value?></option>
@@ -37,8 +37,8 @@
         <div class="clearfix">&nbsp;</div>
         <label class="date-range-label filter-select-label">Is job finished? </label>
         <span class="filter-select-container">
-            <select name="finished" class="selectize">
-                <option value="">All</option>
+            <select name="finished" class="multiselect">
+                <option value="">Select</option>
                 <option value="Yes" <?=Arr::get($_GET, 'finished')=='Yes' ? 'selected': ''?>>Yes</option>
                 <option value="No"  <?=Arr::get($_GET, 'finished')=='No' ? 'selected': ''?>>No</option>
             </select>
