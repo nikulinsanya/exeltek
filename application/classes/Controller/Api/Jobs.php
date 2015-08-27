@@ -142,8 +142,8 @@ class Controller_Api_Jobs extends Kohana_Controller {
                 $submissions[$submission['job_key']][$submission['update_time']] = 1;
 
             foreach ($submissions as $key => $list)
-                foreach ($list as $key => $value)
-                    $jobs[$key]['submissions'][] = $key;
+                foreach (array_keys($list) as $value)
+                    $jobs[$key]['submissions'][] = $value;
         }
 
         if (isset($_GET['gzip']))
