@@ -332,7 +332,7 @@
             <a href="#" class="dropdown-toggle" data-toggle="collapse" data-target="#filter-<?=$id?>">
                 <?=Columns::get_name($id)?>
             </a>
-                <ul class="collapse dropdown-menu"  id="filter-<?=$id?>" data-id="<?=$id?>">
+                <ul class="collapse dropdown-menu dropdown-menu-right"  id="filter-<?=$id?>" data-id="<?=$id?>">
                     <li class="dropdown-header">Add filter:</li>
                     <li><?=Form::select(NULL, $actions, false, array('class' => 'selectize'))?></li>
                     <li><?=Form::input(NULL, NULL, array('class' => 'form-control' . (Columns::get_type($id) == 'date' ? ' datepicker' : ''), 'placeholder' => 'Filtering value'))?></li>
