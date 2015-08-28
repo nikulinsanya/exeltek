@@ -1172,7 +1172,8 @@ $(function () {
         return false;
     });
 
-    if($('.submission-filter-container').length){
+    if($('.submission-filter-container').length ||
+        $('.financial-filter-container').length){
         initFsaFdaFill();
     }
 
