@@ -1,49 +1,87 @@
 <?php $week = strtotime('this week', strtotime('this week') > time() ? strtotime('yesterday') : time());?>
-<form action="" method="get" class="auto-submit">
-    <div class="filter-info-container">
-        <label class="date-range-label">Date range: </label>
-        <span class="date-range-container">
-            <div class="daterange" class="pull-right" data-start="start" data-end="end" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
-                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
-                <span></span> <b class="caret"></b>
+<form action="" method="get" class="">
+    <div class="financial-filter-container">
+            <div class="col-xs-12 col-md-6">
+            <label class="date-range-label">Date range: </label>
+            <span class="date-range-container">
+                <div class="daterange" class="pull-right" data-start="start" data-end="end" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                    <span></span> <b class="caret"></b>
+                </div>
+            </span>
             </div>
-        </span>
-        <div class="clearfix">&nbsp;</div>
+            <div class="col-xs-12 col-md-6">
 
-        <label class="date-range-label">Date range(Approved) :</label>
-         <span class="date-range-container">
-            <div class="daterange" class="pull-right"  data-start="app-start" data-end="app-end" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
-                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
-                <span></span> <b class="caret"></b>
+            <label class="date-range-label">Date range(Approved) :</label>
+             <span class="date-range-container">
+                <div class="daterange" class="pull-right"  data-start="app-start" data-end="app-end" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                    <span></span> <b class="caret"></b>
+                </div>
+            </span>
             </div>
-        </span>
-        <div class="clearfix">&nbsp;</div>
+            <div class="col-xs-12 col-md-6">
 
-        <label class="date-range-label">Date range(Financial) :</label>
-         <span class="date-range-container">
-            <div class="daterange" class="pull-right"  data-start="fin-start" data-end="fin-end" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
-                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
-                <span></span> <b class="caret"></b>
+            <label class="date-range-label">Date range(Financial) :</label>
+             <span class="date-range-container">
+                <div class="daterange" class="pull-right"  data-start="fin-start" data-end="fin-end" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                    <span></span> <b class="caret"></b>
+                </div>
+            </span>
             </div>
-        </span>
+
+            <div class="col-xs-12 col-md-6">
+                <label class="date-range-label filter-select-label">FSA: </label>
+                    <span class="filter-select-container" data-fsa-selected="<?=isset($_GET['fsa']) ? implode(',',Arr::get($_GET, 'fsa')):''?>">
+                    <?=Form::select('fsa[]', [], NULL, array('class' => 'fsa-filter multiselect', 'multiple' => 'multiple'))?>
+                </span>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <label class="date-range-label">Discrepancies only: </label>
+                <input name="discrepancy" type="checkbox" class="discrepancy no-submit" <?=Arr::get($_GET, 'discrepancy') ? ' checked' : ''?>/>
+            </div>
+            <div class="col-xs-12 col-md-6">
+                <label class="date-range-label filter-select-label">FSAM: </label>
+                        <span class="filter-select-container" data-fsam-selected="<?=isset($_GET['fsam']) ? implode(',',Arr::get($_GET, 'fsam')):''?>">
+                        <?=Form::select('fsam[]', [], NULL, array('class' => 'fsam-filter multiselect', 'multiple' => 'multiple'))?>
+                    </span>
+            </div>
+            <?php if (Group::current('allow_assign')):?>
+                <div class="col-xs-12 col-md-6">
+                    <label class="date-range-label">Contractors :</label>
+                    <span class="filter-select-container">
+                    <select name="company" class="form-control multiselect">
+                        <option value="">All contractors</option>
+                        <?php foreach ($companies as $key => $value):?>
+                            <option value="<?=$key?>" <?=$key == Arr::get($_GET, 'company') ? 'selected' : ''?>><?=$value?></option>
+                        <?php endforeach;?>
+                    </select>
+                </span>
+                </div>
+            <?php endif;?>
 
 
+
+
+            <div class="col-xs-12 col-md-6">
+                <label class="date-range-label filter-select-label">FDA: </label>
+                <span class="filter-select-container" data-fda-selected="<?=isset($_GET['fda']) ? implode(',',Arr::get($_GET, 'fda')):''?>">
+                <?=Form::select('fda[]', [], NULL, array('class' => 'fda-filter multiselect', 'multiple' => 'multiple'))?>
+            </span>
+
+            </div>
+            <div class="col-xs-12 col-md-6">
+                <label class="date-range-label">Address:</label>
+                <span class="filter-select-container">
+                    <input type="text" class="form-control"placeholder="Address" name="address" value="<?=Arr::get($_GET, 'address')?>" />
+                </span>
+            </div>
         <div class="clearfix">&nbsp;</div>
-        <?php if (Group::current('allow_assign')):?>
-            <label class="date-range-label">Contractors :</label>
-            <span class="filter-select-container">
-            <select name="company" class="form-control">
-                <option value="">All contractors</option>
-                <?php foreach ($companies as $key => $value):?>
-                    <option value="<?=$key?>" <?=$key == Arr::get($_GET, 'company') ? 'selected' : ''?>><?=$value?></option>
-                <?php endforeach;?>
-            </select>
-        </span>
-        <?php endif;?>
-        <div class="clearfix">&nbsp;</div>
-
-            <label class="date-range-label">Discrepancies only: </label>
-            <input name="discrepancy" type="checkbox" class="discrepancy no-submit" <?=Arr::get($_GET, 'discrepancy') ? ' checked' : ''?>/>
+        <div class="col-xs-12 col-md-6">
+            <button type="submit" class="btn btn-success">Apply filters</button>
+        </div>
     </div>
 
     <div id="sorting" class="hidden">
