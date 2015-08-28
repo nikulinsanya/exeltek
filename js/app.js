@@ -1109,8 +1109,6 @@ $(function () {
                 html.push('</tr>');
             }
 
-
-
             $('#batchEditModal .edit-tickets-table').html(html.join(''));
 
             initPlugins();
@@ -1156,12 +1154,12 @@ $(function () {
                 var filters = [];
                 for (var i in data.filters)
                     filters.push(
-                        '<span class="filter-item">' ,
+                        '<span class="filter-item">',
                             data.filters[i].name ,
-                            ': <label class="filter_value">' ,
+                            ': <label class="filter_value">',
                             data.filters[i].value ,
-                        '</label></span>');
-
+                        '</label></span>'
+                    );
                 $('div.text-info-filters>div').html(filters.join(''));
                 $('#lifd-report').html(data.html);
                 initTreeView();
@@ -1173,6 +1171,104 @@ $(function () {
         });
         return false;
     });
+
+    if($('.submission-filter-container').length){
+        initFsaFdaFill();
+    }
+
+    function initFsaFdaFill(){
+        fillFsa();
+        fillFsam();
+        fillFda();
+    }
+    function fillFsa(){
+        var selected = $('[data-fsa-selected]').attr('data-fsa-selected') &&
+            $('[data-fsa-selected]').attr('data-fsa-selected').split(',');
+        $.ajax({
+            url:utils.baseUrl() + "json/fsa",
+            type:'get',
+            dataType:'JSON',
+            success: function(data){
+                var i = data.length,
+                    html = [];
+                while(i--){
+                    html.unshift('<option value="',
+                        data[i],
+                        '"',
+                        selected.indexOf(data[i]) != -1 ? 'selected="selected"' : '',
+                        '>',
+                        data[i],
+                        '</option>')
+                }
+                $('.fsa-filter').html(html.join(''));
+                $('.fsa-filter').multiselect('rebuild');
+                $('.fsam-filter').html('');
+            },
+            error: function(e){
+                alert(e.responseText);
+                $('.fsam-filter').html('');
+                $('.fsa-filter').html('');
+            }
+        });
+    }
+    function fillFsam(){
+        var selected = $('[data-fsam-selected]').attr('data-fsam-selected') &&
+            $('[data-fsam-selected]').attr('data-fsam-selected').split(',');
+        
+        $.ajax({
+            url:utils.baseUrl() + "json/fsam",
+            type:'get',
+            dataType:'JSON',
+            success: function(data){
+
+                var i = data.length,
+                    html = [];
+                while(i--){
+                    html.unshift('<option value="',
+                        data[i],
+                        '"',
+                        selected.indexOf(data[i]) != -1 ? 'selected="selected"' : '',
+                        '>',
+                        data[i],
+                        '</option>');
+                }
+                $('.fsam-filter').html(html.join(''));
+                $('.fsam-filter').multiselect('rebuild');
+            },
+            error: function(e){
+                alert(e.responseText);
+                $('.fsam-filter').html('');
+                $('.fsa-filter').html('');
+            }
+        });
+    }
+    function fillFda(){
+        var selected = $('[data-fda-selected]').attr('data-fda-selected') &&
+            $('[data-fda-selected]').attr('data-fda-selected').split(',');
+        $.ajax({
+            url:utils.baseUrl() + "json/fda",
+            type:'get',
+            dataType:'JSON',
+            success: function(data){
+                var i = data.length,
+                    html = [];
+                while(i--){
+                    html.unshift('<option value="',
+                        data[i],
+                        '"',
+                        selected.indexOf(data[i]) != -1 ? 'selected="selected"' : '',
+                        '>',
+                        data[i],
+                        '</option>');
+                }
+                $('.fda-filter').html(html.join(''));
+                $('.fda-filter').multiselect('rebuild');
+            },
+            error: function(e){
+                alert(e.responseText);
+            }
+        })
+    }
 
 
     $('.company-filter, .region-filter').on('change',function(){
@@ -1191,16 +1287,14 @@ $(function () {
                         data[i],
                         '">',
                         data[i],
-                        '</option>')
+                        '</option>');
                 }
                 $('.fsa-filter').html(html.join(''));
                 $('.fsa-filter').multiselect('rebuild');
                 $('.fsam-filter').html('');
             },
             error: function(e){
-                alert(e.responseText);
-                $('.fsam-filter').html('');
-                $('.fsa-filter').html('');
+                alert(e.responseText || e);
             }
         })
 
