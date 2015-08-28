@@ -129,6 +129,7 @@ class Controller_Api_Jobs extends Kohana_Controller {
             foreach ($attachments as $attachment)
                 $jobs[$attachment['job_id']]['attachments'][] = array(
                     'id' => $attachment['id'],
+                    'time' => $attachment['uploaded'],
                     'folder' => $attachment['folder'],
                     'name' => $attachment['filename'],
                     'mime' => $attachment['mime'],
