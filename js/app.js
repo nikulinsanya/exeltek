@@ -899,6 +899,9 @@ $(function () {
                 var dialog = $('#modalHtmlContainer'),
                     container = dialog.find('.modal-body');
                 container.html(html);
+                initPlugins();
+                $('#modalHtmlContainer').modal('show');
+
             },
             error: function(e){
                 console.log(e);
