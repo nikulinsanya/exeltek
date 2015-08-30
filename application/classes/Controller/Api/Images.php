@@ -173,7 +173,7 @@ class Controller_Api_Images extends Kohana_Controller {
                 DB::insert('upload_log', array_keys($data))->values(array_values($data))->execute();
                 Database::instance()->commit();
                 Database_Mongo::collection('jobs')->update(array('_id' => $attachment['job_id']), array('$unset' => array('downloaded' => 1), '$set' => array('last_update' => time())));
-                die(json_encode(array('success' => true)));
+                die(json_encode(array('success' => true, 'time' => $data['uploaded'])));
             }
         } catch (Exception $e) {
             die(json_encode(array('success' => false, 'error' => 'exception')));
