@@ -356,19 +356,24 @@ class Controller_Imex_Upload extends Controller {
                                     $discrepancy[$key] = $diff[$key];
 
                                 if ($discrepancy) {
-                                    Database_Mongo::collection('discrepancies')->insert(array(
+                                    $discrepancy = array(
                                         'job_key' => $id,
                                         'update_time' => time(),
                                         'user_id' => User::current('id'),
                                         'filename' => $filename,
                                         'data' => $discrepancy,
                                         'fields' => array_keys($discrepancy),
-                                    ));
-
+                                    );
+                                    Database_Mongo::collection('discrepancies')->insert($discrepancy);
+                                    Database_Mongo::collection('jobs')->update(array('_id' => $id), array('$set' => array('discrepancies' => $discrepancy['_id'])));
                                 }
                             }
                             if ($new) {
                                 $new['$set']['last_update'] = time();
+                                if (isset($new['$set']['data.8']))
+                                    $new['$set']['address'] = MapQuest::parse($new['$set']['data.8']);
+                                elseif (isset($new['$unset']['data.8']))
+                                    $new['$unset']['address'] = 1;
                                 $jobs->update(array('_id' => $id), $new);
 
                                 foreach (array_keys($diff) as $key)
@@ -399,6 +404,9 @@ class Controller_Imex_Upload extends Controller {
                             'last_update' => time(),
                             'data' => $data,
                         );
+                        if (isset($data[8]))
+                            $job['address'] = MapQuest::parse($data[8]);
+
                         $jobs->insert($job);
                         $archive->insert(array(
                             'job_key' => $id,

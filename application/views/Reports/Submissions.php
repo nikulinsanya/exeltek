@@ -1,7 +1,8 @@
 <?php $week = strtotime('this week', strtotime('this week') > time() ? strtotime('yesterday') : time());?>
-<form action="" method="get" class="auto-submit report-form-container">
+<form action="" method="get" class="report-form-container">
 
-    <div class="filter-info-container">
+    <div class="submission-filter-container">
+        <div class="col-xs-12 col-md-6">
         <label class="date-range-label">Date range: </label>
         <span class="date-range-container">
             <div class="daterange" class="pull-right" data-start="start" data-end="end" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
@@ -9,10 +10,15 @@
                 <span></span> <b class="caret"></b>
             </div>
         </span>
+        </div>
+        <div class="col-xs-12 col-md-6">
+            <label class="date-range-label">Ticket ID:</label>
+        <span class="filter-select-container">
+            <input type="text" class="form-control" id="ticket-id" placeholder="Ticket ID" name="ticket" value="<?=Arr::get($_GET, 'ticket')?>" />
+        </span>
+        </div>
 
-        <div class="clearfix">&nbsp;</div>
-
-
+        <div class="col-xs-12 col-md-6">
         <label class="date-range-label">Date range(Approved) :</label>
          <span class="date-range-container">
             <div class="daterange" class="pull-right"  data-start="app-start" data-end="app-end" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
@@ -21,31 +27,66 @@
             </div>
         </span>
 
+        </div>
+        <div class="col-xs-12 col-md-6">
+            <label class="date-range-label filter-select-label">FSA: </label>
 
-        <div class="clearfix">&nbsp;</div>
-        <?php if (Group::current('allow_assign')):?>
-        <label class="date-range-label filter-select-label">Contractors :</label>
-        <span class="filter-select-container">
-            <select name="company" class="selectize">
-                <option value="">All contractors</option>
-                <?php foreach ($companies as $key => $value):?>
-                <option value="<?=$key?>" <?=$key == Arr::get($_GET, 'company') ? 'selected' : ''?>><?=$value?></option>
-                <?php endforeach;?>
-            </select>
+            <span class="filter-select-container" data-fsa-selected="<?=isset($_GET['fsa']) ? implode(',',Arr::get($_GET, 'fsa')):''?>">
+            <?=Form::select('fsa[]', [], NULL, array('class' => 'fsa-filter multiselect', 'multiple' => 'multiple'))?>
         </span>
-        <?php endif;?>
-        <div class="clearfix">&nbsp;</div>
+        </div>
+
+        <div class="col-xs-12 col-md-6">
         <label class="date-range-label filter-select-label">Is job finished? </label>
         <span class="filter-select-container">
-            <select name="finished" class="selectize">
+            <select name="finished" class="multiselect">
                 <option value="">Select</option>
                 <option value="Yes" <?=Arr::get($_GET, 'finished')=='Yes' ? 'selected': ''?>>Yes</option>
                 <option value="No"  <?=Arr::get($_GET, 'finished')=='No' ? 'selected': ''?>>No</option>
             </select>
         </span>
+        </div>
+
+        <div class="col-xs-12 col-md-6">
+            <label class="date-range-label filter-select-label">FSAM: </label>
+            <span class="filter-select-container" data-fsam-selected="<?=isset($_GET['fsam']) ? implode(',',Arr::get($_GET, 'fsam')):''?>">
+            <?=Form::select('fsam[]', [], NULL, array('class' => 'fsam-filter multiselect', 'multiple' => 'multiple'))?>
+        </span>
+        </div>
+
+
+        <?php if (Group::current('allow_assign')):?>
+        <div class="col-xs-12 col-md-6">
+            <label class="date-range-label filter-select-label">Contractors :</label>
+        <span class="filter-select-container">
+            <select name="company" class="multiselect">
+                <option value="">All contractors</option>
+                <?php foreach ($companies as $key => $value):?>
+                    <option value="<?=$key?>" <?=$key == Arr::get($_GET, 'company') ? 'selected' : ''?>><?=$value?></option>
+                <?php endforeach;?>
+            </select>
+        </span>
+        </div>
+        <?php endif;?>
+        <div class="col-xs-12 col-md-6">
+        <label class="date-range-label filter-select-label">FDA: </label>
+            <span class="filter-select-container" data-fda-selected="<?=isset($_GET['fda']) ? implode(',',Arr::get($_GET, 'fda')):''?>">
+            <?=Form::select('fda[]', [], NULL, array('class' => 'fda-filter multiselect', 'multiple' => 'multiple'))?>
+        </span>
+        </div>
+        <div class="col-xs-12 col-md-6">
+            <label class="date-range-label">Address:</label>
+            <span class="filter-select-container">
+                <input type="text" class="form-control"placeholder="Address" name="address" value="<?=Arr::get($_GET, 'address')?>" />
+            </span>
+        </div>
+    </div>
+        <div class="clearfix">&nbsp;</div>
+    <div class="col-xs-12 col-md-6">
+        <button type="submit" class="btn btn-success">Apply filters</button>
     </div>
 
-
+    <div class="clearfix">&nbsp;</div>
 
     <div id="sorting" class="hidden">
         <?php $sorting = Arr::get($_GET, 'sort', array()); foreach ($sorting as $sort):?>

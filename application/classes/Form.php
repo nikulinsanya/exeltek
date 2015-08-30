@@ -165,6 +165,7 @@ class Form extends Kohana_Form {
         $params = array('method' => $this->method);
         if ($this->has_files)
             $params['enctype'] = 'multipart/form-data';
+        $params['class'] = 'modal-form';
         
         $form = Form::open($this->action, $params);
 
@@ -243,9 +244,9 @@ class Form extends Kohana_Form {
             }
             $form .= '</div>';
         }
-        $form .= '<div class="form-group">' . Form::submit(NULL, 'Save', array('class' => 'btn btn-primary'));
+        $form .= '<div class="form-group buttons-group">' . Form::submit(NULL, 'Save', array('class' => 'btn btn-primary'));
         if ($this->back_button)
-            $form .= '&nbsp;' . Form::button(NULL, 'Back', array('class' => 'btn btn-danger back-button', 'type' => 'button'));
+            $form .= '&nbsp;' . Form::button(NULL, 'Back', array('class' => 'btn btn-danger back-button', 'type' => 'button', 'data-dismiss'=>"modal"));
         $form .= '</div>';
         
         $form .= Form::close();

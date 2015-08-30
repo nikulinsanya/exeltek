@@ -18,6 +18,7 @@ class Controller_Download extends Controller {
 
         header('Content-type: '. $this->attachment['mime']);
         header('Content-disposition: filename="' . $this->attachment['filename'] . '"');
+        header('Content-length: ' . filesize(DOCROOT . 'storage/' . $this->attachment['id']));
         
         readfile(DOCROOT . 'storage/' . $this->attachment['id']);
         
@@ -50,6 +51,7 @@ class Controller_Download extends Controller {
 
         header('Content-type: image/png');
         header('Content-disposition: filename="thumbnail.png"');
+        header('Content-length: ' . filesize(DOCROOT . 'storage/' . $this->attachment['id'] . '.thumb'));
 
         readfile(DOCROOT . 'storage/' . $this->attachment['id'] . '.thumb');
 

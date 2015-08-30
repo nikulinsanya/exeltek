@@ -67,4 +67,28 @@ class MapQuest
         else
             return $response;
     }
+
+    public static function parse($address) {
+        if (preg_match('/^((unit|whse|lot|shop|ant|bldg|shed|site|hall|dupl|tncy|se|offc|fcty|room[ a-z]*|hse) [0-9a-z-]+,? )*(\d[-0-9a-z]* )?([a-z- \']+),?(\r\n|\n)([a-z ]+), ([a-z]+)( \d+)?$/msi', trim($address), $matches)) {
+            $matches = array_map('trim', $matches);
+            $address = array(
+                'state' => $matches[7],
+                'city' => $matches[6],
+                'street' => $matches[4],
+                'number' => intval($matches[3]),
+                'house' => $matches[3],
+                'extra' => $matches[1],
+            );
+        } elseif (preg_match('/^([0-9a-z-]+) ((the |rue )?[a-z]+) ([a-z ]+), ([a-z]+)$/msi', trim($address), $matches)) {
+            $matches = array_map('trim', $matches);
+            $address = array(
+                'state' => $matches[5],
+                'city' => $matches[4],
+                'street' => $matches[2],
+                'number' => intval($matches[1]),
+                'house' => $matches[1],
+            );
+        }
+        return $address;
+    }
 }

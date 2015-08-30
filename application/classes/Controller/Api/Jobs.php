@@ -67,7 +67,8 @@ class Controller_Api_Jobs extends Kohana_Controller {
                 'form' => $form,
                 'jobs' => $jobs,
             )), 9));
-        else
+        else {
+            header('Content-type: application/json');
             die(json_encode(array(
                 'success' => true,
                 'columns' => $columns,
@@ -75,6 +76,7 @@ class Controller_Api_Jobs extends Kohana_Controller {
                 'form' => $form,
                 'jobs' => $jobs,
             )));
+        }
     }
 
     public function action_get() {
@@ -111,7 +113,7 @@ class Controller_Api_Jobs extends Kohana_Controller {
 
         if ($regs) $query['region'] = array('$in' => $regs);
 
-        $result = Database_Mongo::collection('jobs')->find($query, array('assigned' => 0, 'companies' => 0, 'ex' => 0));
+        $result = Database_Mongo::collection('jobs')->find($query, array('assigned' => 0, 'companies' => 0, 'ex' => 0, 'address' => 0));
 
         if (!$result)
             die(json_encode(array('success' => false, 'error' => 'not found')));
@@ -119,13 +121,38 @@ class Controller_Api_Jobs extends Kohana_Controller {
         $jobs = array();
         foreach ($result as $job) {
             $job['data'] = array_intersect_key(Arr::get($job, 'data', array()), $columns);
-            $jobs[] = $job;
+            $jobs[$job['_id']] = $job;
+        }
+
+        if ($jobs) {
+            $attachments = DB::select()->from('attachments')->where('uploaded', '>', 0)->and_where('job_id', 'IN', array_keys($jobs))->execute()->as_array();
+            foreach ($attachments as $attachment)
+                $jobs[$attachment['job_id']]['attachments'][] = array(
+                    'id' => $attachment['id'],
+                    'time' => $attachment['uploaded'],
+                    'folder' => $attachment['folder'],
+                    'name' => $attachment['filename'],
+                    'mime' => $attachment['mime'],
+                );
+
+            $users = DB::select('id')->from('users')->where('company_id', '=', User::current('company_id'))->execute()->as_array(NULL, 'id');
+
+            $result = Database_Mongo::collection('submissions')->find(array('job_key' => array('$in' => array_keys($jobs)), 'user_id' => array('$in' => $users)), array('update_time' => 1, 'job_key' => 1, '_id' => 0));
+            $submissions = array();
+            foreach ($result as $submission)
+                $submissions[$submission['job_key']][$submission['update_time']] = 1;
+
+            foreach ($submissions as $key => $list)
+                foreach (array_keys($list) as $value)
+                    $jobs[$key]['submissions'][] = $value;
         }
 
         if (isset($_GET['gzip']))
-            die(gzcompress(json_encode($jobs), 9));
-        else
-            die(json_encode($jobs));
+            die(gzcompress(json_encode(array_values($jobs)), 9));
+        else {
+            header('Content-type: application/json');
+            die(json_encode(array_values($jobs)));
+        }
     }
 
     public function action_submit() {
@@ -154,6 +181,7 @@ class Controller_Api_Jobs extends Kohana_Controller {
         if (!isset($job['companies']) || !in_array(intval(User::current('company_id')), $job['companies'], true))
             die(json_encode(array('success' => false, 'error' => 'not found')));
 
+        $time = time();
         $signature = strval(Arr::get($_REQUEST, 'signature'));
         $submissions = Arr::get($_REQUEST, 'data');
         $completed = Arr::get($_REQUEST, 'completed');
@@ -166,7 +194,7 @@ class Controller_Api_Jobs extends Kohana_Controller {
             $data = array(
                 'filename' => 'Submission-' . date('dmY-His') . '-signature.png',
                 'mime' => 'image/png',
-                'uploaded' => time(),
+                'uploaded' => $time,
                 'user_id' => User::current('id'),
                 'job_id' => $id,
                 'folder' => 'Signatures',
@@ -181,7 +209,7 @@ class Controller_Api_Jobs extends Kohana_Controller {
                 unset($data['mime']);
                 $data = array(
                     'filename' => trim(preg_replace('/-{2,}/', '-', preg_replace('/[^0-9a-z\-]/i', '-', 'Signatures / ' . Arr::path($job, 'data.14') . ' / ' . Arr::path($job, 'data.8') . ' / Submission-' . date('dmY-His') . '-signature.png')), '-'),
-                    'uploaded' => time(),
+                    'uploaded' => $time,
                     'user_id' => User::current('id'),
                     'job_id' => $id,
                     'action' => 1,
@@ -191,7 +219,7 @@ class Controller_Api_Jobs extends Kohana_Controller {
                 $submission = array(
                     'job_key' => $id,
                     'user_id' => User::current('id'),
-                    'update_time' => time(),
+                    'update_time' => $time,
                     'version' => Arr::get($_REQUEST, 'ver'),
                 );
                 if ($location)
@@ -240,8 +268,8 @@ class Controller_Api_Jobs extends Kohana_Controller {
                     $update['$set']['status'] = Enums::STATUS_PENDING;
 
                 if ($update) {
-                    $update['$set']['last_update'] = time();
-                    $update['$set']['last_submit'] = time();
+                    $update['$set']['last_update'] = $time;
+                    $update['$set']['last_submit'] = $time;
                     Database_Mongo::collection('jobs')->update(
                         array('_id' => $id),
                         $update
@@ -253,7 +281,7 @@ class Controller_Api_Jobs extends Kohana_Controller {
                         $archive['fields'] = array_keys($archive['data']);
                         $archive['job_key'] = $id;
                         $archive['user_id'] = User::current('id');
-                        $archive['update_time'] = time();
+                        $archive['update_time'] = $time;
                         $archive['update_type'] = 2;
                         $archive['filename'] = 'MANUAL';
                         Database_Mongo::collection('archive')->insert($archive);
@@ -265,9 +293,44 @@ class Controller_Api_Jobs extends Kohana_Controller {
             }
             if (Kohana::$environment == Kohana::DEVELOPMENT)
                 Database_Mongo::collection('api')->insert($_REQUEST);
-            die(json_encode(array('success' => true)));
+            die(json_encode(array('success' => true, 'time' => $time)));
         }
 
         die(json_encode(array('success' => false, 'error' => 'wrong key')));
+    }
+
+    public function action_submission() {
+        $token = Arr::get($_REQUEST, 'token');
+
+        if (!API::check($token))
+            die(json_encode(array('success' => false, 'error' => 'forbidden')));
+
+        $id = strval(Arr::get($_REQUEST, 'id'));
+
+        if (!$id)
+            die(json_encode(array('success' => false, 'error' => 'not found')));
+
+        $job = Database_Mongo::collection('jobs')->findOne(array('_id' => $id));
+
+        if (!$job)
+            die(json_encode(array('success' => false, 'error' => 'not found')));
+
+        $time = intval($_GET['time']);
+
+        $users = DB::select('id')->from('users')->where('company_id', '=', User::current('company_id'))->execute()->as_array(NULL, 'id');
+
+        $result = Database_Mongo::collection('submissions')->find(array('job_key' => $id, 'update_time' => $time, 'user_id' => array('$in' => $users)));
+
+        $submission = array();
+        foreach ($result as $item)
+            $submission[] = array(
+                'id' => intval(substr($item['key'], 5)),
+                'value' => strval($item['value']),
+            );
+
+        if (!$submission)
+            die(json_encode(array('success' => false, 'error' => 'not found')));
+
+        die(json_encode($submission));
     }
 }

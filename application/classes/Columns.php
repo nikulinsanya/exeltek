@@ -38,11 +38,13 @@ class Columns {
         'passed' => 'QA audit passed',
         'removed' => 'Removed from SOD',
         'downloaded' => 'Attachments downloaded',
+        'discrepancies' => 'Has discrepancies',
     );
 
     public static $settings_read_only = array(
         'removed',
         'downloaded',
+        'discrepancies',
     );
     
     public static $settings_img = array(
@@ -55,6 +57,7 @@ class Columns {
         'passed' => 'check',
         'removed' => 'remove',
         'downloaded' => 'floppy-saved',
+        'discrepancies' => 'duplicate',
     );
     
     private static $columns = array();

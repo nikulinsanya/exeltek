@@ -37,7 +37,7 @@ class Controller_Security_Users extends Controller {
     public function action_edit() {
         $id = $this->request->param('id');
         
-        $form = new Form();
+        $form = new Form(URL::base() . 'security/users/edit' . ($id ? '/' . $id : ''));
         
         $groups = DB::select('id', 'name')->from('groups')->execute()->as_array('id', 'name');
         $partners = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
@@ -45,20 +45,18 @@ class Controller_Security_Users extends Controller {
         
         $form->add("login", 'Login', Form::STRING, '', array('not_empty', 'min_length' => array(':value', 4)))
             ->add("email", 'E-Mail', Form::STRING, '', array('not_empty', 'email'))
-            ->add('group_id', 'Group', Form::SELECT, array('' => 'Please, select...') + $groups, array('not_empty'))
-            ->add('company_id', 'Partner', Form::SELECT, array('' => 'None') + $partners)
-            ->add('default_region', 'Default region', Form::SELECT, array(0 => 'None') + $regions)
-            ->add('passw', 'Password', Form::PASSWORD, '', $id ? false : array('not_empty', 'min_length' => array(':value', 6)))
-            ->add('pass2', 'Confirm password', Form::PASSWORD, '', array('matches' => array(':validation', 'pass2', 'passw')));
+            ->add('group_id', 'Group', Form::SELECT, array ('' => 'Please select...') + $groups, array('not_empty'), array('class'=>'multiselect'))
+            ->add('company_id', 'Partner', Form::SELECT, array('' => 'None') + $partners, null, array('class'=>'multiselect'))
+            ->add('default_region', 'Default region', Form::SELECT, array(0 => 'None') + $regions, null , array('class'=>'multiselect'));
             
-        $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
-        $values = DB::select('region_id')->from('user_regions')->where('user_id', '=', $id)->execute()->as_array('region_id', 'region_id');
-        
-        $form->add(NULL, 'Available regions', Form::INFO);
-        foreach ($regions as $key => $name)
-            $form->add('region-' . $key, $name, Form::BOOL, isset($values[$key]) || !$values ? 1 : 0);
-            
+        $form->add('region[]', 'Available regions', Form::SELECT, $regions, null, array('multiple'=>'multiple','class'=>'multiselect'));
+        $form->add('passw', 'Password', Form::PASSWORD, '', $id ? false : array('not_empty', 'min_length' => array(':value', 6)))
+             ->add('pass2', 'Confirm password', Form::PASSWORD, '', array('matches' => array(':validation', 'pass2', 'passw')));
+
         $item = $id ? User::get($id) : array();
+
+        if ($id)
+            $item['region[]'] = DB::select('region_id')->from('user_regions')->where('user_id', '=', $id)->execute()->as_array(NULL, 'region_id') ? : false;
         
         $form->values($item);
         
@@ -81,12 +79,8 @@ class Controller_Security_Users extends Controller {
                 if ($exists)
                     Messages::save("User with given login or email already exists! Please, enter different login/email!");
                 else {
-                    $regs = array();
-                    foreach ($regions as $key => $name) if (isset($item['region-' . $key])) {
-                        if ($item['region-' . $key]) $regs[] = $key;
-                        unset($item['region-' . $key]);
-                    }
-                    
+                    $regs = Arr::get($_POST, 'region');
+
                     if ($id) {
                         if (!Arr::get($item, 'passw'))
                             unset($item['passw']);

@@ -846,3 +846,42 @@ td a.text-danger{
 .col-xs-12.col-md-6.col-lg-4 table{
     height: 100px;
 }
+
+
+.report-form-container .filter-select-container .btn-group button.multiselect,
+.report-form-container .filter-select-container .btn-group{
+    width:100%;
+}
+
+.report-form-container .filter-info-container .filter-select-label{
+    top:0px;
+}
+
+.modal-form .form-group{
+    width: 30%;
+    float: left;
+    padding: 10px;
+}
+.modal-form .form-group .btn-group{
+    display: block;
+}
+.modal-form .form-group button.multiselect{
+    width:100%;
+}
+
+.modal-form .buttons-group{
+    width: 100%;
+    clear: both;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
+
+.modal-form  .checkbox, .radio{
+    clear: both;
+    margin-left: 10px;
+}
+
+.form-group p.form-control-static{
+    margin-bottom: -45px;
+}

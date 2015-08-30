@@ -287,7 +287,11 @@ $(function () {
     }).focus(function(){
         $(this).trigger('keydown');
     });
-    
+
+    $('.auto-submit').submit(function() {
+        if ($(this).prop('hold'))
+            return false;
+    });
     $('.auto-submit').find('select:not(.no-submit),input:not(.no-submit),textarea:not(.no-submit)').change(function() {
         if ($(this).attr('name'))
             $(this).parents('form').submit();
@@ -702,7 +706,7 @@ $(function () {
                 var location = $('#location').val();
                 
                 url = url + 'prepare/' + id + '?location=' + location + '&type=' + type + '&title=' + title;
-                
+
                 $.get(url, function(data) {
                     data = $.parseJSON(data);
                     id = data.id;
@@ -715,7 +719,7 @@ $(function () {
     
     $('.tree').jstree({
         'core' : {
-            'multiple': false,
+            'multiple': false
         },
         'search': {
             'show_only_matches': true,
@@ -761,15 +765,21 @@ $(function () {
     
     var ticket_id_unfocus = function() {
         var val = $(this).val().replace(/\n/g, ',');
-        $('#ticket-id').val(val).show();
+        $('#ticket-id').show();
         $(this).remove();
+        if ($('#ticket-id').val() != val) {
+            $('#ticket-id').val(val);
+            $('#ticket-id').trigger('change');
+        }
     }
     
     $('#ticket-id').focus(function() {
+        $('form').prop('hold', true);
         var val = $(this).val().replace(/,/g, "\n");
         var textarea = $('<textarea class="form-control" width="100%"></textarea>').val(val).focusout(ticket_id_unfocus);
         $(this).hide().before(textarea);
         textarea.focus();
+        $('form').prop('hold', false);
     });
     
     $('.notification').click(function() {
@@ -875,6 +885,31 @@ $(function () {
             $('tr.discrepancy').removeClass('hidden');
         }
         $('#submissions_count').text($('.ticket-id:not(.hidden)').length);
+    });
+
+
+    $('.show-content-in-popup').on('click',function(e){
+        e.preventDefault();
+        var url = $(this).attr('href');
+        $.ajax({
+            url:url,
+            type:'get',
+            dataType:'html',
+            success: function(html){
+                var dialog = $('#modalHtmlContainer'),
+                    container = dialog.find('.modal-body');
+                container.html(html);
+                initPlugins();
+                $('#modalHtmlContainer').modal('show');
+
+            },
+            error: function(e){
+                console.log(e);
+                alert('Internal server error');
+            }
+        })
+
+        return false;
     });
 
 
@@ -1077,8 +1112,6 @@ $(function () {
                 html.push('</tr>');
             }
 
-
-
             $('#batchEditModal .edit-tickets-table').html(html.join(''));
 
             initPlugins();
@@ -1124,12 +1157,12 @@ $(function () {
                 var filters = [];
                 for (var i in data.filters)
                     filters.push(
-                        '<span class="filter-item">' ,
+                        '<span class="filter-item">',
                             data.filters[i].name ,
-                            ': <label class="filter_value">' ,
+                            ': <label class="filter_value">',
                             data.filters[i].value ,
-                        '</label></span>');
-
+                        '</label></span>'
+                    );
                 $('div.text-info-filters>div').html(filters.join(''));
                 $('#lifd-report').html(data.html);
                 initTreeView();
@@ -1141,6 +1174,105 @@ $(function () {
         });
         return false;
     });
+
+    if($('.submission-filter-container').length ||
+        $('.financial-filter-container').length){
+        initFsaFdaFill();
+    }
+
+    function initFsaFdaFill(){
+        fillFsa();
+        fillFsam();
+        fillFda();
+    }
+    function fillFsa(){
+        var selected = $('[data-fsa-selected]').attr('data-fsa-selected') &&
+            $('[data-fsa-selected]').attr('data-fsa-selected').split(',');
+        $.ajax({
+            url:utils.baseUrl() + "json/fsa",
+            type:'get',
+            dataType:'JSON',
+            success: function(data){
+                var i = data.length,
+                    html = [];
+                while(i--){
+                    html.unshift('<option value="',
+                        data[i],
+                        '"',
+                        selected.indexOf(data[i]) != -1 ? 'selected="selected"' : '',
+                        '>',
+                        data[i],
+                        '</option>')
+                }
+                $('.fsa-filter').html(html.join(''));
+                $('.fsa-filter').multiselect('rebuild');
+                $('.fsam-filter').html('');
+            },
+            error: function(e){
+                alert(e.responseText);
+                $('.fsam-filter').html('');
+                $('.fsa-filter').html('');
+            }
+        });
+    }
+    function fillFsam(){
+        var selected = $('[data-fsam-selected]').attr('data-fsam-selected') &&
+            $('[data-fsam-selected]').attr('data-fsam-selected').split(',');
+        
+        $.ajax({
+            url:utils.baseUrl() + "json/fsam",
+            type:'get',
+            dataType:'JSON',
+            success: function(data){
+
+                var i = data.length,
+                    html = [];
+                while(i--){
+                    html.unshift('<option value="',
+                        data[i],
+                        '"',
+                        selected.indexOf(data[i]) != -1 ? 'selected="selected"' : '',
+                        '>',
+                        data[i],
+                        '</option>');
+                }
+                $('.fsam-filter').html(html.join(''));
+                $('.fsam-filter').multiselect('rebuild');
+            },
+            error: function(e){
+                alert(e.responseText);
+                $('.fsam-filter').html('');
+                $('.fsa-filter').html('');
+            }
+        });
+    }
+    function fillFda(){
+        var selected = $('[data-fda-selected]').attr('data-fda-selected') &&
+            $('[data-fda-selected]').attr('data-fda-selected').split(',');
+        $.ajax({
+            url:utils.baseUrl() + "json/fda",
+            type:'get',
+            dataType:'JSON',
+            success: function(data){
+                var i = data.length,
+                    html = [];
+                while(i--){
+                    html.unshift('<option value="',
+                        data[i],
+                        '"',
+                        selected.indexOf(data[i]) != -1 ? 'selected="selected"' : '',
+                        '>',
+                        data[i],
+                        '</option>');
+                }
+                $('.fda-filter').html(html.join(''));
+                $('.fda-filter').multiselect('rebuild');
+            },
+            error: function(e){
+                alert(e.responseText);
+            }
+        })
+    }
 
 
     $('.company-filter, .region-filter').on('change',function(){
@@ -1159,16 +1291,14 @@ $(function () {
                         data[i],
                         '">',
                         data[i],
-                        '</option>')
+                        '</option>');
                 }
                 $('.fsa-filter').html(html.join(''));
                 $('.fsa-filter').multiselect('rebuild');
                 $('.fsam-filter').html('');
             },
             error: function(e){
-                alert(e.responseText);
-                $('.fsam-filter').html('');
-                $('.fsa-filter').html('');
+                alert(e.responseText || e);
             }
         })
 

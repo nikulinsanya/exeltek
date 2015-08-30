@@ -146,6 +146,9 @@ class Controller_Search_Search extends Controller {
 
             $value = Columns::parse($value, Columns::get_type($column));
 
+            if (substr(Columns::get_type($column), 0, 4) == 'enum' && $op == '=' && $value)
+                $op = 'contain';
+
             if (Columns::get_type($column) == 'date')
                 if ($op === 'contain')
                     $op = '=';
@@ -194,6 +197,15 @@ class Controller_Search_Search extends Controller {
         $list_values = array();
         foreach (Columns::get_search() as $key => $value) if ($value == 2) {
             $list_values[$key] = $jobs->distinct('data.' . $key, $query ? : NULL);
+            if (substr(Columns::get_type($key), 0, 4) == 'enum') {
+                $list = array();
+                foreach ($list_values[$key] as $values) if ($values) {
+                    $values = explode(', ', $values);
+                    foreach ($values as $value)
+                        $list[$value] = 1;
+                } else $list[''] = 1;
+                $list_values[$key] = array_keys($list);
+            }
             if ($list_values[$key]) sort($list_values[$key]);
         }
 
@@ -227,11 +239,10 @@ class Controller_Search_Search extends Controller {
                 case 'status':
                     $order = 'status';
                     break;
-                /*case 'data-8':
-                    $sorting['data.119'] = $dir;
-                    $sorting['data.118'] = $dir;
+                case 'data-8':
+                    $sorting['address'] = $dir;
                     $order = false;
-                break;*/
+                break;
                 default:
                     if (substr($order, 0, 5) == 'data-')
                         $order = 'data.' . intval(substr($order, 5));

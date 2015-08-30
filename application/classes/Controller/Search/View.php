@@ -286,6 +286,18 @@ class Controller_Search_View extends Controller {
                     }
 
                 if ($update) {
+                    if (isset($job['discrepancies'])) {
+                        $discrepancies = Database_Mongo::collection('discrepancies')->findOne(array('_id' => new MongoId($job['discrepancies'])));
+                        $fl = true;
+                        foreach ($discrepancies['data'] as $key => $values) {
+                            $value = $values['old_value'];
+                            if ($value != Arr::get($job['data'], $key, ''))
+                                $fl = false;
+                        }
+
+                        if ($fl)
+                            $update['$unset']['discrepancies'] = 1;
+                    }
                     $update['$set']['companies'] = array_keys($companies);
 
                     $status = Arr::get($job, 'status', Enums::STATUS_UNALLOC);
@@ -295,6 +307,10 @@ class Controller_Search_View extends Controller {
                         $update['$unset']['status'] = 1;
                     }
                     $update['$set']['last_update'] = time();
+                    if (isset($update['$set']['data.8']))
+                        $update['$set']['address'] = MapQuest::parse($update['$set']['data.8']);
+                    elseif (isset($update['$unset']['data.8']))
+                        $update['$unset']['address'] = 1;
                     Database_Mongo::collection('jobs')->update(array('_id' => $id), $update);
                     if ($archive) {
                         foreach (Columns::get_static() as $key => $value)
