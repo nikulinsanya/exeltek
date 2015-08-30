@@ -875,3 +875,13 @@ td a.text-danger{
     padding-bottom: 0px;
     margin-bottom: 0px;
 }
+
+
+.modal-form  .checkbox, .radio{
+    clear: both;
+    margin-left: 10px;
+}
+
+.form-group p.form-control-static{
+    margin-bottom: -45px;
+}

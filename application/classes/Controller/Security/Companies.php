@@ -27,7 +27,7 @@ class Controller_Security_Companies extends Controller {
     public function action_edit() {
         $id = $this->request->param('id');
         
-        $form = new Form();
+        $form = new Form('security/companies/edit');
         
         $types = DB::select('id', 'name')->from('company_types')->execute()->as_array('id', 'name');
         
