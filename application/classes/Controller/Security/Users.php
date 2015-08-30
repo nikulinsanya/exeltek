@@ -37,7 +37,7 @@ class Controller_Security_Users extends Controller {
     public function action_edit() {
         $id = $this->request->param('id');
         
-        $form = new Form('security/users/edit');
+        $form = new Form(URL::base() . 'security/users/edit' . ($id ? '/' . $id : ''));
         
         $groups = DB::select('id', 'name')->from('groups')->execute()->as_array('id', 'name');
         $partners = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
@@ -49,13 +49,14 @@ class Controller_Security_Users extends Controller {
             ->add('company_id', 'Partner', Form::SELECT, array('' => 'None') + $partners, null, array('class'=>'multiselect'))
             ->add('default_region', 'Default region', Form::SELECT, array(0 => 'None') + $regions, null , array('class'=>'multiselect'));
             
-        $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
-
         $form->add('region[]', 'Available regions', Form::SELECT, $regions, null, array('multiple'=>'multiple','class'=>'multiselect'));
         $form->add('passw', 'Password', Form::PASSWORD, '', $id ? false : array('not_empty', 'min_length' => array(':value', 6)))
              ->add('pass2', 'Confirm password', Form::PASSWORD, '', array('matches' => array(':validation', 'pass2', 'passw')));
 
         $item = $id ? User::get($id) : array();
+
+        if ($id)
+            $item['region[]'] = DB::select('region_id')->from('user_regions')->where('user_id', '=', $id)->execute()->as_array(NULL, 'region_id') ? : false;
         
         $form->values($item);
         
@@ -78,8 +79,7 @@ class Controller_Security_Users extends Controller {
                 if ($exists)
                     Messages::save("User with given login or email already exists! Please, enter different login/email!");
                 else {
-                    $regs = $item['region'];
-                    unset($item['region']);
+                    $regs = Arr::get($_POST, 'region');
 
                     if ($id) {
                         if (!Arr::get($item, 'passw'))
