@@ -25,7 +25,7 @@ class Controller_Security_Groups extends Controller {
     public function action_edit() {
         $id = $this->request->param('id');
         
-        $form = new Form();
+        $form = new Form('security/groups/edit');
         
         $form->add("name", 'Name', Form::STRING, '', array('not_empty'))
             ->add('is_admin', 'Administrative group', Form::BOOL)

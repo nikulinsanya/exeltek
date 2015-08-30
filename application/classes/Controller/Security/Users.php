@@ -37,7 +37,7 @@ class Controller_Security_Users extends Controller {
     public function action_edit() {
         $id = $this->request->param('id');
         
-        $form = new Form();
+        $form = new Form('security/users/edit');
         
         $groups = DB::select('id', 'name')->from('groups')->execute()->as_array('id', 'name');
         $partners = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
