@@ -146,7 +146,7 @@ class Controller_Search_Search extends Controller {
 
             $value = Columns::parse($value, Columns::get_type($column));
 
-            if (substr(Columns::get_type($column), 0, 4) == 'enum' && $op == '=' && $value)
+            if (substr(Columns::get_type($column), 0, 4) == 'enum' && Enums::is_multi(substr(Columns::get_type($column), 5)) && $op == '=' && $value)
                 $op = 'contain';
 
             if (Columns::get_type($column) == 'date')
