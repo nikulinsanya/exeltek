@@ -203,11 +203,22 @@ class Controller_Reports_Submissions extends Controller {
             //print_r($result);
             die();
         }
-        
+
+        $result = Database_Mongo::collection('jobs')->find(array('_id' => array('$in' => array_keys($submissions))), array('data.8' => 1, 'data.9' => 1, 'data.14' => 1));
+        $jobs = array();
+        foreach ($result as $job) {
+            $jobs[$job['_id']] = array(
+                'f' => Arr::path($job, 'data.14', ''),
+                'l' => Arr::path($job, 'data.9', ''),
+                'a' => Arr::path($job, 'data.8', ''),
+            );
+        }
+
         $view = View::factory("Reports/Submissions")
             ->bind('companies', $companies)
-            ->bind('submissions', $submissions);
-        
+            ->bind('submissions', $submissions)
+            ->bind('jobs', $jobs);
+
         $this->response->body($view);
     }
 }

@@ -117,7 +117,9 @@
     </tr>
     <?php foreach ($submissions as $job => $list):?>
         <tr class="text-center">
-            <th colspan="<?=(Group::current('allow_assign')) ? 6 : 5?>"><a href="<?=URL::base()?>search/view/<?=$job?>"><?=$job?></a></th>
+            <th colspan="<?=(Group::current('allow_assign')) ? 6 : 5?>">
+                <a href="<?=URL::base()?>search/view/<?=$job?>"><?=$job?>, <?=Arr::path($jobs, array($job, 'l'))?>, <?=Arr::path($jobs, array($job, 'f'))?>, <?=Arr::path($jobs, array($job, 'a'))?></a>
+            </th>
         </tr>
 
         <?php foreach ($list as $submission): $key = substr($submission['key'], 5); $status = Arr::get($submission, 'active', 0);?>
