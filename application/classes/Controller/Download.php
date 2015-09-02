@@ -9,6 +9,8 @@ class Controller_Download extends Controller {
 
         $this->attachment = DB::select()->from('attachments')->where('id', '=', $id)->execute()->current();
 
+        if (!$this->attachment)
+            throw new HTTP_Exception_404('Not found');
     }
 
     public function action_attachment()
