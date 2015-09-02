@@ -23,11 +23,9 @@ class Controller_Reports_Submissions extends Controller {
         if (!Group::current('allow_assign') || Arr::get($_GET, 'company'))
             $query['user_id'] = array('$in' => DB::select('id')->from('users')->where('company_id', '=', Group::current('allow_assign') ? $_GET['company'] : User::current('company_id'))->execute()->as_array(NULL, 'id'));
 
-        if (Arr::get($_GET, 'finished')) {
-            $keys = Database_Mongo::collection('submissions')->distinct('job_key', $query);
-            $keys = Database_Mongo::collection('jobs')->distinct('_id', array('data.245' => $_GET['finished'], '_id' => array('$in' => $keys)));
-            $query['job_key'] = array('$in' => $keys);
-        }
+        $jobs = array();
+        if (Arr::get($_GET, 'finished'))
+            $jobs['data.245'] = $_GET['finished'];
 
         if (Arr::get($_GET, 'ticket')) {
             $tickets = explode(',', $_GET['ticket']);
@@ -41,28 +39,34 @@ class Controller_Reports_Submissions extends Controller {
                     $q[] = new MongoRegex('/.*' . $ticket . '.*/i');
             }
             if (count($q) > 1)
-                $query['job_key'] = array('$in' => $q);
+                $jobs['_id'] = array('$in' => $q);
             elseif ($q)
-                $query['job_key'] = $q[0];
+                $jobs['_id'] = $q[0];
         }
 
         if (Arr::get($_GET, 'fsa')) {
             $values = is_array($_GET['fsa']) ? $_GET['fsa'] : explode(',', $_GET['fsa']);
-            $query['data.12'] = count($values) > 1 ? array('$in' => array_values($values)) : current($values);
+            $jobs['data.12'] = count($values) > 1 ? array('$in' => array_values($values)) : current($values);
         }
 
         if (Arr::get($_GET, 'fsam')) {
             $values = is_array($_GET['fsam']) ? $_GET['fsam'] : explode(',', $_GET['fsam']);
-            $query['data.13'] = count($values) > 1 ? array('$in' => array_values($values)) : current($values);
+            $jobs['data.13'] = count($values) > 1 ? array('$in' => array_values($values)) : current($values);
         }
 
         if (Arr::get($_GET, 'fda')) {
             $values = is_array($_GET['fda']) ? $_GET['fda'] : explode(',', $_GET['fda']);
-            $query['data.14'] = count($values) > 1 ? array('$in' => array_values($values)) : current($values);
+            $jobs['data.14'] = count($values) > 1 ? array('$in' => array_values($values)) : current($values);
         }
 
         if (Arr::get($_GET, 'address'))
-            $query['data.8'] = new MongoRegex('/.*' . strval($_GET['address']) . '.*/i');
+            $jobs['data.8'] = new MongoRegex('/.*' . strval($_GET['address']) . '.*/mi');
+
+        if ($jobs)
+            if (count($jobs) == 1 && isset($jobs['_id']))
+                $query['job_key'] = $jobs['_id'];
+            else
+                $query['job_key'] = array('$in' => Database_Mongo::collection('jobs')->distinct('_id', $jobs));
 
         $sort = array('job_key' => 1);
 
