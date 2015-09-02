@@ -331,6 +331,6 @@ class Controller_Api_Jobs extends Kohana_Controller {
         if (!$submission)
             die(json_encode(array('success' => false, 'error' => 'not found')));
 
-        die(json_encode(array('success' => true, 'data' => $submission));
+        die(json_encode(array('success' => true, 'data' => $submission)));
     }
 }
