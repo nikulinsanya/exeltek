@@ -6,6 +6,8 @@ class Controller_Json extends Controller {
     {
         if (!$this->request->is_ajax() && Kohana::$environment != Kohana::DEVELOPMENT)
             throw new HTTP_Exception_403('Forbidden');
+
+        header('Content-type: application/json');
     }
 
     public function action_fsa() {
@@ -100,6 +102,27 @@ class Controller_Json extends Controller {
         $list = Database_Mongo::collection('jobs')->distinct('data.14', $query ?: NULL);
 
         sort($list);
+
+        die(json_encode($list));
+    }
+
+    public function action_columns() {
+        $list = array();
+        foreach (Columns::get_all() as $key => $value) {
+            $column = array(
+                'id' => $key,
+                'name' => $value,
+            );
+            $type = Columns::get_type($key);
+            if (substr($type, 0, 4) == 'enum') {
+                $id = substr($type, 5);
+                $column['type'] = Enums::is_multi($id) ? 'multi' : 'enum';
+                $column['values'] = Enums::get_values($id);
+            } else {
+                $column['type'] = $type ? : 'string';
+            }
+            $list[] = $column;
+        }
 
         die(json_encode($list));
     }
