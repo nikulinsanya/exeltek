@@ -318,7 +318,7 @@ class Controller_Imex_Upload extends Controller {
                         $data[$keys[$key]] = $value;
                     }
 
-                    $job = $jobs->findOne(array('_id' => $id), array('data'));
+                    $job = $jobs->findOne(array('_id' => $id));
 
                     if ($job) {
                         $diff = array();
