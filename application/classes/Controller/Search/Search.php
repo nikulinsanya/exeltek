@@ -162,17 +162,17 @@ class Controller_Search_Search extends Controller {
                 $op = '$not';
                 $value = new MongoRegex('/.*' . preg_replace('/[^a-z0-9,.+:;!? -]/i', '', $value) . '.*/i');
             } elseif ($op === 'empty') {
-                $op = '$exists';
-                $value = 0;
+                $op = '$in';
+                $value = array(NULL, '', 0);
             } elseif ($op === 'not empty') {
-                $op = '$exists';
-                $value = 1;
+                $op = '$nin';
+                $value = array(NULL, '', 0);
             } else {
                 $op = Arr::get($actions_mongo, $op, '$eq');
             }
 
             if ($op == '$eq' && !$value)
-                $value = null;
+                $value = NULL;
 
             if (isset($query['data.' . $column]) && $op == '$eq') {
                 if (isset($query['data.' . $column]['$in'])) {
@@ -192,11 +192,12 @@ class Controller_Search_Search extends Controller {
         foreach ($query as $key => $ops) if (substr($key, 0, 5) == 'data.' && count($ops) == 1 && key($ops) == '$eq')
             $query[$key] = array_shift($ops);
 
+
         $jobs = Database_Mongo::collection('jobs');
 
         $list_values = array();
         foreach (Columns::get_search() as $key => $value) if ($value == 2) {
-            $list_values[$key] = $jobs->distinct('data.' . $key, $query ? : NULL);
+            $list_values[$key] = $jobs->distinct('data.' . $key, $query ? : NULL) ? : array();
             if (substr(Columns::get_type($key), 0, 4) == 'enum') {
                 $list = array();
                 foreach ($list_values[$key] as $values) if ($values) {

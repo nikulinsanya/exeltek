@@ -256,11 +256,11 @@
                 <?php foreach ($job['discrepancies'] as $ticket): $cnt = count($ticket['data']);
                     $fl = true;
                     foreach($ticket['data'] as $key => $value): ?>
-                        <tr class="lgreen text-center">
+                        <tr class="<?=$value['old_value'] == Arr::get($job['data'], $key) ? 'lgreen' : 'yellow'?> text-center">
                             <?php if ($fl):?>
-                                <td rowspan="<?=$cnt?>"><?=date('d-m-Y H:i', $ticket['update_time'])?></td>
-                                <td rowspan="<?=$cnt?>"><?=User::get(Arr::get($ticket, 'user_id'), 'login') ? : 'Unknown'?></td>
-                                <td rowspan="<?=$cnt?>"><a href="<?=URL::base() . 'imex/discrepancies?file=' . urlencode($ticket['filename'])?>"><?=HTML::chars($ticket['filename'])?></a></td>
+                                <td class="lgreen" rowspan="<?=$cnt?>"><?=date('d-m-Y H:i', $ticket['update_time'])?></td>
+                                <td class="lgreen" rowspan="<?=$cnt?>"><?=User::get(Arr::get($ticket, 'user_id'), 'login') ? : 'Unknown'?></td>
+                                <td class="lgreen" rowspan="<?=$cnt?>"><a href="<?=URL::base() . 'imex/discrepancies?file=' . urlencode($ticket['filename'])?>"><?=HTML::chars($ticket['filename'])?></a></td>
                             <?php endif;?>
                             <td><?=HTML::chars(Columns::get_name($key));?></td>
                             <td><?=Columns::output($value['old_value'], Columns::get_type($key))?></td>
