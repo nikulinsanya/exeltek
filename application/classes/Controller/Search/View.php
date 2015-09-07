@@ -471,11 +471,11 @@ class Controller_Search_View extends Controller {
                 $values[str_replace('.', '', $submission['key'])] = $submission['value'];
         }
 
-        $job['discrepancies'] = array();
+        $job['discr'] = array();
         if (Group::current('allow_reports')) {
             $result = Database_Mongo::collection('discrepancies')->find(array('job_key' => $id), array('_id' => 0))->sort(array('update_time' => -1));
             foreach ($result as $discr)
-                $job['discrepancies'][] = $discr;
+                $job['discr'][] = $discr;
         }
 
         if (Group::current('time_machine')) {
