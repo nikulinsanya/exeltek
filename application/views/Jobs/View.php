@@ -44,7 +44,7 @@
         <li role="presentation" data-id="submissions"><a class="refreshClick" href="#submissions">Submissions</a></li>
         <?php endif; ?>
         <li role="presentation" data-id="attachments"><a class="refreshClick" href="#attachments">Attachments</a></li>
-        <?php if ($job['discrepancies']):?>
+        <?php if ($job['discr']):?>
             <li role="presentation" class="rose" data-id="discrepancies"><a class="refreshClick" href="#discrepancies">Discrepancies</a></li>
         <?php endif;?>
         <?php if (Group::current('allow_quality')):?>
@@ -242,6 +242,7 @@
 
             <?=View::factory('Jobs/UploadFile')?>
         </div>
+        <?php if ($job['discr']):?>
         <div data-id="discrepancies" class="panel-body hidden">
             <table class="table">
                 <tr class="text-center">
@@ -271,6 +272,7 @@
                 <?php endforeach;?>
             </table>
         </div>
+        <?php endif;?>
         <?php if (Group::current('allow_quality')):?>
             <div data-id="quality" class="panel-body hidden">
                 <table class="table">
@@ -357,7 +359,7 @@
             <li role="presentation" data-id="submissions"><a href="javascript:;">Submissions</a></li>
         <?php endif; ?>
         <li role="presentation" data-id="attachments"><a href="javascript:;">Attachments</a></li>
-        <?php if ($job['discrepancies']):?>
+        <?php if ($job['discr']):?>
             <li role="presentation" class="rose" data-id="discrepancies"><a href="javascript:;">Discrepancies</a></li>
         <?php endif;?>
         <?php if (Group::current('allow_quality')):?>
