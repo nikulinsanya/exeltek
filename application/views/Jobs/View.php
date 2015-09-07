@@ -253,7 +253,7 @@
                     <th>New value:</th>
                     <th>Current value:</th>
                 </tr>
-                <?php foreach ($job['discrepancies'] as $ticket): $cnt = count($ticket['data']);
+                <?php foreach ($job['discr'] as $ticket): $cnt = count($ticket['data']);
                     $fl = true;
                     foreach($ticket['data'] as $key => $value): ?>
                         <tr class="<?=$value['old_value'] == Arr::get($job['data'], $key) ? 'lgreen' : 'yellow'?> text-center">
