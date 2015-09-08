@@ -8,4 +8,8 @@ class Controller_Form extends Controller {
 
         $this->response->body($view);
     }
+    public function action_generate()
+    {
+        
+    }
 }

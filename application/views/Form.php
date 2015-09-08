@@ -8,7 +8,8 @@
     <!--templates-->
     <div class="form-row" data-template-row style="display: none;">
 
-        <button class="add-value tmp-gen">+</button>
+        <button class="add-value tmp-gen btn btn-success">+</button>
+        <button class="remove-line tmp-gen btn btn-danger">remove row</button>
     </div>
 
     <span data-template-value style="display: none;">
@@ -18,6 +19,7 @@
         </div>
     </span>
     <!---->
+    <div>
 
     <div class="form-container"></div>
 
@@ -25,6 +27,7 @@
     <div class="form-configuration-container">
         <div>
             <button class="add-row btn btn-success">Add row</button>
+            <button class="add-line btn btn-danger">Add Line</button>
             <button class="save-form btn btn-info">Save form</button>
             <div class="fields-config">
                 <div class="config-row">
@@ -73,13 +76,7 @@
         </div>
     </div>
 
-
-
-    <div class="form-btns-container">
-        <button class="send-form">Send form</button>
-        <button class="reset-form">Reset form</button>
     </div>
-
 
 
 </div>

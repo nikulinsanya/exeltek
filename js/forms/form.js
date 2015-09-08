@@ -18,6 +18,13 @@ window.form = (function() {
                 $('.form-container').append(row);
             });
 
+            $('.add-line').on('click', function(){
+                var row = '<hr>'
+                $('.form-container').append(row);
+            });
+
+
+
             $('.form-container').on('click','.add-value', function(){
                 var val = valTemplate.clone().html();
                 $(this).before(val);
@@ -33,6 +40,12 @@ window.form = (function() {
                 $(this).parent().remove();
                 $('.fields-config').hide();
             });
+            $('.form-container').on('click','.remove-line',function(){
+                if(confirm('Remove row ?')){
+                    $(this).parents('.form-row').first().remove();
+                }
+            });
+
 
             $('.save-form').on('click', function(){
                 if(confirm('Generate form?')){
@@ -40,9 +53,23 @@ window.form = (function() {
                     $(orign).find('.tmp-gen').remove();
                     $(orign).find('.selected').removeClass('selected');
                     $('.form-configuration-container').remove();
-                    $('.form-btns-container').show();
+                    self.sendForm().then(function(){
+                        $('.form-container').html();
+                    });
                 }
             });
+        },
+
+        sendForm: function(){
+            return $.ajax({
+                url : utils.baseUrl() + 'form/generate',
+                type: 'POST',
+                data: $('.form-container').html(),
+                success: function(){
+                    alert('Posted');
+                }
+            });
+
         },
         editorEvents: function(){
             var self = this;
@@ -111,8 +138,6 @@ window.form = (function() {
             $('.fields-config .placeholder-container').hide();
             $('.fields-config .value-container').hide();
 
-
-
             $(field).attr('data-type',type);
 
             switch (type) {
@@ -139,12 +164,10 @@ window.form = (function() {
                     break;
                 case 'ticket':
                     self.handleTicketField($(field));
-
                     break;
                 case 'select':
                     $('.fields-config .config-select-container').show();
                     break;
-
                 default:
                     $(field).attr('data-value',value);
                     $(field).html(value);
