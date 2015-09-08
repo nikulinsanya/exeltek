@@ -1,0 +1,110 @@
+html, body {
+    height: 100%;
+}
+
+
+.form-container{
+    display: inline-block;
+    width: 70%;
+    float: left;
+}
+.form-block{
+    display: inline-block;
+    margin-left: 5px;
+}
+.form-configuration-container{
+    display: inline-block;
+    width: 30%;
+    border-radius: 5px;
+    float: right;
+}
+
+.fields-config{
+    display: none;
+}
+
+.form-configuration-container>div{
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.container{
+    height: 100%;
+    width: 100%;
+}
+
+.form-row{
+    padding: 10px;
+    width: 100%;
+    height: 50px;
+}
+
+.label-input,
+.value-input{
+    display: none;
+}
+
+.value{
+    display: inline-block;
+    width: 150px;
+    height: 25px;
+    text-align: center;
+    box-shadow:  0px 0px 1px #ccc;
+    float: left;
+}
+
+.value.selected{
+    box-shadow:  0px 0px 5px green;
+}
+
+.value-input{
+    /*padding: 5px;*/
+}
+.tmp-label{
+    max-width: 150px;
+    overflow: hidden;
+    display: inline-block;
+    padding: 0px 5px;
+    line-height: 25px;
+    height: 25px;
+}
+
+.datepicker{
+    width: 150px;
+}
+
+.form-btns-container{
+    display: none;
+}
+
+.config-select-container{
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+.available-options-select{
+    width: 150px;
+}
+
+.remove-field{
+    margin-right: 5px;
+}
+
+
+.form-block .value .btn-group, .form-block .value .btn-group button{
+    width:150px;
+    line-height: 12px;
+    height: 25px;
+}
+
+hr{
+    margin: 0px;
+    border-top: 1px solid #333;
+}
+
+.kohana{
+    display: none;
+}
+.val input[type="text"]{
+    width:150px;
+}
