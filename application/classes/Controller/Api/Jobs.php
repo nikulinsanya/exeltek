@@ -125,7 +125,7 @@ class Controller_Api_Jobs extends Kohana_Controller {
         }
 
         if ($jobs) {
-            $attachments = DB::select()->from('attachments')->where('uploaded', '>', 0)->and_where('job_id', 'IN', array_keys($jobs))->execute()->as_array();
+            $attachments = DB::select()->from('attachments')->where('uploaded', '>', 0)->and_where('folder', '<>', 'Signatures')->and_where('job_id', 'IN', array_keys($jobs))->execute()->as_array();
             foreach ($attachments as $attachment)
                 $jobs[$attachment['job_id']]['attachments'][] = array(
                     'id' => $attachment['id'],
