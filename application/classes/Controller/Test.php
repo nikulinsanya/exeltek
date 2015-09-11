@@ -8,6 +8,21 @@ class Controller_Test extends Controller {
 
     public function action_index() {
         header('Content-type: text/plain');
+        $list = Database_Mongo::collection('jobs')->find(array('discrepancies' => array('$nin' => array(NULL, '', 0))));
+        $ids = array();
+        foreach ($list as $job) {
+            $discr = Database_Mongo::collection('discrepancies')->find(array('job_key' => $job['_id']))->sort(array('update_time' => -1))->getNext();
+            $fl = true;
+            foreach ($discr['data'] as $key => $value)
+                if ($value['old_value'] != Arr::get($job['data'], $key, '')) {
+                    $fl = false;
+                    continue;
+                }
+            if ($fl) $ids[] = $job['_id'];
+        }
+        Database_Mongo::collection('jobs')->update(array('_id' => array('$in' => $ids)), array('$unset' => array('discrepancies' => 1)), array('multiple' => 1));
+        die('Done. Total ' . count($ids) . ' job(s)');
+
         $jobs = Database_Mongo::collection('jobs')->find();
         foreach ($jobs as $job) {
             $address = Arr::path($job, 'data.8');
