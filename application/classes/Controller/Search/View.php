@@ -286,7 +286,7 @@ class Controller_Search_View extends Controller {
                     }
 
                 $discrepancies = Database_Mongo::collection('discrepancies')->find(array('job_key' => $job['_id']))->sort(array('update_time' => -1))->getNext();
-                if (Group::current('allow_reports')) {
+                if (Group::current('allow_reports') && $discrepancies) {
                     $fl = 0; $set = array();
                     $ignores = Arr::get($_POST, 'ignore-discrepancy');
                     foreach ($discrepancies['data'] as $key => $values) {
