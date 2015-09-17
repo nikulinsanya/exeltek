@@ -941,7 +941,7 @@ $(function () {
     function setMultiselect(self){
         if(self){
             $(self).multiselect({
-                maxHeight: 200,
+                maxHeight: 200
             });
         }
     }
@@ -1619,6 +1619,34 @@ $(function () {
             recalcBadges($('.view-tab-header').find('li[data-id="'+(parseInt(activeTabId,10)+1)+'"]'));
         }
     });
+
+//    logic for non stardard variations
+    $('#data-181, #data-209, #data-255').on('change', function(){
+        var additionalVal    = $('#data-255').val() && parseInt($('#data-255').val(),10) || 0,
+            actuallVal       = $('#data-209').val() && parseInt($('#data-209').val(),10) || 0,
+            variationVal     = $('#data-181').val() && parseInt($('#data-181').val(),10) || 0,
+            additionalParent = $('#data-255').parents('td').first(),
+            actualParent     = $('#data-209').parents('td').first(),
+            variationParent  = $('#data-181').parents('td').first();
+        //highlight all
+        if(additionalVal && (additionalVal > actuallVal || additionalVal > variationVal)){
+            $([variationParent,actualParent,additionalParent]).each(function(){
+                $(this).addClass('bg-warning');
+            });
+        }else{
+            $([variationParent,actualParent,additionalParent]).each(function(){
+                $(this).removeClass('bg-warning');
+            });
+        }
+
+        recalcBadges($('.view-tab-header').find('li[data-id="3"]'));
+        recalcBadges($('.view-tab-header').find('li[data-id="4"]'));
+        recalcBadges($('.view-tab-header').find('li[data-id="5"]'));
+    });
+
+    recalcBadges($('.view-tab-header').find('li[data-id="3"]'));
+    recalcBadges($('.view-tab-header').find('li[data-id="4"]'));
+
 
     function recalcBadges(tab){
         tab = tab || $('.view-tab-header').find('li.active');
