@@ -473,7 +473,7 @@ class Controller_Search_View extends Controller {
 
         $job['discr'] = array();
         if (Group::current('allow_reports')) {
-            $result = Database_Mongo::collection('discrepancies')->find(array('job_key' => $id), array('_id' => 0))->sort(array('update_time' => -1));
+            $result = Database_Mongo::collection('discrepancies')->find(array('job_key' => $id))->sort(array('update_time' => -1));
             foreach ($result as $discr)
                 $job['discr'][] = $discr;
         }

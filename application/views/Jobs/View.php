@@ -253,6 +253,7 @@
                     <th>Old value:</th>
                     <th>New value:</th>
                     <th>Current value:</th>
+                    <th>Ignore:</th>
                 </tr>
                 <?php foreach ($job['discr'] as $ticket): $cnt = count($ticket['data']);
                     $fl = true;
@@ -267,6 +268,11 @@
                             <td><?=Columns::output($value['old_value'], Columns::get_type($key))?></td>
                             <td><?=Columns::output($value['new_value'], Columns::get_type($key))?></td>
                             <td><?=Columns::output(Arr::path($job, array('data', $key)), Columns::get_type($key))?></td>
+                            <td>
+                                <?php if ($value['old_value'] != Arr::get($job['data'], $key)):?>
+                                    <input type="checkbox" class="ignore-discrepancy" <?=isset($value['ignore']) ? 'checked' : ''?> data-id="<?=$ticket['_id']?>" data-key="<?=$key?>"/>
+                                <?php else: echo '&nbsp;'; endif;?>
+                            </td>
                         </tr>
                         <?php $fl = false; endforeach;?>
                 <?php endforeach;?>
