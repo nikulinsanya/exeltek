@@ -71,6 +71,7 @@ class Controller_Search_Export extends Controller {
         if (isset($static['status']) && Group::current('show_all_jobs')) $header[] = 'Job status';
         if (isset($static['types'])) $header[] = 'Assigned works';
         if (isset($static['companies'])) $header[] = 'Assigned companies';
+        if (isset($static['ex'])) $header[] = 'Previously assigned companies';
         if (isset($static['pending'])) $header[] = 'Pending submissions';
         if (isset($static['attachments'])) $header[] = 'Attachments';
 
@@ -86,7 +87,7 @@ class Controller_Search_Export extends Controller {
             foreach (range('A', $sheet->getHighestDataColumn()) as $col) {
                 $sheet->getColumnDimension($col)->setAutoSize(true);
             }
-            $x = max(array_map('count', $attachments_list));
+            $x = $attachments_list ? max(array_map('count', $attachments_list)) : 0;
             foreach (range(0, $x - 1) as $col)
                 $sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex(count($header) + $col))->setWidth(14);
         } else {
@@ -111,6 +112,7 @@ class Controller_Search_Export extends Controller {
 
 
             if (isset($static['companies'])) $row[] = implode(', ', array_intersect_key($companies, array_flip(Arr::get($ticket, 'assigned', array()))));
+            if (isset($static['ex'])) $row[] = implode(', ', array_intersect_key($companies, array_flip(Arr::get($ticket, 'ex', array()))));
             if (isset($static['pending'])) $row[] = Arr::get($submissions, $ticket['_id']);
             if (isset($static['attachments'])) $row[] = Arr::get($attachments, $ticket['_id']);
 
