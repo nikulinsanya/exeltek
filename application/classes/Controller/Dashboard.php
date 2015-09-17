@@ -178,7 +178,20 @@ class Controller_Dashboard extends Controller {
                 $query['data.13'] = count($fsam) > 1 ? array('$in' => $fsam) : array_shift($fsam);
             }
 
-            $result = Database_Mongo::collection('jobs')->find($query, array('data.12' => 1, 'data.13' => 1, 'data.14' => 1, 'data.17' => 1, 'data.18' => 1, 'data.44' => 1, 'created' => 1, 'companies' => 1, 'ex' => 1));
+            $result = Database_Mongo::collection('jobs')->find($query, array(
+                'data.12' => 1,
+                'data.13' => 1,
+                'data.14' => 1,
+                'data.17' => 1,
+                'data.18' => 1,
+                'data.43' => 1,
+                'data.44' => 1,
+                'data.222' => 1,
+                'data.228' => 1,
+                'created' => 1,
+                'companies' => 1,
+                'ex' => 1,
+            ));
 
             $jobs = array();
             foreach ($result as $job) {
@@ -189,6 +202,9 @@ class Controller_Dashboard extends Controller {
                     'fda' => Arr::path($job, 'data.14', 'Unknown'),
                     'status' => strtolower(preg_replace('/[^a-z]/i', '', Arr::path($job, 'data.44'))),
                     'companies' => array('now' => Arr::get($job, 'companies', array()), 'ex' => Arr::get($job, 'ex', array())),
+                    'test' => strtolower(preg_replace('/[^0-9a-z]/i', '', Arr::path($job, 'data.43', ''))),
+                    'variation' => strtolower(preg_replace('/[^a-z]/i', '', Arr::path($job, 'data.222'))),
+                    'sequence' => Arr::path($job, 'data.228'),
                 );
             }
 
@@ -213,14 +229,42 @@ class Controller_Dashboard extends Controller {
             $list = array();
 
             $total = array();
+            $breakdown = array();
 
             foreach ($jobs as $job) {
                 $comp = $job['companies'];
                 unset($job['companies']);
+
+                $break = false;
+                if ($job['status'] == 'built') {
+                    if (!$job['test'])
+                        $break = 'no-result';
+                    elseif (in_array($job['test'], array('accessissues', 'demand', 'livefibre'), true))
+                        $break = 'test-exception';
+                    elseif ($job['test'] == 'qafailed')
+                        $break = 'qa-issues';
+                    elseif ($job['variation'] == 'requiresendorsement' && !$job['sequence'])
+                        $break = 'seq-required';
+                    elseif (in_array($job['variation'], array('requiresendorsement', 'autoendorsed', 'autoendorsedvariation', 'novariation'), true))
+                        $break = 'no-issue';
+
+                    if ($break) {
+                        $breakdown[$job['fsa']][$break] = Arr::path($breakdown, array($job['fsa'], $break)) + 1;
+                        $breakdown[$job['fsam']][$break] = Arr::path($breakdown, array($job['fsam'], $break)) + 1;
+                        $breakdown[$job['fsam'] . $job['lifd']][$break] = Arr::path($breakdown, array($job['fsam'] . $job['lifd'], $break)) + 1;
+                        $breakdown[$job['fda'] . $job['lifd']][$break] = Arr::path($breakdown, array($job['fda'] . $job['lifd'], $break)) + 1;
+                    }
+                }
+
+                unset($job['test']);
+                unset($job['variation']);
+                unset($job['sequence']);
+
                 Arr::set_path($list, $job, Arr::path($list, $job, 0) + 1);
                 $total[$job['fsa']][$job['status']] = Arr::path($total, array($job['fsa'], $job['status'])) + 1;
                 $total[$job['fsam']][$job['status']] = Arr::path($total, array($job['fsam'], $job['status'])) + 1;
                 $total[$job['fsam'] . $job['lifd']][$job['status']] = Arr::path($total, array($job['fsam'] . $job['lifd'], $job['status'])) + 1;
+
                 $job['status'] = 'companies';
                 $job['comp'] = 'now';
                 Arr::set_path($list, $job, array_merge(Arr::path($list, $job, array()), $comp['now']));
@@ -435,6 +479,7 @@ class Controller_Dashboard extends Controller {
             $view = View::factory('Dashboard/LifdReport')
                 ->set('url', URL::query($url, false))
                 ->bind('total', $total)
+                ->bind('breakdown', $breakdown)
                 ->bind('list', $list)
                 ->bind('companies', $companies);
 
