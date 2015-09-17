@@ -285,19 +285,45 @@ class Controller_Search_View extends Controller {
                         $job[$key] = $value;
                     }
 
-                if ($update) {
-                    if (isset($job['discrepancies'])) {
-                        $discrepancies = Database_Mongo::collection('discrepancies')->findOne(array('_id' => new MongoId($job['discrepancies'])));
+                $discrepancies = Database_Mongo::collection('discrepancies')->find(array('job_key' => $job['_id']))->sort(array('update_time' => -1))->getNext();
+                if (Group::current('allow_reports')) {
+                    $fl = 0; $set = array();
+                    $ignores = Arr::get($_POST, 'ignore-discrepancy');
+                    foreach ($discrepancies['data'] as $key => $values) {
+                        $val = Arr::get($values, 'ignore') ? 1 : 0;
+                        $new_val = Arr::get($ignores, $key) ? 1 : 0;
+                        if ($val != $new_val) {
+                            if ($new_val) {
+                                if (!$fl) $fl = -1;
+                                $set['$set']['data.' . $key . '.ignore'] = 1;
+                                $discrepancies['data'][$key]['ignore'] = 1;
+                            } else {
+                                if ($values['old_value'] != Arr::get($job['data'], $key, ''))
+                                    $fl = 1;
+                                $set['$unset']['data.' . $key . '.ignore'] = 1;
+                                $discrepancies['data'][$key]['ignore'] = 0;
+                            }
+                        }
+
+                    }
+                    if ($set)
+                        Database_Mongo::collection('discrepancies')->update(array('_id' => new MongoId($discrepancies['_id'])), $set);
+
+                    if ($fl > 0 && !Arr::get($job, 'discrepancies'))
+                        $update['$set']['discrepancies'] = 1;
+                    elseif($fl < 0 && Arr::get($job, 'discrepancies')) {
                         $fl = true;
-                        foreach ($discrepancies['data'] as $key => $values) {
+                        foreach ($discrepancies['data'] as $key => $values) if (!Arr::get($values, 'ignore')) {
                             $value = $values['old_value'];
                             if ($value != Arr::get($job['data'], $key, ''))
                                 $fl = false;
                         }
-
                         if ($fl)
                             $update['$unset']['discrepancies'] = 1;
                     }
+                }
+
+                if ($update) {
                     $update['$set']['companies'] = array_keys($companies);
 
                     $status = Arr::get($job, 'status', Enums::STATUS_UNALLOC);
@@ -473,9 +499,7 @@ class Controller_Search_View extends Controller {
 
         $job['discr'] = array();
         if (Group::current('allow_reports')) {
-            $result = Database_Mongo::collection('discrepancies')->find(array('job_key' => $id))->sort(array('update_time' => -1));
-            foreach ($result as $discr)
-                $job['discr'][] = $discr;
+            $job['discr'] = Database_Mongo::collection('discrepancies')->find(array('job_key' => $id))->sort(array('update_time' => -1))->getNext();
         }
 
         if (Group::current('time_machine')) {

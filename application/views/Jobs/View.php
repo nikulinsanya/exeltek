@@ -255,7 +255,7 @@
                     <th>Current value:</th>
                     <th>Ignore:</th>
                 </tr>
-                <?php foreach ($job['discr'] as $ticket): $cnt = count($ticket['data']);
+                <?php $ticket = $job['discr']; $cnt = count($ticket['data']);
                     $fl = true;
                     foreach($ticket['data'] as $key => $value): ?>
                         <tr class="<?=$value['old_value'] == Arr::get($job['data'], $key) ? 'lgreen' : 'yellow'?> text-center">
@@ -270,13 +270,13 @@
                             <td><?=Columns::output(Arr::path($job, array('data', $key)), Columns::get_type($key))?></td>
                             <td>
                                 <?php if ($value['old_value'] != Arr::get($job['data'], $key)):?>
-                                    <input type="checkbox" class="ignore-discrepancy" <?=isset($value['ignore']) ? 'checked' : ''?> data-id="<?=$ticket['_id']?>" data-key="<?=$key?>"/>
+                                    <input type="checkbox" class="ignore-discrepancy" <?=isset($value['ignore']) ? 'checked' : ''?> name="ignore-discrepancy[<?=$key?>]"/>
                                 <?php else: echo '&nbsp;'; endif;?>
                             </td>
                         </tr>
-                        <?php $fl = false; endforeach;?>
-                <?php endforeach;?>
+                    <?php $fl = false; endforeach;?>
             </table>
+            <a href="<?=URL::base()?>imex/discrepancies?ticket=<?=$job['_id']?>" class="btn btn-info">Show all</a>
         </div>
         <?php endif;?>
         <?php if (Group::current('allow_quality')):?>
