@@ -20,7 +20,7 @@
         <button type="button" class="btn btn-danger back-button">Back</button>
         <button type="submit" class="btn btn-success">Save</button>
         <?php if (Group::current('allow_assign') && Arr::get($job, 'assigned')):?>
-            <button title="Unassign all companies" type="submit" class="btn btn-primary <?=array_column($tabs, 'submissions') ? 'disabled' : ''?>">Finish job</button>
+            <button id="finish-job" title="Unassign all companies" type="submit" class="btn btn-primary <?=array_column($tabs, 'submissions') ? 'disabled' : ''?>">Finish job</button>
         <?php endif;?>
     </div>
 

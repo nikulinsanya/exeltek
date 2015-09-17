@@ -37,7 +37,7 @@
         <?php $fsa_c++?>
         <tr  data-level="1" id="level_1_<?=$fsa_c?>" class="text-center">
             <td colspan="<?=$count?>"><?=$fsa?></td>
-            <td class="data purple"><strong><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=12&actions[]=2&values[]=<?=$fsa?>"><?=array_sum(Arr::get($total, $fsa))?></a></strong></td>
+            <td class="data purple"><strong><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=12&actions[]=2&values[]=<?=$fsa?>"><?=array_sum(Arr::get($total, $fsa, array()))?></a></strong></td>
             <td class="data lightcyan"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=12&actions[]=2&values[]=<?=$fsa?>&columns[]=44&actions[]=0&values[]=assigned"><?=Arr::path($total, array($fsa, 'assigned'))?></a></td>
             <td class="data lightcyan"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=12&actions[]=2&values[]=<?=$fsa?>&columns[]=44&actions[]=0&values[]=notify"><?=Arr::path($total, array($fsa, 'notify'))?></a></td>
             <td class="data lightcyan"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=12&actions[]=2&values[]=<?=$fsa?>&columns[]=44&actions[]=0&values[]=planned"><?=Arr::path($total, array($fsa, 'planned'))?></a></td>
@@ -58,7 +58,7 @@
             <?php $fsam_c++?>
             <tr  data-level="2" id="level_2_<?=$fsam_c?>" class="text-center">
                 <td colspan="<?=$count?>"><?=$fsam?></td>
-                <td class="data purple"><strong><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>"><?=array_sum(Arr::get($total, $fsam))?></a></strong></td>
+                <td class="data purple"><strong><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>"><?=array_sum(Arr::get($total, $fsam, array()))?></a></strong></td>
                 <td class="data lightcyan"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=44&actions[]=0&values[]=assigned"><?=Arr::path($total, array($fsam, 'assigned'))?></a></td>
                 <td class="data lightcyan"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=44&actions[]=0&values[]=notify"><?=Arr::path($total, array($fsam, 'notify'))?></a></td>
                 <td class="data lightcyan"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=44&actions[]=0&values[]=planned"><?=Arr::path($total, array($fsam, 'planned'))?></a></td>
@@ -80,7 +80,7 @@
                 <?php $dates = explode('|', $lifd); $days = Utils::working_days($dates[1]);?>
                 <tr  data-level="3" id="level_3_<?=$lifd_c?>" class="text-center">
                     <td colspan="<?=$count?>"><?=($dates[0] ? date('d-m-Y', $dates[0]) : '') . '-' . ($dates[1] ? date('d-m-Y', $dates[1]) . ' [' . $days . ' day' . ($days != 1 ? 's ' : ' ') . ($dates[1] < time() ? 'passed' : 'left') . ']' : '')?></td>
-                    <td class="data purple"><strong><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=17&actions[]=2&values[]=<?=$dates[0] ? date('d-m-Y', $dates[0]) : ''?>&columns[]=18&actions[]=2&values[]=<?=$dates[1] ? date('d-m-Y', $dates[1]) : ''?>"><?=array_sum(Arr::get($total, $fsam . $lifd))?></a></strong></td>
+                    <td class="data purple"><strong><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=17&actions[]=2&values[]=<?=$dates[0] ? date('d-m-Y', $dates[0]) : ''?>&columns[]=18&actions[]=2&values[]=<?=$dates[1] ? date('d-m-Y', $dates[1]) : ''?>"><?=array_sum(Arr::get($total, $fsam . $lifd, array()))?></a></strong></td>
                     <td class="data lightcyan"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=17&actions[]=2&values[]=<?=$dates[0] ? date('d-m-Y', $dates[0]) : ''?>&columns[]=18&actions[]=2&values[]=<?=$dates[1] ? date('d-m-Y', $dates[1]) : ''?>&columns[]=44&actions[]=0&values[]=assigned"><?=Arr::path($total, array($fsam . $lifd, 'assigned'))?></a></td>
                     <td class="data lightcyan"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=17&actions[]=2&values[]=<?=$dates[0] ? date('d-m-Y', $dates[0]) : ''?>&columns[]=18&actions[]=2&values[]=<?=$dates[1] ? date('d-m-Y', $dates[1]) : ''?>&columns[]=44&actions[]=0&values[]=notify"><?=Arr::path($total, array($fsam . $lifd, 'notify'))?></a></td>
                     <td class="data lightcyan"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=17&actions[]=2&values[]=<?=$dates[0] ? date('d-m-Y', $dates[0]) : ''?>&columns[]=18&actions[]=2&values[]=<?=$dates[1] ? date('d-m-Y', $dates[1]) : ''?>&columns[]=44&actions[]=0&values[]=planned"><?=Arr::path($total, array($fsam . $lifd, 'planned'))?></a></td>
