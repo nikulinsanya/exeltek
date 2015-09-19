@@ -1139,7 +1139,10 @@ $(function () {
 
     $('#lifd-report-form').submit(function() {
         if ($(this).prop('export')) return true;
-        var data = $(this).serialize();
+        var data = $(this).serialize(),
+            attrs = ['data-no-result','data-seq-required','data-no-issue','data-text-exception','data-qa-issues'],
+            i
+            ;
         $('#filterModal').modal('hide');
         $('#preloaderModal').modal('show');
         if (data) {
@@ -1165,7 +1168,41 @@ $(function () {
                     );
                 $('div.text-info-filters>div').html(filters.join(''));
                 $('#lifd-report').html(data.html);
-                initTreeView();
+
+                $('[data-toggle="popover"]').each(function(){
+                    var html = [];
+
+                    var found = false;
+                    html.push('<ul>');
+
+                    for(i=0;i<attrs.length;i++){
+                         if($(this).attr(attrs[i])){
+                             found = true;
+                             html.push('<li>',
+                                 attrSimplify(attrs[i]),
+                                 ':<b> &nbsp;',
+                                 $(this).attr(attrs[i]),
+                                 '</b></li>');
+                         };
+                    }
+
+                    if(!found){
+                        $(this).remove();
+                        return;
+                    }
+
+                    html.push('</ul>');
+
+                    $(this).popover({
+                        html:true,
+                        content:html.join('')
+                    });
+                });
+                $('[data-toggle="popover"]').on('click', function(e){
+                    e.preventDefault();
+
+                    return false;
+                });
             } catch (e) {
                 alert(data);
             }
@@ -1174,6 +1211,10 @@ $(function () {
         });
         return false;
     });
+
+    function attrSimplify(attr){
+        return attr.replace('data','').replace(/-/g,' ').toUpperCase();
+    }
 
     if($('.submission-filter-container').length ||
         $('.financial-filter-container').length){
