@@ -82,11 +82,12 @@ window.form = (function() {
                 var val = $('.select-option').val();
                 $('.available-options-select').append('<option value="val">'+val+'</option>');
                 $('.select-option').val('');
+                $('.apply-option').trigger('click');
             });
 
             $('.apply-option').on('click', function(){
                 var select = $('.available-options-select').clone().removeClass('available-options-select');
-                $('.available-options-select').html('');
+//                $('.available-options-select').html('');
                 $('.select-option').val('');
                 select.attr('name',self.guid());
                 if($('.multiselect-option').is(':checked')){
@@ -160,12 +161,18 @@ window.form = (function() {
                     break;
                 case 'canvas':
                     var guid = self.guid();
-                    $(field).html('<canvas name="' + guid + '" class="panel panel-default" width="200" height="25"></canvas><input type="hidden" data-name="'+guid+'"/>');
+                    $(field).html('<canvas name="' + guid + '" class="panel panel-default" width="150" height="25"></canvas><input type="hidden" data-name="'+guid+'"/>');
                     break;
                 case 'ticket':
                     self.handleTicketField($(field));
                     break;
                 case 'select':
+                    if($(field).find('select').length){
+                        $('.available-options-select').html($(field).find('select').html());
+                    }
+                    else{
+                        $('.available-options-select').html('');
+                    }
                     $('.fields-config .config-select-container').show();
                     break;
                 default:
