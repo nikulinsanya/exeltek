@@ -55,7 +55,7 @@ html, body {
     display: inline-block;
     width: 150px;
     height: 25px;
-    text-align: center;
+    text-align: left;
     box-shadow:  0px 0px 1px #ccc;
     float: left;
     margin-right: 3px;
@@ -65,6 +65,10 @@ html, body {
 
 .value.selected{
     box-shadow: 0px 0px 30px 1px #7FFD7F;
+}
+
+.value input[type="text"]{
+    height: 25px;
 }
 
 .value-input{
@@ -109,6 +113,10 @@ hr{
     border-top: 1px solid #333;
 }
 
+.remove-hr{
+    margin: 0px 2px 2px 13px;
+}
+
 .kohana{
     display: none;
 }
@@ -118,4 +126,19 @@ hr{
 
 .remove-line{
     float: right;
+}
+
+.submited .value.selected{
+    box-shadow: none;
+}
+.submited .value[data-type="label"]{
+    box-shadow: none;
+}
+.value[data-type="label"]{
+    width: auto;
+    min-width: 50px;
+}
+
+.form-container.submited{
+    width: 100%;
 }

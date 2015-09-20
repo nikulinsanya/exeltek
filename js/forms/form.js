@@ -19,11 +19,9 @@ window.form = (function() {
             });
 
             $('.add-line').on('click', function(){
-                var row = '<hr>'
+                var row = '<hr><button class="tmp-gen remove-hr tmp-gen btn btn-danger"> - </button>'
                 $('.form-container').append(row);
             });
-
-
 
             $('.form-container').on('click','.add-value', function(){
                 var val = valTemplate.clone().html();
@@ -45,6 +43,11 @@ window.form = (function() {
                     $(this).parents('.form-row').first().remove();
                 }
             });
+            $('.form-container').on('click','.remove-hr',function(){
+                $(this).prev().remove();
+                $(this).remove();
+            });
+
 
 
             $('.save-form').on('click', function(){
@@ -52,12 +55,19 @@ window.form = (function() {
                     var orign = $('.form-container');
                     $(orign).find('.tmp-gen').remove();
                     $(orign).find('.selected').removeClass('selected');
+                    $(orign).addClass('submited');
+
                     $('.form-configuration-container').remove();
+
                     self.sendForm().then(function(){
                         $('.form-container').html();
                     });
                 }
             });
+        },
+
+        offHandlers: function(){
+
         },
 
         sendForm: function(){
@@ -114,7 +124,7 @@ window.form = (function() {
 
             $('.field-type-select').val(type);
             $('.field-type-select').multiselect('refresh');
-            $('.config-value-container').find('input').val(value);
+            $('.config-value-container').find('input').val(value).focus();
             $('.field-placeholder').val(placeholder);
             $('.field-width-select').val(width);
 
@@ -124,6 +134,7 @@ window.form = (function() {
 
             $('.fields-config .placeholder-container').hide();
             $('.fields-config').show();
+
             this.updateField();
         },
         updateField: function(){
