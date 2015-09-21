@@ -46,8 +46,8 @@
             <td class="data yellow"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=12&actions[]=2&values[]=<?=$fsa?>&columns[]=44&actions[]=0&values[]=in-progress"><?=Arr::path($total, array($fsa, 'inprogress'))?></a></td>
             <td class="data yellow"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=12&actions[]=2&values[]=<?=$fsa?>&columns[]=44&actions[]=0&values[]=held-contractor"><?=Arr::path($total, array($fsa, 'heldcontractor'))?></a></td>
             <td class="data yellow"><strong><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=12&actions[]=2&values[]=<?=$fsa?>&columns[]=44&actions[]=0&values[]=scheduled&columns[]=44&actions[]=0&values[]=in-progress&columns[]=44&actions[]=0&values[]=held-contractor""><?=Arr::path($total, array($fsa, 'scheduled')) + Arr::path($total, array($fsa, 'inprogress')) + Arr::path($total, array($fsa, 'heldcontractor')) ? : ''?></a></strong></td>
-            <td class="data lgreen">
-                <span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="popover" title="Built statuses"
+            <td class="data lgreen" width="65">
+                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" data-toggle="popover" title="Built statuses"
                     <?php foreach ($break as $key => $value) echo 'data-' . $key . '="' . $value . '"'?>>
                 </span>
                 <a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=12&actions[]=2&values[]=<?=$fsa?>&columns[]=44&actions[]=0&values[]=built" class="breakdown-info">
@@ -74,8 +74,8 @@
                 <td class="data yellow"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=44&actions[]=0&values[]=in-progress"><?=Arr::path($total, array($fsam, 'inprogress'))?></a></td>
                 <td class="data yellow"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=44&actions[]=0&values[]=held-contractor"><?=Arr::path($total, array($fsam, 'heldcontractor'))?></a></td>
                 <td class="data yellow"><strong><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=44&actions[]=0&values[]=scheduled&columns[]=44&actions[]=0&values[]=in-progress&columns[]=44&actions[]=0&values[]=held-contractor""><?=Arr::path($total, array($fsam, 'scheduled')) + Arr::path($total, array($fsam, 'inprogress')) + Arr::path($total, array($fsam, 'heldcontractor')) ? : ''?></a></strong></td>
-                <td class="data lgreen">
-                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="popover" title="Built statuses"
+                <td class="data lgreen" width="65">
+                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" data-toggle="popover" title="Built statuses"
                         <?php foreach ($break as $key => $value) echo 'data-' . $key . '="' . $value . '"'?>>
                     </span>
 
@@ -103,8 +103,8 @@
                     <td class="data yellow"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=17&actions[]=2&values[]=<?=$dates[0] ? date('d-m-Y', $dates[0]) : ''?>&columns[]=18&actions[]=2&values[]=<?=$dates[1] ? date('d-m-Y', $dates[1]) : ''?>&columns[]=44&actions[]=0&values[]=in-progress"><?=Arr::path($total, array($fsam . $lifd, 'inprogress'))?></a></td>
                     <td class="data yellow"><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=17&actions[]=2&values[]=<?=$dates[0] ? date('d-m-Y', $dates[0]) : ''?>&columns[]=18&actions[]=2&values[]=<?=$dates[1] ? date('d-m-Y', $dates[1]) : ''?>&columns[]=44&actions[]=0&values[]=held-contractor"><?=Arr::path($total, array($fsam . $lifd, 'heldcontractor'))?></a></td>
                     <td class="data yellow"><strong><a href="<?=URL::base()?><?=$url ? $url . '&' : '?'?>columns[]=13&actions[]=2&values[]=<?=$fsam?>&columns[]=17&actions[]=2&values[]=<?=$dates[0] ? date('d-m-Y', $dates[0]) : ''?>&columns[]=18&actions[]=2&values[]=<?=$dates[1] ? date('d-m-Y', $dates[1]) : ''?>&columns[]=44&actions[]=0&values[]=scheduled&columns[]=44&actions[]=0&values[]=in-progress&columns[]=44&actions[]=0&values[]=held-contractor""><?=Arr::path($total, array($fsam . $lifd, 'scheduled')) + Arr::path($total, array($fsam . $lifd, 'inprogress')) + Arr::path($total, array($fsam . $lifd, 'heldcontractor')) ? : ''?></a></strong></td>
-                    <td class="data lgreen">
-                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true" data-toggle="popover" title="Built statuses"
+                    <td class="data lgreen" width="65">
+                        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" data-toggle="popover" title="Built statuses"
                             <?php foreach ($break as $key => $value) echo 'data-' . $key . '="' . $value . '"'?>>
                         </span>
 

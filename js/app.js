@@ -1168,7 +1168,7 @@ $(function () {
                     );
                 $('div.text-info-filters>div').html(filters.join(''));
                 $('#lifd-report').html(data.html);
-
+                initTreeView();
                 $('[data-toggle="popover"]').each(function(){
                     var html = [];
 
@@ -1197,10 +1197,13 @@ $(function () {
                         html:true,
                         content:html.join('')
                     });
+                    $(this).on('show.bs.popover', function () {
+                        $('.popover').popover('hide');
+                    })
                 });
-                $('[data-toggle="popover"]').on('click', function(e){
+                $('.glyphicon[data-toggle="popover"]').on('click', function(e){
+//                    $('.popover').popover('hide');
                     e.preventDefault();
-
                     return false;
                 });
             } catch (e) {
