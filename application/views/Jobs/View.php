@@ -20,7 +20,7 @@
         <button type="button" class="btn btn-danger back-button">Back</button>
         <button type="submit" class="btn btn-success">Save</button>
         <?php if (Group::current('allow_assign') && Arr::get($job, 'assigned')):?>
-            <button title="Unassign all companies" type="submit" class="btn btn-primary <?=array_column($tabs, 'submissions') ? 'disabled' : ''?>">Finish job</button>
+            <button id="finish-job" title="Unassign all companies" type="submit" class="btn btn-primary <?=array_column($tabs, 'submissions') ? 'disabled' : ''?>">Finish job</button>
         <?php endif;?>
     </div>
 
@@ -72,8 +72,8 @@
                         $class = 'bg-warning';
                     else $class = '';
                 ?>
-                <td  class="<?=$class?>" <?= $id > 161 && $id < 182 ? "data-has-actual-relation='$relation_id'" : ''?> <?= $id > 189 && $id < 210 ? "data-has-variation-relation='$relation_id'" : ''?>>
 
+                <td  class="<?=$class?>" <?= $id > 161 && $id < 182 ? "data-has-actual-relation='$relation_id'" : ''?> <?= $id > 189 && $id < 210 ? "data-has-variation-relation='$relation_id'" : ''?><?= $id > 242 && $id < 255 ? "data-has-additional-relation='$relation_id'" : ''?>>
                         <label  class="left-label"><?=HTML::chars($name)?><?=isset($values['data' . $id]) ? '*' : ''?>: </label>
                         <div class="">
                             <?php $type = Columns::get_type($id); if (Columns::allowed($id) == Columns::COLUMN_WRITE):?>

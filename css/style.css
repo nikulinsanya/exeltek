@@ -885,3 +885,22 @@ td a.text-danger{
 .form-group p.form-control-static{
     margin-bottom: -45px;
 }
+
+.popover-content ul{
+    padding-left: 0px;
+    list-style: none;
+}
+
+#fda_table td>.glyphicon{
+    float: right;
+    margin-top: 3px;
+    margin-left: 2px;
+    font-size: 12px;
+    cursor: pointer;
+    color:#848484;
+}
+
+#fda_table td>.glyphicon:hover{
+    color:#333;
+    text-decoration: underline;
+}

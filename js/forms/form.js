@@ -19,11 +19,9 @@ window.form = (function() {
             });
 
             $('.add-line').on('click', function(){
-                var row = '<hr>'
+                var row = '<hr><button class="tmp-gen remove-hr tmp-gen btn btn-danger"> - </button>'
                 $('.form-container').append(row);
             });
-
-
 
             $('.form-container').on('click','.add-value', function(){
                 var val = valTemplate.clone().html();
@@ -45,6 +43,11 @@ window.form = (function() {
                     $(this).parents('.form-row').first().remove();
                 }
             });
+            $('.form-container').on('click','.remove-hr',function(){
+                $(this).prev().remove();
+                $(this).remove();
+            });
+
 
 
             $('.save-form').on('click', function(){
@@ -52,12 +55,19 @@ window.form = (function() {
                     var orign = $('.form-container');
                     $(orign).find('.tmp-gen').remove();
                     $(orign).find('.selected').removeClass('selected');
+                    $(orign).addClass('submited');
+
                     $('.form-configuration-container').remove();
+
                     self.sendForm().then(function(){
                         $('.form-container').html();
                     });
                 }
             });
+        },
+
+        offHandlers: function(){
+
         },
 
         sendForm: function(){
@@ -82,11 +92,12 @@ window.form = (function() {
                 var val = $('.select-option').val();
                 $('.available-options-select').append('<option value="val">'+val+'</option>');
                 $('.select-option').val('');
+                $('.apply-option').trigger('click');
             });
 
             $('.apply-option').on('click', function(){
                 var select = $('.available-options-select').clone().removeClass('available-options-select');
-                $('.available-options-select').html('');
+//                $('.available-options-select').html('');
                 $('.select-option').val('');
                 select.attr('name',self.guid());
                 if($('.multiselect-option').is(':checked')){
@@ -113,7 +124,7 @@ window.form = (function() {
 
             $('.field-type-select').val(type);
             $('.field-type-select').multiselect('refresh');
-            $('.config-value-container').find('input').val(value);
+            $('.config-value-container').find('input').val(value).focus();
             $('.field-placeholder').val(placeholder);
             $('.field-width-select').val(width);
 
@@ -123,6 +134,7 @@ window.form = (function() {
 
             $('.fields-config .placeholder-container').hide();
             $('.fields-config').show();
+
             this.updateField();
         },
         updateField: function(){
@@ -160,12 +172,18 @@ window.form = (function() {
                     break;
                 case 'canvas':
                     var guid = self.guid();
-                    $(field).html('<canvas name="' + guid + '" class="panel panel-default" width="200" height="25"></canvas><input type="hidden" data-name="'+guid+'"/>');
+                    $(field).html('<canvas name="' + guid + '" class="panel panel-default" width="150" height="25"></canvas><input type="hidden" data-name="'+guid+'"/>');
                     break;
                 case 'ticket':
                     self.handleTicketField($(field));
                     break;
                 case 'select':
+                    if($(field).find('select').length){
+                        $('.available-options-select').html($(field).find('select').html());
+                    }
+                    else{
+                        $('.available-options-select').html('');
+                    }
                     $('.fields-config .config-select-container').show();
                     break;
                 default:

@@ -45,6 +45,7 @@ function expandCollapseTreeView(expand){
         $('.expandAll').show();
         $('.collapseAll').hide();
     }
+    $('.popover').popover('hide');
 }
 
 $(function () {
@@ -941,7 +942,7 @@ $(function () {
     function setMultiselect(self){
         if(self){
             $(self).multiselect({
-                maxHeight: 200,
+                maxHeight: 200
             });
         }
     }
@@ -1137,9 +1138,19 @@ $(function () {
     });
 
 
+    var testedLabels = {
+        'data-no-result': 'No Test Result',
+        'data-seq-required':'Tested SEQ Number Required',
+        'data-no-issue':'Tested No Issue',
+        'data-text-exception':'Test Exception',
+        'data-qa-issues':'QA Issues'
+    }
     $('#lifd-report-form').submit(function() {
         if ($(this).prop('export')) return true;
-        var data = $(this).serialize();
+        var data = $(this).serialize(),
+            attrs = ['data-no-result','data-seq-required','data-no-issue','data-text-exception','data-qa-issues'],
+            i
+            ;
         $('#filterModal').modal('hide');
         $('#preloaderModal').modal('show');
         if (data) {
@@ -1166,6 +1177,44 @@ $(function () {
                 $('div.text-info-filters>div').html(filters.join(''));
                 $('#lifd-report').html(data.html);
                 initTreeView();
+                $('[data-toggle="popover"]').each(function(){
+                    var html = [];
+
+                    var found = false;
+                    html.push('<ul>');
+
+                    for(i=0;i<attrs.length;i++){
+                         if($(this).attr(attrs[i])){
+                             found = true;
+                             html.push('<li>',
+                                 '<b>',
+                                 $(this).attr(attrs[i]),
+                                 '</b>  - &nbsp;',
+                                 testedLabels[attrs[i]],
+                                 '</li>');
+                         };
+                    }
+
+                    if(!found){
+                        $(this).remove();
+                        return;
+                    }
+
+                    html.push('</ul>');
+
+                    $(this).popover({
+                        html:true,
+                        content:html.join('')
+                    });
+                    $(this).on('show.bs.popover', function () {
+                        $('.popover').popover('hide');
+                    })
+                });
+                $('.glyphicon[data-toggle="popover"]').on('click', function(e){
+//                    $('.popover').popover('hide');
+                    e.preventDefault();
+                    return false;
+                });
             } catch (e) {
                 alert(data);
             }
@@ -1619,6 +1668,34 @@ $(function () {
             recalcBadges($('.view-tab-header').find('li[data-id="'+(parseInt(activeTabId,10)+1)+'"]'));
         }
     });
+
+//    logic for non stardard variations
+    $('#data-181, #data-209, #data-255').on('change', function(){
+        var additionalVal    = $('#data-255').val() && parseInt($('#data-255').val(),10) || 0,
+            actuallVal       = $('#data-209').val() && parseInt($('#data-209').val(),10) || 0,
+            variationVal     = $('#data-181').val() && parseInt($('#data-181').val(),10) || 0,
+            additionalParent = $('#data-255').parents('td').first(),
+            actualParent     = $('#data-209').parents('td').first(),
+            variationParent  = $('#data-181').parents('td').first();
+        //highlight all
+        if(additionalVal && (additionalVal > actuallVal || additionalVal > variationVal)){
+            $([variationParent,actualParent,additionalParent]).each(function(){
+                $(this).addClass('bg-warning');
+            });
+        }else{
+            $([variationParent,actualParent,additionalParent]).each(function(){
+                $(this).removeClass('bg-warning');
+            });
+        }
+
+        recalcBadges($('.view-tab-header').find('li[data-id="3"]'));
+        recalcBadges($('.view-tab-header').find('li[data-id="4"]'));
+        recalcBadges($('.view-tab-header').find('li[data-id="5"]'));
+    });
+
+    recalcBadges($('.view-tab-header').find('li[data-id="3"]'));
+    recalcBadges($('.view-tab-header').find('li[data-id="4"]'));
+
 
     function recalcBadges(tab){
         tab = tab || $('.view-tab-header').find('li.active');
