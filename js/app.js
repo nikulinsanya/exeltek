@@ -1138,6 +1138,13 @@ $(function () {
     });
 
 
+    var testedLabels = {
+        'data-no-result': 'No Test Result',
+        'data-seq-required':'Tested SEQ Number Required',
+        'data-no-issue':'Tested No Issue',
+        'data-text-exception':'Test Exception',
+        'data-qa-issues':'QA Issues'
+    }
     $('#lifd-report-form').submit(function() {
         if ($(this).prop('export')) return true;
         var data = $(this).serialize(),
@@ -1180,10 +1187,11 @@ $(function () {
                          if($(this).attr(attrs[i])){
                              found = true;
                              html.push('<li>',
-                                 attrSimplify(attrs[i]),
-                                 ':<b> &nbsp;',
+                                 '<b>',
                                  $(this).attr(attrs[i]),
-                                 '</b></li>');
+                                 '</b>  - &nbsp;',
+                                 testedLabels[attrs[i]],
+                                 '</li>');
                          };
                     }
 
@@ -1215,10 +1223,6 @@ $(function () {
         });
         return false;
     });
-
-    function attrSimplify(attr){
-        return attr.replace('data','').replace(/-/g,' ').toUpperCase();
-    }
 
     if($('.submission-filter-container').length ||
         $('.financial-filter-container').length){
