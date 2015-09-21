@@ -660,6 +660,7 @@ $(function () {
         $('#file-content').attr('accept', selected.attr('data-accept'));
         $('#file-content').attr('accept', selected.attr('data-accept'));
     });
+    var filesList = [];
     $('#file-content').fileupload({
         autoUpload: true,
         type: 'POST',
@@ -667,12 +668,6 @@ $(function () {
         maxChunkSize: 64 * 1024,
         paramName: 'attachment',
         replaceFileInput: false,
-        submit: function(e, data) {
-            $('#upload-progress').parent().removeClass('hidden');
-            $('#upload-progress').text("0%").attr('aria-valuenow', 0).css('width', '0%');
-            $('.modal-footer').find('button').addClass('hidden');
-            //$('#preloaderModal').modal({backdrop: 'static', keyboard: false});
-        },
         progress: function (e, data) {
             var progress = parseInt(data.loaded / data.total * 100, 10);
             $('#upload-progress').text(progress+"%").attr('aria-valuenow', progress).css('width', progress + '%');
@@ -686,7 +681,7 @@ $(function () {
             link.find('.remove-link').click(confirm_link).click(remove_link);
             $('.files-container').prepend(link);
             $('.modal-footer.upload-footer').find('button.btn-success').before(data.result.attachment.message);
-            $('#file-content').val('');
+            if (filesList.length > 0) $('#start-upload').click();
         },
         fail: function (e, data) {
             dump(data.jqXHR);
@@ -699,25 +694,39 @@ $(function () {
             //$('#preloaderModal').modal('hide');
         },
         add: function(e, target) {
-            $('#start-upload').off('click').on('click', function() {
-                var id = $('.upload').attr('data-id');
-                var url = $('.upload').attr('data-target');
-                var type = $('#file-type').val();
-                var title = $('#file-title').val();
-                var location = $('#location').val();
-                
-                url = url + 'prepare/' + id + '?location=' + location + '&type=' + type + '&title=' + title;
+            for (var i in target.files)
+                filesList.push(target.files[i]);
 
-                $.get(url, function(data) {
-                    data = $.parseJSON(data);
-                    id = data.id;
-                    $('#file-content').fileupload({ url: $('.upload').attr('data-target') + 'upload/' + id });
-                    target.submit();
-                })
-            }).removeClass('hidden');
+            $('#start-upload').removeClass('hidden');
         }
     });
-    
+    $('#start-upload').click(function() {
+        var file = filesList.pop();
+        if (filesList.length < 1)
+            $('#start-upload').addClass('hidden');
+
+        var id = $('.upload').attr('data-id');
+        var url = $('.upload').attr('data-target');
+        var type = $('#file-type').val();
+        var title = $('#file-title').val();
+        var location = $('#location').val();
+
+        url = url + 'prepare/' + id + '?location=' + location + '&type=' + type + '&title=' + title;
+
+        $.get(url, function (data) {
+            data = $.parseJSON(data);
+            id = data.id;
+            $('#upload-progress').parent().removeClass('hidden');
+            $('#upload-progress').text("0%").attr('aria-valuenow', 0).css('width', '0%');
+            $('.modal-footer').find('button').addClass('hidden');
+
+            $('#file-content').fileupload({url: $('.upload').attr('data-target') + 'upload/' + id});
+            $('#file-content').fileupload('send', {files: [ file ]});
+            $('#file-content').val('');
+        })
+    });
+
+
     $('.tree').jstree({
         'core' : {
             'multiple': false
