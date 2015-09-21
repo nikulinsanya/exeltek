@@ -62,7 +62,7 @@ class Form extends Kohana_Form {
             '178,206' => 'Installation Type C: Rock Installation in Metres',
             '179,207' => 'Installation Type C: Core Bore',
             '180,208' => 'Installation Type C: Asbestos Pit P20 Install',
-            255 => 'Non-Standard Variation in $AUD excl. GST',
+            257 => 'Non-Standard Variation in $AUD excl. GST',
             228 => 'Variation Sequence Number',
         ),
         'Yes - submit OTDR testing data only' => array(
