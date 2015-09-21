@@ -45,6 +45,7 @@ function expandCollapseTreeView(expand){
         $('.expandAll').show();
         $('.collapseAll').hide();
     }
+    $('.popover').popover('hide');
 }
 
 $(function () {
