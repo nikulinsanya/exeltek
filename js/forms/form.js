@@ -136,7 +136,7 @@ window.form = (function() {
                     rowObjects.push(valObject);
                 });
                 row.push(rowObjects);
-                if($(this).next()[0].nodeName == 'hr'){
+                if($(this).next()[0] && $(this).next()[0].nodeName == 'hr'){
                     row.push('<hr>');
                 }
             });
