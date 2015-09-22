@@ -52,26 +52,27 @@ window.form = (function() {
 
             $('.save-form').on('click', function(){
                 if(confirm('Generate form?')){
-                    var orign = $('.form-container');
+                    /*var orign = $('.form-container');
                     $(orign).find('.tmp-gen').remove();
                     $(orign).find('.selected').removeClass('selected');
                     $(orign).addClass('submited');
 
-                    $('.form-configuration-container').remove();
+                    $('.form-configuration-container').remove();*/
 
-                    self.sendForm().then(function(){
+                    self.sendForm();/*.then(function(){
                         $('.form-container').html();
-                    });
+                    });*/
                 }
             });
         },
 
         sendForm: function(){
             var json = this.createJson();
+            console.log(json);
             return $.ajax({
                 url : utils.baseUrl() + 'form/generate',
                 type: 'POST',
-                data: json,
+                data: JSON.stringify(json),
                 success: function(){
                     alert('Posted');
                 }
