@@ -52,16 +52,7 @@ window.form = (function() {
 
             $('.save-form').on('click', function(){
                 if(confirm('Generate form?')){
-                    /*var orign = $('.form-container');
-                    $(orign).find('.tmp-gen').remove();
-                    $(orign).find('.selected').removeClass('selected');
-                    $(orign).addClass('submited');
-
-                    $('.form-configuration-container').remove();*/
-
-                    self.sendForm();/*.then(function(){
-                        $('.form-container').html();
-                    });*/
+                    self.sendForm();
                 }
             });
         },
@@ -69,6 +60,9 @@ window.form = (function() {
         sendForm: function(){
             var json = this.createJson();
             console.log(json);
+
+//            this.buildFormByJson('#newFormContainer',json);
+
             return $.ajax({
                 url : utils.baseUrl() + 'form/generate',
                 type: 'POST',
@@ -77,6 +71,29 @@ window.form = (function() {
                     alert('Posted');
                 }
             });
+        },
+
+        buildFormByJson: function(container, json){
+            console.log(json);
+            var html = [],
+                el,
+                htmlContainer
+                i, j, l, k;
+            debugger;
+            for(i = 0;i<json.length;i++){
+                if(typeof(json[i]) == 'string'){
+                    el = document.createElement("div");
+                    html.push('')
+                }
+
+                for(i = 0;i<json.length;i++){
+
+                }
+            }
+
+
+
+            $(container).html(hrml.join(''));
         },
 
         createJson: function(){
@@ -122,7 +139,7 @@ window.form = (function() {
                             break;
                         case 'ticket':
                             valObject = {
-                                type:'date',
+                                type:'ticket',
                                 fieldId: $(this).attr('data-field-id')
                             };
                             break;
@@ -231,8 +248,8 @@ window.form = (function() {
                     $('.fields-config .value-container').show();
                     break;
                 case 'date':
-                    $(field).attr('data-value',value);
-                    $(field).html('<input name="'+self.guid()+'"  type="text" class="datepicker" value="'+value+'" placeholder="'+placeholder+'"/>');
+                    $(field).attr('data-value','');
+                    $(field).html('<input name="'+self.guid()+'"  type="text" class="datepicker" value="" placeholder="'+placeholder+'"/>');
                     $('.fields-config .placeholder-container').show();
                     $(field).find('input[type="text"]').attr('data-placeholder',placeholder);
                     break;
@@ -339,8 +356,4 @@ window.form = (function() {
 })(window);
 
 
-$(document).on('ready',function(){
-    form.init();
-
-});
 

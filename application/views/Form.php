@@ -77,9 +77,18 @@
     </div>
 
 
+   <div id="newFormContainer"></div>
+
+
 </div>
 
 <link href="<?=URL::base()?>css/forms/form.css" rel="stylesheet">
 <script src="<?=URL::base()?>js/lib/signature_pad.min.js"></script>
 
 <script src="<?=URL::base()?>js/forms/form.js"></script>
+
+<script type="application/javascript">
+    $(document).on('ready',function(){
+        form.init();
+    });
+</script>

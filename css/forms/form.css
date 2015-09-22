@@ -145,3 +145,8 @@ hr{
 .form-container.submited{
     width: 100%;
 }
+
+#newFormContainer{
+    display: none;
+    border:1px solid red;
+}
