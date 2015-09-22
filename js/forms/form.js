@@ -68,6 +68,7 @@ window.form = (function() {
 
         sendForm: function(){
             var json = this.createJson();
+            console.log(json);
             return $.ajax({
                 url : utils.baseUrl() + 'form/generate',
                 type: 'POST',
@@ -95,7 +96,8 @@ window.form = (function() {
                             valObject = {
                                 type:'text',
                                 placeholder: $(this).attr('data-placeholder'),
-                                value: $(this).attr('data-value')
+                                    value: $(this).attr('data-value'),
+                                    name: $(this).find('input[type="text"]').attr('name')
                             };
                             break;
                         case 'label':
@@ -108,12 +110,14 @@ window.form = (function() {
                             valObject = {
                                 type:'date',
                                 placeholder: $(this).attr('data-placeholder'),
-                                value: $(this).find('input[type="text"]').val()
+                                value: $(this).find('input[type="text"]').val(),
+                                name: $(this).find('input[type="text"]').attr('name')
                             };
                             break;
                         case 'canvas':
                             valObject = {
-                                type:'canvas'
+                                type:'canvas',
+                                name: $(this).find('canvas').attr('name')
                             };
                             break;
                         case 'ticket':
@@ -128,15 +132,16 @@ window.form = (function() {
                                 multiple: !!$(this).find('select').attr('multiple'),
                                 values: $(this).find('select').find('option').map(function(el){
                                     return $(el).text();
-                                })
+                                }),
+                                name: $(this).find('select').attr('name')
                             };
 
                             break;
                     }
                     rowObjects.push(valObject);
-                });
+                    });
                 row.push(rowObjects);
-                if($(this).next()[0] && $(this).next()[0].nodeName == 'hr'){
+                if($(this).next()[0] && $(this).next()[0].nodeName == 'HR'){
                     row.push('<hr>');
                 }
             });
