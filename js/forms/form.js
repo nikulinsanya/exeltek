@@ -66,20 +66,81 @@ window.form = (function() {
             });
         },
 
-        offHandlers: function(){
-
-        },
-
         sendForm: function(){
+            var json = this.createJson();
             return $.ajax({
                 url : utils.baseUrl() + 'form/generate',
                 type: 'POST',
-                data: $('.form-container').html(),
+                data: json,
                 success: function(){
                     alert('Posted');
                 }
             });
+        },
 
+        createJson: function(){
+            var items = $('.form-container').find('.form-row'),
+                i,
+                vals,
+                row = [],
+                valObject,
+                rowObjects;
+            items.each(function(){
+                rowObjects = [];
+                vals = $(this).find('.value');
+                vals.each(function(){
+                    valObject = {};
+                    switch ($(this).attr('data-type')) {
+                        case 'text':
+                            valObject = {
+                                type:'text',
+                                placeholder: $(this).attr('data-placeholder'),
+                                value: $(this).attr('data-value')
+                            };
+                            break;
+                        case 'label':
+                            valObject = {
+                                type:'label',
+                                value: $(this).attr('data-value')
+                            };
+                            break;
+                        case 'date':
+                            valObject = {
+                                type:'date',
+                                placeholder: $(this).attr('data-placeholder'),
+                                value: $(this).find('input[type="text"]').val()
+                            };
+                            break;
+                        case 'canvas':
+                            valObject = {
+                                type:'canvas'
+                            };
+                            break;
+                        case 'ticket':
+                            valObject = {
+                                type:'date',
+                                fieldId: $(this).attr('data-field-id')
+                            };
+                            break;
+                        case 'select':
+                            valObject = {
+                                type:'select',
+                                multiple: !!$(this).find('select').attr('multiple'),
+                                values: $(this).find('select').find('option').map(function(el){
+                                    return $(el).text();
+                                })
+                            };
+
+                            break;
+                    }
+                    rowObjects.push(valObject);
+                });
+                row.push(rowObjects);
+                if($(this).next()[0].nodeName == 'hr'){
+                    row.push('<hr>');
+                }
+            });
+            return(row);
         },
         editorEvents: function(){
             var self = this;
