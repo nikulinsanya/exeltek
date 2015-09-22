@@ -107,7 +107,7 @@ class Controller_Json extends Controller {
     }
 
     public function action_columns() {
-        $list = array();
+        $list = array(array('id' => 0, 'name' => 'Ticket ID'));
         foreach (Columns::get_all() as $key => $value) {
             $column = array(
                 'id' => $key,
