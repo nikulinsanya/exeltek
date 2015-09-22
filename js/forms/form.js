@@ -136,7 +136,7 @@ window.form = (function() {
                     rowObjects.push(valObject);
                 });
                 row.push(rowObjects);
-                if($(this).next()[0].nodeName == 'hr'){
+                if($(this).next()[0] && $(this).next()[0].nodeName == 'hr'){
                     row.push('<hr>');
                 }
             });
@@ -227,7 +227,7 @@ window.form = (function() {
                     break;
                 case 'date':
                     $(field).attr('data-value',value);
-                    $(field).html('<input name="'+self.guid()+'"  type="text" class="datepicker" value="'+value+'"/>');
+                    $(field).html('<input name="'+self.guid()+'"  type="text" class="datepicker" value="'+value+'" placeholder="'+placeholder+'"/>');
                     $('.fields-config .placeholder-container').show();
                     $(field).find('input[type="text"]').attr('data-placeholder',placeholder);
                     break;
@@ -303,9 +303,9 @@ window.form = (function() {
             if($('canvas').length){
                 var signature = new SignaturePad(document.querySelector('canvas'));
             }
-            $('.datepicker').datepicker({
-                dateFormat: 'dd-mm-yy'
-            });
+//            $('.datepicker').datepicker({
+//                dateFormat: 'dd-mm-yy'
+//            });
         },
 
         guid: function () {
