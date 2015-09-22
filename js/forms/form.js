@@ -260,8 +260,11 @@ window.form = (function() {
 
         handleTicketField: function(field){
             var html = [], i,
-                select = $('.ticket-input-select select');
+                select = $('.ticket-input-select select'),
+                value = field.attr('data-field-id'),
+                text;
             $('.ticket-input-select select').html('');
+
             getColumns().then(function(data){
                 for(i in data){
                     html.push(
@@ -273,12 +276,21 @@ window.form = (function() {
                 }
                 $('.ticket-input-select select').html(html.join(''));
                 $('.ticket-input-select select').selectize();
+                if(value){
+                    $('.ticket-input-select select').val(value);
+                    text = $('.ticket-input-select select').find('option:selected').text();
+                    $('.selectize-input').find('.item').text(text);
+                }
+
+
+
                 $('.ticket-type-select').show();
-                select.on('change', function(e){
+                select.off().on('change', function(e){
                     var fieldId = $(this).val(),
                         label = $(this).find(":selected").text();
                     $(field).html(label).attr('data-field-id', fieldId);
                 });
+
                 var fieldId = $(select).val(),
                     label = $(select).find(":selected").text();
                 $(field).html(label).attr('data-field-id', fieldId);
