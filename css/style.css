@@ -573,7 +573,8 @@ form.view-form  label.checkbox{
 
 
 .modal-content .progress{
-    margin: 10px 0px;
+    width: 500px;
+    margin: 10px auto;
 }
 
 .col-container .multiselect-container label {
