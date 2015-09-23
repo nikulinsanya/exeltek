@@ -59,16 +59,16 @@ window.form = (function() {
 
         sendForm: function(){
             var json = this.createJson();
-            this.buildFormByJson('#newFormContainer',json);
+//            this.buildFormByJson('#newFormContainer',json);
 
-//            return $.ajax({
-//                url : utils.baseUrl() + 'form/generate',
-//                type: 'POST',
-//                data: JSON.stringify(json),
-//                success: function(){
-//                    alert('Posted');
-//                }
-//            });
+            return $.ajax({
+                url : utils.baseUrl() + 'form/generate',
+                type: 'POST',
+                data: JSON.stringify(json),
+                success: function(){
+                    alert('Posted');
+                }
+            });
         },
 
         buildFormByJson: function(container, json){
