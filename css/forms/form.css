@@ -131,11 +131,16 @@ hr{
     float: right;
 }
 
+.submited .value,
 .submited .value.selected{
     box-shadow: none;
 }
 .submited .value[data-type="label"]{
     box-shadow: none;
+}
+.submited .form-row{
+    border:none;
+    height: 37px;
 }
 .value[data-type="label"]{
     width: auto;
@@ -148,5 +153,4 @@ hr{
 
 #newFormContainer{
     display: none;
-    border:1px solid red;
 }

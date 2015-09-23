@@ -59,41 +59,124 @@ window.form = (function() {
 
         sendForm: function(){
             var json = this.createJson();
-            console.log(json);
+            this.buildFormByJson('#newFormContainer',json);
 
-//            this.buildFormByJson('#newFormContainer',json);
-
-            return $.ajax({
-                url : utils.baseUrl() + 'form/generate',
-                type: 'POST',
-                data: JSON.stringify(json),
-                success: function(){
-                    alert('Posted');
-                }
-            });
+//            return $.ajax({
+//                url : utils.baseUrl() + 'form/generate',
+//                type: 'POST',
+//                data: JSON.stringify(json),
+//                success: function(){
+//                    alert('Posted');
+//                }
+//            });
         },
 
         buildFormByJson: function(container, json){
             console.log(json);
             var html = [],
                 el,
-                htmlContainer
+                htmlContainer,
                 i, j, l, k;
-            debugger;
+
             for(i = 0;i<json.length;i++){
                 if(typeof(json[i]) == 'string'){
-                    el = document.createElement("div");
-                    html.push('')
-                }
+                    html.push('<hr>');
+                }else{
+                    html.push('<div class="form-row">');
+                    for(j = 0;j<json[i].length;j++){
+                        el = json[i][j];
+                        switch (el.type) {
+                            case 'text':
+                                html.push(
+                                    '<div class="form-block">',
+                                        '<div class="value" data-type="text" data-value="" data-placeholder="',
+                                            el.placeholder,
+                                            '">',
+                                            '<input name="',
+                                             el.name,
+                                            '" type="text" value="',
+                                                el.value,
+                                                '" placeholder="',
+                                            el.placeholder,
+                                            '">',
+                                        '</div>',
+                                    '</div>');
+                                break;
+                            case 'label':
+                                html.push('<div class="form-block">',
+                                    '<div class="value" data-type="label" data-value="123123" data-placeholder="">',
+                                    '<span class="tmp-label">',
+                                    el.value,
+                                    '</span>',
+                                    '</div>');
+                                break;
+                            case 'date':
+                                html.push(
+                                    '<div class="form-block">',
+                                        '<div class="value" data-type="date" data-value="" data-placeholder="',
+                                            el.placeholder,
+                                        '">',
+                                        '<input class="datepicker" name="',
+                                            el.name,
+                                            '" type="text" value="',
+                                            el.value,
+                                            '" placeholder="',
+                                            el.placeholder,
+                                            '">',
+                                        '</div>',
 
-                for(i = 0;i<json.length;i++){
-
+                                    '</div>');
+                                break;
+                            case 'canvas':
+                                html.push(
+                                    '<div class="form-block">',
+                                        '<div class="value" data-type="date" data-value="" data-placeholder="',
+                                        el.placeholder,
+                                        '">',
+                                            '<canvas name="',
+                                            el.name,
+                                            '" class="panel panel-default" width="150" height="25"></canvas>',
+                                        '</div>',
+                                    '</div>');
+                                break;
+                            case 'ticket':
+                                html.push(
+                                    '<div class="form-block">',
+                                    '<div class="value" data-type="ticket" data-value="" data-placeholder="" data-field-id="',
+                                    el.fieldId,
+                                    '">',
+                                    el.value || '',
+                                    '</div>',
+                                    '</div>');
+                                break;
+                            case 'select':
+                                var options = [];
+                                el.values.each(function(){
+                                    options.push('<option value="'+this+'">'+this+'</option>');
+                                });
+                                html.push(
+                                    '<div class="form-block">',
+                                        '<div class="value" data-type="date" data-value="" data-placeholder="',
+                                        el.placeholder,
+                                        '">',
+                                            '<select class="" name="',
+                                            el.name,
+                                            '" ',
+                                            el.multiple ? 'multiple="multiple"' : '',
+                                            ' >',
+                                                options.join(''),
+                                            '</select>',
+                                        '</div>',
+                                    '</div>');
+                                break;
+                        }
+                    }
                 }
+                html.push('</div>');
             }
 
-
-
-            $(container).html(hrml.join(''));
+            $(container).html(html.join('')).show().addClass('submited');
+            this.initPluginsOnBuiltForm();
         },
 
         createJson: function(){
@@ -147,8 +230,8 @@ window.form = (function() {
                             valObject = {
                                 type:'select',
                                 multiple: !!$(this).find('select').attr('multiple'),
-                                values: $(this).find('select').find('option').map(function(el){
-                                    return $(el).text();
+                                values: $(this).find('select').find('option').map(function(){
+                                    return $(this).text();
                                 }),
                                 name: $(this).find('select').attr('name')
                             };
@@ -328,6 +411,16 @@ window.form = (function() {
 //            $('.datepicker').datepicker({
 //                dateFormat: 'dd-mm-yy'
 //            });
+        },
+
+        initPluginsOnBuiltForm: function(){
+            if($('canvas').length){
+                var signature = new SignaturePad(document.querySelector('canvas'));
+            }
+            $('.datepicker').datepicker({
+                dateFormat: 'dd-mm-yy'
+            });
+            $('select.selectize').selectize();
         },
 
         guid: function () {
