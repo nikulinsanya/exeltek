@@ -1,9 +1,84 @@
 window.form = (function() {
+    var formTemplate = '<div class="form-row" data-template-row style="display: none;">'+
+'        <button class="remove-line tmp-gen btn btn-danger">remove row</button>'+
+'        <button class="add-value tmp-gen btn btn-success">+</button>'+
+'    </div>'+
+'        <span data-template-value style="display: none;">'+
+'            <div class="form-block">'+
+'                <div class="value"><span class="tmp-label"></span></div>'+
+'                <button class="remove-field tmp-gen"> - </button>'+
+'            </div>'+
+'        </span>'+
+'    <div>'+
+'        <div class="form-container"></div>'+
+'        <div class="form-configuration-container">'+
+'            <div>'+
+'                <button class="add-row btn btn-success">Add row</button>'+
+'                <button class="add-line btn btn-danger">Add Line</button>'+
+'                <button class="save-form btn btn-warning">Save form</button>'+
+'                <div class="fields-config">'+
+'                    <div class="config-row">'+
+'                        <div class="config-label"> Type </div>'+
+'                        <div class="config-val">'+
+'                            <select class="field-type-select">'+
+'                                <option value="label" >Label</option>'+
+'                                <option value="text">Text input</option>'+
+'                                <option value="date">Date input</option>'+
+'                                <option value="canvas">Signature</option>'+
+'                                <option value="select">Select</option>'+
+'                                <option value="ticket">Ticket field</option>'+
+'                            </select>'+
+'                        </div>'+
+'                    </div>'+
+'                    <div class="config-row ticket-type-select">'+
+'                        <div class="config-label"> Ticket field </div>'+
+'                        <div class="config-val ticket-input-select">'+
+'                            <select></select>'+
+'                        </div>'+
+'                    </div>'+
+'                    <div class="config-row  placeholder-container">'+
+'                        <div class="config-label"> Placeholder </div>'+
+'                        <div class="config-val"><input type="text" class="field-placeholder"/></div>'+
+'                    </div>'+
+'                    <div class="config-row config-value-container  value-container">'+
+'                        <div class="config-label"> Value </div>'+
+'                        <div class="config-val"><input type="text"/></div>'+
+'                    </div>'+
+'                    <div class="config-row config-select-container">'+
+'                        <select class="available-options-select"></select>'+
+'                        <div class="config-val">'+
+'                            <input type="text" class="select-option">'+
+'                                <button class="add-option btn btn-info">Add option</button>'+
+'                                <br>'+
+'                                    <label><input type="checkbox" class="multiselect-option"> Multiple choises</label>'+
+'                                        <br>'+
+'                                            <button class="apply-option btn btn-danger">Apply</button>'+
+'                                        </div>'+
+'                                    </div>'+
+'                                </div>'+
+'                            </div>'+
+'                        </div>'+
+'                    </div>';
+
     var formBuilder = {
-        init: function(){
-            this.setHandlers();
-            this.editorEvents();
-            $('.add-row').trigger('click');
+        init: function(container, json){
+            this.prepareHtml(container);
+debugger;
+            if(json){
+                this.buildFormByJson($('.form-container'),json);
+                this.setHandlers();
+                this.editorEvents();
+
+            }else{
+                $('.add-row').trigger('click');
+                this.setHandlers();
+                this.editorEvents();
+            }
+
+
+        },
+        prepareHtml: function(container){
+            $(container).html(formTemplate);
         },
         focusedField : false,
         setHandlers: function(){
@@ -59,8 +134,6 @@ window.form = (function() {
 
         sendForm: function(){
             var json = this.createJson();
-//            this.buildFormByJson('#newFormContainer',json);
-
             return $.ajax({
                 url : utils.baseUrl() + 'form/generate',
                 type: 'POST',
@@ -72,7 +145,6 @@ window.form = (function() {
         },
 
         buildFormByJson: function(container, json){
-            console.log(json);
             var html = [],
                 el,
                 htmlContainer,
@@ -80,7 +152,7 @@ window.form = (function() {
 
             for(i = 0;i<json.length;i++){
                 if(typeof(json[i]) == 'string'){
-                    html.push('<hr>');
+                    html.push('<hr><button class="tmp-gen remove-hr tmp-gen btn btn-danger"> - </button>');
                 }else{
                     html.push('<div class="form-row">');
                     for(j = 0;j<json[i].length;j++){
@@ -100,6 +172,7 @@ window.form = (function() {
                                             el.placeholder,
                                             '">',
                                         '</div>',
+                                    '<button class="remove-field tmp-gen"> - </button>',
                                     '</div>');
                                 break;
                             case 'label':
@@ -108,6 +181,8 @@ window.form = (function() {
                                     '<span class="tmp-label">',
                                     el.value,
                                     '</span>',
+                                    '</div>',
+                                    '<button class="remove-field tmp-gen"> - </button>',
                                     '</div>');
                                 break;
                             case 'date':
@@ -124,19 +199,20 @@ window.form = (function() {
                                             el.placeholder,
                                             '">',
                                         '</div>',
-
+                                    '<button class="remove-field tmp-gen"> - </button>',
                                     '</div>');
                                 break;
                             case 'canvas':
                                 html.push(
                                     '<div class="form-block">',
-                                        '<div class="value" data-type="date" data-value="" data-placeholder="',
+                                        '<div class="value" data-type="canvas" data-value="" data-placeholder="',
                                         el.placeholder,
                                         '">',
                                             '<canvas name="',
                                             el.name,
                                             '" class="panel panel-default" width="150" height="25"></canvas>',
                                         '</div>',
+                                    '<button class="remove-field tmp-gen"> - </button>',
                                     '</div>');
                                 break;
                             case 'ticket':
@@ -147,19 +223,21 @@ window.form = (function() {
                                     '">',
                                     el.value || '',
                                     '</div>',
+                                    '<button class="remove-field tmp-gen"> - </button>',
                                     '</div>');
                                 break;
                             case 'select':
                                 var options = [];
-                                el.values.each(function(){
+
+                                $(el.values).each(function(){
                                     options.push('<option value="'+this+'">'+this+'</option>');
                                 });
                                 html.push(
                                     '<div class="form-block">',
-                                        '<div class="value" data-type="date" data-value="" data-placeholder="',
+                                        '<div class="value" data-type="select" data-value="" data-placeholder="',
                                         el.placeholder,
                                         '">',
-                                            '<select class="" name="',
+                                            '<select class="selectize" name="',
                                             el.name,
                                             '" ',
                                             el.multiple ? 'multiple="multiple"' : '',
@@ -167,16 +245,20 @@ window.form = (function() {
                                                 options.join(''),
                                             '</select>',
                                         '</div>',
+                                    '<button class="remove-field tmp-gen"> - </button>',
                                     '</div>');
                                 break;
                         }
                     }
+                    html.push('<button class="remove-line tmp-gen btn btn-danger">remove row</button>' ,
+                        '<button class="add-value tmp-gen btn btn-success">+</button></div>');
                 }
                 html.push('</div>');
             }
 
-            $(container).html(html.join('')).show().addClass('submited');
-            this.initPluginsOnBuiltForm();
+            $(container).html(html.join(''));
+//            this.initPluginsOnBuiltForm();
+            this.initPlugins();
         },
 
         createJson: function(){
@@ -227,12 +309,14 @@ window.form = (function() {
                             };
                             break;
                         case 'select':
+                            var options = [];
+                            $(this).find('select').find('option').each(function(){
+                                options.push($(this).text());
+                            });
                             valObject = {
                                 type:'select',
                                 multiple: !!$(this).find('select').attr('multiple'),
-                                values: $(this).find('select').find('option').map(function(){
-                                    return $(this).text();
-                                }),
+                                values: options,
                                 name: $(this).find('select').attr('name')
                             };
 
@@ -408,6 +492,7 @@ window.form = (function() {
             if($('canvas').length){
                 var signature = new SignaturePad(document.querySelector('canvas'));
             }
+//            $('select.selectize').selectize();
 //            $('.datepicker').datepicker({
 //                dateFormat: 'dd-mm-yy'
 //            });

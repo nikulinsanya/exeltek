@@ -3,84 +3,10 @@
     <h1 style="margin-left: 15px;">Form builder</h1>
 </div>
 
-<div class="container">
-    <!--<div class='fb-main'></div>-->
-    <!--templates-->
-    <div class="form-row" data-template-row style="display: none;">
-        <button class="remove-line tmp-gen btn btn-danger">remove row</button>
-        <button class="add-value tmp-gen btn btn-success">+</button>
-
-    </div>
-
-    <span data-template-value style="display: none;">
-        <div class="form-block">
-            <div class="value"><span class="tmp-label"></span></div>
-            <button class="remove-field tmp-gen"> - </button>
-        </div>
-    </span>
-    <!---->
-    <div>
-
-    <div class="form-container"></div>
-
-
-    <div class="form-configuration-container">
-        <div>
-            <button class="add-row btn btn-success">Add row</button>
-            <button class="add-line btn btn-danger">Add Line</button>
-            <button class="save-form btn btn-warning">Save form</button>
-            <div class="fields-config">
-                <div class="config-row">
-                    <div class="config-label"> Type </div>
-                    <div class="config-val">
-                        <select class="field-type-select">
-                            <option value="label" >Label</option>
-                            <option value="text">Text input</option>
-                            <option value="date">Date input</option>
-                            <option value="canvas">Signature</option>
-                            <option value="select">Select</option>
-                            <option value="ticket">Ticket field</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="config-row ticket-type-select">
-                    <div class="config-label"> Ticket field </div>
-                    <div class="config-val ticket-input-select">
-                        <select></select>
-                    </div>
-                </div>
-                <div class="config-row  placeholder-container">
-                    <div class="config-label"> Placeholder </div>
-                    <div class="config-val"><input type="text" class="field-placeholder"/></div>
-                </div>
-                <div class="config-row config-value-container  value-container">
-                    <div class="config-label"> Value </div>
-                    <div class="config-val"><input type="text"/></div>
-                </div>
-
-                <div class="config-row config-select-container">
-                    <select class="available-options-select"></select>
-                    <div class="config-val">
-                        <input type="text" class="select-option">
-                        <button class="add-option btn btn-info">Add option</button>
-                        <br>
-                        <label><input type="checkbox" class="multiselect-option"> Multiple choises</label>
-                        <br>
-                        <button class="apply-option btn btn-danger">Apply</button>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    </div>
-
-
-   <div id="newFormContainer"></div>
-
+<div class="container" id="formBuildeContainer">
 
 </div>
+<div id="newFormContainer"></div>
 
 <link href="<?=URL::base()?>css/forms/form.css" rel="stylesheet">
 <script src="<?=URL::base()?>js/lib/signature_pad.min.js"></script>
@@ -89,6 +15,95 @@
 
 <script type="application/javascript">
     $(document).on('ready',function(){
-        form.init();
+        var json = [
+            [
+                {
+                    "type": "label",
+                    "value": "text:"
+                },
+                {
+                    "type": "text",
+                    "placeholder": "111",
+                    "value": "2222",
+                    "name": "f552f5cc-a925-0f85-37af-cb7706736f64"
+                }
+            ],
+            "<hr>",
+            [
+                {
+                    "type": "label",
+                    "value": "date:"
+                },
+                {
+                    "type": "date",
+                    "placeholder": "11111",
+                    "value": "",
+                    "name": "5a2d4ee9-b6ed-7d8b-260d-0a202438e2d9"
+                }
+            ],
+            "<hr>",
+            [
+                {
+                    "type": "label",
+                    "value": "sign:"
+                },
+                {
+                    "type": "canvas",
+                    "name": "94c8ad08-b25e-87fe-1436-989ecd73e366"
+                }
+            ],
+            "<hr>",
+            [
+                {
+                    "type": "label",
+                    "value": "select"
+                },
+                {
+                    "type": "select",
+                    "multiple": false,
+                    "values": {
+                        "0": "12",
+                        "1": "123313",
+                        "length": 2,
+                        "prevObject": {
+                            "0": {},
+                            "1": {},
+                            "length": 2,
+                            "prevObject": {
+                                "0": {
+                                    "0": {},
+                                    "1": {},
+                                    "jQuery111306564710114616901": 106
+                                },
+                                "length": 1,
+                                "prevObject": {
+                                    "0": {},
+                                    "context": {},
+                                    "length": 1
+                                },
+                                "context": {},
+                                "selector": "select"
+                            },
+                            "context": {},
+                            "selector": "select option"
+                        },
+                        "context": {}
+                    },
+                    "name": "a3544343-65b9-5dff-398e-a8e0e015357b"
+                }
+            ],
+            "<hr>",
+            [
+                {
+                    "type": "label",
+                    "value": "tick"
+                },
+                {
+                    "type": "ticket",
+                    "fieldId": "0"
+                }
+            ]
+        ];
+        form.init($('#formBuildeContainer'),json);
     });
 </script>
