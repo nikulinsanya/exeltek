@@ -218,13 +218,14 @@ window.form = (function() {
                                         '</div>');
                                     break;
                                 case 'ticket':
-                                    debugger;
+                                    var name = utils.searchInListById(el.fieldId,ticketFields);
+                                    name = name && name.name || '';
                                     html.push(
                                         '<div class="form-block">',
                                         '<div class="value" data-type="ticket" data-value="" data-placeholder="" data-field-id="',
                                         el.fieldId,
                                         '">',
-                                        ticketFields[el.fieldId] && ticketFields[el.fieldId].name || '',
+                                         name,
                                         '</div>',
                                         '<button class="remove-field tmp-gen"> - </button>',
                                         '</div>');
@@ -310,8 +311,7 @@ window.form = (function() {
                         case 'ticket':
                             valObject = {
                                 type:'ticket',
-                                fieldId: $(this).attr('data-field-id'),
-                                label:  $(this).attr('data-field-label')
+                                fieldId: $(this).attr('data-field-id')
                             };
                             break;
                         case 'select':
