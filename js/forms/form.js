@@ -63,7 +63,6 @@ window.form = (function() {
     var formBuilder = {
         init: function(container, json){
             this.prepareHtml(container);
-debugger;
             if(json){
                 this.buildFormByJson($('.form-container'),json);
                 this.setHandlers();
@@ -221,7 +220,7 @@ debugger;
                                     '<div class="value" data-type="ticket" data-value="" data-placeholder="" data-field-id="',
                                     el.fieldId,
                                     '">',
-                                    el.value || '',
+                                    el.label || '',
                                     '</div>',
                                     '<button class="remove-field tmp-gen"> - </button>',
                                     '</div>');
@@ -305,7 +304,8 @@ debugger;
                         case 'ticket':
                             valObject = {
                                 type:'ticket',
-                                fieldId: $(this).attr('data-field-id')
+                                fieldId: $(this).attr('data-field-id'),
+                                label:  $(this).attr('data-field-label')
                             };
                             break;
                         case 'select':
@@ -477,12 +477,12 @@ debugger;
                 select.off().on('change', function(e){
                     var fieldId = $(this).val(),
                         label = $(this).find(":selected").text();
-                    $(field).html(label).attr('data-field-id', fieldId);
+                    $(field).html(label).attr('data-field-id', fieldId).attr('data-field-label', label);
                 });
 
                 var fieldId = $(select).val(),
                     label = $(select).find(":selected").text();
-                $(field).html(label).attr('data-field-id', fieldId);
+                $(field).html(label).attr('data-field-id', fieldId).attr('data-field-label', label);
             });
 
             $(field).html('ticket value');
