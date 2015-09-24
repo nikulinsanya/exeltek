@@ -468,6 +468,7 @@ window.form = (function() {
                         '</option>');
                 }
                 $('.ticket-input-select select').html(html.join(''));
+
                 $('.ticket-input-select select').selectize();
                 if(value){
                     $('.ticket-input-select select').val(value);
@@ -481,12 +482,13 @@ window.form = (function() {
                 select.off().on('change', function(e){
                     var fieldId = $(this).val(),
                         label = $(this).find(":selected").text();
-                    $(field).html(label).attr('data-field-id', fieldId).attr('data-field-label', label);
+                    $(field).html(label).attr('data-field-id', fieldId);
                 });
 
                 var fieldId = $(select).val(),
-                    label = $(select).find(":selected").text();
-                $(field).html(label).attr('data-field-id', fieldId).attr('data-field-label', label);
+                    label = utils.searchInListById(value,data);
+                    label = label && label.name || '';
+                $(field).html(label).attr('data-field-id', value);
             });
 
             $(field).html('ticket value');
