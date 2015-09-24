@@ -176,7 +176,9 @@ window.form = (function() {
                                 break;
                             case 'label':
                                 html.push('<div class="form-block">',
-                                    '<div class="value" data-type="label" data-value="123123" data-placeholder="">',
+                                    '<div class="value" data-type="label" data-value="',
+                                    el.value,
+                                    '" data-placeholder="">',
                                     '<span class="tmp-label">',
                                     el.value,
                                     '</span>',
