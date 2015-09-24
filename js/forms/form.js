@@ -146,120 +146,124 @@ window.form = (function() {
         buildFormByJson: function(container, json){
             var html = [],
                 el,
+                self = this,
                 htmlContainer,
                 i, j, l, k;
-
-            for(i = 0;i<json.length;i++){
-                if(typeof(json[i]) == 'string'){
-                    html.push('<hr><button class="tmp-gen remove-hr tmp-gen btn btn-danger"> - </button>');
-                }else{
-                    html.push('<div class="form-row">');
-                    for(j = 0;j<json[i].length;j++){
-                        el = json[i][j];
-                        switch (el.type) {
-                            case 'text':
-                                html.push(
-                                    '<div class="form-block">',
-                                        '<div class="value" data-type="text" data-value="" data-placeholder="',
-                                            el.placeholder,
+            getColumns().then(function(ticketFields){
+                for(i = 0;i<json.length;i++){
+                    if(typeof(json[i]) == 'string'){
+                        html.push('<hr><button class="tmp-gen remove-hr tmp-gen btn btn-danger"> - </button>');
+                    }else{
+                        html.push('<div class="form-row">');
+                        for(j = 0;j<json[i].length;j++){
+                            el = json[i][j];
+                            switch (el.type) {
+                                case 'text':
+                                    html.push(
+                                        '<div class="form-block">',
+                                            '<div class="value" data-type="text" data-value="" data-placeholder="',
+                                                el.placeholder,
+                                                '">',
+                                                '<input name="',
+                                                 el.name,
+                                                '" type="text" value="',
+                                                    el.value,
+                                                    '" placeholder="',
+                                                el.placeholder,
+                                                '">',
+                                            '</div>',
+                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        '</div>');
+                                    break;
+                                case 'label':
+                                    html.push('<div class="form-block">',
+                                        '<div class="value" data-type="label" data-value="',
+                                        el.value,
+                                        '" data-placeholder="">',
+                                        '<span class="tmp-label">',
+                                        el.value,
+                                        '</span>',
+                                        '</div>',
+                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        '</div>');
+                                    break;
+                                case 'date':
+                                    html.push(
+                                        '<div class="form-block">',
+                                            '<div class="value" data-type="date" data-value="" data-placeholder="',
+                                                el.placeholder,
                                             '">',
-                                            '<input name="',
-                                             el.name,
-                                            '" type="text" value="',
+                                            '<input class="datepicker" name="',
+                                                el.name,
+                                                '" type="text" value="',
                                                 el.value,
                                                 '" placeholder="',
+                                                el.placeholder,
+                                                '">',
+                                            '</div>',
+                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        '</div>');
+                                    break;
+                                case 'canvas':
+                                    html.push(
+                                        '<div class="form-block">',
+                                            '<div class="value" data-type="canvas" data-value="" data-placeholder="',
                                             el.placeholder,
                                             '">',
-                                        '</div>',
-                                    '<button class="remove-field tmp-gen"> - </button>',
-                                    '</div>');
-                                break;
-                            case 'label':
-                                html.push('<div class="form-block">',
-                                    '<div class="value" data-type="label" data-value="',
-                                    el.value,
-                                    '" data-placeholder="">',
-                                    '<span class="tmp-label">',
-                                    el.value,
-                                    '</span>',
-                                    '</div>',
-                                    '<button class="remove-field tmp-gen"> - </button>',
-                                    '</div>');
-                                break;
-                            case 'date':
-                                html.push(
-                                    '<div class="form-block">',
-                                        '<div class="value" data-type="date" data-value="" data-placeholder="',
-                                            el.placeholder,
+                                                '<canvas name="',
+                                                el.name,
+                                                '" class="panel panel-default" width="150" height="25"></canvas>',
+                                            '</div>',
+                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        '</div>');
+                                    break;
+                                case 'ticket':
+                                    debugger;
+                                    html.push(
+                                        '<div class="form-block">',
+                                        '<div class="value" data-type="ticket" data-value="" data-placeholder="" data-field-id="',
+                                        el.fieldId,
                                         '">',
-                                        '<input class="datepicker" name="',
-                                            el.name,
-                                            '" type="text" value="',
-                                            el.value,
-                                            '" placeholder="',
-                                            el.placeholder,
-                                            '">',
+                                        ticketFields[el.fieldId] && ticketFields[el.fieldId].name || '',
                                         '</div>',
-                                    '<button class="remove-field tmp-gen"> - </button>',
-                                    '</div>');
-                                break;
-                            case 'canvas':
-                                html.push(
-                                    '<div class="form-block">',
-                                        '<div class="value" data-type="canvas" data-value="" data-placeholder="',
-                                        el.placeholder,
-                                        '">',
-                                            '<canvas name="',
-                                            el.name,
-                                            '" class="panel panel-default" width="150" height="25"></canvas>',
-                                        '</div>',
-                                    '<button class="remove-field tmp-gen"> - </button>',
-                                    '</div>');
-                                break;
-                            case 'ticket':
-                                html.push(
-                                    '<div class="form-block">',
-                                    '<div class="value" data-type="ticket" data-value="" data-placeholder="" data-field-id="',
-                                    el.fieldId,
-                                    '">',
-                                    el.label || '',
-                                    '</div>',
-                                    '<button class="remove-field tmp-gen"> - </button>',
-                                    '</div>');
-                                break;
-                            case 'select':
-                                var options = [];
+                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        '</div>');
+                                    break;
+                                case 'select':
+                                    var options = [];
 
-                                $(el.values).each(function(){
-                                    options.push('<option value="'+this+'">'+this+'</option>');
-                                });
-                                html.push(
-                                    '<div class="form-block">',
-                                        '<div class="value" data-type="select" data-value="" data-placeholder="',
-                                        el.placeholder,
-                                        '">',
-                                            '<select class="selectize" name="',
-                                            el.name,
-                                            '" ',
-                                            el.multiple ? 'multiple="multiple"' : '',
-                                            ' >',
-                                                options.join(''),
-                                            '</select>',
-                                        '</div>',
-                                    '<button class="remove-field tmp-gen"> - </button>',
-                                    '</div>');
-                                break;
+                                    $(el.values).each(function(){
+                                        options.push('<option value="'+this+'">'+this+'</option>');
+                                    });
+                                    html.push(
+                                        '<div class="form-block">',
+                                            '<div class="value" data-type="select" data-value="" data-placeholder="',
+                                            el.placeholder,
+                                            '">',
+                                                '<select class="selectize" name="',
+                                                el.name,
+                                                '" ',
+                                                el.multiple ? 'multiple="multiple"' : '',
+                                                ' >',
+                                                    options.join(''),
+                                                '</select>',
+                                            '</div>',
+                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        '</div>');
+                                    break;
+                            }
                         }
+                        html.push('<button class="remove-line tmp-gen btn btn-danger">remove row</button>' ,
+                            '<button class="add-value tmp-gen btn btn-success">+</button></div>');
                     }
-                    html.push('<button class="remove-line tmp-gen btn btn-danger">remove row</button>' ,
-                        '<button class="add-value tmp-gen btn btn-success">+</button></div>');
+                    html.push('</div>');
                 }
-                html.push('</div>');
-            }
-
             $(container).html(html.join(''));
-//            this.initPluginsOnBuiltForm();
-            this.initPlugins();
+//            self.initPluginsOnBuiltForm();
+            self.initPlugins();
+            });
+
+
         },
 
         createJson: function(){
@@ -336,7 +340,6 @@ window.form = (function() {
         editorEvents: function(){
             var self = this;
             $('.field-type-select').on('change', $.proxy(this.updateField, this));
-            $('.config-value-container').find('input').on('keyup', $.proxy(this.updateField, this));
             $('.field-placeholder').on('change', $.proxy(this.updateField, this));
             $('.field-width-select').on('change', $.proxy(this.updateField, this));
 
@@ -407,9 +410,8 @@ window.form = (function() {
             switch (type) {
                 case 'text':
                     $(field).attr('data-value',value);
-                    $(field).html('<input name="'+self.guid()+'" type="text" value="'+value+'" placeholder="'+placeholder+'"/>');
+                    $(field).html('<input name="'+self.guid()+'" type="text" placeholder="'+placeholder+'"/>');
                     $('.fields-config .placeholder-container').show();
-                    $('.fields-config .value-container').show();
                     break;
                 case 'label':
                     $(field).attr('data-value',value);
