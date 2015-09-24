@@ -100,7 +100,8 @@
                 },
                 {
                     "type": "ticket",
-                    "fieldId": "0"
+                    "fieldId": "0",
+                    "label": "Ticket ID"
                 }
             ]
         ];
