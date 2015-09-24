@@ -490,8 +490,6 @@ window.form = (function() {
                     label = label && label.name || '';
                 $(field).html(label).attr('data-field-id', value);
             });
-
-            $(field).html('ticket value');
         },
 
         initPlugins: function(){
