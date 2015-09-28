@@ -226,6 +226,10 @@ class Columns {
                 return $value;
         } elseif ($type == 'date' || $type == 'datetime')
             return strtotime($value);
+        elseif ($type == 'float')
+            return floatval($value);
+        elseif ($type == 'int')
+            return intval($value);
         elseif ($type == 'bool')
             return $value ? 1 : 0;
         else
