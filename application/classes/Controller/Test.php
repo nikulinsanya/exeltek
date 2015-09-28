@@ -8,6 +8,14 @@ class Controller_Test extends Controller {
 
     public function action_index() {
         header('Content-type: text/plain');
+
+        set_time_limit(0);
+        $jobs = Database_Mongo::collection('jobs')->find();
+        foreach ($jobs as $job) {
+            Utils::calculate_financial($job);
+        }
+        die('Done');
+
         $list = Database_Mongo::collection('jobs')->find(array('discrepancies' => array('$nin' => array(NULL, '', 0))));
         $ids = array();
         foreach ($list as $job) {

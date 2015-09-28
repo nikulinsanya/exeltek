@@ -76,7 +76,7 @@
                 <td  class="<?=$class?>" <?= $id > 161 && $id < 182 ? "data-has-actual-relation='$relation_id'" : ''?> <?= $id > 189 && $id < 210 ? "data-has-variation-relation='$relation_id'" : ''?><?= $id > 242 && $id < 255 ? "data-has-additional-relation='$relation_id'" : ''?>>
                         <label  class="left-label"><?=HTML::chars($name)?><?=isset($values['data' . $id]) ? '*' : ''?>: </label>
                         <div class="">
-                            <?php $type = Columns::get_type($id); if (Columns::allowed($id) == Columns::COLUMN_WRITE):?>
+                            <?php $type = Columns::get_type($id); if (Columns::allowed($id) == Columns::COLUMN_WRITE && !Columns::get_readonly($id)):?>
                                 <?php echo Columns::input('data', $id, $type, $value); if (isset($submissions['data.' . $id])):?>
                                     <ul class="list-unstyled radio-container">
                                         <li><label><input type="radio" class="submission-select" data-id="data-<?=$id?>" name="submission-data[<?=$id?>]" value="0" />Keep current</label></li>

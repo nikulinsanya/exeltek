@@ -1,9 +1,83 @@
 window.form = (function() {
+    var formTemplate = '<div class="form-row" data-template-row style="display: none;">'+
+'        <button class="remove-line tmp-gen btn btn-danger">remove row</button>'+
+'        <button class="add-value tmp-gen btn btn-success">+</button>'+
+'    </div>'+
+'        <span data-template-value style="display: none;">'+
+'            <div class="form-block">'+
+'                <div class="value"><span class="tmp-label"></span></div>'+
+'                <button class="remove-field tmp-gen"> - </button>'+
+'            </div>'+
+'        </span>'+
+'    <div>'+
+'        <div class="form-container"></div>'+
+'        <div class="form-configuration-container">'+
+'            <div>'+
+'                <button class="add-row btn btn-success">Add row</button>'+
+'                <button class="add-line btn btn-danger">Add Line</button>'+
+'                <button class="save-form btn btn-warning">Save form</button>'+
+'                <div class="fields-config">'+
+'                    <div class="config-row">'+
+'                        <div class="config-label"> Type </div>'+
+'                        <div class="config-val">'+
+'                            <select class="field-type-select">'+
+'                                <option value="label" >Label</option>'+
+'                                <option value="text">Text input</option>'+
+'                                <option value="date">Date input</option>'+
+'                                <option value="canvas">Signature</option>'+
+'                                <option value="select">Select</option>'+
+'                                <option value="ticket">Ticket field</option>'+
+'                            </select>'+
+'                        </div>'+
+'                    </div>'+
+'                    <div class="config-row ticket-type-select">'+
+'                        <div class="config-label"> Ticket field </div>'+
+'                        <div class="config-val ticket-input-select">'+
+'                            <select></select>'+
+'                        </div>'+
+'                    </div>'+
+'                    <div class="config-row  placeholder-container">'+
+'                        <div class="config-label"> Placeholder </div>'+
+'                        <div class="config-val"><input type="text" class="field-placeholder"/></div>'+
+'                    </div>'+
+'                    <div class="config-row config-value-container  value-container">'+
+'                        <div class="config-label"> Value </div>'+
+'                        <div class="config-val"><input type="text"/></div>'+
+'                    </div>'+
+'                    <div class="config-row config-select-container">'+
+'                        <select class="available-options-select"></select>'+
+'                        <div class="config-val">'+
+'                            <input type="text" class="select-option">'+
+'                                <button class="add-option btn btn-info">Add option</button>'+
+'                                <br>'+
+'                                    <label><input type="checkbox" class="multiselect-option"> Multiple choises</label>'+
+'                                        <br>'+
+'                                            <button class="apply-option btn btn-danger">Apply</button>'+
+'                                        </div>'+
+'                                    </div>'+
+'                                </div>'+
+'                            </div>'+
+'                        </div>'+
+'                    </div>';
+
     var formBuilder = {
-        init: function(){
-            this.setHandlers();
-            this.editorEvents();
-            $('.add-row').trigger('click');
+        init: function(container, json){
+            this.prepareHtml(container);
+            if(json){
+                this.buildFormByJson($('.form-container'),json);
+                this.setHandlers();
+                this.editorEvents();
+
+            }else{
+                $('.add-row').trigger('click');
+                this.setHandlers();
+                this.editorEvents();
+            }
+
+
+        },
+        prepareHtml: function(container){
+            $(container).html(formTemplate);
         },
         focusedField : false,
         setHandlers: function(){
@@ -52,39 +126,220 @@ window.form = (function() {
 
             $('.save-form').on('click', function(){
                 if(confirm('Generate form?')){
-                    var orign = $('.form-container');
-                    $(orign).find('.tmp-gen').remove();
-                    $(orign).find('.selected').removeClass('selected');
-                    $(orign).addClass('submited');
-
-                    $('.form-configuration-container').remove();
-
-                    self.sendForm().then(function(){
-                        $('.form-container').html();
-                    });
+                    self.sendForm();
                 }
             });
         },
 
-        offHandlers: function(){
-
-        },
-
         sendForm: function(){
+            var json = this.createJson();
             return $.ajax({
                 url : utils.baseUrl() + 'form/generate',
                 type: 'POST',
-                data: $('.form-container').html(),
+                data: JSON.stringify(json),
                 success: function(){
                     alert('Posted');
                 }
             });
+        },
 
+        buildFormByJson: function(container, json){
+            var html = [],
+                el,
+                self = this,
+                htmlContainer,
+                i, j, l, k;
+            getColumns().then(function(ticketFields){
+                for(i = 0;i<json.length;i++){
+                    if(typeof(json[i]) == 'string'){
+                        html.push('<hr><button class="tmp-gen remove-hr tmp-gen btn btn-danger"> - </button>');
+                    }else{
+                        html.push('<div class="form-row">');
+                        for(j = 0;j<json[i].length;j++){
+                            el = json[i][j];
+                            switch (el.type) {
+                                case 'text':
+                                    html.push(
+                                        '<div class="form-block">',
+                                            '<div class="value" data-type="text" data-value="" data-placeholder="',
+                                                el.placeholder,
+                                                '">',
+                                                '<input name="',
+                                                 el.name,
+                                                '" type="text" value="',
+                                                    el.value,
+                                                    '" placeholder="',
+                                                el.placeholder,
+                                                '">',
+                                            '</div>',
+                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        '</div>');
+                                    break;
+                                case 'label':
+                                    html.push('<div class="form-block">',
+                                        '<div class="value" data-type="label" data-value="',
+                                        el.value,
+                                        '" data-placeholder="">',
+                                        '<span class="tmp-label">',
+                                        el.value,
+                                        '</span>',
+                                        '</div>',
+                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        '</div>');
+                                    break;
+                                case 'date':
+                                    html.push(
+                                        '<div class="form-block">',
+                                            '<div class="value" data-type="date" data-value="" data-placeholder="',
+                                                el.placeholder,
+                                            '">',
+                                            '<input class="datepicker" name="',
+                                                el.name,
+                                                '" type="text" value="',
+                                                el.value,
+                                                '" placeholder="',
+                                                el.placeholder,
+                                                '">',
+                                            '</div>',
+                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        '</div>');
+                                    break;
+                                case 'canvas':
+                                    html.push(
+                                        '<div class="form-block">',
+                                            '<div class="value" data-type="canvas" data-value="" data-placeholder="',
+                                            el.placeholder,
+                                            '">',
+                                                '<canvas name="',
+                                                el.name,
+                                                '" class="panel panel-default" width="150" height="25"></canvas>',
+                                            '</div>',
+                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        '</div>');
+                                    break;
+                                case 'ticket':
+                                    var name = utils.searchInListById(el.fieldId,ticketFields);
+                                    name = name && name.name || '';
+                                    html.push(
+                                        '<div class="form-block">',
+                                        '<div class="value" data-type="ticket" data-value="" data-placeholder="" data-field-id="',
+                                        el.fieldId,
+                                        '">',
+                                         name,
+                                        '</div>',
+                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        '</div>');
+                                    break;
+                                case 'select':
+                                    var options = [];
+
+                                    $(el.values).each(function(){
+                                        options.push('<option value="'+this+'">'+this+'</option>');
+                                    });
+                                    html.push(
+                                        '<div class="form-block">',
+                                            '<div class="value" data-type="select" data-value="" data-placeholder="',
+                                            el.placeholder,
+                                            '">',
+                                                '<select class="selectize" name="',
+                                                el.name,
+                                                '" ',
+                                                el.multiple ? 'multiple="multiple"' : '',
+                                                ' >',
+                                                    options.join(''),
+                                                '</select>',
+                                            '</div>',
+                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        '</div>');
+                                    break;
+                            }
+                        }
+                        html.push('<button class="remove-line tmp-gen btn btn-danger">remove row</button>' ,
+                            '<button class="add-value tmp-gen btn btn-success">+</button></div>');
+                    }
+                    html.push('</div>');
+                }
+            $(container).html(html.join(''));
+//            self.initPluginsOnBuiltForm();
+            self.initPlugins();
+            });
+
+
+        },
+
+        createJson: function(){
+            var items = $('.form-container').find('.form-row'),
+                i,
+                vals,
+                row = [],
+                valObject,
+                rowObjects;
+            items.each(function(){
+                rowObjects = [];
+                vals = $(this).find('.value');
+                vals.each(function(){
+                    valObject = {};
+                    switch ($(this).attr('data-type')) {
+                        case 'text':
+                            valObject = {
+                                type:'text',
+                                placeholder: $(this).attr('data-placeholder'),
+                                    value: $(this).attr('data-value'),
+                                    name: $(this).find('input[type="text"]').attr('name')
+                            };
+                            break;
+                        case 'label':
+                            valObject = {
+                                type:'label',
+                                value: $(this).attr('data-value')
+                            };
+                            break;
+                        case 'date':
+                            valObject = {
+                                type:'date',
+                                placeholder: $(this).attr('data-placeholder'),
+                                value: $(this).find('input[type="text"]').val(),
+                                name: $(this).find('input[type="text"]').attr('name')
+                            };
+                            break;
+                        case 'canvas':
+                            valObject = {
+                                type:'canvas',
+                                name: $(this).find('canvas').attr('name')
+                            };
+                            break;
+                        case 'ticket':
+                            valObject = {
+                                type:'ticket',
+                                fieldId: $(this).attr('data-field-id')
+                            };
+                            break;
+                        case 'select':
+                            var options = [];
+                            $(this).find('select').find('option').each(function(){
+                                options.push($(this).text());
+                            });
+                            valObject = {
+                                type:'select',
+                                multiple: !!$(this).find('select').attr('multiple'),
+                                values: options,
+                                name: $(this).find('select').attr('name')
+                            };
+
+                            break;
+                    }
+                    rowObjects.push(valObject);
+                    });
+                row.push(rowObjects);
+                if($(this).next()[0] && $(this).next()[0].nodeName == 'HR'){
+                    row.push('<hr>');
+                }
+            });
+            return(row);
         },
         editorEvents: function(){
             var self = this;
             $('.field-type-select').on('change', $.proxy(this.updateField, this));
-            $('.config-value-container').find('input').on('keyup', $.proxy(this.updateField, this));
             $('.field-placeholder').on('change', $.proxy(this.updateField, this));
             $('.field-width-select').on('change', $.proxy(this.updateField, this));
 
@@ -155,9 +410,8 @@ window.form = (function() {
             switch (type) {
                 case 'text':
                     $(field).attr('data-value',value);
-                    $(field).html('<input name="'+self.guid()+'" type="text" value="'+value+'" placeholder="'+placeholder+'"/>');
+                    $(field).html('<input name="'+self.guid()+'" type="text" placeholder="'+placeholder+'"/>');
                     $('.fields-config .placeholder-container').show();
-                    $('.fields-config .value-container').show();
                     break;
                 case 'label':
                     $(field).attr('data-value',value);
@@ -165,8 +419,8 @@ window.form = (function() {
                     $('.fields-config .value-container').show();
                     break;
                 case 'date':
-                    $(field).attr('data-value',value);
-                    $(field).html('<input name="'+self.guid()+'"  type="text" class="datepicker" value="'+value+'"/>');
+                    $(field).attr('data-value','');
+                    $(field).html('<input name="'+self.guid()+'"  type="text" class="datepicker" value="" placeholder="'+placeholder+'"/>');
                     $('.fields-config .placeholder-container').show();
                     $(field).find('input[type="text"]').attr('data-placeholder',placeholder);
                     break;
@@ -199,8 +453,11 @@ window.form = (function() {
 
         handleTicketField: function(field){
             var html = [], i,
-                select = $('.ticket-input-select select');
+                select = $('.ticket-input-select select'),
+                value = field.attr('data-field-id'),
+                text;
             $('.ticket-input-select select').html('');
+
             getColumns().then(function(data){
                 for(i in data){
                     html.push(
@@ -211,28 +468,48 @@ window.form = (function() {
                         '</option>');
                 }
                 $('.ticket-input-select select').html(html.join(''));
+
                 $('.ticket-input-select select').selectize();
+                if(value){
+                    $('.ticket-input-select select').val(value);
+                    text = $('.ticket-input-select select').find('option:selected').text();
+                    $('.selectize-input').find('.item').text(text);
+                }
+
+
+
                 $('.ticket-type-select').show();
-                select.on('change', function(e){
+                select.off().on('change', function(e){
                     var fieldId = $(this).val(),
                         label = $(this).find(":selected").text();
                     $(field).html(label).attr('data-field-id', fieldId);
                 });
-                var fieldId = $(select).val(),
-                    label = $(select).find(":selected").text();
-                $(field).html(label).attr('data-field-id', fieldId);
-            });
 
-            $(field).html('ticket value');
+                var fieldId = $(select).val(),
+                    label = utils.searchInListById(value,data);
+                    label = label && label.name || '';
+                $(field).html(label).attr('data-field-id', value);
+            });
         },
 
         initPlugins: function(){
             if($('canvas').length){
                 var signature = new SignaturePad(document.querySelector('canvas'));
             }
+//            $('select.selectize').selectize();
+//            $('.datepicker').datepicker({
+//                dateFormat: 'dd-mm-yy'
+//            });
+        },
+
+        initPluginsOnBuiltForm: function(){
+            if($('canvas').length){
+                var signature = new SignaturePad(document.querySelector('canvas'));
+            }
             $('.datepicker').datepicker({
                 dateFormat: 'dd-mm-yy'
             });
+            $('select.selectize').selectize();
         },
 
         guid: function () {
@@ -261,8 +538,4 @@ window.form = (function() {
 })(window);
 
 
-$(document).on('ready',function(){
-    form.init();
-
-});
 

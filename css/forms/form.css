@@ -60,6 +60,9 @@ html, body {
     float: left;
     margin-right: 3px;
     line-height: 25px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
 }
 
@@ -128,17 +131,26 @@ hr{
     float: right;
 }
 
+.submited .value,
 .submited .value.selected{
     box-shadow: none;
 }
 .submited .value[data-type="label"]{
     box-shadow: none;
 }
+.submited .form-row{
+    border:none;
+    height: 37px;
+}
 .value[data-type="label"]{
     width: auto;
-    min-width: 50px;
+    min-width: 150px;
 }
 
 .form-container.submited{
     width: 100%;
+}
+
+#newFormContainer{
+    display: none;
 }
