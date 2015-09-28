@@ -820,7 +820,8 @@ $(function () {
         var url = $(this).parents('table').attr('data-url');
         var company = $(this).attr('data-company');
         var column = $(this).attr('data-column');
-        $.get(url + '?id=' + column + '&company=' + company + '&rate=' + $(this).val());
+        var region = $(this).attr('data-region');
+        $.get(url + '?id=' + column + '&company=' + company + '&region=' + region + '&rate=' + $(this).val());
     })
     
     $('ul.dropdown-menu').find('input,select,textarea').keypress(function(e) {

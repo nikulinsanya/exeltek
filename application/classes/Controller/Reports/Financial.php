@@ -63,7 +63,7 @@ class Controller_Reports_Financial extends Controller {
         $users = array();
 
         $jobs = array();
-        $keys = array();
+        $keys = array('region' => 1);
 
         foreach ($result as $submission) {
             $jobs[$submission['job_key']] = 1;
@@ -82,12 +82,12 @@ class Controller_Reports_Financial extends Controller {
 
         $rates = array();
 
-        $result = DB::select('company_id', 'column_id', 'rate')->from('rates')->execute();
+        $result = DB::select()->from('rates')->execute();
 
         foreach ($result as $row)
-            $rates[$row['company_id']][$row['column_id']] = $row['rate'];
+            $rates[$row['company_id']][$row['region_id']][$row['column_id']] = $row['rate'];
 
-        $columns = DB::select('id', 'financial')->from('job_columns')->where('financial', '>', 0)->execute()->as_array('id', 'financial');
+        $columns = Columns::get_financial();
 
         $approved = array();
         $duplicates = array();
@@ -98,6 +98,7 @@ class Controller_Reports_Financial extends Controller {
         if (Group::current('allow_assign') && isset($_GET['approve']) && Arr::get($_GET, 'company')) {
             $rates = Arr::get($rates, $_GET['company'], array());
             foreach ($submissions as $job => $list) {
+                $region = $jobs[$job]['region'];
                 $data = array();
                 $partial_fl = false;
                 $full_fl = true;
@@ -108,21 +109,23 @@ class Controller_Reports_Financial extends Controller {
                     $data[$submission['key']][] = $submission;
 
                 foreach ($data as $key => $values) {
+                    $key = substr($key, 5);
+                    $rate = isset($rates[$region][$key]) ? $rates[$region][$key] : (isset($rates[0][$key]) ? $rates[0][$key] : 0);
                     $value = array_shift($values);
                     if (count($values)) {
                         $dup_fl = true;
                         $full_fl = false;
-                    } elseif ($value['value'] != Arr::path($jobs, $job . '.' . $key)) {
+                    } elseif ($value['value'] != Arr::path($jobs, $job . '.data.' . $key)) {
                         $discr_fl = true;
                         $full_fl = false;
-                    } elseif (!Arr::get($rates, substr($key, 5))) {
+                    } elseif (!$rate) {
                         $skip_fl = true;
                         $full_fl = false;
                     } elseif (!$value['financial_time']) {
                         $approved[] = array(
                             'id' => $value['_id'],
-                            'rate' => $rates[substr($key, 5)],
-                            'paid' => min(floatval($value['value']), Arr::get($columns, substr($key, 5))),
+                            'rate' => $rate,
+                            'paid' => min(floatval($value['value']), Arr::get($columns, $key)),
                         );
                         $partial_fl = true;
                     }
@@ -148,6 +151,11 @@ class Controller_Reports_Financial extends Controller {
                     'financial_time' => $time,
                 )));
             }
+
+            $jobs = Database_Mongo::collection('jobs')->find(array('_id' => array('$in' => array_keys($jobs))));
+            foreach ($jobs as $job)
+                Utils::calculate_financial($job);
+
             Messages::save(sprintf('%d/%d tickets were successfully approved.', count($full), count($jobs)), 'success');
             if ($partial) Messages::save(sprintf('%d tickets were partially approved.', count($partial)), 'warning');
             if ($discr) Messages::save(sprintf('%d tickets contain discrepancies.', count($discr)), 'danger');
@@ -354,6 +362,9 @@ class Controller_Reports_Financial extends Controller {
         $result = Database_Mongo::collection('submissions')->findOne(array('_id' => $id));
         
         if (!$result) throw new HTTP_Exception_404('Not found');
+
+        $job = Database_Mongo::collection('jobs')->findOne(array('_id' => $result['job_key']));
+        $region = $job['region'];
         
         $key = substr($result['key'], 5);
         $max = DB::select('financial')->from('job_columns')->where('id', '=', $key)->execute()->get('financial');
@@ -361,7 +372,9 @@ class Controller_Reports_Financial extends Controller {
         if ($value > $max) $value = $max;
         
         $company = User::get($result['user_id'], 'company_id');
-        $rate = DB::select('rate')->from('rates')->where('company_id', '=', $company)->and_where('column_id', '=', $key)->execute()->get('rate');
+        $rates = DB::select('region_id', 'rate')->from('rates')->where('company_id', '=', $company)->and_where('column_id', '=', $key)->execute()->as_array('region_id', 'rate');
+
+        $rate = Arr::get($rates, $region, Arr::get($rates, 0, 0));
         
         if (!$rate) throw new HTTP_Exception_403('Forbidden');
         
@@ -374,6 +387,8 @@ class Controller_Reports_Financial extends Controller {
         ));
         
         Database_Mongo::collection('submissions')->update(array('_id' => $id), $update);
+
+        Utils::calculate_financial($job);
 
         die(json_encode(array('success' => true, 'rate' => $rate, 'value' => $value, 'time' => date('d-m-Y H:i', $time))));
     }

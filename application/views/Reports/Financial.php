@@ -120,12 +120,16 @@
         <th>Rate</th>
         <?php if (Group::current('allow_assign')):?><th>&nbsp;</th><?php endif;?>
     </tr>
-    <?php foreach ($submissions as $job => $list):?>
+    <?php foreach ($submissions as $job => $list): $region = Arr::path($jobs, array($job, 'region'), 0);?>
         <tr class="ticket-id <?=isset($discrepancies[$job])? 'discrepancy text-center'  . (Arr::get($_GET, 'discrepancy') ? ' hidden' : '') : 'text-center'?>">
             <th colspan="<?=Group::current('allow_assign') ? 12 : 9?>"><a href="<?=URL::base()?>search/view/<?=$job?>"><?=$job?></a></th>
         </tr>
 
-        <?php foreach ($list as $submission): $key = substr($submission['key'], 5); $type = Columns::get_type($key); $discr = Group::current('allow_assign') && Arr::path($jobs, $job . '.' . $submission['key']) != $submission['value'];?>
+        <?php foreach ($list as $submission):
+            $key = substr($submission['key'], 5);
+            $type = Columns::get_type($key);
+            $discr = Group::current('allow_assign') && Arr::path($jobs, $job . '.' . $submission['key']) != $submission['value'];
+            $rate = Arr::path($rates, array(User::get($submission['user_id'], 'company_id'), $region, $key), Arr::path($rates, array(User::get($submission['user_id'], 'company_id'), 0, $key), 0));?>
         <tr class="submission text-center <?=$discr ? 'rose' : (Arr::get($_GET, 'discrepancy') ? 'hidden ' : '') .  (Arr::get($submission, 'financial_time') ? 'lgreen' : 'yellow')?>" data-id="<?=$job?>">
             <td><?=date('d-m-Y H:i', $submission['update_time'])?></td>
             <td><?=Arr::get($submission, 'process_time') ? date('d-m-Y H:i', $submission['process_time']) : ''?></td>
@@ -137,10 +141,10 @@
             <?php if (Group::current('allow_assign')):?><td><?=Arr::path($jobs, $job . '.' . $submission['key']) ? Columns::output($jobs[$job]['data'][$key], $type) : ''?></td><?php endif;?>
             <td class="paid"><?=Arr::get($submission, 'paid')?></td>
             <td><?=floatval(Arr::get($columns, $key))?></td>
-            <td class="rate"><?=Arr::get($submission, 'rate') ? number_format($submission['rate'], 2) : Arr::path($rates, array(User::get($submission['user_id'], 'company_id'), $key), '')?></td>
+            <td class="rate"><?=Arr::get($submission, 'rate') ? number_format($submission['rate'], 2) : $rate?></td>
             <?php if (Group::current('allow_assign')):?>
             <td>
-                <?php if (!$submission['financial_time'] && Arr::path($rates, array(User::get($submission['user_id'], 'company_id'), $key), '')):?>
+                <?php if (!$submission['financial_time'] && $rate):?>
                 <a href="javascript:;" data-id="<?=$submission['_id']?>" data-value="<?=min(floatval(Arr::get($columns, $key)), floatval($submission['value']) ? : 1)?>" data-max="<?=floatval(Arr::get($columns, $key))?>" class="btn btn-success approve-financial">Approve</a>
                 <?php else: echo '&nbsp;'; endif;?>
             </td>

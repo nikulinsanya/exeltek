@@ -324,6 +324,7 @@ class Controller_Search_View extends Controller {
                 }
 
                 if ($update) {
+                    Utils::calculate_financial($job);
                     $update['$set']['companies'] = array_keys($companies);
 
                     $status = Arr::get($job, 'status', Enums::STATUS_UNALLOC);

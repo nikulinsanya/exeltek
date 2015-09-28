@@ -72,6 +72,8 @@ class Columns {
     private static $direct = array();
     private static $track = array();
     private static $persistent = array();
+    private static $readonly = array();
+    private static $financial = array();
     
     private static function init() {
         $columns = DB::select()->from('job_columns')->execute()->as_array();
@@ -95,6 +97,8 @@ class Columns {
             if (Arr::get($search, $column['id'])) self::$search[$column['id']] = Arr::get($search, $column['id']);
             if ($column['track']) self::$track[$column['id']] = $column['id'];
             if ($column['persistent']) self::$persistent[$column['id']] = $column['id'];
+            if ($column['read_only']) self::$readonly[$column['id']] = $column['id'];
+            if (floatval($column['financial'])) self::$financial[$column['id']] = floatval($column['financial']);
         }
         
         if (Group::current('is_admin')) {
@@ -103,7 +107,21 @@ class Columns {
         } else
             self::$columns = array_intersect_key(self::$all, self::$permissions);
     }
-    
+
+    public static function get_readonly($id = false) {
+        if (!self::$all)
+            self::init();
+
+        return $id ? Arr::get(self::$readonly, $id) : self::$readonly;
+    }
+
+    public static function get_financial($id = false) {
+        if (!self::$all)
+            self::init();
+
+        return $id ? Arr::get(self::$financial, $id) : self::$financial;
+    }
+
     public static function get_name($id) {
         if (!self::$all)
             self::init();
