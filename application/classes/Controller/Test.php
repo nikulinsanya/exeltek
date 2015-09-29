@@ -11,7 +11,7 @@ class Controller_Test extends Controller {
 
         $list = Database_Mongo::collection('archive')->distinct('job_key', array('update_time' => array('$gt' => strtotime('2015-09-01')), 'data.44.new_value' => array('$in' => array('TESTED', '[3] Tested'))));
         $list = Database_Mongo::collection('jobs')->distinct('_id', array('_id' => array('$in' => $list), 'data.12' => '4AAR'));
-        print_r($list);
+        echo implode("\n", $list);
         die();
 
         set_time_limit(0);
