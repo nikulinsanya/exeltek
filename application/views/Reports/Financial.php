@@ -10,6 +10,14 @@
                 </div>
             </span>
             </div>
+
+            <div class="col-xs-12 col-md-6">
+                <label class="date-range-label">Ticket ID:</label>
+            <span class="filter-select-container">
+                <input type="text" class="form-control" id="ticket-id" placeholder="Ticket ID" name="ticket" value="<?=Arr::get($_GET, 'ticket')?>" />
+            </span>
+            </div>
+
             <div class="col-xs-12 col-md-6">
 
             <label class="date-range-label">Date range(Approved) :</label>
@@ -20,8 +28,13 @@
                 </div>
             </span>
             </div>
-            <div class="col-xs-12 col-md-6">
 
+            <div class="col-xs-12 col-md-6">
+                <label class="date-range-label">Discrepancies only: </label>
+                <input name="discrepancy" type="checkbox" class="discrepancy no-submit" <?=Arr::get($_GET, 'discrepancy') ? ' checked' : ''?>/>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
             <label class="date-range-label">Date range(Financial) :</label>
              <span class="date-range-container">
                 <div class="daterange" class="pull-right"  data-start="fin-start" data-end="fin-end" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
@@ -38,10 +51,6 @@
                 </span>
             </div>
 
-            <div class="col-xs-12 col-md-6">
-                <label class="date-range-label">Discrepancies only: </label>
-                <input name="discrepancy" type="checkbox" class="discrepancy no-submit" <?=Arr::get($_GET, 'discrepancy') ? ' checked' : ''?>/>
-            </div>
             <div class="col-xs-12 col-md-6">
                 <label class="date-range-label filter-select-label">FSAM: </label>
                         <span class="filter-select-container" data-fsam-selected="<?=isset($_GET['fsam']) ? implode(',',Arr::get($_GET, 'fsam')):''?>">
@@ -122,7 +131,9 @@
     </tr>
     <?php foreach ($submissions as $job => $list): $region = Arr::path($jobs, array($job, 'region'), 0);?>
         <tr class="ticket-id <?=isset($discrepancies[$job])? 'discrepancy text-center'  . (Arr::get($_GET, 'discrepancy') ? ' hidden' : '') : 'text-center'?>">
-            <th colspan="<?=Group::current('allow_assign') ? 12 : 9?>"><a href="<?=URL::base()?>search/view/<?=$job?>"><?=$job?></a></th>
+            <th colspan="<?=Group::current('allow_assign') ? 12 : 9?>">
+                <a href="<?=URL::base()?>search/view/<?=$job?>"><?=$job?>, <?=Arr::path($jobs, array($job, 'data', 9))?>, <?=Arr::path($jobs, array($job, 'data', 14))?>, <?=Arr::path($jobs, array($job, 'data', 8))?></a>
+            </th>
         </tr>
 
         <?php foreach ($list as $submission):

@@ -36,6 +36,49 @@ class Controller_Reports_Financial extends Controller {
         if (!Group::current('allow_assign') || Arr::get($_GET, 'company'))
             $query['user_id'] = array('$in' => DB::select('id')->from('users')->where('company_id', '=', Group::current('allow_assign') ? $_GET['company'] : User::current('company_id'))->execute()->as_array(NULL, 'id'));
 
+        $jobs = array();
+
+        if (Arr::get($_GET, 'ticket')) {
+            $tickets = explode(',', $_GET['ticket']);
+            $q = array();
+            foreach ($tickets as $ticket) {
+                $ticket = preg_replace('/[^a-z0-9]/i', '', strval($ticket));
+                if (!$ticket) continue;
+                if (preg_match('/^T1W[0-9]{12}$/', $ticket))
+                    $q[] = $ticket;
+                else
+                    $q[] = new MongoRegex('/.*' . $ticket . '.*/i');
+            }
+            if (count($q) > 1)
+                $jobs['_id'] = array('$in' => $q);
+            elseif ($q)
+                $jobs['_id'] = $q[0];
+        }
+
+        if (Arr::get($_GET, 'fsa')) {
+            $values = is_array($_GET['fsa']) ? $_GET['fsa'] : explode(',', $_GET['fsa']);
+            $jobs['data.12'] = count($values) > 1 ? array('$in' => array_values($values)) : current($values);
+        }
+
+        if (Arr::get($_GET, 'fsam')) {
+            $values = is_array($_GET['fsam']) ? $_GET['fsam'] : explode(',', $_GET['fsam']);
+            $jobs['data.13'] = count($values) > 1 ? array('$in' => array_values($values)) : current($values);
+        }
+
+        if (Arr::get($_GET, 'fda')) {
+            $values = is_array($_GET['fda']) ? $_GET['fda'] : explode(',', $_GET['fda']);
+            $jobs['data.14'] = count($values) > 1 ? array('$in' => array_values($values)) : current($values);
+        }
+
+        if (Arr::get($_GET, 'address'))
+            $jobs['data.8'] = new MongoRegex('/.*' . strval($_GET['address']) . '.*/mi');
+
+        if ($jobs)
+            if (count($jobs) == 1 && isset($jobs['_id']))
+                $query['job_key'] = $jobs['_id'];
+            else
+                $query['job_key'] = array('$in' => Database_Mongo::collection('jobs')->distinct('_id', $jobs));
+
         $sort = array('job_key' => 1);
 
         if (!Arr::get($_GET, 'sort'))
@@ -63,7 +106,7 @@ class Controller_Reports_Financial extends Controller {
         $users = array();
 
         $jobs = array();
-        $keys = array('region' => 1);
+        $keys = array('region' => 1, 'data.8' => 1, 'data.9' => 1, 'data.14' => 1);
 
         foreach ($result as $submission) {
             $jobs[$submission['job_key']] = 1;
