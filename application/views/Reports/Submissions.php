@@ -11,6 +11,7 @@
             </div>
         </span>
         </div>
+
         <div class="col-xs-12 col-md-6">
             <label class="date-range-label">Ticket ID:</label>
         <span class="filter-select-container">
