@@ -11,7 +11,9 @@ class Controller extends Kohana_Controller {
             unset($_GET[$url]);
         if (isset($_GET[$url . '/'])) 
             unset($_GET[$url . '/']);
-            
+
+        if (Group::current('is_admin') || (Group::current('show_all_jobs') && Group::current('allow_finance'))) Pager::$counts[] = 2500;
+
         if (Arr::get($_GET, 'limit') && in_array($_GET['limit'], Pager::$counts)) {
             DB::update('users')->set(array('list_items' => intval($_GET['limit'])))->where('id', '=', User::current('id'))->execute();
             die(json_encode(array('success' => 'true')));

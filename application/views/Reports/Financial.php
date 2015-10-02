@@ -114,7 +114,7 @@
 <?php endif;?>
 </div>
 <div class="clearfix">&nbsp;</div>
-<table class="table table-hover" <?=Group::current('allow_assign') ? 'data-url="' . URL::base() . 'reports/financial/approve"' : ''?>>
+<table class="table table-hover">
     <tr class="text-center">
         <th class="sortable" data-id="submission">Submission date</th>
         <th class="sortable" data-id="approval">Approval date</th>
@@ -156,7 +156,9 @@
             <?php if (Group::current('allow_assign')):?>
             <td>
                 <?php if (!$submission['financial_time'] && $rate):?>
-                <a href="javascript:;" data-id="<?=$submission['_id']?>" data-value="<?=min(floatval(Arr::get($columns, $key)), floatval($submission['value']) ? : 1)?>" data-max="<?=floatval(Arr::get($columns, $key))?>" class="btn btn-success approve-financial">Approve</a>
+                    <button type="button" data-rate="<?=$rate?>" data-id="<?=$submission['_id']?>" data-value="<?=min(floatval(Arr::get($columns, $key)), floatval($submission['value']) ? : 1)?>" data-max="<?=floatval(Arr::get($columns, $key))?>" class="btn btn-success approve-financial">Approve</button>
+                <?php elseif ($submission['financial_time']):?>
+                    <button type="button" data-rate="<?=$rate?>" data-id="<?=$submission['_id']?>" data-value="<?=min(floatval(Arr::get($columns, $key)), floatval($submission['value']) ? : 1)?>" data-max="<?=floatval(Arr::get($columns, $key))?>" class="btn btn-warning unapprove-financial">Unapprove</button>
                 <?php else: echo '&nbsp;'; endif;?>
             </td>
             <?php endif;?>

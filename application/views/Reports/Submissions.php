@@ -3,7 +3,7 @@
 
     <div class="submission-filter-container">
         <div class="col-xs-12 col-md-6">
-        <label class="date-range-label">Date range: </label>
+            <label class="date-range-label">Date range: </label>
         <span class="date-range-container">
             <div class="daterange" class="pull-right" data-start="start" data-end="end" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
                 <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
@@ -20,7 +20,7 @@
         </div>
 
         <div class="col-xs-12 col-md-6">
-        <label class="date-range-label">Date range(Approved) :</label>
+            <label class="date-range-label">Date range(Approved) :</label>
          <span class="date-range-container">
             <div class="daterange" class="pull-right"  data-start="app-start" data-end="app-end" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
                 <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
@@ -38,7 +38,7 @@
         </div>
 
         <div class="col-xs-12 col-md-6">
-        <label class="date-range-label filter-select-label">Is job finished? </label>
+            <label class="date-range-label filter-select-label">Is job finished? </label>
         <span class="filter-select-container">
             <select name="finished" class="multiselect">
                 <option value="">Select</option>
@@ -57,8 +57,8 @@
 
 
         <?php if (Group::current('allow_assign')):?>
-        <div class="col-xs-12 col-md-6">
-            <label class="date-range-label filter-select-label">Contractors :</label>
+            <div class="col-xs-12 col-md-6">
+                <label class="date-range-label filter-select-label">Contractors :</label>
         <span class="filter-select-container">
             <select name="company" class="multiselect">
                 <option value="">All contractors</option>
@@ -67,10 +67,10 @@
                 <?php endforeach;?>
             </select>
         </span>
-        </div>
+            </div>
         <?php endif;?>
         <div class="col-xs-12 col-md-6">
-        <label class="date-range-label filter-select-label">FDA: </label>
+            <label class="date-range-label filter-select-label">FDA: </label>
             <span class="filter-select-container" data-fda-selected="<?=isset($_GET['fda']) ? implode(',',Arr::get($_GET, 'fda')):''?>">
             <?=Form::select('fda[]', [], NULL, array('class' => 'fda-filter multiselect', 'multiple' => 'multiple'))?>
         </span>
@@ -82,7 +82,7 @@
             </span>
         </div>
     </div>
-        <div class="clearfix">&nbsp;</div>
+    <div class="clearfix">&nbsp;</div>
     <div class="col-xs-12 col-md-6">
         <button type="submit" class="btn btn-success">Apply filters</button>
     </div>
@@ -96,16 +96,17 @@
     </div>
 
 
-<?=Form::hidden('start', Arr::get($_GET, 'start', date('d-m-Y', $week)), array('class' => 'form-control datepicker', 'placeholder' => 'Start date', 'id' => 'start'))?>
-<?=Form::hidden('end', Arr::get($_GET, 'end', date('d-m-Y')), array('class' => 'form-control datepicker', 'placeholder' => 'End date', 'id' => 'end'))?>
+    <?=Form::hidden('start', Arr::get($_GET, 'start', date('d-m-Y', $week)), array('class' => 'form-control datepicker', 'placeholder' => 'Start date', 'id' => 'start'))?>
+    <?=Form::hidden('end', Arr::get($_GET, 'end', date('d-m-Y')), array('class' => 'form-control datepicker', 'placeholder' => 'End date', 'id' => 'end'))?>
 
-<?=Form::hidden('app-start', Arr::get($_GET, 'app-start'), array('class' => 'form-control datepicker', 'placeholder' => 'Start date (Approved)', 'id' => 'app-start'))?>
-<?=Form::hidden('app-end', Arr::get($_GET, 'app-end'), array('class' => 'form-control datepicker', 'placeholder' => 'End date (Approved)', 'id' => 'app-end'))?>
+    <?=Form::hidden('app-start', Arr::get($_GET, 'app-start'), array('class' => 'form-control datepicker', 'placeholder' => 'Start date (Approved)', 'id' => 'app-start'))?>
+    <?=Form::hidden('app-end', Arr::get($_GET, 'app-end'), array('class' => 'form-control datepicker', 'placeholder' => 'End date (Approved)', 'id' => 'app-end'))?>
 </form>
 <h2>Total <?=count($submissions)?> job(s) found:</h2>
 <div class="upload-buttons text-right">
-<a href="?export&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', $week))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="btn btn-info"><span class="glyphicon glyphicon-export"></span> Export</a>
-<a href="?export2&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', $week))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="btn btn-primary"><span class="glyphicon glyphicon-export"></span> Export grouped</a>
+    <a href="?export&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', $week))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="btn btn-info"><span class="glyphicon glyphicon-export"></span> Export</a>
+    <a href="?export2&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', $week))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="btn btn-primary"><span class="glyphicon glyphicon-export"></span> Export grouped</a>
+    <a href="?export3&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', $week))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="btn btn-warning"><span class="glyphicon glyphicon-export"></span> Export all columns</a>
 </div>
 <table class="table table-hover">
     <tr class="text-center">
@@ -124,18 +125,19 @@
         </tr>
 
         <?php foreach ($list as $submission): $key = substr($submission['key'], 5); $status = Arr::get($submission, 'active', 0);?>
-        <tr class="text-center <?=$status > 0 ? 'yellow' : ($status < 0 ? 'lgreen' : 'rose')?>">
-            <td><?=date('d-m-Y H:i', $submission['update_time'])?></td>
-            <td><?=isset($submission['process_time']) ? date('d-m-Y H:i', $submission['process_time']) : ''?></td>
-            <td><?=User::get($submission['user_id'], 'login')?></td>
-            <?php if (Group::current('allow_assign')):?><td><?=Arr::get($companies, User::get($submission['user_id'], 'company_id'), 'Unknown')?></td><?php endif;?>
-            <td><?=Columns::get_name($key)?></td>
-            <td class="<?=strlen(Columns::output($submission['value'], Columns::get_type($key))) > 2 ? 'shorten' : ''?>"><?=Columns::output($submission['value'], Columns::get_type($key))?></td>
-        </tr>
-    <?php endforeach;?>
+            <tr class="text-center <?=$status > 0 ? 'yellow' : ($status < 0 ? 'lgreen' : 'rose')?>">
+                <td><?=date('d-m-Y H:i', $submission['update_time'])?></td>
+                <td><?=isset($submission['process_time']) ? date('d-m-Y H:i', $submission['process_time']) : ''?></td>
+                <td><?=User::get($submission['user_id'], 'login')?></td>
+                <?php if (Group::current('allow_assign')):?><td><?=Arr::get($companies, User::get($submission['user_id'], 'company_id'), 'Unknown')?></td><?php endif;?>
+                <td><?=Columns::get_name($key)?></td>
+                <td class="<?=strlen(Columns::output($submission['value'], Columns::get_type($key))) > 2 ? 'shorten' : ''?>"><?=Columns::output($submission['value'], Columns::get_type($key))?></td>
+            </tr>
+        <?php endforeach;?>
     <?php endforeach;?>
 </table>
 <div class="upload-buttons text-right">
     <a href="?export&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', $week))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="btn btn-info"><span class="glyphicon glyphicon-export"></span> Export</a>
     <a href="?export2&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', $week))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="btn btn-primary"><span class="glyphicon glyphicon-export"></span> Export grouped</a>
+    <a href="?export3&company=<?=Arr::get($_GET, 'company')?>&start=<?=Arr::get($_GET, 'start', date('d-m-Y', $week))?>&end=<?=Arr::get($_GET, 'end', date('d-m-Y'))?>" class="btn btn-warning"><span class="glyphicon glyphicon-export"></span> Export all columns</a>
 </div>

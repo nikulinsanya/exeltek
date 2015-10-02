@@ -79,10 +79,12 @@ class Controller_Search_Assign extends Controller {
 
                 $update['$set']['companies'] = array_keys($companies);
                 $status = Arr::get($job, 'status', Enums::STATUS_UNALLOC);
-                if ($companies && $status == Enums::STATUS_UNALLOC) {
-                    $update['$set']['status'] = Enums::STATUS_ALLOC;
-                } elseif (!$companies && $status == Enums::STATUS_ALLOC) {
-                    $update['$unset']['status'] = 1;
+                if (in_array($status, array(Enums::STATUS_UNALLOC, Enums::STATUS_COMPLETE, Enums::STATUS_ARCHIVE))) {
+                    if ($companies)
+                        $update['$set']['status'] = Enums::STATUS_ALLOC;
+                } elseif ($status == Enums::STATUS_ALLOC) {
+                    if (!$companies)
+                        $update['$unset']['status'] = 1;
                 } else $update['$set']['status'] = Enums::STATUS_COMPLETE;
 
                 $count++;

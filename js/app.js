@@ -878,25 +878,38 @@ $(function () {
         $(e).prepend('&nbsp;');
         $(e).prepend(sort);
     });
-    
-    $('.approve-financial').click(function() {
+
+    $('.approve-financial,.unapprove-financial').click(function() {
         var id = $(this).attr('data-id');
         var value = $(this).attr('data-value');
         var max = $(this).attr('data-max');
+        var rate = $(this).attr('data-rate');
         var row = $(this).parents('tr');
-        
-        value = prompt('Please, enter confirmed value (max - ' + max + '):', value);
-        
-        if (value) {
-            var url = $(this).parents('table').attr('data-url') + '?id=' + id + '&value=' + value;
+        var action = $(this).hasClass('approve-financial') ? true : false;
+
+        if (action)
+            value = prompt('Please, enter confirmed value (max - ' + max + '):', value);
+        else
+            if (!confirm('Are you really want to unapprove this submission? In case of unapprovement it can be re-approved later.')) return false;
+
+        if (value || !action) {
+            var url = utils.baseUrl() + 'reports/financial/' + (action ? 'approve' : 'unapprove') + '?id=' + id + '&value=' + value;
             $.get(url, function(data) {
                 try {
                     data = $.parseJSON(data);
-                    row.removeClass('bg-warning').addClass('bg-success');
-                    row.find('td.time').text(data.time);
-                    row.find('td.paid').text(data.value);
-                    row.find('td.rate').text(data.rate);
-                    row.find('td').last().html('');
+                    if (action) {
+                        row.removeClass('yellow').addClass('lgreen');
+                        row.find('td.time').text(data.time);
+                        row.find('td.paid').text(data.value);
+                        row.find('td.rate').text(data.rate);
+                        row.find('td>button').removeClass('approve-financial btn-success').addClass('unapprove-financial btn-warning').text('Unapprove');
+                    } else {
+                        row.removeClass('lgreen').addClass('yellow');
+                        row.find('td.time').text('');
+                        row.find('td.paid').text('');
+                        row.find('td.rate').text(rate);
+                        row.find('td>button').removeClass('unapprove-financial btn-warning').addClass('approve-financial btn-success').text('Approve');
+                    }
                 } catch (e) {
                     alert(data);
                 }
