@@ -157,12 +157,8 @@ class Controller_Reports_Submissions extends Controller {
             foreach ($submissions as $job => $list) foreach ($list as $submission) {
                 $key = substr($submission['key'], 5);
                 $result[$job][$submission['update_time']][$submission['user_id']][$key] = $submission['value'];
-                $columns[$key] = 1;
             }
             $submissions = $result;
-
-            $columns = array_keys($columns);
-            sort($columns);
 
             $headers = array(
                 'Tickets ID',
@@ -173,7 +169,9 @@ class Controller_Reports_Submissions extends Controller {
                 'User',
             );
             if (Group::current('allow_assign')) $headers[] = 'Company';
-            foreach ($columns as $column) $headers[] = Columns::get_name($column);
+            $columns = Columns::get_visible();
+            foreach ($columns as $column) $headers[] = $column;
+            $columns = array_keys($columns);
 
             $result = Database_Mongo::collection('jobs')->find(array('_id' => array('$in' => array_keys($submissions))), array('data.8' => 1, 'data.9' => 1, 'data.14' => 1));
             $jobs = array();
@@ -198,6 +196,63 @@ class Controller_Reports_Submissions extends Controller {
                 );
                 if (Group::current('allow_assign')) $row[] = Arr::get($companies, User::get($user, 'company_id'));
                 foreach ($columns as $column) $row[] = Columns::output(Arr::get($submission, $column, ''), Columns::get_type($column), true);
+                fputcsv($file, $row);
+            }
+            fseek($file, 0);
+            fpassthru($file);
+            fclose($file);
+
+            //print_r($result);
+            die();
+        } elseif (isset($_GET['export3'])) {
+            //header('Content-type: text/plain');
+            header('Content-type: text/csv');
+            header('Content-disposition: filename="Submissions.' . date('Ymd', $start) . '-' . date('Ymd', $end) . '.' . date('YmdHi', time()) . '.csv"');
+            $result = array();
+            foreach ($submissions as $job => $list) foreach ($list as $submission) {
+                $key = substr($submission['key'], 5);
+                $result[$job][$submission['update_time']][$submission['user_id']][$key] = $submission['value'];
+            }
+            $submissions = $result;
+
+
+            $headers = array(
+                'Tickets ID',
+                'FDA ID',
+                'LOC ID',
+                'Address',
+                'Submission Date',
+                'User',
+            );
+            if (Group::current('allow_assign')) $headers[] = 'Company';
+
+            $columns = Columns::get_visible();
+            foreach ($columns as $column) $headers[] = $column;
+            $columns = array_keys($columns);
+
+            $result = Database_Mongo::collection('jobs')->find(array('_id' => array('$in' => array_keys($submissions))), array('data.8' => 1, 'data.9' => 1, 'data.14' => 1));
+            $jobs = array();
+            foreach ($result as $job) {
+                $jobs[$job['_id']] = array(
+                    'f' => Arr::path($job, 'data.14', ''),
+                    'l' => Arr::path($job, 'data.9', ''),
+                    'a' => Arr::path($job, 'data.8', ''),
+                );
+            }
+
+            $file = tmpfile();
+            fputcsv($file, $headers);
+            foreach ($submissions as $job => $list) foreach ($list as $time => $values) foreach ($values as $user => $submission) {
+                $row = array(
+                    $job,
+                    Arr::path($jobs, $job . '.f'),
+                    Arr::path($jobs, $job . '.l'),
+                    Arr::path($jobs, $job . '.a'),
+                    date('d-m-Y H:i', $time),
+                    User::get($user, 'login'),
+                );
+                if (Group::current('allow_assign')) $row[] = Arr::get($companies, User::get($user, 'company_id'));
+                foreach ($columns as $column) $row[] = Arr::get($submission, $column) ? Columns::output($submission[$column], Columns::get_type($column), true) : '';
                 fputcsv($file, $row);
             }
             fseek($file, 0);

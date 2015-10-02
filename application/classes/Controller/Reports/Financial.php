@@ -407,6 +407,7 @@ class Controller_Reports_Financial extends Controller {
         if (!$result) throw new HTTP_Exception_404('Not found');
 
         $job = Database_Mongo::collection('jobs')->findOne(array('_id' => $result['job_key']));
+        if (!$job) throw new HTTP_Exception_404('Not found');
         $region = $job['region'];
         
         $key = substr($result['key'], 5);
@@ -434,5 +435,33 @@ class Controller_Reports_Financial extends Controller {
         Utils::calculate_financial($job);
 
         die(json_encode(array('success' => true, 'rate' => $rate, 'value' => $value, 'time' => date('d-m-Y H:i', $time))));
+    }
+
+    public function action_unapprove() {
+        if (!Group::current('allow_assign')) throw new HTTP_Exception_403('Forbidden');
+
+        $id = new MongoId(strval(Arr::get($_GET, 'id')));
+        $result = Database_Mongo::collection('submissions')->findOne(array('_id' => $id));
+
+        if (!$result) throw new HTTP_Exception_404('Not found');
+
+        if (!Arr::get($result, 'financial_time')) throw new HTTP_Exception_404('Not found');
+
+        $job = Database_Mongo::collection('jobs')->findOne(array('_id' => $result['job_key']));
+        if (!$job) throw new HTTP_Exception_404('Not found');
+
+        $update = array(
+            '$set' => array('financial_time' => 0),
+            '$unset' => array(
+                'paid' => 1,
+                'rate' => 1,
+            ),
+        );
+
+        Database_Mongo::collection('submissions')->update(array('_id' => $id), $update);
+
+        Utils::calculate_financial($job);
+
+        die(json_encode(array('success' => true)));
     }
 }
