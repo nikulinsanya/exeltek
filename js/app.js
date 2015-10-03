@@ -62,6 +62,56 @@ $(function () {
         $('#upload>h2').text($('#upload>h2').text() + ' (' + $(this).parent().text().trim() + '):')
     });
 
+    $('#payment-company').change(function() {
+        var company = $(this).val();
+        var total = 0;
+        $('div.payment-info').each(function(i, e) {
+            var value = $(e).attr('data-company-' + company);
+            if (value == undefined) value = 0; else value = parseFloat(value);
+            total += value;
+            $(e).removeClass (function (index, css) {
+                return (css.match (/(^|\s)text-\S+/g) || []) + ' ' + (css.match (/(^|\s)glyphicon-\S+/g) || []);
+            });
+            $(e).children('span').text(value);
+            if ($(e).attr('data-paid-' + company)) {
+                $(e).addClass('text-danger glyphicon-flag')
+            } else if (value) {
+                $(e).addClass('text-success glyphicon-ok');
+            } else {
+                $(e).addClass('text-muted glyphicon-minus');
+            }
+        });
+        $('#payment-amount').val(total.toFixed(2));
+    });
+
+    $('#payment-form').submit(function() {
+        var has_paid = $('div.payment-info.text-danger').length > 0;
+        var has_unpaid = $('div.payment-info.text-success').length > 0;
+        if (!$('#payment-company').val()) {
+            alert('Please, select contractor!');
+            return false;
+        }
+
+        if (!has_unpaid && !confirm('Warning! There is no unpaid tickets for this contractor! Are you really want to create payment for paid tickets only?'))
+            return false;
+
+        if (has_paid && !confirm('Warning! There are paid tickets for this contractor! Are you really want to create new payments for paid tickets?'))
+            return false;
+
+        var data = $(this).serialize();
+        $.post(utils.baseUrl() + 'search/payment', data, function(data) {
+            try {
+                data = $.parseJSON(data)
+                if (data.success)
+                    window.location = utils.baseUrl() + 'search';
+            } catch (e) {
+                alert(data);
+            }
+        });
+
+        return false;
+    });
+
     $('#preloaderModal').modal({backdrop: 'static', keyboard: false, show: false});
 
     function handle_progress(data) {
@@ -356,13 +406,6 @@ $(function () {
 
 
 
-    $('#export-map').on('click',function (e) {
-        if(!$('#search-table').find('[type="checkbox"]:checked').length){
-            e.preventDefault();
-            alert('Please, select at least one ticket to export');
-        }
-    });
-
     $('.filters-form').submit(function (e) {
         $('#filterModal').modal('hide');
         $('#preloaderModal').modal('show');
@@ -578,6 +621,13 @@ $(function () {
         $('#upload-dialog').modal({backdrop: 'static', keyboard: false});
     });
 
+    $('#export-map').on('click',function (e) {
+        if(!$('#search-table').find('[type="checkbox"]:checked').length){
+            e.preventDefault();
+            alert('Please, select at least one ticket to export');
+        }
+    });
+
     $('.export-button').click(function() {
         var url = '';
         if ($(this).attr('data-url')) url = $(this).attr('data-url') + '?'; else url = '?';
@@ -592,6 +642,10 @@ $(function () {
         });
 
         document.location = utils.baseUrl() + 'attachments/tickets?id=' + ids.toString();
+    });
+
+    $('#payment-jobs').click(function() {
+        $(this).parents('form').attr('action', './search/payment');
     });
 
     $('.export-jobs').click(function() {
@@ -1735,7 +1789,6 @@ $(function () {
 
     recalcBadges($('.view-tab-header').find('li[data-id="3"]'));
     recalcBadges($('.view-tab-header').find('li[data-id="4"]'));
-
 
     function recalcBadges(tab){
         tab = tab || $('.view-tab-header').find('li.active');

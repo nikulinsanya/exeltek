@@ -494,8 +494,9 @@
     <button type="submit" class="btn btn-info export-result"><span class="glyphicon glyphicon-export"></span>Export search result</button>
     <button type="submit" class="btn btn-info export-excel"><span class="glyphicon glyphicon-export"></span>Export search result (Excel)</button>
     <button type="submit" class="btn btn-info export-map" id="export-map"><span class="glyphicon glyphicon-export"></span>Export map</button>
-
-
+    <?php if (Group::current('allow_finance') && Group::current('show_all_jobs')):?>
+        <button type="submit" class="btn btn-success" id="payment-jobs"><span class="glyphicon glyphicon-usd"></span>Add payment</button>
+    <?php endif;?>
 </div>
 <div class="clearfix">&nbsp;</div>
 
