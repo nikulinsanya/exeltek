@@ -905,3 +905,11 @@ td a.text-danger{
     color:#333;
     text-decoration: underline;
 }
+
+.search-select-container{
+    margin: 0px 0px 10px 15px;
+    width: 380px;
+}
+.search-buttons-bottom button{
+    margin-bottom: 10px;
+}

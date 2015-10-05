@@ -1028,7 +1028,15 @@ $(function () {
         if(self){
             $(self).selectize({
                 create: true,
-                sortField: 'text'
+                sortField: 'text',
+                onDropdownClose      : function($dropdown) {
+                    //fix for page jump on small screens
+                    var left = $dropdown.position().left,
+                        top = $dropdown.position().top;
+                    setTimeout(function(){
+                        window.scrollTo(left,top);
+                    },10);
+                }
             });
         }
     }

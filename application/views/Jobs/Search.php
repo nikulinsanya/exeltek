@@ -470,16 +470,14 @@
 <?=$pager;?>
 </div>
 <?php if (Group::current('allow_assign')):?>
-<div class="col-sm-6 col-xs-12">
-    <?=Form::select('type', array('' => 'Please, select works type...') + $types, false, array('class' => 'form-control'))?>
-</div>
-<div class="hidden visible-xs clearfix">&nbsp;</div>
-<div class="col-sm-6 col-xs-12">
-    <?=Form::select('company', array('' => 'Please, select company...', -1 => 'Unassign jobs') + $companies, false, array('class' => 'form-control'))?>
-</div>
-<div class="clearfix">&nbsp;</div>
+    <div class="search-select-container">
+        <?=Form::select('type', array('' => 'Please, select works type...') + $types, false, array('class' => 'form-control'))?>
+    </div>
+    <div class="search-select-container">
+        <?=Form::select('company', array('' => 'Please, select company...', -1 => 'Unassign jobs') + $companies, false, array('class' => 'form-control'))?>
+    </div>
 <?php endif;?>
-<div class="col-xs-12">
+<div class="col-xs-12 search-buttons-bottom">
     <?php if (Group::current('allow_assign')):?>
     <button type="submit" class="btn btn-warning assign-jobs">Assign jobs</button>
     <button type="submit" class="btn btn-danger archive-jobs">Archive jobs</button>
