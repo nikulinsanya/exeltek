@@ -1,3 +1,4 @@
+@import "devices-media.css";
 
 @media (min-width: 992px){
     #batchEditModal .modal-dialog.modal-lg{
