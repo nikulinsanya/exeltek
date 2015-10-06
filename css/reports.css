@@ -1,3 +1,9 @@
+@media (max-width: 568px) {
+    body {
+        min-width: 568px!important;
+    }
+}
+
 .report-block{
     margin: 0px 0px 10px 0px;
 }

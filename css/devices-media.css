@@ -15,7 +15,7 @@ and (max-width : 801px){
         border-bottom: 1px solid #ccc;
     }
     .nav.navbar-nav li ul li{
-        border-bottom: none;
+        border-bottom: none!important;
     }
     .navbar-nav>li {
         margin-left: 15px;
