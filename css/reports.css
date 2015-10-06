@@ -81,3 +81,8 @@
     text-align: center;
     margin-bottom:10px;
 }
+
+.switcher span.pull-right{
+    float: left!important;
+    margin-right: 10px;
+}
