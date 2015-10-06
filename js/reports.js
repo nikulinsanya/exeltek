@@ -73,7 +73,7 @@ $(function () {
     function dashboardHandlers(){
         $('#report-container').on('click','.switcher',function(e){
             var id = $(this).attr('href').replace('#','');
-            $('#report-container .tab-pane.active').removeClass('active');
+            $('.tab-pane.active').removeClass('active');
             $('.selected_switcher').removeClass('selected_switcher');
             $(this).addClass('selected_switcher');
             $('[data-id="'+id+'"]').addClass('active');
