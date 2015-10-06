@@ -20,11 +20,11 @@
                 <div class="collapse navbar-collapse" id="bs-sidebar-navbar-collapse-1">
                     <ul class="nav navbar-nav"  id="report-container">
                         <li data-id="main" class="active"><a class="switcher selected_switcher" href="#main">Overview<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-home"></span></a></li>
-                        <li data-id="company"><a class="switcher" href="#company">Company progress<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-user"></span></a></li>
-                        <li data-id="time"><a class="switcher" href="#time">Time progress<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-envelope"></span></a></li>
-                        <li data-id="stacked"><a class="switcher" href="#stacked">Stacked<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-home"></span></a></li>
-                        <li data-id="fsa-fsam"><a class="switcher" href="#fsa-fsam">Fsa/Fsam<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-user"></span></a></li>
-                        <li data-id="built-type-mix"><a class="switcher" href="#built-type-mix">Built type mix<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-envelope"></span></a></li>
+                        <li data-id="company"><a class="switcher" href="#company">Company progress<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-signal"></span></a></li>
+                        <li data-id="time"><a class="switcher" href="#time">Time progress<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-time"></span></a></li>
+                        <li data-id="stacked"><a class="switcher" href="#stacked">Stacked<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-stats"></span></a></li>
+                        <li data-id="fsa-fsam"><a class="switcher" href="#fsa-fsam">Fsa/Fsam<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-tasks"></span></a></li>
+                        <li data-id="built-type-mix"><a class="switcher" href="#built-type-mix">Built type mix<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-th-large"></span></a></li>
                     </ul>
                 </div>
             </div>
