@@ -4,6 +4,7 @@
         };
 
     </script>
+
     <?php if(Group::current('show_all_jobs')):?>
         <nav class="black-navbar navbar navbar-inverse sidebar" role="navigation">
             <div class="container-fluid">
@@ -324,3 +325,48 @@
             </div>
         </div>
     </div>
+
+
+    <div class="modal fade" id="ticketData" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width:800px;">
+            <div class="modal-content">
+                <form id="dashboard-report-form" class="" action="" method="get">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Total tickets for selected date</h4>
+                    </div>
+
+                    <div class="modal-body" id="filter-form" style="min-height: 300px;">
+                        <h4 class="modal-title" id="ticketsTitle"></h4>
+
+                        <div class="clearfix  fda-hidden">&nbsp;</div>
+                        <table class="table small">
+                            <tr class="text-center tr-header">
+                                <th>Ticket ID</th>
+                                <th></th>
+                            </tr>
+                            <tr class="tr-body">
+                                <td>111</td>
+                                <td class="text-center"><a class="btn btn-info" href="#">View details</a></td>
+                            </tr>
+                            <tr class="tr-body">
+                                <td>2222</td>
+                                <td class="text-center"><a class="btn btn-info" href="#">View details</a></td>
+                            </tr>
+                            <tr class="tr-body">
+                                <td>3333</td>
+                                <td class="text-center"><a class="btn btn-info" href="#">View details</a></td>
+                            </tr>
+                        </table>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <a href="javascript:;" class="btn btn-warning"><span class="glyphicon glyphicon-cloud-download"></span> Export</a>
+                        <button type="submit" class="btn btn-success" id="hideModalTickets">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+

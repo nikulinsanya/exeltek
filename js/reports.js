@@ -35,6 +35,16 @@ $(function () {
             'HELD-NBN'
         ]
     }
+    //lib config
+//    hs.outlineType = 'rounded-white';
+    hs.wrapperClassName = 'draggable-header';
+    hs.captionEval = 'this.a.title';
+    hs.showCredits = false;
+    hs.marginTop = 20;
+    hs.marginRight = 20;
+    hs.marginBottom = 20;
+    hs.marginLeft = 20;
+
 
     Highcharts.setOptions({
         colors:[
@@ -155,7 +165,6 @@ $(function () {
                     break
             }
         })
-
     }
 
     (function(){
@@ -639,6 +648,29 @@ $(function () {
             },
             tooltip: {
                 shared:true
+            },
+            plotOptions: {
+                series: {
+                    cursor: 'pointer',
+                    point: {
+                        events: {
+                            click: function (e) {
+                                var series = this.series.name,
+                                    date = Highcharts.dateFormat('%b %e, %Y', this.x),
+                                    count = this.y,
+                                    shared = this.series.data,
+                                    i,
+                                    html = [];
+
+                                $('#ticketsTitle').html('<b>'+this.y + ' ' + series + '</b> tickets for <b>' + date + '</b>');
+                                $('#ticketData').modal('show');
+                            }
+                        }
+                    },
+                    marker: {
+                        lineWidth: 1
+                    }
+                }
             },
 
             legend: {
