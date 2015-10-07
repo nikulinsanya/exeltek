@@ -541,7 +541,7 @@ class Controller_Dashboard extends Controller {
     public function action_api() {
         header('Content-type: application/json');
 
-        Database_Mongo::collection('api')->insert($_GET);
+        //Database_Mongo::collection('api')->insert($_GET);
 
         $type = Arr::get($_GET, 'type');
         $range = array();
@@ -673,12 +673,12 @@ class Controller_Dashboard extends Controller {
 
                     $list = array();
                     $date = false;
-                    foreach ($jobs as $item) {
+                    foreach ($jobs as $job => $item) {
                         $key = ucfirst(trim(preg_replace('/(\[.\] )?([a-z-]*)/i', '$2', $item['s']))) ? : 'Unknown';
 
                         switch ($separate) {
                             case 'm':
-                                $day = Arr::get($_GET, 'monthStart');
+                                $day = Arr::get($_GET, 'monthStart', 1);
 
                                 $date = strtotime(date($day . '-m-Y', $item['t'])) - 1;
                                 if ($item['t'] > $date)
@@ -698,12 +698,16 @@ class Controller_Dashboard extends Controller {
                                 $date = false;
                                 break;
                         }
-                        if ($date)
-                            $list[$date][$key] = Arr::path($list, array($date, $key), 0) + 1;
-                        else
+                        if ($date) {
+                            if (isset($_GET['details'])) {
+                                if ($_GET['details'] == $date)
+                                    $list[$key][] = $job;
+                            } else
+                                $list[$date][$key] = Arr::path($list, array($date, $key), 0) + 1;
+                        } else
                             $list[$key] = Arr::get($list, $key, 0) + 1;
                     }
-                    if ($date) ksort($list);
+                    if (!isset($_GET['details']) && $date) ksort($list);
                 } else {
                     $query = array();
                     if ($filter) $query[] = array('$match' => $filter);
