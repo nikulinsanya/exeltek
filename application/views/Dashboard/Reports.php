@@ -31,7 +31,7 @@
         </nav>
         <div class="main tab-content">
             <!-- Content Here -->
-            <div class="tab-pane active" data-id="main">
+            <div class="tab-pane" data-id="main">
                 <form id="overview-report">
                             <span class="date-range-container">
                                 <div class="daterange" class="pull-right" data-start="start-overview" data-end="end-overview" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
@@ -124,6 +124,14 @@
                         <span class="glyphicon glyphicon-cog"></span>
                     </button>
                     <div class="chart-container full-width" id="history-block"></div>
+                </div>
+                <div class="report-block">
+                    <div class="charts-expand">
+                        <button class="btn btn-simple small hidden do-collapse"><i class="glyphicon glyphicon-menu-up"></i> Close</button>
+                        <button class="btn btn-simple small  do-expand"><i class="glyphicon glyphicon-menu-down"></i> Show additional info</button>
+                    </div>
+
+                    <div class="chart-list-container"></div>
                 </div>
             </div>
             <div class="tab-pane" data-id="stacked">

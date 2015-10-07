@@ -159,7 +159,7 @@ $(function () {
     }
 
     (function(){
-        var id = window.location.hash.replace('#','');
+        var id = window.location.hash.replace('#','') || 'main';
         if(id){
             $('#report-container .tab-pane.active').removeClass('active');
             $('[data-id="'+id+'"]').addClass('active');
