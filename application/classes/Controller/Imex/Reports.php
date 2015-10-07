@@ -139,7 +139,7 @@ class Controller_Imex_Reports extends Controller {
                 $ticket['type'],
                 $ticket['filename'],
             );
-            foreach ($reports as $id => $name) $data[] = Arr::path($ticket, 'static.' . $id);
+            foreach ($reports as $id => $name) $data[] = Columns::output(Arr::path($ticket, 'static.' . $id), Columns::get_type($id), true);
 
 
             if ($ticket['update_type'] == 2) {
