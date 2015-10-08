@@ -13,7 +13,8 @@ $(function () {
             'DEFERRED': '#ED7476',
             'DIRTY': '#EB1014',
             'HEC': '#FC5356',
-            'HELD-NBN': '#FA6466'
+            'HELD-NBN': '#FA6466',
+            'UNKNOWN': '#EB1014'
         },
 
         colorByTypeMix:{
@@ -155,11 +156,10 @@ $(function () {
                     break
             }
         })
-
     }
 
     (function(){
-        var id = window.location.hash.replace('#','');
+        var id = window.location.hash.replace('#','') || 'main';
         if(id){
             $('#report-container .tab-pane.active').removeClass('active');
             $('[data-id="'+id+'"]').addClass('active');
@@ -640,6 +640,27 @@ $(function () {
             tooltip: {
                 shared:true
             },
+            plotOptions: {
+                series: {
+                    cursor: 'pointer',
+                    point: {
+                        events: {
+                            click: function (e) {
+                                var series = this.series.name,
+                                    date = Highcharts.dateFormat('%b %e, %Y', this.x),
+                                    count = this.y,
+                                    shared = this.series.data,
+                                    i,
+                                    html = [];
+                                showDailyTickets(this.x);
+                            }
+                        }
+                    },
+                    marker: {
+                        lineWidth: 1
+                    }
+                }
+            },
 
             legend: {
                enabled:true
@@ -925,6 +946,71 @@ $(function () {
         return res.join('');
     }
 
+    function showDailyTickets(timeStamp){
+        var format = $('.history-container .active').attr('data-attr');
+        if(!format){
+            format = window.localStorage && window.localStorage['_history_format_'] || 'd';
+        }
+        $('#preloaderModal').modal('show');
+        $.ajax({
+            url:[utils.baseUrl(),
+                '/dashboard/api?sep=',
+                format,
+                '&details=',
+                moment(timeStamp).unix()
+            ].join(''),
+            type:'get',
+            dataType:'JSON',
+            success:function(data){
+                var i, j, k,
+                    status,
+                    color,
+                    html = [],
+                    date = format == 'd' ? moment(timeStamp).format('DD/MMM/YYYY') : moment(timeStamp).format('MMM/YYYY');
+
+                html.push(' <tr class="text-center tr-header">',
+                                '<th colspan="5">Ticket ID</th>',
+                            '</tr>');
+
+                for(i in data)
+                {
+                    color = window.REPORTDATA.allocation.colorByType[utils.simplifyString(i).toUpperCase()] || '#ccc' ;
+
+                    j = data[i].length;
+                    k=0;
+                    while(j--){
+
+                        if(k == 0){
+                            html.push('<tr class="text-center">');
+                        }
+
+                        html.push(
+                            '<td style="background-color:',color,
+                            '"><a data-toggle="tooltip" data-placement="top"  title="status: ',i,'" href="',
+                            utils.baseUrl(),'search/view/',data[i][j],'">',
+                                data[i][j],
+                            '</a></td>');
+                        k++;
+                        if(k == 5){
+                            k = 0;
+                            html.push('</tr>');
+                        }
+                    }
+                }
+
+                $('#ticketTable').html(html.join(''));
+                $('#ticketsTitle').html('Tickets for <b>' + date + '</b>');
+                $('#ticketData').modal('show');
+                $('#preloaderModal').modal('hide');
+                $('[data-toggle="tooltip"]').tooltip();
+            }
+        })
+    }
+
+    function simplifyString(str){
+        return str.replace(/ /g,"").toLowerCase();
+    }
+
     function getAllStatuses(start,end){
         return $.ajax({
             url:[utils.baseUrl(),
@@ -938,6 +1024,8 @@ $(function () {
             dataType:'JSON'
         })
     }
+
+
 
     function getBuiltTypeMixed(start,end){
         return $.ajax({
@@ -1006,8 +1094,7 @@ $(function () {
     }
     function getHistoryChanges(format,start, end){
         if(!format){
-            //montly by default
-            format = window.localStorage && window.localStorage['_history_format_'] || 'm';
+            format = window.localStorage && window.localStorage['_history_format_'] || 'd';
         }
         return $.ajax({
             url:[utils.baseUrl() , "dashboard/api?sep=" ,format,

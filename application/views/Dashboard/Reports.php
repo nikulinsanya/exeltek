@@ -4,10 +4,10 @@
         };
 
     </script>
+
     <?php if(Group::current('show_all_jobs')):?>
         <nav class="black-navbar navbar navbar-inverse sidebar" role="navigation">
             <div class="container-fluid">
-                <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-sidebar-navbar-collapse-1">
                         <span class="sr-only">Toggle navigation</span>
@@ -16,7 +16,6 @@
                         <span class="icon-bar"></span>
                     </button>
                 </div>
-                <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-sidebar-navbar-collapse-1">
                     <ul class="nav navbar-nav"  id="report-container">
                         <li data-id="main" class="active"><a class="switcher selected_switcher" href="#main">Overview<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-home"></span></a></li>
@@ -30,8 +29,7 @@
             </div>
         </nav>
         <div class="main tab-content">
-            <!-- Content Here -->
-            <div class="tab-pane active" data-id="main">
+            <div class="tab-pane" data-id="main">
                 <form id="overview-report">
                             <span class="date-range-container">
                                 <div class="daterange" class="pull-right" data-start="start-overview" data-end="end-overview" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
@@ -116,9 +114,9 @@
                 </div>
                 <div class="report-block history-container" style="padding-top: 0px;">
                     <div class="btn-group" role="group">
-                        <button type="button" data-attr="d" data-format="YYYY-MM-DD" class="btn btn-default">Daily</button>
+                        <button type="button" data-attr="d" data-format="YYYY-MM-DD" class="active btn btn-default">Daily</button>
                         <button type="button" data-attr="w" data-format="YYYY-WW" class="btn btn-default">Weekly</button>
-                        <button type="button" data-attr="m" data-format="YYYY-MM" class="active btn btn-default">Monthly</button>
+                        <button type="button" data-attr="m" data-format="YYYY-MM" class=" btn btn-default">Monthly</button>
                     </div>
                     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#startDayModal">
                         <span class="glyphicon glyphicon-cog"></span>
@@ -316,3 +314,33 @@
             </div>
         </div>
     </div>
+
+
+    <div class="modal fade" id="ticketData" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width:800px;">
+            <div class="modal-content">
+                <form id="dashboard-report-form" class="" action="" method="get">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="ticketsTitle">Total tickets for selected date</h4>
+                    </div>
+
+                    <div class="modal-body" id="filter-form" style="min-height: 300px;max-height: 500px;">
+                        <table class="table small" id="ticketTable">
+                            <tr class="text-center tr-header">
+                                <th>Ticket ID</th>
+                                <th></th>
+                            </tr>
+                        </table>
+
+                    </div>
+
+                    <div class="modal-footer">
+<!--                        <a href="javascript:;" class="btn btn-warning"><span class="glyphicon glyphicon-cloud-download"></span> Export</a>-->
+                        <button class="btn btn-warning"  data-dismiss="modal" id="hideModalTickets">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
