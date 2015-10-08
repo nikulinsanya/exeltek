@@ -86,3 +86,21 @@
     float: left!important;
     margin-right: 10px;
 }
+
+#ticketTable tr{
+    border-bottom: 1px solid #ECECEC;
+}
+
+#ticketTable tr>th {
+    border-right: 1px solid #ededed;
+    background-color: #F0F7FF;
+}
+
+#ticketTable tr td{
+    border-right: 1px solid #fff;
+}
+#ticketTable tr td a{
+    color:#fff;
+    padding: 10px 5px;
+    display: inline-block;
+}

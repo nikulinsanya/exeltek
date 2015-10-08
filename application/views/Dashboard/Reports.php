@@ -114,22 +114,14 @@
                 </div>
                 <div class="report-block history-container" style="padding-top: 0px;">
                     <div class="btn-group" role="group">
-                        <button type="button" data-attr="d" data-format="YYYY-MM-DD" class="btn btn-default">Daily</button>
+                        <button type="button" data-attr="d" data-format="YYYY-MM-DD" class="active btn btn-default">Daily</button>
                         <button type="button" data-attr="w" data-format="YYYY-WW" class="btn btn-default">Weekly</button>
-                        <button type="button" data-attr="m" data-format="YYYY-MM" class="active btn btn-default">Monthly</button>
+                        <button type="button" data-attr="m" data-format="YYYY-MM" class=" btn btn-default">Monthly</button>
                     </div>
                     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#startDayModal">
                         <span class="glyphicon glyphicon-cog"></span>
                     </button>
                     <div class="chart-container full-width" id="history-block"></div>
-                </div>
-                <div class="report-block">
-                    <div class="charts-expand">
-                        <button class="btn btn-simple small hidden do-collapse"><i class="glyphicon glyphicon-menu-up"></i> Close</button>
-                        <button class="btn btn-simple small  do-expand"><i class="glyphicon glyphicon-menu-down"></i> Show additional info</button>
-                    </div>
-
-                    <div class="chart-list-container"></div>
                 </div>
             </div>
             <div class="tab-pane" data-id="stacked">
@@ -330,37 +322,22 @@
                 <form id="dashboard-report-form" class="" action="" method="get">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Total tickets for selected date</h4>
+                        <h4 class="modal-title" id="ticketsTitle">Total tickets for selected date</h4>
                     </div>
 
-                    <div class="modal-body" id="filter-form" style="min-height: 300px;">
-                        <h4 class="modal-title" id="ticketsTitle"></h4>
-
-                        <div class="clearfix  fda-hidden">&nbsp;</div>
-                        <table class="table small">
+                    <div class="modal-body" id="filter-form" style="min-height: 300px;max-height: 500px;">
+                        <table class="table small" id="ticketTable">
                             <tr class="text-center tr-header">
                                 <th>Ticket ID</th>
                                 <th></th>
-                            </tr>
-                            <tr class="tr-body">
-                                <td>111</td>
-                                <td class="text-center"><a class="btn btn-info" href="#">View details</a></td>
-                            </tr>
-                            <tr class="tr-body">
-                                <td>2222</td>
-                                <td class="text-center"><a class="btn btn-info" href="#">View details</a></td>
-                            </tr>
-                            <tr class="tr-body">
-                                <td>3333</td>
-                                <td class="text-center"><a class="btn btn-info" href="#">View details</a></td>
                             </tr>
                         </table>
 
                     </div>
 
                     <div class="modal-footer">
-                        <a href="javascript:;" class="btn btn-warning"><span class="glyphicon glyphicon-cloud-download"></span> Export</a>
-                        <button type="submit" class="btn btn-success" id="hideModalTickets">Close</button>
+<!--                        <a href="javascript:;" class="btn btn-warning"><span class="glyphicon glyphicon-cloud-download"></span> Export</a>-->
+                        <button class="btn btn-warning"  data-dismiss="modal" id="hideModalTickets">Close</button>
                     </div>
                 </form>
             </div>
