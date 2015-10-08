@@ -14,6 +14,7 @@ $(function () {
             'DIRTY': '#EB1014',
             'HEC': '#FC5356',
             'HELD-NBN': '#FA6466',
+            'PLANNED': '#A9A9A9',
             'UNKNOWN': '#EB1014'
         },
 

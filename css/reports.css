@@ -87,18 +87,20 @@
     margin-right: 10px;
 }
 
-#ticketTable tr{
-    border-bottom: 1px solid #ECECEC;
+
+#ticketTable .nav-tabs li {
+    font-weight: bold;
 }
 
-#ticketTable tr>th {
-    border-right: 1px solid #ededed;
-    background-color: #F0F7FF;
-}
-
-#ticketTable div{
+#ticketTable .tab-pane>div{
+    float: left;
+    width: 50%;
+    height: 40px;
     border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    padding-left: 5px;
 }
+
 #ticketTable a{
     color:#fff;
     padding: 10px 5px;
