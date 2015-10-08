@@ -966,43 +966,52 @@ $(function () {
                     status,
                     color,
                     html = [],
+                    simplified;
                     date = format == 'd' ? moment(timeStamp).format('DD/MMM/YYYY') : moment(timeStamp).format('MMM/YYYY');
 
-                html.push(' <tr class="text-center tr-header">',
-                                '<th colspan="5">Ticket ID</th>',
-                            '</tr>');
-
+                html.push('<ul class="nav nav-tabs" id="tabs">');
                 for(i in data)
                 {
-                    color = window.REPORTDATA.allocation.colorByType[utils.simplifyString(i).toUpperCase()] || '#ccc' ;
+                    simplified = utils.simplifyString(i).toUpperCase();
+                    color = window.REPORTDATA.allocation.colorByType[simplified] || '#ccc' ;
+                    html.push('<li role="presentation" class=""><a  style="background-color:',color,
+                        '" href="#',simplified,'" data-toggle="tab">',i,'</a></li>');
+                }
+                html.push('</ul>');
+                html.push('<div id="my-tab-content" class="tab-content">');
+                for(i in data)
+                {
+                    simplified = utils.simplifyString(i).toUpperCase();
+                    color = window.REPORTDATA.allocation.colorByType[simplified] || '#ccc' ;
 
                     j = data[i].length;
                     k=0;
+
+
+                    html.push('<div class="tab-pane active" id="',simplified,'">');
                     while(j--){
-
-                        if(k == 0){
-                            html.push('<tr class="text-center">');
-                        }
-
                         html.push(
-                            '<td style="background-color:',color,
+                            '<div style="background-color:',color,
                             '"><a data-toggle="tooltip" data-placement="top"  title="status: ',i,'" href="',
                             utils.baseUrl(),'search/view/',data[i][j],'">',
                                 data[i][j],
-                            '</a></td>');
+                            '</a></div>');
                         k++;
                         if(k == 5){
                             k = 0;
                             html.push('</tr>');
                         }
                     }
+                    html.push('</div>');
                 }
+                html.push('</div>');
 
                 $('#ticketTable').html(html.join(''));
                 $('#ticketsTitle').html('Tickets for <b>' + date + '</b>');
                 $('#ticketData').modal('show');
                 $('#preloaderModal').modal('hide');
                 $('[data-toggle="tooltip"]').tooltip();
+                $('#tabs').tab();
             }
         })
     }
