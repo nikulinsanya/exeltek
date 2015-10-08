@@ -967,8 +967,8 @@ $(function () {
                     status,
                     color,
                     html = [],
-                    simplified;
-                    date = format == 'd' ? moment(timeStamp).format('DD/MMM/YYYY') : moment(timeStamp).format('MMM/YYYY');
+                    simplified,
+                    date = format == 'd' ? moment(timeStamp).format('DD MMM,YYYY') : moment(timeStamp).format('MMM YYYY');
 
                 html.push('<ul class="nav nav-tabs" id="tabs">');
                 for(i in data)
