@@ -8,7 +8,6 @@
     <?php if(Group::current('show_all_jobs')):?>
         <nav class="black-navbar navbar navbar-inverse sidebar" role="navigation">
             <div class="container-fluid">
-                <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-sidebar-navbar-collapse-1">
                         <span class="sr-only">Toggle navigation</span>
@@ -17,7 +16,6 @@
                         <span class="icon-bar"></span>
                     </button>
                 </div>
-                <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-sidebar-navbar-collapse-1">
                     <ul class="nav navbar-nav"  id="report-container">
                         <li data-id="main" class="active"><a class="switcher selected_switcher" href="#main">Overview<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-home"></span></a></li>
@@ -31,7 +29,6 @@
             </div>
         </nav>
         <div class="main tab-content">
-            <!-- Content Here -->
             <div class="tab-pane" data-id="main">
                 <form id="overview-report">
                             <span class="date-range-container">
