@@ -96,10 +96,10 @@
     background-color: #F0F7FF;
 }
 
-#ticketTable tr td{
+#ticketTable div{
     border-right: 1px solid #fff;
 }
-#ticketTable tr td a{
+#ticketTable a{
     color:#fff;
     padding: 10px 5px;
     display: inline-block;
