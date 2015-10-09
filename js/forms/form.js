@@ -1,4 +1,5 @@
 window.form = (function() {
+    var viewTemplate = '<div><div class="form-container"></div></div>';
     var formTemplate = '<div class="form-row" data-template-row style="display: none;">'+
 '        <button class="remove-line tmp-gen btn btn-danger">remove row</button>'+
 '        <button class="add-value tmp-gen btn btn-success">+</button>'+
@@ -61,13 +62,16 @@ window.form = (function() {
 '                    </div>';
 
     var formBuilder = {
-        init: function(container, json){
-            this.prepareHtml(container);
+        init: function(container, json, editable){
+            if (editable == undefined) editable = true;
+            //if (editable)
+                this.prepareHtml(container, editable);
             if(json){
-                this.buildFormByJson($('.form-container'),json);
-                this.setHandlers();
-                this.editorEvents();
-
+                this.buildFormByJson($('.form-container'), json, editable);
+                if (editable) {
+                    this.setHandlers();
+                    this.editorEvents();
+                }
             }else{
                 $('.add-row').trigger('click');
                 this.setHandlers();
@@ -76,8 +80,8 @@ window.form = (function() {
 
 
         },
-        prepareHtml: function(container){
-            $(container).html(formTemplate);
+        prepareHtml: function(container, editable){
+            $(container).html(editable ? formTemplate : viewTemplate);
         },
         focusedField : false,
         setHandlers: function(){
@@ -125,7 +129,7 @@ window.form = (function() {
 
 
             $('.save-form').on('click', function(){
-                if(confirm('Generate form?')){
+                if(confirm('Save form and close the editor?')){
                     self.sendForm();
                 }
             });
@@ -133,17 +137,18 @@ window.form = (function() {
 
         sendForm: function(){
             var json = this.createJson();
+            var id = $('#form-builder').attr('data-id');
             return $.ajax({
-                url : utils.baseUrl() + 'form/generate',
+                url : utils.baseUrl() + 'form/save?id=' + id + '&type=' + $('#form-type').val() + '&name=' + encodeURIComponent($('#form-name').val()),
                 type: 'POST',
                 data: JSON.stringify(json),
                 success: function(){
-                    alert('Posted');
+                    window.location.reload(true);
                 }
             });
         },
 
-        buildFormByJson: function(container, json){
+        buildFormByJson: function(container, json, editable){
             var html = [],
                 el,
                 self = this,
@@ -152,7 +157,7 @@ window.form = (function() {
             getColumns().then(function(ticketFields){
                 for(i = 0;i<json.length;i++){
                     if(typeof(json[i]) == 'string'){
-                        html.push('<hr><button class="tmp-gen remove-hr tmp-gen btn btn-danger"> - </button>');
+                        html.push('<hr>' + (editable ? '<button class="tmp-gen remove-hr tmp-gen btn btn-danger"> - </button>' : ''));
                     }else{
                         html.push('<div class="form-row">');
                         for(j = 0;j<json[i].length;j++){
@@ -172,7 +177,7 @@ window.form = (function() {
                                                 el.placeholder,
                                                 '">',
                                             '</div>',
-                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        editable ? '<button class="remove-field tmp-gen"> - </button>' : '',
                                         '</div>');
                                     break;
                                 case 'label':
@@ -184,7 +189,7 @@ window.form = (function() {
                                         el.value,
                                         '</span>',
                                         '</div>',
-                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        editable ? '<button class="remove-field tmp-gen"> - </button>' : '',
                                         '</div>');
                                     break;
                                 case 'date':
@@ -201,7 +206,7 @@ window.form = (function() {
                                                 el.placeholder,
                                                 '">',
                                             '</div>',
-                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        editable ? '<button class="remove-field tmp-gen"> - </button>' : '',
                                         '</div>');
                                     break;
                                 case 'canvas':
@@ -214,7 +219,7 @@ window.form = (function() {
                                                 el.name,
                                                 '" class="panel panel-default" width="150" height="25"></canvas>',
                                             '</div>',
-                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        editable ? '<button class="remove-field tmp-gen"> - </button>' : '',
                                         '</div>');
                                     break;
                                 case 'ticket':
@@ -227,7 +232,7 @@ window.form = (function() {
                                         '">',
                                          name,
                                         '</div>',
-                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        editable ? '<button class="remove-field tmp-gen"> - </button>' : '',
                                         '</div>');
                                     break;
                                 case 'select':
@@ -249,19 +254,20 @@ window.form = (function() {
                                                     options.join(''),
                                                 '</select>',
                                             '</div>',
-                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        editable ? '<button class="remove-field tmp-gen"> - </button>' : '',
                                         '</div>');
                                     break;
                             }
                         }
-                        html.push('<button class="remove-line tmp-gen btn btn-danger">remove row</button>' ,
-                            '<button class="add-value tmp-gen btn btn-success">+</button></div>');
+                        if (editable)
+                            html.push('<button class="remove-line tmp-gen btn btn-danger">remove row</button>' ,
+                                '<button class="add-value tmp-gen btn btn-success">+</button></div>');
                     }
                     html.push('</div>');
                 }
-            $(container).html(html.join(''));
+                $(container).html(html.join(''));
 //            self.initPluginsOnBuiltForm();
-            self.initPlugins();
+                if (!editable) self.initPlugins();
             });
 
 
@@ -493,13 +499,13 @@ window.form = (function() {
         },
 
         initPlugins: function(){
-            if($('canvas').length){
+            if($('canvas').length)
                 var signature = new SignaturePad(document.querySelector('canvas'));
-            }
-//            $('select.selectize').selectize();
-//            $('.datepicker').datepicker({
-//                dateFormat: 'dd-mm-yy'
-//            });
+
+            $('select.selectize').selectize();
+            $('.datepicker').datepicker({
+                dateFormat: 'dd-mm-yy'
+            });
         },
 
         initPluginsOnBuiltForm: function(){
@@ -537,5 +543,29 @@ window.form = (function() {
     return formBuilder;
 })(window);
 
+$(function () {
+    $('.form-edit-link').click(function() {
+        var id = $(this).attr('data-id');
+        $('#forms-list').hide();
 
+        if (id == undefined) {
+            $('#form-builder').attr('data-id', '');
+            $('#form-name').val('');
+            $('#form-type').val('');
+            form.init($('#form-builder-container'), []);
+            $('#form-builder').removeClass('hidden');
+        } else {
+            $.get(utils.baseUrl() + 'form/load?id=' + id, function(data) {
+                $('#form-builder').attr('data-id', id);
+                $('#form-name').val(data.name);
+                $('#form-type').val(data.type);
+                form.init($('#form-builder-container'), data.data);
+                $('#form-builder').removeClass('hidden');
+            });
+        }
+    });
 
+    $('#form-save').click(function() {
+        alert($(this).parents('form').serialize());
+    });
+});

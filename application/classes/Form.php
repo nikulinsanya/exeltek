@@ -86,6 +86,16 @@ class Form extends Kohana_Form {
             246 => 'Status',
         ),
     );
+
+    const FORM_TYPE_TICKET = 1;
+    const FORM_TYPE_TICKET_GROUP = 2;
+    const FORM_TYPE_COMMON = 3;
+
+    public static $form_types = array(
+        self::FORM_TYPE_TICKET => 'Ticket form',
+        self::FORM_TYPE_TICKET_GROUP => 'Group of tickets form',
+        self::FORM_TYPE_COMMON => 'Unbinded form',
+    );
     
     private $elements = array();
     private $has_files = false;
