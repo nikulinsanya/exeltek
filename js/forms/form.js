@@ -181,16 +181,23 @@ window.form = (function() {
                                         '</div>');
                                     break;
                                 case 'label':
-                                    html.push('<div class="form-block">',
-                                        '<div class="value" data-type="label" data-value="',
-                                        el.value,
-                                        '" data-placeholder="">',
-                                        '<span class="tmp-label">',
-                                        el.value,
-                                        '</span>',
-                                        '</div>',
-                                        editable ? '<button class="remove-field tmp-gen"> - </button>' : '',
-                                        '</div>');
+                                    if (editable)
+                                        html.push('<div class="form-block">',
+                                            '<div class="value" data-type="label" data-value="',
+                                            el.value,
+                                            '" data-placeholder="">',
+                                            '<span class="tmp-label">',
+                                            el.value,
+                                            '</span>',
+                                            '</div>',
+                                            '<button class="remove-field tmp-gen"> - </button>',
+                                            '</div>');
+                                    else
+                                        html.push('<div class="form-block">',
+                                            '<span class="tmp-label">',
+                                            el.value,
+                                            '</span>',
+                                            '</div>');
                                     break;
                                 case 'date':
                                     html.push(
@@ -225,21 +232,28 @@ window.form = (function() {
                                 case 'ticket':
                                     var name = utils.searchInListById(el.fieldId,ticketFields);
                                     name = name && name.name || '';
-                                    html.push(
-                                        '<div class="form-block">',
-                                        '<div class="value" data-type="ticket" data-value="" data-placeholder="" data-field-id="',
-                                        el.fieldId,
-                                        '">',
-                                         name,
-                                        '</div>',
-                                        editable ? '<button class="remove-field tmp-gen"> - </button>' : '',
-                                        '</div>');
+                                    if (editable)
+                                        html.push(
+                                            '<div class="form-block">',
+                                            '<div class="value" data-type="ticket" data-value="" data-placeholder="" data-field-id="',
+                                            el.fieldId,
+                                            '">',
+                                             name,
+                                            '</div>',
+                                            '<button class="remove-field tmp-gen"> - </button>',
+                                            '</div>');
+                                    else
+                                        html.push(
+                                            '<div class="form-block">',
+                                            el.value,
+                                            '</div>',
+                                            '</div>');
                                     break;
                                 case 'select':
                                     var options = [];
 
                                     $(el.values).each(function(){
-                                        options.push('<option value="'+this+'">'+this+'</option>');
+                                        options.push('<option value="'+this+'"' + (el.value == this ? ' selected' : '') + '>'+this+'</option>');
                                     });
                                     html.push(
                                         '<div class="form-block">',
