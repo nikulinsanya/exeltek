@@ -1177,7 +1177,7 @@ $(function () {
         var csvContent = "data:text/csv;charset=utf-8,",
             parent = $('#my-tab-content').find('.tab-pane.active'),
             data = parent.find('[data-item]'),
-            name = parent.attr('id'),
+            name = parent.attr('id') + '('+$('#ticketsTitle b').text()+')',
             dataString;
 
         dataString = data.map(function(){
