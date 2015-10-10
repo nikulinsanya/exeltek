@@ -991,7 +991,7 @@ $(function () {
                     k=0;
 
 
-                    html.push('<div class="tab-pane"',(!used ? ' active ' : ''), 'id="',simplified,'">');
+                    html.push('<div class="tab-pane',(!used ? ' active" ' : '"'), 'id="',simplified,'">');
                     used = true;
                     while(j--){
                         html.push(
