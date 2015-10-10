@@ -364,6 +364,19 @@ $(function () {
 
 
             $('#fsam-statuses').highcharts({
+                navigation: {
+                    buttonOptions: {
+                        align: 'left'
+                    }
+                },
+                exporting: {
+                    contextButton: {
+                        exportButton: {
+                            align: 'left'
+                        }
+                    },
+                    enabled: true
+                },
                 chart: {
                     type: 'column'
                 },
@@ -453,6 +466,19 @@ $(function () {
         }
 
         $('#fsa-statuses').highcharts({
+            navigation: {
+                buttonOptions: {
+                    align: 'left'
+                }
+            },
+            exporting: {
+                contextButton: {
+                    exportButton: {
+                        align: 'left'
+                    }
+                },
+                enabled: true
+            },
             chart: {
                 type: 'column',
                 events: {
@@ -538,6 +564,19 @@ $(function () {
         }
 
         $('#tickets-stacked').highcharts({
+            navigation: {
+                buttonOptions: {
+                    align: 'left'
+                }
+            },
+            exporting: {
+                contextButton: {
+                    exportButton: {
+                        align: 'left'
+                    }
+                },
+                enabled: true
+            },
             chart: {
                 type: 'column',
                 zoomType: 'x,y'
@@ -606,7 +645,19 @@ $(function () {
 
 
         $('#history-block').highcharts({
-
+            navigation: {
+                buttonOptions: {
+                    align: 'left'
+                }
+            },
+            exporting: {
+                contextButton: {
+                    exportButton: {
+                        align: 'left'
+                    }
+                },
+                enabled: true
+            },
             title: {
                 text: 'Status progress'
             },
@@ -688,6 +739,19 @@ $(function () {
             $('#tickets-companies').append(chartContainer);
 
             $(chartContainer).highcharts({
+                navigation: {
+                    buttonOptions: {
+                        align: 'left'
+                    }
+                },
+                exporting: {
+                    contextButton: {
+                        exportButton: {
+                            align: 'left'
+                        }
+                    },
+                    enabled: true
+                },
                 chart: {
                     type: 'pie'
                 },
@@ -705,9 +769,6 @@ $(function () {
                             enabled: false
                         }
                     }
-                },
-                exporting: {
-                    enabled: true
                 },
                 series: [{
                     name: "Tickets",
@@ -733,6 +794,19 @@ $(function () {
         }
 
         $('#pie-total-tickets').highcharts({
+            navigation: {
+                buttonOptions: {
+                    align: 'left'
+                }
+            },
+            exporting: {
+                contextButton: {
+                    exportButton: {
+                        align: 'left'
+                    }
+                },
+                enabled: true
+            },
             chart: {
                 type: 'pie'
             },
@@ -747,9 +821,6 @@ $(function () {
                     allowPointSelect: true,
                     showInLegend: true
                 }
-            },
-            exporting: {
-                enabled: true
             },
             series: [{
                 name: "Tickets",
@@ -823,6 +894,18 @@ $(function () {
             }
         }
         $('#tickets-built-type-mix').highcharts({
+            navigation: {
+                buttonOptions: {
+                    align: 'left'
+                }
+            },
+            exporting: {
+                contextButton: {
+                    exportButton: {
+                        align: 'left'
+                    }
+                }
+            },
             chart: {
                 type: 'pie',
                 events: {
@@ -868,9 +951,6 @@ $(function () {
             legend:{
                 enabled:false
             },
-            exporting: {
-                enabled: true
-            },
             series: [{
                 data: series
             }]
@@ -895,6 +975,18 @@ $(function () {
         }
 
         $('#pie-total-tickets-assigned').highcharts({
+            navigation: {
+                buttonOptions: {
+                    align: 'left'
+                }
+            },
+            exporting: {
+                contextButton: {
+                    exportButton: {
+                        align: 'left'
+                    }
+                }
+            },
             chart: {
                 type: 'column',
                 zoomType: 'x,y'
@@ -913,9 +1005,6 @@ $(function () {
             },
             legend:{
                 enabled:false
-            },
-            exporting: {
-                enabled: true
             },
             series: [{
                 data: series
