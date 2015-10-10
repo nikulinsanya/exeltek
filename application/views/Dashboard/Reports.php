@@ -336,7 +336,7 @@
                     </div>
 
                     <div class="modal-footer">
-<!--                        <a href="javascript:;" class="btn btn-warning"><span class="glyphicon glyphicon-cloud-download"></span> Export</a>-->
+                        <button class="btn btn-success"  data-dismiss="modal" id="exportTickets"><span class="glyphicon glyphicon-download"></span> Export</button>
                         <button class="btn btn-warning"  data-dismiss="modal" id="hideModalTickets">Close</button>
                     </div>
                 </form>

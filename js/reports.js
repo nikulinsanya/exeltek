@@ -619,17 +619,6 @@ $(function () {
                     month: '%e. %b',
                     year: '%b'
                 }
-//                tickPositioner: function () {
-//                    var positions = [],
-//                        tick = Math.floor(this.dataMin),
-//                        increment = Math.ceil((this.dataMax - this.dataMin) / 2);
-//
-//                    for (; tick - increment <= this.dataMax; tick += increment) {
-//                        positions.push(moment(tick).toDate());
-//                    }
-//                    console.log(positions);
-//                    return positions;
-//                }
             },
 
             yAxis: {
@@ -977,7 +966,7 @@ $(function () {
                 {
                     simplified = utils.simplifyString(i).toUpperCase();
                     color = window.REPORTDATA.allocation.colorByType[simplified] || '#ccc' ;
-                    html.push('<li role="presentation" class=""><a  style="background-color:',color,
+                    html.push('<li role="presentation" class=""><a style="background-color:',color,
                         '" href="#',simplified,'" data-toggle="tab">',i,'</a></li>');
                 }
                 html.push('</ul>');
@@ -996,7 +985,7 @@ $(function () {
                     while(j--){
                         html.push(
                             '<div style="background-color:',color,
-                            '"><a data-toggle="tooltip" data-placement="top"  title="status: ',i,'" href="',
+                            '"><a data-item="',data[i][j],'" data-toggle="tooltip" data-placement="top"  title="status: ',i,'" href="',
                             utils.baseUrl(),'search/view/',data[i][j],'">',
                                 data[i][j],
                             '</a></div>');
@@ -1016,6 +1005,8 @@ $(function () {
                 $('#preloaderModal').modal('hide');
                 $('[data-toggle="tooltip"]').tooltip();
                 $('#tabs').tab();
+
+                $('#exportTickets').off().on('click',exportTickets);
             }
         })
     }
@@ -1180,6 +1171,28 @@ $(function () {
         });
     }
 
+    function exportTickets(){
+//        var data = [["name1", "city1", "some other info"], ["name2", "city2", "more info"]],
+
+        var csvContent = "data:text/csv;charset=utf-8,",
+            parent = $('#my-tab-content').find('.tab-pane.active'),
+            data = parent.find('[data-item]'),
+            name = parent.attr('id'),
+            dataString;
+
+        dataString = data.map(function(){
+            return $(this).attr('data-item');
+        });
+
+        csvContent += dataString.toArray().join(',');
+
+        var encodedUri = encodeURI(csvContent);
+        var link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", name + ".csv");
+
+        link.click();
+    }
 
     dashboardHandlers();
     initExpandCollapse();
