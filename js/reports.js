@@ -953,6 +953,7 @@ $(function () {
             format = window.localStorage && window.localStorage['_history_format_'] || 'd';
         }
         $('#preloaderModal').modal('show');
+
         $.ajax({
             url:[utils.baseUrl(),
                 'dashboard/api?sep=',
