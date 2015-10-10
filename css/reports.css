@@ -92,8 +92,13 @@
     font-weight: bold;
 }
 
+#ticketTable .tab-pane{
+    border-top: 2px solid #FFF;
+    border-radius: 5px;
+    overflow: hidden;
+}
 #ticketTable .tab-pane>div{
-    float: left;
+    display: inline-block;
     width: 20%;
     height: 40px;
     border-right: 1px solid #fff;
