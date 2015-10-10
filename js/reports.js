@@ -967,6 +967,7 @@ $(function () {
                 var i, j, k,
                     status,
                     color,
+                    used = false,
                     html = [],
                     simplified,
                     date = format == 'd' ? moment(timeStamp).format('DD MMM,YYYY') : moment(timeStamp).format('MMM YYYY');
@@ -990,7 +991,8 @@ $(function () {
                     k=0;
 
 
-                    html.push('<div class="tab-pane active" id="',simplified,'">');
+                    html.push('<div class="tab-pane"',(!used ? ' active' : ''), 'id="',simplified,'">');
+                    used = true;
                     while(j--){
                         html.push(
                             '<div style="background-color:',color,
