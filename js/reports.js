@@ -955,7 +955,7 @@ $(function () {
         $('#preloaderModal').modal('show');
         $.ajax({
             url:[utils.baseUrl(),
-                '/dashboard/api?sep=',
+                'dashboard/api?sep=',
                 format,
                 '&details=',
                 moment(timeStamp).unix()
