@@ -383,6 +383,13 @@ window.form = (function() {
                 $(select).multiselect('refresh');
             });
 
+            $('.config-value-container').find('input').on('keyup', function(){
+                var value = $(this).val();
+                if(self.focusedField.attr('data-type') == 'label'){
+                    self.focusedField.attr('data-value',value);
+                    self.focusedField.find('.tmp-label').html(value);
+                }
+            });
 
         },
         changeConfigContext: function(field){
@@ -513,8 +520,9 @@ window.form = (function() {
         },
 
         initPlugins: function(){
-            if($('canvas').length)
-                var signature = new SignaturePad(document.querySelector('canvas'));
+            $('canvas').each(function(){
+                new SignaturePad($(this).get(0));
+            });
 
             $('select.selectize').selectize();
             $('.datepicker').datepicker({
@@ -523,9 +531,10 @@ window.form = (function() {
         },
 
         initPluginsOnBuiltForm: function(){
-            if($('canvas').length){
-                var signature = new SignaturePad(document.querySelector('canvas'));
-            }
+            $('canvas').each(function(){
+                new SignaturePad($(this).get(0));
+            });
+
             $('.datepicker').datepicker({
                 dateFormat: 'dd-mm-yy'
             });
@@ -580,6 +589,24 @@ $(function () {
     });
 
     $('#form-save').click(function() {
-        alert($(this).parents('form').serialize());
+        var form = $(this).parents('form').serializeArray();
+
+        $('form').find('canvas').each(function(){
+            form.push({
+                name:$(this).attr('name'),
+                value: $(this).get(0).toDataURL()
+            });
+        });
+
+        $.ajax({
+            url     : utils.baseUrl(),
+            type    : 'POST',
+            success : function(data){
+                window.location.reload();
+            },
+            error   : function(e){
+                alert(e.responseText);
+            }
+        });
     });
 });
