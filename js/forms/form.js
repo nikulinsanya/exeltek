@@ -224,7 +224,7 @@ window.form = (function() {
                                             '">',
                                                 '<canvas name="',
                                                 el.name,
-                                                '" class="panel panel-default" width="150" height="25"></canvas>',
+                                                '" class="panel panel-default" width="250" height="40"></canvas>',
                                             '</div>',
                                         editable ? '<button class="remove-field tmp-gen"> - </button>' : '',
                                         '</div>');
@@ -280,11 +280,39 @@ window.form = (function() {
                     html.push('</div>');
                 }
                 $(container).html(html.join(''));
-//            self.initPluginsOnBuiltForm();
-                if (!editable) self.initPlugins();
+                if (!editable){
+                    self.initPlugins();
+                    self.refreshCanvasWithData(json);
+                }
+
             });
+        },
 
+        refreshCanvasWithData: function(json){
+            var i, j, el,
+                self = this,
+                canvas;
 
+            for(i = 0;i<json.length;i++){
+                if(typeof(json[i]) != 'string'){
+                    for(j = 0;j<json[i].length;j++){
+                        el = json[i][j];
+                        if(typeof(el.type) == 'canvas'){
+                            canvas = $('canvas[name="'+el.name+'"]').get(0),
+                            self.loadCanvas(canvas,el.value);
+                        }
+                    }
+                }
+            }
+        },
+
+        loadCanvas: function(canvas, base64){
+            var ctx = canvas.getContext("2d"),
+                image = new Image();
+            image.onload = function() {
+                ctx.drawImage(image, 0, 0);
+            };
+            image.src = el.value;
         },
 
         createJson: function(){
@@ -453,7 +481,7 @@ window.form = (function() {
                     break;
                 case 'canvas':
                     var guid = self.guid();
-                    $(field).html('<canvas name="' + guid + '" class="panel panel-default" width="150" height="25"></canvas><input type="hidden" data-name="'+guid+'"/>');
+                    $(field).html('<canvas name="' + guid + '" class="panel panel-default" width="250" height="40"></canvas><input type="hidden" data-name="'+guid+'"/>');
                     break;
                 case 'ticket':
                     self.handleTicketField($(field));

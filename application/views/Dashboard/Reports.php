@@ -317,7 +317,7 @@
 
 
     <div class="modal fade" id="ticketData" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document" style="width:800px;">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <form id="dashboard-report-form" class="" action="" method="get">
                     <div class="modal-header">
