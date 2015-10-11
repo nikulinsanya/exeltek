@@ -599,10 +599,12 @@ $(function () {
         });
 
         $.ajax({
-            url     : utils.baseUrl(),
+            url     : '',
             type    : 'POST',
+            data    : form,
             success : function(data){
-                window.location.reload();
+                dump(data);
+                //window.location.reload();
             },
             error   : function(e){
                 alert(e.responseText);
