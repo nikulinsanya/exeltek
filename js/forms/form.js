@@ -224,7 +224,7 @@ window.form = (function() {
                                             '">',
                                                 '<canvas name="',
                                                 el.name,
-                                                '" class="panel panel-default" width="300" height="100"></canvas>',
+                                                '" class="panel panel-default" width="300" height="60"></canvas>',
                                             '</div>',
                                         editable ? '<button class="remove-field tmp-gen"> - </button>' : '',
                                         '</div>');
@@ -481,7 +481,7 @@ window.form = (function() {
                     break;
                 case 'canvas':
                     var guid = self.guid();
-                    $(field).html('<canvas name="' + guid + '" class="panel panel-default" width="300" height="100"></canvas><input type="hidden" data-name="'+guid+'"/>');
+                    $(field).html('<canvas name="' + guid + '" class="panel panel-default" width="300" height="60"></canvas><input type="hidden" data-name="'+guid+'"/>');
                     break;
                 case 'ticket':
                     self.handleTicketField($(field));
