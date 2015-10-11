@@ -312,7 +312,7 @@ window.form = (function() {
             image.onload = function() {
                 ctx.drawImage(image, 0, 0);
             };
-            image.src = el.value;
+            image.src = base64;
         },
 
         createJson: function(){
