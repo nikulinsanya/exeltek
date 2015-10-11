@@ -28,6 +28,7 @@ class Controller_Form extends Controller {
         $id = Arr::get($_GET, 'id');
         if ($id) {
             $form = Database_Mongo::collection('forms-data')->findOne(array('_id' => new MongoId($id)));
+            $form_id = false;
         } else {
             $form_id = Arr::get($_GET, 'form');
             $form = Database_Mongo::collection('forms')->findOne(array('_id' => new MongoId($form_id)));
@@ -37,6 +38,20 @@ class Controller_Form extends Controller {
 
         if ($this->request->is_ajax()) {
             header('Content-type: application/json');
+
+            if ($_POST) {
+                foreach ($form['data'] as $key => $values) if (is_array($values))
+                    foreach ($values as $v => $input)
+                        if (Arr::get($input, 'name')) {
+                            $form['data'][$key][$v]['value'] = Columns::parse(Arr::get($_POST, $input['name']), Arr::get($input, 'type'));
+                        }
+                unset($form['_id']);
+
+                if ($id)
+                    Database_Mongo::collection('forms-data')->update(array('_id' => $id), $form);
+                else
+                    Database_Mongo::collection('forms-data')->insert($form);
+            }
             die(json_encode($form['data']));
         }
 
