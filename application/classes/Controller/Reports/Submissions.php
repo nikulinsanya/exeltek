@@ -157,8 +157,10 @@ class Controller_Reports_Submissions extends Controller {
             foreach ($submissions as $job => $list) foreach ($list as $submission) {
                 $key = substr($submission['key'], 5);
                 $result[$job][$submission['update_time']][$submission['user_id']][$key] = $submission['value'];
+                $columns[$key] = Columns::get_name($key);
             }
             $submissions = $result;
+            ksort($columns);
 
             $headers = array(
                 'Tickets ID',
@@ -169,7 +171,7 @@ class Controller_Reports_Submissions extends Controller {
                 'User',
             );
             if (Group::current('allow_assign')) $headers[] = 'Company';
-            $columns = Columns::get_visible();
+            /*$columns = Columns::get_visible();*/
             foreach ($columns as $column) $headers[] = $column;
             $columns = array_keys($columns);
 
