@@ -72,21 +72,108 @@ $(function () {
             $(e).removeClass (function (index, css) {
                 return (css.match (/(^|\s)text-\S+/g) || []) + ' ' + (css.match (/(^|\s)glyphicon-\S+/g) || []);
             });
-            $(e).children('span').text(value);
-            if ($(e).attr('data-paid-' + company)) {
-                $(e).addClass('text-danger glyphicon-flag')
+            var paid = $(e).attr('data-paid-' + company);
+            paid = paid == undefined ? 0 : parseFloat(paid);
+            if (paid) {
+
+                if (paid < value) {
+                    total -= paid;
+                    $(e).addClass('text-info glyphicon-flag');
+                } else {
+                    total -= value;
+                    $(e).addClass('text-danger glyphicon-flag');
+                }
+                $(e).children('span.payment-job-value').text(paid + '/' + value);
             } else if (value) {
+                $(e).children('span.payment-job-value').text(value);
                 $(e).addClass('text-success glyphicon-ok');
             } else {
                 $(e).addClass('text-muted glyphicon-minus');
             }
         });
+        $('#payment-avail').text(total.toFixed(2));
         $('#payment-amount').val(total.toFixed(2));
+        if (total > 0)
+            $('#payment-continue').removeClass('hidden');
+        else
+            $('#payment-continue').addClass('hidden');
+    });
+
+    $('#payment-continue').click(function() {
+        var company = $('#payment-company').val();
+
+        var html = '';
+        $('div.payment-info[data-company-' + company + ']').each(function (i, e) {
+            var id = $(e).children('span.payment-job-id').text();
+            var total = parseFloat($(e).attr('data-company-' + company));
+            var paid = $(e).attr('data-paid-' + company);
+            paid = paid == undefined ? 0 : parseFloat(paid);
+            if (total > paid)
+                html += '<tr><td>' + id + '</td><td>' + total.toFixed(2) + '</td><td>' + paid.toFixed(2) + '</td><td class="payment-total">' + (total-paid).toFixed(2) + '</td><td>' +
+                    '<input type="text" class="form-control payment-value" name="payment[' + id + ']" value="' + (total-paid).toFixed(2) + '" />' + '</td><td>' +
+                    '<input type="text" class="form-control payment-percentage" value="100.00" />' + '</td></tr>';
+            //alert(html);
+        });
+        html = '<table class="table">' + html + '</table>';
+        $('#payment-details').prepend(html);
+        $('#payment-details').removeClass('hidden');
+        $('#payment-pre').addClass('hidden');
+    });
+
+    $('#payment-amount').change(function() {
+        var sum = parseFloat($(this).val());
+        total = 0;
+        $('.payment-total').each(function(i, e) {
+            total += parseFloat($(e).text());
+        });
+        $('#payment-details').find('tr').each(function(i, e) {
+            var value = parseFloat($(e).find('.payment-total').text());
+            var val = value / total * sum;
+            $(e).find('input.payment-value').val(val.toFixed(2));
+            $(e).find('input.payment-percentage').val((val/value*100).toFixed(2));
+        });
+    })
+
+    $('#payment-details').on('change', 'input.payment-percentage', function() {
+        var total = parseFloat($(this).parents('tr').children('.payment-total').text());
+        var value = parseFloat($(this).val());
+        if (value == NaN || value < 0) {
+            value = 0;
+            $(this).val('0');
+        }
+
+        $(this).parents('tr').find('input.payment-value').val((value/100 * total).toFixed(2));
+        total = 0;
+        $('.payment-value').each(function(i, e) {
+            total += parseFloat($(e).val());
+        });
+        $('#payment-amount').val(total);
+    });
+
+    $('#payment-details').on('change', 'input.payment-value', function() {
+        var total = parseFloat($(this).parents('tr').children('.payment-total').text());
+        var value = parseFloat($(this).val());
+        if (value == NaN || value < 0) {
+            value = 0;
+            $(this).val('0');
+        }
+
+        $(this).parents('tr').find('input.payment-percentage').val((value/total * 100).toFixed(2));
+        total = 0;
+        $('.payment-value').each(function(i, e) {
+            total += parseFloat($(e).val());
+        });
+        $('#payment-amount').val(total);
+    });
+
+    $('#payment-cancel').click(function() {
+        $('#payment-details').addClass('hidden');
+        $('#payment-pre').removeClass('hidden');
     });
 
     $('#payment-form').submit(function() {
         var has_paid = $('div.payment-info.text-danger').length > 0;
-        var has_unpaid = $('div.payment-info.text-success').length > 0;
+        var has_unpaid = $('div.payment-info.text-success,div.payment-info.text-info').length > 0;
         if (!$('#payment-company').val()) {
             alert('Please, select contractor!');
             return false;

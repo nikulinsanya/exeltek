@@ -223,7 +223,7 @@ class Columns {
         return $id ? Arr::get(self::$permissions, $id) : self::$permissions;
     }
     
-    public static function parse($value, $type = false) {
+    public static function  parse($value, $type = false) {
         if (strpos($type, 'enum') !== false) {
             $enum = substr($type, 5);
             if (Enums::is_multi($enum))

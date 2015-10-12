@@ -26,9 +26,10 @@ class Controller_Search_Payment extends Controller
 
         $paid = array();
         if ($companies) {
-            $result = DB::select('job_key', 'company_id')->from('payment_jobs')->join('payments')->on('payment_id', '=', 'id')->where('job_key', 'IN', $ids)->execute()->as_array();
+            $result = DB::select('job_key', 'company_id', DB::expr('SUM(`payment_jobs`.`amount`) as value'))->from('payment_jobs')->join('payments')->on('payment_id', '=', 'id')->where('job_key', 'IN', $ids)
+                ->group_by('job_key', 'company_id')->execute()->as_array();
             foreach ($result as $payment)
-                $paid[$payment['company_id']][$payment['job_key']] = 1;
+                $paid[$payment['company_id']][$payment['job_key']] = $payment['value'];
         }
 
         $jobs = array_fill_keys($ids, array('c' => array(), 'p' => array()));
@@ -38,35 +39,41 @@ class Controller_Search_Payment extends Controller
                 $jobs[$key]['c'][$company] = $value;
 
         foreach ($paid as $company => $list)
-            foreach ($list as $key => $dummy)
-                $jobs[$key]['p'][$company] = 1;
+            foreach ($list as $key => $value)
+                $jobs[$key]['p'][$company] = $value;
 
-        if (Arr::get($_POST, 'company') && Arr::get($_POST, 'amount')) {
+        if (Arr::get($_POST, 'company') && Arr::get($_POST, 'payment')) {
             $company = Arr::get($companies, $_POST['company']);
             if (!$company) {
                 die(json_encode(array('success' => false)));
             }
+            $payments = array_map('floatval', array_intersect_key($_POST['payment'], $company));
+
             $payment = array(
                 'company_id' => intval($_POST['company']),
                 'admin_id' => User::current('id'),
                 'payment_time' => time(),
-                'amount' => floatval($_POST['amount']),
+                'amount' => array_sum($payments),
             );
             Database::instance()->begin();
             $id = Arr::get(DB::insert('payments', array_keys($payment))->values(array_values($payment))->execute(), 0);
-            $query = DB::insert('payment_jobs', array('payment_id', 'job_key'));
+            $query = DB::insert('payment_jobs', array('payment_id', 'job_key', 'amount'));
+            foreach ($company as $job => $value) if (Arr::get($payments, $job))
+                $query->values(array($id, $job, $payments[$job]));
+            $query->execute();
+
             $partial = array();
             $paid = array();
-            foreach ($company as $job => $value) {
-                $diff = array_diff_key($jobs[$job]['c'], $jobs[$job]['p']);
-                if (count($diff) == 0 || (count($diff) == 1 && isset($diff[$_POST['company']])))
-                    $paid[] = $job;
-                else
-                    $partial[] = $job;
 
-                $query->values(array($id, $job));
+            $result = Database_Mongo::collection('jobs')->find(array('_id' => array('$in' => $ids)));
+            foreach ($result as $job) {
+                $data = Utils::calculate_financial($job);
+                if (isset($data['$set']['partial']))
+                    $partial[] = $job['_id'];
+                elseif (isset($data['$set']['paid']))
+                    $paid[] = $job['_id'];
             }
-            $query->execute();
+
             if ($partial)
                 Database_Mongo::collection('jobs')->update(array('_id' => array('$in' => $partial)), array('$unset' => array('paid' => 1), '$set' => array('partial' => 1)), array('multiple' => 1));
             if ($paid)
@@ -75,9 +82,6 @@ class Controller_Search_Payment extends Controller
             Messages::save('Payment successfully added!', 'success');
             die(json_encode(array('success' => true)));
         }
-
-        foreach ($jobs as $key => $list)
-            $jobs[$key]['p'] = array_keys($list['p']);
 
         ksort($jobs);
 

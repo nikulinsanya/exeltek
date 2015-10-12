@@ -56,9 +56,9 @@
     </ul>
     
     <div class="panel panel-default">
-        <?php $fl = true; foreach ($tabs as $id => $tab) if (isset($tab['columns'])):?>
+        <?php $fl = true; foreach ($tabs as $tab_id => $tab) if (isset($tab['columns'])):?>
     
-        <div data-id="<?=$id?>" class="panel-body <?=!$fl ? 'hidden' : 'active'?>">
+        <div data-id="<?=$tab_id?>" class="panel-body <?=!$fl ? 'hidden' : 'active'?>">
             <table class="col-container job-details-table">
             <?php  $index = 0; foreach ($tab['columns'] as $id => $name): $value = isset($values['data' . $id]) ? $values['data' . $id]: Arr::path($job, 'data.' . $id, '');?>
                 <?php
@@ -103,6 +103,14 @@
                 <?php endif; ?>
             <?php endforeach;?>
             </table>
+
+            <?php if ($tab_id == 6 && Arr::get($job, 'payments')):?>
+            <h4>Payments:</h4>
+            <?php foreach ($job['payments'] as $payment): ?>
+                <div class="col-xs-12">
+                    <?=date('d-m-Y H:i', $payment['payment_time'])?>: <strong><?=$payment['amount']?></strong> paid to <strong><?=Arr::get($companies, $payment['company_id'], 'Unknown')?></strong> by <strong><?=User::get($payment['admin_id'], 'login')?></strong>. Total payment amount: <strong><?=$payment['total']?></strong>
+                </div>
+            <?php endforeach; endif;?>
 
         </div>
         <?php $fl = false; endif;?>
