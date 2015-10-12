@@ -62,6 +62,143 @@ $(function () {
         $('#upload>h2').text($('#upload>h2').text() + ' (' + $(this).parent().text().trim() + '):')
     });
 
+    $('#payment-company').change(function() {
+        var company = $(this).val();
+        var total = 0;
+        $('div.payment-info').each(function(i, e) {
+            var value = $(e).attr('data-company-' + company);
+            if (value == undefined) value = 0; else value = parseFloat(value);
+            total += value;
+            $(e).removeClass (function (index, css) {
+                return (css.match (/(^|\s)text-\S+/g) || []) + ' ' + (css.match (/(^|\s)glyphicon-\S+/g) || []);
+            });
+            var paid = $(e).attr('data-paid-' + company);
+            paid = paid == undefined ? 0 : parseFloat(paid);
+            if (paid) {
+
+                if (paid < value) {
+                    total -= paid;
+                    $(e).addClass('text-info glyphicon-flag');
+                } else {
+                    total -= value;
+                    $(e).addClass('text-danger glyphicon-flag');
+                }
+                $(e).children('span.payment-job-value').text(paid + '/' + value);
+            } else if (value) {
+                $(e).children('span.payment-job-value').text(value);
+                $(e).addClass('text-success glyphicon-ok');
+            } else {
+                $(e).addClass('text-muted glyphicon-minus');
+            }
+        });
+        $('#payment-avail').text(total.toFixed(2));
+        $('#payment-amount').val(total.toFixed(2));
+        if (total > 0)
+            $('#payment-continue').removeClass('hidden');
+        else
+            $('#payment-continue').addClass('hidden');
+    });
+
+    $('#payment-continue').click(function() {
+        var company = $('#payment-company').val();
+
+        var html = '';
+        $('div.payment-info[data-company-' + company + ']').each(function (i, e) {
+            var id = $(e).children('span.payment-job-id').text();
+            var total = parseFloat($(e).attr('data-company-' + company));
+            var paid = $(e).attr('data-paid-' + company);
+            paid = paid == undefined ? 0 : parseFloat(paid);
+            if (total > paid)
+                html += '<tr><td>' + id + '</td><td>' + total.toFixed(2) + '</td><td>' + paid.toFixed(2) + '</td><td class="payment-total">' + (total-paid).toFixed(2) + '</td><td>' +
+                    '<input type="text" class="form-control payment-value" name="payment[' + id + ']" value="' + (total-paid).toFixed(2) + '" />' + '</td><td>' +
+                    '<input type="text" class="form-control payment-percentage" value="100.00" />' + '</td></tr>';
+            //alert(html);
+        });
+        html = '<table class="table">' + html + '</table>';
+        $('#payment-details').prepend(html);
+        $('#payment-details').removeClass('hidden');
+        $('#payment-pre').addClass('hidden');
+    });
+
+    $('#payment-amount').change(function() {
+        var sum = parseFloat($(this).val());
+        total = 0;
+        $('.payment-total').each(function(i, e) {
+            total += parseFloat($(e).text());
+        });
+        $('#payment-details').find('tr').each(function(i, e) {
+            var value = parseFloat($(e).find('.payment-total').text());
+            var val = value / total * sum;
+            $(e).find('input.payment-value').val(val.toFixed(2));
+            $(e).find('input.payment-percentage').val((val/value*100).toFixed(2));
+        });
+    })
+
+    $('#payment-details').on('change', 'input.payment-percentage', function() {
+        var total = parseFloat($(this).parents('tr').children('.payment-total').text());
+        var value = parseFloat($(this).val());
+        if (value == NaN || value < 0) {
+            value = 0;
+            $(this).val('0');
+        }
+
+        $(this).parents('tr').find('input.payment-value').val((value/100 * total).toFixed(2));
+        total = 0;
+        $('.payment-value').each(function(i, e) {
+            total += parseFloat($(e).val());
+        });
+        $('#payment-amount').val(total);
+    });
+
+    $('#payment-details').on('change', 'input.payment-value', function() {
+        var total = parseFloat($(this).parents('tr').children('.payment-total').text());
+        var value = parseFloat($(this).val());
+        if (value == NaN || value < 0) {
+            value = 0;
+            $(this).val('0');
+        }
+
+        $(this).parents('tr').find('input.payment-percentage').val((value/total * 100).toFixed(2));
+        total = 0;
+        $('.payment-value').each(function(i, e) {
+            total += parseFloat($(e).val());
+        });
+        $('#payment-amount').val(total);
+    });
+
+    $('#payment-cancel').click(function() {
+        $('#payment-details').addClass('hidden');
+        $('#payment-pre').removeClass('hidden');
+    });
+
+    $('#payment-form').submit(function() {
+        var has_paid = $('div.payment-info.text-danger').length > 0;
+        var has_unpaid = $('div.payment-info.text-success,div.payment-info.text-info').length > 0;
+        if (!$('#payment-company').val()) {
+            alert('Please, select contractor!');
+            return false;
+        }
+
+        if (!has_unpaid && !confirm('Warning! There is no unpaid tickets for this contractor! Are you really want to create payment for paid tickets only?'))
+            return false;
+
+        if (has_paid && !confirm('Warning! There are paid tickets for this contractor! Are you really want to create new payments for paid tickets?'))
+            return false;
+
+        var data = $(this).serialize();
+        $.post(utils.baseUrl() + 'search/payment', data, function(data) {
+            try {
+                data = $.parseJSON(data)
+                if (data.success)
+                    window.location = utils.baseUrl() + 'search';
+            } catch (e) {
+                alert(data);
+            }
+        });
+
+        return false;
+    });
+
     $('#preloaderModal').modal({backdrop: 'static', keyboard: false, show: false});
 
     function handle_progress(data) {
@@ -356,13 +493,6 @@ $(function () {
 
 
 
-    $('#export-map').on('click',function (e) {
-        if(!$('#search-table').find('[type="checkbox"]:checked').length){
-            e.preventDefault();
-            alert('Please, select at least one ticket to export');
-        }
-    });
-
     $('.filters-form').submit(function (e) {
         $('#filterModal').modal('hide');
         $('#preloaderModal').modal('show');
@@ -578,6 +708,13 @@ $(function () {
         $('#upload-dialog').modal({backdrop: 'static', keyboard: false});
     });
 
+    $('#export-map').on('click',function (e) {
+        if(!$('#search-table').find('[type="checkbox"]:checked').length){
+            e.preventDefault();
+            alert('Please, select at least one ticket to export');
+        }
+    });
+
     $('.export-button').click(function() {
         var url = '';
         if ($(this).attr('data-url')) url = $(this).attr('data-url') + '?'; else url = '?';
@@ -592,6 +729,10 @@ $(function () {
         });
 
         document.location = utils.baseUrl() + 'attachments/tickets?id=' + ids.toString();
+    });
+
+    $('#payment-jobs').click(function() {
+        $(this).parents('form').attr('action', './search/payment');
     });
 
     $('.export-jobs').click(function() {
@@ -974,7 +1115,15 @@ $(function () {
         if(self){
             $(self).selectize({
                 create: true,
-                sortField: 'text'
+                sortField: 'text',
+                onDropdownClose      : function($dropdown) {
+                    //fix for page jump on small screens
+                    var left = $dropdown.position().left,
+                        top = $dropdown.position().top;
+                    setTimeout(function(){
+                        window.scrollTo(left,top);
+                    },10);
+                }
             });
         }
     }
@@ -1735,7 +1884,6 @@ $(function () {
 
     recalcBadges($('.view-tab-header').find('li[data-id="3"]'));
     recalcBadges($('.view-tab-header').find('li[data-id="4"]'));
-
 
     function recalcBadges(tab){
         tab = tab || $('.view-tab-header').find('li.active');

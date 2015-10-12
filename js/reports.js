@@ -13,7 +13,9 @@ $(function () {
             'DEFERRED': '#ED7476',
             'DIRTY': '#EB1014',
             'HEC': '#FC5356',
-            'HELD-NBN': '#FA6466'
+            'HELD-NBN': '#FA6466',
+            'PLANNED': '#A9A9A9',
+            'UNKNOWN': '#EB1014'
         },
 
         colorByTypeMix:{
@@ -73,7 +75,7 @@ $(function () {
     function dashboardHandlers(){
         $('#report-container').on('click','.switcher',function(e){
             var id = $(this).attr('href').replace('#','');
-            $('#report-container .tab-pane.active').removeClass('active');
+            $('.tab-pane.active').removeClass('active');
             $('.selected_switcher').removeClass('selected_switcher');
             $(this).addClass('selected_switcher');
             $('[data-id="'+id+'"]').addClass('active');
@@ -155,11 +157,10 @@ $(function () {
                     break
             }
         })
-
     }
 
     (function(){
-        var id = window.location.hash.replace('#','');
+        var id = window.location.hash.replace('#','') || 'main';
         if(id){
             $('#report-container .tab-pane.active').removeClass('active');
             $('[data-id="'+id+'"]').addClass('active');
@@ -363,6 +364,19 @@ $(function () {
 
 
             $('#fsam-statuses').highcharts({
+                navigation: {
+                    buttonOptions: {
+                        align: 'left'
+                    }
+                },
+                exporting: {
+                    contextButton: {
+                        exportButton: {
+                            align: 'left'
+                        }
+                    },
+                    enabled: true
+                },
                 chart: {
                     type: 'column'
                 },
@@ -452,6 +466,19 @@ $(function () {
         }
 
         $('#fsa-statuses').highcharts({
+            navigation: {
+                buttonOptions: {
+                    align: 'left'
+                }
+            },
+            exporting: {
+                contextButton: {
+                    exportButton: {
+                        align: 'left'
+                    }
+                },
+                enabled: true
+            },
             chart: {
                 type: 'column',
                 events: {
@@ -537,6 +564,19 @@ $(function () {
         }
 
         $('#tickets-stacked').highcharts({
+            navigation: {
+                buttonOptions: {
+                    align: 'left'
+                }
+            },
+            exporting: {
+                contextButton: {
+                    exportButton: {
+                        align: 'left'
+                    }
+                },
+                enabled: true
+            },
             chart: {
                 type: 'column',
                 zoomType: 'x,y'
@@ -605,7 +645,19 @@ $(function () {
 
 
         $('#history-block').highcharts({
-
+            navigation: {
+                buttonOptions: {
+                    align: 'left'
+                }
+            },
+            exporting: {
+                contextButton: {
+                    exportButton: {
+                        align: 'left'
+                    }
+                },
+                enabled: true
+            },
             title: {
                 text: 'Status progress'
             },
@@ -618,17 +670,6 @@ $(function () {
                     month: '%e. %b',
                     year: '%b'
                 }
-//                tickPositioner: function () {
-//                    var positions = [],
-//                        tick = Math.floor(this.dataMin),
-//                        increment = Math.ceil((this.dataMax - this.dataMin) / 2);
-//
-//                    for (; tick - increment <= this.dataMax; tick += increment) {
-//                        positions.push(moment(tick).toDate());
-//                    }
-//                    console.log(positions);
-//                    return positions;
-//                }
             },
 
             yAxis: {
@@ -639,6 +680,27 @@ $(function () {
             },
             tooltip: {
                 shared:true
+            },
+            plotOptions: {
+                series: {
+                    cursor: 'pointer',
+                    point: {
+                        events: {
+                            click: function (e) {
+                                var series = this.series.name,
+                                    date = Highcharts.dateFormat('%b %e, %Y', this.x),
+                                    count = this.y,
+                                    shared = this.series.data,
+                                    i,
+                                    html = [];
+                                showDailyTickets(this.x);
+                            }
+                        }
+                    },
+                    marker: {
+                        lineWidth: 1
+                    }
+                }
             },
 
             legend: {
@@ -677,6 +739,19 @@ $(function () {
             $('#tickets-companies').append(chartContainer);
 
             $(chartContainer).highcharts({
+                navigation: {
+                    buttonOptions: {
+                        align: 'left'
+                    }
+                },
+                exporting: {
+                    contextButton: {
+                        exportButton: {
+                            align: 'left'
+                        }
+                    },
+                    enabled: true
+                },
                 chart: {
                     type: 'pie'
                 },
@@ -694,9 +769,6 @@ $(function () {
                             enabled: false
                         }
                     }
-                },
-                exporting: {
-                    enabled: true
                 },
                 series: [{
                     name: "Tickets",
@@ -722,6 +794,19 @@ $(function () {
         }
 
         $('#pie-total-tickets').highcharts({
+            navigation: {
+                buttonOptions: {
+                    align: 'left'
+                }
+            },
+            exporting: {
+                contextButton: {
+                    exportButton: {
+                        align: 'left'
+                    }
+                },
+                enabled: true
+            },
             chart: {
                 type: 'pie'
             },
@@ -736,9 +821,6 @@ $(function () {
                     allowPointSelect: true,
                     showInLegend: true
                 }
-            },
-            exporting: {
-                enabled: true
             },
             series: [{
                 name: "Tickets",
@@ -812,6 +894,18 @@ $(function () {
             }
         }
         $('#tickets-built-type-mix').highcharts({
+            navigation: {
+                buttonOptions: {
+                    align: 'left'
+                }
+            },
+            exporting: {
+                contextButton: {
+                    exportButton: {
+                        align: 'left'
+                    }
+                }
+            },
             chart: {
                 type: 'pie',
                 events: {
@@ -857,9 +951,6 @@ $(function () {
             legend:{
                 enabled:false
             },
-            exporting: {
-                enabled: true
-            },
             series: [{
                 data: series
             }]
@@ -884,6 +975,18 @@ $(function () {
         }
 
         $('#pie-total-tickets-assigned').highcharts({
+            navigation: {
+                buttonOptions: {
+                    align: 'left'
+                }
+            },
+            exporting: {
+                contextButton: {
+                    exportButton: {
+                        align: 'left'
+                    }
+                }
+            },
             chart: {
                 type: 'column',
                 zoomType: 'x,y'
@@ -902,9 +1005,6 @@ $(function () {
             },
             legend:{
                 enabled:false
-            },
-            exporting: {
-                enabled: true
             },
             series: [{
                 data: series
@@ -925,6 +1025,85 @@ $(function () {
         return res.join('');
     }
 
+    function showDailyTickets(timeStamp){
+        var format = $('.history-container .active').attr('data-attr');
+        if(!format){
+            format = window.localStorage && window.localStorage['_history_format_'] || 'd';
+        }
+        $('#preloaderModal').modal('show');
+
+        $.ajax({
+            url:[utils.baseUrl(),
+                'dashboard/api?sep=',
+                format,
+                '&details=',
+                moment(timeStamp).unix()
+            ].join(''),
+            type:'get',
+            dataType:'JSON',
+            success:function(data){
+                var i, j, k,
+                    status,
+                    color,
+                    used = false,
+                    html = [],
+                    simplified,
+                    date = format == 'd' ? moment(timeStamp).format('DD MMM,YYYY') : moment(timeStamp).format('MMM YYYY');
+
+                html.push('<ul class="nav nav-tabs" id="tabs">');
+                for(i in data)
+                {
+                    simplified = utils.simplifyString(i).toUpperCase();
+                    color = window.REPORTDATA.allocation.colorByType[simplified] || '#ccc' ;
+                    html.push('<li role="presentation" class=""><a style="background-color:',color,
+                        '" href="#',simplified,'" data-toggle="tab">',i,'</a></li>');
+                }
+                html.push('</ul>');
+                html.push('<div id="my-tab-content" class="tab-content">');
+                for(i in data)
+                {
+                    simplified = utils.simplifyString(i).toUpperCase();
+                    color = window.REPORTDATA.allocation.colorByType[simplified] || '#ccc' ;
+
+                    j = data[i].length;
+                    k=0;
+
+
+                    html.push('<div class="tab-pane',(!used ? ' active" ' : '"'), 'id="',simplified,'">');
+                    used = true;
+                    while(j--){
+                        html.push(
+                            '<div style="background-color:',color,
+                            '"><a data-item="',data[i][j],'" data-toggle="tooltip" data-placement="top"  title="status: ',i,'" href="',
+                            utils.baseUrl(),'search/view/',data[i][j],'">',
+                                data[i][j],
+                            '</a></div>');
+                        k++;
+                        if(k == 5){
+                            k = 0;
+                            html.push('</tr>');
+                        }
+                    }
+                    html.push('</div>');
+                }
+                html.push('</div>');
+
+                $('#ticketTable').html(html.join(''));
+                $('#ticketsTitle').html('Tickets for <b>' + date + '</b>');
+                $('#ticketData').modal('show');
+                $('#preloaderModal').modal('hide');
+                $('[data-toggle="tooltip"]').tooltip();
+                $('#tabs').tab();
+
+                $('#exportTickets').off().on('click',exportTickets);
+            }
+        })
+    }
+
+    function simplifyString(str){
+        return str.replace(/ /g,"").toLowerCase();
+    }
+
     function getAllStatuses(start,end){
         return $.ajax({
             url:[utils.baseUrl(),
@@ -938,6 +1117,8 @@ $(function () {
             dataType:'JSON'
         })
     }
+
+
 
     function getBuiltTypeMixed(start,end){
         return $.ajax({
@@ -1006,8 +1187,7 @@ $(function () {
     }
     function getHistoryChanges(format,start, end){
         if(!format){
-            //montly by default
-            format = window.localStorage && window.localStorage['_history_format_'] || 'm';
+            format = window.localStorage && window.localStorage['_history_format_'] || 'd';
         }
         return $.ajax({
             url:[utils.baseUrl() , "dashboard/api?sep=" ,format,
@@ -1080,11 +1260,62 @@ $(function () {
         });
     }
 
+    function exportTickets(){
+//        var data = [["name1", "city1", "some other info"], ["name2", "city2", "more info"]],
+
+        var csvContent = "data:text/csv;charset=utf-8,",
+            parent = $('#my-tab-content').find('.tab-pane.active'),
+            data = parent.find('[data-item]'),
+            name = parent.attr('id') + '('+$('#ticketsTitle b').text()+')',
+            dataString;
+
+        dataString = data.map(function(){
+            return $(this).attr('data-item');
+        });
+
+        csvContent += dataString.toArray().join(',');
+
+        var encodedUri = encodeURI(csvContent);
+        var link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", name + ".csv");
+
+        link.click();
+    }
 
     dashboardHandlers();
     initExpandCollapse();
     initDateRangeSwitcher();
 
+
+
+
+
+//sidebar block
+    function htmlbodyHeightUpdate(){
+        var height3 = $( window ).height()
+        var height1 = $('.nav').height()+50
+        height2 = $('.main').height()
+        if(height2 > height3){
+            $('html').height(Math.max(height1,height3,height2)+10);
+            $('body').height(Math.max(height1,height3,height2)+10);
+        }
+        else
+        {
+            $('html').height(Math.max(height1,height3,height2));
+            $('body').height(Math.max(height1,height3,height2));
+        }
+
+    }
+    htmlbodyHeightUpdate()
+    $( window ).resize(function() {
+        htmlbodyHeightUpdate()
+    });
+    $( window ).scroll(function() {
+        height2 = $('.main').height()
+        htmlbodyHeightUpdate()
+    });
+//
 
 
 });

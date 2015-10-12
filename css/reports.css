@@ -1,3 +1,9 @@
+@media (max-width: 568px) {
+    body {
+        min-width: 568px!important;
+    }
+}
+
 .report-block{
     margin: 0px 0px 10px 0px;
 }
@@ -74,4 +80,34 @@
     width: 100%;
     text-align: center;
     margin-bottom:10px;
+}
+
+.switcher span.pull-right{
+    float: left!important;
+    margin-right: 10px;
+}
+
+
+#ticketTable .nav-tabs li {
+    font-weight: bold;
+}
+
+#ticketTable .tab-pane{
+    border-top: 2px solid #FFF;
+    border-radius: 5px;
+    overflow: hidden;
+}
+#ticketTable .tab-pane>div{
+    display: inline-block;
+    width: 20%;
+    height: 40px;
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    padding-left: 5px;
+}
+
+#ticketTable a{
+    color:#fff;
+    padding: 10px 5px;
+    display: inline-block;
 }

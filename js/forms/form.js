@@ -1,4 +1,5 @@
 window.form = (function() {
+    var viewTemplate = '<div><div class="form-container"></div></div>';
     var formTemplate = '<div class="form-row" data-template-row style="display: none;">'+
 '        <button class="remove-line tmp-gen btn btn-danger">remove row</button>'+
 '        <button class="add-value tmp-gen btn btn-success">+</button>'+
@@ -61,13 +62,16 @@ window.form = (function() {
 '                    </div>';
 
     var formBuilder = {
-        init: function(container, json){
-            this.prepareHtml(container);
+        init: function(container, json, editable){
+            if (editable == undefined) editable = true;
+            //if (editable)
+                this.prepareHtml(container, editable);
             if(json){
-                this.buildFormByJson($('.form-container'),json);
-                this.setHandlers();
-                this.editorEvents();
-
+                this.buildFormByJson($('.form-container'), json, editable);
+                if (editable) {
+                    this.setHandlers();
+                    this.editorEvents();
+                }
             }else{
                 $('.add-row').trigger('click');
                 this.setHandlers();
@@ -76,8 +80,8 @@ window.form = (function() {
 
 
         },
-        prepareHtml: function(container){
-            $(container).html(formTemplate);
+        prepareHtml: function(container, editable){
+            $(container).html(editable ? formTemplate : viewTemplate);
         },
         focusedField : false,
         setHandlers: function(){
@@ -125,7 +129,7 @@ window.form = (function() {
 
 
             $('.save-form').on('click', function(){
-                if(confirm('Generate form?')){
+                if(confirm('Save form and close the editor?')){
                     self.sendForm();
                 }
             });
@@ -133,17 +137,18 @@ window.form = (function() {
 
         sendForm: function(){
             var json = this.createJson();
+            var id = $('#form-builder').attr('data-id');
             return $.ajax({
-                url : utils.baseUrl() + 'form/generate',
+                url : utils.baseUrl() + 'form/save?id=' + id + '&type=' + $('#form-type').val() + '&name=' + encodeURIComponent($('#form-name').val()),
                 type: 'POST',
                 data: JSON.stringify(json),
                 success: function(){
-                    alert('Posted');
+                    window.location.reload(true);
                 }
             });
         },
 
-        buildFormByJson: function(container, json){
+        buildFormByJson: function(container, json, editable){
             var html = [],
                 el,
                 self = this,
@@ -152,7 +157,7 @@ window.form = (function() {
             getColumns().then(function(ticketFields){
                 for(i = 0;i<json.length;i++){
                     if(typeof(json[i]) == 'string'){
-                        html.push('<hr><button class="tmp-gen remove-hr tmp-gen btn btn-danger"> - </button>');
+                        html.push('<hr>' + (editable ? '<button class="tmp-gen remove-hr tmp-gen btn btn-danger"> - </button>' : ''));
                     }else{
                         html.push('<div class="form-row">');
                         for(j = 0;j<json[i].length;j++){
@@ -172,20 +177,27 @@ window.form = (function() {
                                                 el.placeholder,
                                                 '">',
                                             '</div>',
-                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        editable ? '<button class="remove-field tmp-gen"> - </button>' : '',
                                         '</div>');
                                     break;
                                 case 'label':
-                                    html.push('<div class="form-block">',
-                                        '<div class="value" data-type="label" data-value="',
-                                        el.value,
-                                        '" data-placeholder="">',
-                                        '<span class="tmp-label">',
-                                        el.value,
-                                        '</span>',
-                                        '</div>',
-                                        '<button class="remove-field tmp-gen"> - </button>',
-                                        '</div>');
+                                    if (editable)
+                                        html.push('<div class="form-block">',
+                                            '<div class="value" data-type="label" data-value="',
+                                            el.value,
+                                            '" data-placeholder="">',
+                                            '<span class="tmp-label">',
+                                            el.value,
+                                            '</span>',
+                                            '</div>',
+                                            '<button class="remove-field tmp-gen"> - </button>',
+                                            '</div>');
+                                    else
+                                        html.push('<div class="form-block">',
+                                            '<span class="tmp-label">',
+                                            el.value,
+                                            '</span>',
+                                            '</div>');
                                     break;
                                 case 'date':
                                     html.push(
@@ -201,7 +213,7 @@ window.form = (function() {
                                                 el.placeholder,
                                                 '">',
                                             '</div>',
-                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        editable ? '<button class="remove-field tmp-gen"> - </button>' : '',
                                         '</div>');
                                     break;
                                 case 'canvas':
@@ -212,29 +224,36 @@ window.form = (function() {
                                             '">',
                                                 '<canvas name="',
                                                 el.name,
-                                                '" class="panel panel-default" width="150" height="25"></canvas>',
+                                                '" class="panel panel-default" width="300" height="60"></canvas>',
                                             '</div>',
-                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        editable ? '<button class="remove-field tmp-gen"> - </button>' : '',
                                         '</div>');
                                     break;
                                 case 'ticket':
                                     var name = utils.searchInListById(el.fieldId,ticketFields);
                                     name = name && name.name || '';
-                                    html.push(
-                                        '<div class="form-block">',
-                                        '<div class="value" data-type="ticket" data-value="" data-placeholder="" data-field-id="',
-                                        el.fieldId,
-                                        '">',
-                                         name,
-                                        '</div>',
-                                        '<button class="remove-field tmp-gen"> - </button>',
-                                        '</div>');
+                                    if (editable)
+                                        html.push(
+                                            '<div class="form-block">',
+                                            '<div class="value" data-type="ticket" data-value="" data-placeholder="" data-field-id="',
+                                            el.fieldId,
+                                            '">',
+                                             name,
+                                            '</div>',
+                                            '<button class="remove-field tmp-gen"> - </button>',
+                                            '</div>');
+                                    else
+                                        html.push(
+                                            '<div class="form-block">',
+                                            el.value,
+                                            '</div>',
+                                            '</div>');
                                     break;
                                 case 'select':
                                     var options = [];
 
                                     $(el.values).each(function(){
-                                        options.push('<option value="'+this+'">'+this+'</option>');
+                                        options.push('<option value="'+this+'"' + (el.value == this ? ' selected' : '') + '>'+this+'</option>');
                                     });
                                     html.push(
                                         '<div class="form-block">',
@@ -249,22 +268,51 @@ window.form = (function() {
                                                     options.join(''),
                                                 '</select>',
                                             '</div>',
-                                        '<button class="remove-field tmp-gen"> - </button>',
+                                        editable ? '<button class="remove-field tmp-gen"> - </button>' : '',
                                         '</div>');
                                     break;
                             }
                         }
-                        html.push('<button class="remove-line tmp-gen btn btn-danger">remove row</button>' ,
-                            '<button class="add-value tmp-gen btn btn-success">+</button></div>');
+                        if (editable)
+                            html.push('<button class="remove-line tmp-gen btn btn-danger">remove row</button>' ,
+                                '<button class="add-value tmp-gen btn btn-success">+</button></div>');
                     }
                     html.push('</div>');
                 }
-            $(container).html(html.join(''));
-//            self.initPluginsOnBuiltForm();
-            self.initPlugins();
+                $(container).html(html.join(''));
+                if (!editable){
+                    self.initPlugins();
+                    self.refreshCanvasWithData(json);
+                }
+
             });
+        },
 
+        refreshCanvasWithData: function(json){
+            var i, j, el,
+                self = this,
+                canvas;
 
+            for(i = 0;i<json.length;i++){
+                if(typeof(json[i]) != 'string'){
+                    for(j = 0;j<json[i].length;j++){
+                        el = json[i][j];
+                        if(el.type == 'canvas'){
+                            canvas = $('canvas[name="'+el.name+'"]').get(0),
+                            self.loadCanvas(canvas,el.value);
+                        }
+                    }
+                }
+            }
+        },
+
+        loadCanvas: function(canvas, base64){
+            var ctx = canvas.getContext("2d"),
+                image = new Image();
+            image.onload = function() {
+                ctx.drawImage(image, 0, 0);
+            };
+            image.src = base64;
         },
 
         createJson: function(){
@@ -363,6 +411,13 @@ window.form = (function() {
                 $(select).multiselect('refresh');
             });
 
+            $('.config-value-container').find('input').on('keyup', function(){
+                var value = $(this).val();
+                if(self.focusedField.attr('data-type') == 'label'){
+                    self.focusedField.attr('data-value',value);
+                    self.focusedField.find('.tmp-label').html(value);
+                }
+            });
 
         },
         changeConfigContext: function(field){
@@ -426,7 +481,7 @@ window.form = (function() {
                     break;
                 case 'canvas':
                     var guid = self.guid();
-                    $(field).html('<canvas name="' + guid + '" class="panel panel-default" width="150" height="25"></canvas><input type="hidden" data-name="'+guid+'"/>');
+                    $(field).html('<canvas name="' + guid + '" class="panel panel-default" width="300" height="60"></canvas><input type="hidden" data-name="'+guid+'"/>');
                     break;
                 case 'ticket':
                     self.handleTicketField($(field));
@@ -493,19 +548,21 @@ window.form = (function() {
         },
 
         initPlugins: function(){
-            if($('canvas').length){
-                var signature = new SignaturePad(document.querySelector('canvas'));
-            }
-//            $('select.selectize').selectize();
-//            $('.datepicker').datepicker({
-//                dateFormat: 'dd-mm-yy'
-//            });
+            $('canvas').each(function(){
+                new SignaturePad($(this).get(0));
+            });
+
+            $('select.selectize').selectize();
+            $('.datepicker').datepicker({
+                dateFormat: 'dd-mm-yy'
+            });
         },
 
         initPluginsOnBuiltForm: function(){
-            if($('canvas').length){
-                var signature = new SignaturePad(document.querySelector('canvas'));
-            }
+            $('canvas').each(function(){
+                new SignaturePad($(this).get(0));
+            });
+
             $('.datepicker').datepicker({
                 dateFormat: 'dd-mm-yy'
             });
@@ -537,5 +594,49 @@ window.form = (function() {
     return formBuilder;
 })(window);
 
+$(function () {
+    $('.form-edit-link').click(function() {
+        var id = $(this).attr('data-id');
+        $('#forms-list').hide();
 
+        if (id == undefined) {
+            $('#form-builder').attr('data-id', '');
+            $('#form-name').val('');
+            $('#form-type').val('');
+            form.init($('#form-builder-container'), []);
+            $('#form-builder').removeClass('hidden');
+        } else {
+            $.get(utils.baseUrl() + 'form/load?id=' + id, function(data) {
+                $('#form-builder').attr('data-id', id);
+                $('#form-name').val(data.name);
+                $('#form-type').val(data.type);
+                form.init($('#form-builder-container'), data.data);
+                $('#form-builder').removeClass('hidden');
+            });
+        }
+    });
 
+    $('#form-save').click(function() {
+        var form = $(this).parents('form').serializeArray();
+
+        $('form').find('canvas').each(function(){
+            form.push({
+                name:$(this).attr('name'),
+                value: $(this).get(0).toDataURL()
+            });
+        });
+
+        $.ajax({
+            url     : '',
+            type    : 'POST',
+            data    : form,
+            success : function(data){
+                dump(data);
+                //window.location.reload();
+            },
+            error   : function(e){
+                alert(e.responseText);
+            }
+        });
+    });
+});

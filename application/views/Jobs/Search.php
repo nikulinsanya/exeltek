@@ -470,16 +470,14 @@
 <?=$pager;?>
 </div>
 <?php if (Group::current('allow_assign')):?>
-<div class="col-sm-6 col-xs-12">
-    <?=Form::select('type', array('' => 'Please, select works type...') + $types, false, array('class' => 'form-control'))?>
-</div>
-<div class="hidden visible-xs clearfix">&nbsp;</div>
-<div class="col-sm-6 col-xs-12">
-    <?=Form::select('company', array('' => 'Please, select company...', -1 => 'Unassign jobs') + $companies, false, array('class' => 'form-control'))?>
-</div>
-<div class="clearfix">&nbsp;</div>
+    <div class="search-select-container">
+        <?=Form::select('type', array('' => 'Please, select works type...') + $types, false, array('class' => 'form-control'))?>
+    </div>
+    <div class="search-select-container">
+        <?=Form::select('company', array('' => 'Please, select company...', -1 => 'Unassign jobs') + $companies, false, array('class' => 'form-control'))?>
+    </div>
 <?php endif;?>
-<div class="col-xs-12">
+<div class="col-xs-12 search-buttons-bottom">
     <?php if (Group::current('allow_assign')):?>
     <button type="submit" class="btn btn-warning assign-jobs">Assign jobs</button>
     <button type="submit" class="btn btn-danger archive-jobs">Archive jobs</button>
@@ -493,9 +491,10 @@
     <?php endif;?>
     <button type="submit" class="btn btn-info export-result"><span class="glyphicon glyphicon-export"></span>Export search result</button>
     <button type="submit" class="btn btn-info export-excel"><span class="glyphicon glyphicon-export"></span>Export search result (Excel)</button>
-    <button type="submit" class="btn btn-info export-map" id="export-map"><span class="glyphicon glyphicon-export"></span>Export map</button>
-
-
+    <button type="submit" class="btn btn-info export-map" id="export-map"><span class="glyphicon glyphicon-globe"></span>Export map</button>
+    <?php if (Group::current('allow_finance') && Group::current('show_all_jobs')):?>
+        <button type="submit" class="btn btn-success" id="payment-jobs"><span class="glyphicon glyphicon-usd"></span>Add payment</button>
+    <?php endif;?>
 </div>
 <div class="clearfix">&nbsp;</div>
 

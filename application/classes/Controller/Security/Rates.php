@@ -38,7 +38,7 @@ class Controller_Security_Rates extends Controller {
             throw new HTTP_Exception_403();
             
         $company = Arr::get($_GET, 'company');
-        if ($company !== '0' || ($company && !DB::select('id')->from('companies')->where('id', '=', $company)->execute()->get('id')))
+        if ($company !== '0' && ($company && !DB::select('id')->from('companies')->where('id', '=', $company)->execute()->get('id')))
             throw new HTTP_Exception_403();
 
         $region = intval(Arr::get($_GET, 'region'));

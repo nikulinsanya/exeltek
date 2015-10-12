@@ -524,6 +524,25 @@ class Controller_Search_View extends Controller {
 
         }
 
+        if (Group::current('allow_finance')) {
+            $query = DB::select('company_id', 'payment_time', 'admin_id', array('payments.amount', 'total'), array('payment_jobs.amount', 'amount'))
+                ->from('payment_jobs')
+                ->join('payments')->on('payment_jobs.payment_id', '=', 'payments.id')
+                ->where('job_key', '=', $job['_id'])
+                ->order_by('payment_time', 'desc');
+
+            if (!Group::current('show_all_jobs'))
+                $query->and_where('company_id', '=', User::current('company_id'));
+
+            $job['payments'] = $query->execute()->as_array();
+            $ids = array();
+
+            foreach ($job['payments'] as $payment)
+                $ids[$payment['admin_id']] = 1;
+
+            if ($ids) User::get(array_keys($ids));
+        }
+
 
         $view = View::factory('Jobs/View')
             ->bind('job', $job)

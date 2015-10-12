@@ -145,6 +145,21 @@ class Utils {
         if (Arr::get($job['data'], 262, 0) != $data['gp'])
             $result['$set']['data.262'] = $data['gp'];
 
+        $target = DB::select(DB::expr('SUM(`amount`) as total'))->from('payment_jobs')->where('job_key', '=', $job['_id'])->execute()->get('total');
+
+        if ($target) {
+            if ($data['acost'] > $target) {
+                if (!isset($job['partial'])) $result['$set']['partial'] = 1;
+                if (isset($job['paid'])) $result['$unset']['paid'] = 1;
+            } else {
+                if (isset($job['partial'])) $result['$unset']['partial'] = 1;
+                if (!isset($job['paid'])) $result['$set']['paid'] = 1;
+            }
+        } else {
+            if (isset($job['partial'])) $result['$unset']['partial'] = 1;
+            if (isset($job['paid'])) $result['$unset']['paid'] = 1;
+        }
+
         if ($result)
             Database_Mongo::collection('jobs')->update(array('_id' => $job['_id']), $result);
     }

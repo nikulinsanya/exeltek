@@ -39,12 +39,16 @@ class Columns {
         'removed' => 'Removed from SOD',
         'downloaded' => 'Attachments downloaded',
         'discrepancies' => 'Has discrepancies',
+        'partial' => 'Is partially paid',
+        'paid' => 'Is paid',
     );
 
     public static $settings_read_only = array(
         'removed',
         'downloaded',
         'discrepancies',
+        'partial',
+        'paid',
     );
     
     public static $settings_img = array(
@@ -58,6 +62,8 @@ class Columns {
         'removed' => 'remove',
         'downloaded' => 'floppy-saved',
         'discrepancies' => 'duplicate',
+        'partial' => 'align-left',
+        'paid' => 'align-justify',
     );
     
     private static $columns = array();
@@ -217,7 +223,7 @@ class Columns {
         return $id ? Arr::get(self::$permissions, $id) : self::$permissions;
     }
     
-    public static function parse($value, $type = false) {
+    public static function  parse($value, $type = false) {
         if (strpos($type, 'enum') !== false) {
             $enum = substr($type, 5);
             if (Enums::is_multi($enum))

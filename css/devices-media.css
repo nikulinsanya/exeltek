@@ -1,0 +1,146 @@
+@media only screen
+and (max-width : 801px){
+    .pagination>li>a, .pagination>li>span {
+        position: relative;
+        float: left;
+        padding: 3px 9px;
+    }
+
+    .nav>li>a {
+        padding: 5px 5px;
+        margin-right: 5px;
+    }
+
+    .nav.navbar-nav li:not(.divider){
+        border-bottom: 1px solid #ccc;
+    }
+    .nav.navbar-nav li ul li{
+        border-bottom: none!important;
+    }
+    .navbar-nav>li {
+        margin-left: 15px;
+    }
+}
+
+@media only screen
+and (max-width : 568px){
+   .search-select-container{
+        margin: 0px 0px 10px 15px;
+        width: 280px!important;
+    }
+    .modal {
+        position: fixed;
+        top: 3%;
+        right: 3%;
+        left: 3%;
+        width: auto;
+        margin: 0;
+    }
+    .modal-body {
+        height: 60%;
+    }
+    .modal-body {
+        max-height: 350px;
+        padding: 15px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+}
+
+
+
+/*iPhone 5 & 5S in portrait*/
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 568px){
+    .search-buttons-bottom{
+        width: 320px;
+    }
+    .search-buttons-bottom button{
+        width: 280px;
+    }
+    .navbar-fixed-top .navbar-collapse {
+        max-height: 385px;
+    }
+}
+
+
+/*iPhone 5 & 5S in landscape*/
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 568px)
+and (orientation : landscape) {
+    .navbar-fixed-top .navbar-collapse {
+        max-height: 270px;
+    }
+
+}
+
+/*iPhone 6 Plus in portrait*/
+@media only screen
+and (min-device-width : 414px)
+and (max-device-width : 736px)
+and (orientation : portrait) {
+    .search-buttons-bottom{
+        width: 320px;
+    }
+    .search-buttons-bottom button{
+        width: 280px;
+    }
+    .navbar-fixed-top .navbar-collapse {
+        max-height: 400px;
+    }
+
+}
+/*iPhone 6 Plus in landscape*/
+@media only screen
+and (min-device-width : 414px)
+and (max-device-width : 736px)
+and (orientation : landscape) {
+    .navbar-fixed-top .navbar-collapse {
+        max-height: 330px;
+    }
+
+
+}
+
+
+
+/*iPhone 6 in portrait*/
+@media only screen
+and (min-device-width : 375px)
+and (max-device-width : 667px)
+and (orientation : portrait) {
+    .search-buttons-bottom{
+        width: 320px;
+    }
+    .search-buttons-bottom button{
+        width: 280px;
+    }
+    .navbar-fixed-top .navbar-collapse {
+        max-height: 400px;
+    }
+
+}
+
+/*iPhone 6 in landscape*/
+@media only screen
+and (min-device-width : 375px)
+and (max-device-width : 667px)
+and (orientation : landscape) {
+    .navbar-fixed-top .navbar-collapse {
+        max-height: 330px;
+    }
+
+}
+
+
+/*iPad mini in portrait*/
+@media only screen
+and (min-device-width : 768px)
+and (max-device-width : 1024px)
+and (orientation : portrait){
+
+
+}
