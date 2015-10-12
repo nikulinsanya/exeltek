@@ -85,7 +85,10 @@ class Controller_Search_Payment extends Controller
 
         ksort($jobs);
 
-        $companies = DB::select('id', 'name')->from('companies')->where('id', 'IN', array_keys($companies))->order_by('name', 'ASC')->execute()->as_array('id', 'name');
+        if ($companies)
+            $companies = DB::select('id', 'name')->from('companies')->where('id', 'IN', array_keys($companies))->order_by('name', 'ASC')->execute()->as_array('id', 'name');
+        else
+            $companies = array();
 
         $view = View::factory('Jobs/Payment')
             ->bind('jobs', $jobs)
