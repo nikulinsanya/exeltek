@@ -125,7 +125,7 @@ table td .multiselect-container input[type=checkbox]{
 }
 
 #navbar,.navbar-header{
-    padding: 0px 20px;
+    padding: 0px 10px;
 }
 
 /*row colors*/
@@ -709,7 +709,6 @@ table.table>tbody>tr>td{
     }
     .navbar-header .navbar-toggle {
         float:left;
-        margin-left: 15px;
     }
     .black-navbar .container-fluid{
         padding-left: 0px;
@@ -919,4 +918,8 @@ td a.text-danger{
 }
 .search-buttons-bottom button{
     margin-bottom: 10px;
+}
+
+button>span.glyphicon{
+    margin-right: 5px;
 }
