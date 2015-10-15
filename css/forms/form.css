@@ -200,3 +200,7 @@ hr{
     height: 16px;
     line-height: 15px;
 }
+
+#form-type, #form-name{
+    width: 200px;
+}
