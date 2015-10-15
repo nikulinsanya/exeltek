@@ -63,6 +63,14 @@ and (max-device-width : 568px){
     .navbar-fixed-top .navbar-collapse {
         max-height: 385px;
     }
+
+    #tickets-container{
+        max-height: 410px!important;
+    }
+
+    #ticketTable .tab-pane>div {
+        width: 50%!important;
+    }
 }
 
 
@@ -74,7 +82,14 @@ and (orientation : landscape) {
     .navbar-fixed-top .navbar-collapse {
         max-height: 270px;
     }
+    #tickets-container{
+        max-height: 180px!important;
+        min-height: 180px!important;
+    }
 
+    #ticketTable .tab-pane>div {
+        width: 33%!important;
+    }
 }
 
 /*iPhone 6 Plus in portrait*/
@@ -92,6 +107,13 @@ and (orientation : portrait) {
         max-height: 400px;
     }
 
+    #tickets-container{
+        max-height: 410px!important;
+    }
+    #ticketTable .tab-pane>div {
+        width: 50%!important;
+    }
+
 }
 /*iPhone 6 Plus in landscape*/
 @media only screen
@@ -100,6 +122,11 @@ and (max-device-width : 736px)
 and (orientation : landscape) {
     .navbar-fixed-top .navbar-collapse {
         max-height: 330px;
+    }
+
+    #tickets-container{
+        max-height: 180px!important;
+        min-height: 180px!important;
     }
 
 

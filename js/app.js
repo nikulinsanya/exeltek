@@ -94,33 +94,33 @@ $(function () {
         $('#payment-avail').text(total.toFixed(2));
         $('#payment-amount').val(total.toFixed(2));
         if (total > 0)
-            $('#payment-continue').removeClass('hidden');
+            $('.payment-continue').removeClass('hidden');
         else
-            $('#payment-continue').addClass('hidden');
+            $('.payment-continue').addClass('hidden');
     });
 
     $('#payment-continue').click(function() {
         var company = $('#payment-company').val();
 
-        var html = '';
+        var html = [];
+        html.push('<tr><th>Ticket</th><th>Total</th><th>Payed</th><th>Left</th><th>Add value</th><th>% value</th></tr>');
         $('div.payment-info[data-company-' + company + ']').each(function (i, e) {
             var id = $(e).children('span.payment-job-id').text();
             var total = parseFloat($(e).attr('data-company-' + company));
             var paid = $(e).attr('data-paid-' + company);
             paid = paid == undefined ? 0 : parseFloat(paid);
             if (total > paid)
-                html += '<tr><td>' + id + '</td><td>' + total.toFixed(2) + '</td><td>' + paid.toFixed(2) + '</td><td class="payment-total">' + (total-paid).toFixed(2) + '</td><td>' +
-                    '<input type="text" class="form-control payment-value" name="payment[' + id + ']" value="' + (total-paid).toFixed(2) + '" />' + '</td><td>' +
-                    '<input type="text" class="form-control payment-percentage" value="100.00" />' + '</td></tr>';
-            //alert(html);
+                html.push('<tr><td>',id,'</td><td>',total.toFixed(2),'</td><td>',paid.toFixed(2),'</td><td class="payment-total">',(total-paid).toFixed(2),'</td><td>' +
+                    '<input type="text" class="form-control payment-value" name="payment[',id,']" value="',(total-paid).toFixed(2),'" />','</td><td>' +
+                    '<input type="text" class="form-control payment-percentage" value="100.00" />','</td></tr>');
         });
-        html = '<table class="table">' + html + '</table>';
+        html = '<table class="table">'+html.join('')+'</table>';
         $('#payment-details').prepend(html);
         $('#payment-details').removeClass('hidden');
         $('#payment-pre').addClass('hidden');
     });
 
-    $('#payment-amount').change(function() {
+    $('#payment-amount').keyup(function() {
         var sum = parseFloat($(this).val());
         total = 0;
         $('.payment-total').each(function(i, e) {
@@ -134,10 +134,10 @@ $(function () {
         });
     })
 
-    $('#payment-details').on('change', 'input.payment-percentage', function() {
+    $('#payment-details').on('keyup', 'input.payment-percentage', function() {
         var total = parseFloat($(this).parents('tr').children('.payment-total').text());
         var value = parseFloat($(this).val());
-        if (value == NaN || value < 0) {
+        if (isNaN(value) || value < 0) {
             value = 0;
             $(this).val('0');
         }
@@ -150,10 +150,10 @@ $(function () {
         $('#payment-amount').val(total);
     });
 
-    $('#payment-details').on('change', 'input.payment-value', function() {
+    $('#payment-details').on('keyup', 'input.payment-value', function() {
         var total = parseFloat($(this).parents('tr').children('.payment-total').text());
         var value = parseFloat($(this).val());
-        if (value == NaN || value < 0) {
+        if (isNaN(value) || value < 0) {
             value = 0;
             $(this).val('0');
         }

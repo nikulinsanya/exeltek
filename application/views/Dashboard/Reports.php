@@ -325,7 +325,7 @@
                         <h4 class="modal-title" id="ticketsTitle">Total tickets for selected date</h4>
                     </div>
 
-                    <div class="modal-body" id="filter-form" style="min-height: 300px;max-height: 500px;">
+                    <div class="modal-body" id="tickets-container" style="min-height: 300px;max-height: 500px;">
                         <table class="table small" id="ticketTable">
                             <tr class="text-center tr-header">
                                 <th>Ticket ID</th>
