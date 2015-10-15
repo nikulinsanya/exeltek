@@ -286,6 +286,11 @@ class Controller_Search_Search extends Controller {
                 $submissions[$value['_id']] = $value['count'];
         }
 
+        $result = Database_Mongo::collection('forms')->find(array(), array('_id', 'type', 'name'));
+        $forms = array();
+        foreach ($result as $form)
+            $forms[$form['type']][strval($form['_id'])] = $form['name'];
+
         $view = View::factory('Jobs/Search')
             ->bind('reports', $reports)
             ->bind('regions', $regions)
@@ -297,7 +302,8 @@ class Controller_Search_Search extends Controller {
             ->bind('list_values', $list_values)
             ->bind('types', $types)
             ->bind('sort', $sort)
-            ->bind('companies', $companies);
+            ->bind('companies', $companies)
+            ->bind('forms', $forms);
         $this->response->body($view);
     }
 }

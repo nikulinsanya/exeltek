@@ -71,7 +71,10 @@ window.form = (function() {
                 if (editable) {
                     this.setHandlers();
                     this.editorEvents();
+                }else{
+                    $(container).addClass('form_generated');
                 }
+
             }else{
                 $('.add-row').trigger('click');
                 this.setHandlers();
@@ -550,11 +553,18 @@ window.form = (function() {
         initPlugins: function(){
             $('canvas').each(function(){
                 new SignaturePad($(this).get(0));
+                $('<a class="btn btn-danger clear-canvas">X</a>').insertAfter($(this));
             });
 
             $('select.selectize').selectize();
             $('.datepicker').datepicker({
                 dateFormat: 'dd-mm-yy'
+            });
+            $('.clear-canvas').on('click',function(e){
+                e.preventDefault();
+                var canvas = $(this).prev()[0];
+                var context = canvas.getContext('2d');
+                context.clearRect(0, 0, canvas.width, canvas.height);
             });
         },
 
@@ -616,8 +626,16 @@ $(function () {
         }
     });
 
-    $('#form-save').click(function() {
+    $('.form-save').click(function() {
         var form = $(this).parents('form').serializeArray();
+
+        if ($(this).hasClass('btn-info'))
+            if (confirm('Do you really want to convert this file to PDF? After this, form data can\'t  be edited!'))
+                form.push({
+                    name: 'print',
+                    value: ''
+                });
+            else return false;
 
         $('form').find('canvas').each(function(){
             form.push({
@@ -631,8 +649,9 @@ $(function () {
             type    : 'POST',
             data    : form,
             success : function(data){
-                dump(data);
-                //window.location.reload();
+
+                //dump(data);
+                window.location = data.url;
             },
             error   : function(e){
                 alert(e.responseText);

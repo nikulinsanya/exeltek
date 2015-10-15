@@ -923,3 +923,43 @@ td a.text-danger{
 button>span.glyphicon{
     margin-right: 5px;
 }
+
+#payment-pre .payment-info{
+    height: 35px;
+    line-height: 35px;
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+}
+
+#payment-pre .payment-info:nth-child(4n+1){
+    border-right: 1px solid #ccc;
+}
+
+#payment-pre .payment-info:nth-last-of-type(4){
+    border-bottom: 1px solid #ccc;
+}
+#payment-pre .payment-info:nth-last-of-type(3){
+    border-bottom: 1px solid #ccc;
+}
+#payment-pre .payment-info:nth-last-of-type(5){
+    border-bottom: 1px solid #ccc;
+}
+#payment-pre .payment-info:nth-last-of-type(6){
+    border-bottom: 1px solid #ccc;
+}
+.payment-info:nth-last-child(3){
+    border-right: 1px solid #ccc;
+}
+
+
+#payment-details> table{
+    border:1px solid #ccc;
+}
+
+#payment-amount{
+    width: 200px;
+}
+
+#payment-buttons{
+    margin-top: 10px;
+}

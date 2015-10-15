@@ -543,6 +543,11 @@ class Controller_Search_View extends Controller {
             if ($ids) User::get(array_keys($ids));
         }
 
+        $forms = array();
+        $result = Database_Mongo::collection('forms-data')->find(array('job' => $job['_id']), array('data' => 0));
+        foreach ($result as $form)
+            $forms[] = $form;
+
 
         $view = View::factory('Jobs/View')
             ->bind('job', $job)
@@ -552,6 +557,7 @@ class Controller_Search_View extends Controller {
             ->bind('submissions', $submissions)
             ->bind('values', $values)
             ->bind('archive', $archive)
+            ->bind('forms', $forms)
             ->bind('quality', $quality);
         $this->response->body($view);
     }

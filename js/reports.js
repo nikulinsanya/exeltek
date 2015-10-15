@@ -687,13 +687,7 @@ $(function () {
                     point: {
                         events: {
                             click: function (e) {
-                                var series = this.series.name,
-                                    date = Highcharts.dateFormat('%b %e, %Y', this.x),
-                                    count = this.y,
-                                    shared = this.series.data,
-                                    i,
-                                    html = [];
-                                showDailyTickets(this.x);
+                                showDailyTickets(this.x/1000);
                             }
                         }
                     },
@@ -1026,7 +1020,8 @@ $(function () {
     }
 
     function showDailyTickets(timeStamp){
-        var format = $('.history-container .active').attr('data-attr');
+        var format = $('.history-container .active').attr('data-attr'),
+            dataFormat= $('.history-container .active').attr('data-format');
         if(!format){
             format = window.localStorage && window.localStorage['_history_format_'] || 'd';
         }
@@ -1037,7 +1032,9 @@ $(function () {
                 'dashboard/api?sep=',
                 format,
                 '&details=',
-                moment(timeStamp).unix()
+                timeStamp,
+                (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : ''),
+                    '&',getDateConfiguration()
             ].join(''),
             type:'get',
             dataType:'JSON',
@@ -1048,7 +1045,7 @@ $(function () {
                     used = false,
                     html = [],
                     simplified,
-                    date = format == 'd' ? moment(timeStamp).format('DD MMM,YYYY') : moment(timeStamp).format('MMM YYYY');
+                    date = moment.unix(timeStamp).format(dataFormat);
 
                 html.push('<ul class="nav nav-tabs" id="tabs">');
                 for(i in data)

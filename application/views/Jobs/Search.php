@@ -456,6 +456,16 @@
             <?php if (Group::current('allow_submissions')):?>
             <a href="<?=URL::base()?>submissions?ticket=<?=$ticket['_id']?>" class="btn btn-danger col-xs-12" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-check"></span> Submissions</a>
             <?php endif;?>
+            <?php if (Arr::get($forms, Form::FORM_TYPE_TICKET)):?>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Forms <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <?php foreach ($forms[Form::FORM_TYPE_TICKET] as $key => $name):?>
+                            <li><a href="<?=URL::base()?>form/fill?form=<?=$key . '/' . $ticket['_id']?>"><?=$name?></a></li>
+                        <?php endforeach;?>
+                    </ul>
+                </div>
+            <?php endif;?>
         </td>
     </tr>
     <?php endforeach;?>
