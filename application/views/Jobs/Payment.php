@@ -42,7 +42,7 @@
 
         <div class="col-xs-12" style="margin-top: 10px;">
             <button class="btn btn-success">Create payment</button>
-            <button class="btn btn-danger" id="payment-cancel">Cancel</button>
+            <a class="btn btn-danger" id="payment-cancel">Cancel</a>
         </div>
     </div>
 </form>
