@@ -11,7 +11,7 @@
 
         </div>
         <?php foreach ($jobs as $job => $info):?>
-        <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 glyphicon glyphicon-minus text-muted payment-info"
+        <div class="col-sm-3 col-md-3 glyphicon glyphicon-minus text-muted payment-info"
             <?php
                 foreach ($info['c'] as $company => $value) {
                     echo ' data-company-' . $company . '="' . $value . '"';
