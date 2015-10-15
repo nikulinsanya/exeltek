@@ -947,6 +947,19 @@ button>span.glyphicon{
 #payment-pre .payment-info:nth-last-of-type(6){
     border-bottom: 1px solid #ccc;
 }
-#payment-pre .payment-info:last-of-type{
+.payment-info:nth-last-child(3){
     border-right: 1px solid #ccc;
+}
+
+
+#payment-details> table{
+    border:1px solid #ccc;
+}
+
+#payment-amount{
+    width: 200px;
+}
+
+#payment-buttons{
+    margin-top: 10px;
 }
