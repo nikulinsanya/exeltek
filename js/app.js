@@ -120,7 +120,7 @@ $(function () {
         $('#payment-pre').addClass('hidden');
     });
 
-    $('#payment-amount').change(function() {
+    $('#payment-amount').keyup(function() {
         var sum = parseFloat($(this).val());
         total = 0;
         $('.payment-total').each(function(i, e) {
@@ -134,10 +134,10 @@ $(function () {
         });
     })
 
-    $('#payment-details').on('change', 'input.payment-percentage', function() {
+    $('#payment-details').on('keyup', 'input.payment-percentage', function() {
         var total = parseFloat($(this).parents('tr').children('.payment-total').text());
         var value = parseFloat($(this).val());
-        if (value == NaN || value < 0) {
+        if (isNaN(value) || value < 0) {
             value = 0;
             $(this).val('0');
         }
@@ -150,10 +150,10 @@ $(function () {
         $('#payment-amount').val(total);
     });
 
-    $('#payment-details').on('change', 'input.payment-value', function() {
+    $('#payment-details').on('keyup', 'input.payment-value', function() {
         var total = parseFloat($(this).parents('tr').children('.payment-total').text());
         var value = parseFloat($(this).val());
-        if (value == NaN || value < 0) {
+        if (isNaN(value) || value < 0) {
             value = 0;
             $(this).val('0');
         }
