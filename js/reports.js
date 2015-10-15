@@ -1045,7 +1045,7 @@ $(function () {
                     used = false,
                     html = [],
                     simplified,
-                    date = format == moment(timeStamp).format(dataFormat);
+                    date = moment.unix(timeStamp).format(dataFormat);
 
                 html.push('<ul class="nav nav-tabs" id="tabs">');
                 for(i in data)
