@@ -687,7 +687,7 @@ $(function () {
                     point: {
                         events: {
                             click: function (e) {
-                                showDailyTickets(this.x);
+                                showDailyTickets(this.x/1000);
                             }
                         }
                     },
@@ -1032,7 +1032,7 @@ $(function () {
                 'dashboard/api?sep=',
                 format,
                 '&details=',
-                moment(timeStamp).unix(),
+                timeStamp,
                 (window.REPORTDATA.filterParams ? '&'+window.REPORTDATA.filterParams : ''),
                     '&',getDateConfiguration()
             ].join(''),
