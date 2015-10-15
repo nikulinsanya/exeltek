@@ -191,3 +191,12 @@ hr{
     line-height: 46px;
     width: auto;
 }
+
+.clear-canvas{
+    position: absolute;
+    margin-left: -20px;
+    margin-top: 1px;
+    padding: 0px 3px;
+    height: 16px;
+    line-height: 15px;
+}
