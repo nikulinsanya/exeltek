@@ -6,6 +6,7 @@
     <div class="container" id="form-builder-container"></div>
     <div class="col-xs-12">
         <button type="button" id="form-save" class="btn btn-success">Save</button>
+        <a href="<?=URL::base().'form/print?'. ($id ? 'id=' . $id : 'form=' . $_GET['form'])?>"  class="btn btn-info">Print</a>
     </div>
 </form>
 
