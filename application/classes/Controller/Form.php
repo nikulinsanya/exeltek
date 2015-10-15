@@ -24,13 +24,39 @@ class Controller_Form extends Controller {
         $this->response->body($view);
     }
 
+    public function action_print() {
+        $id = Arr::get($_GET, 'id');
+        $form = Database_Mongo::collection('forms-data')->findOne(array('_id' => new MongoId($id)));
+
+        if (!$form) throw new HTTP_Exception_404('Not found');
+
+        $view = View::factory('Forms/PDF')
+            ->bind('form', $form['data']);
+
+        $view = View::factory('Forms/PDF')
+            ->bind('form', $form['data']);
+
+        require_once(APPPATH . 'mpdf/mpdf.php');
+        $pdf = new mPDF();
+        $pdf->ignore_invalid_utf8 = true;
+
+        $pdf->WriteHTML($view);
+        $content = $pdf->Output('', 'S');
+
+        header('Content-type: application/pdf');
+        echo $content;
+        die();
+    }
+
     public function action_fill() {
         $id = Arr::get($_GET, 'id');
         if ($id) {
             $form = Database_Mongo::collection('forms-data')->findOne(array('_id' => new MongoId($id)));
             $form_id = false;
         } else {
-            $form_id = Arr::get($_GET, 'form');
+            list($form_id, $job_id) = explode('/', Arr::get($_GET, 'form', ''));
+            $job = Database_Mongo::collection('jobs')->findOne(array('_id' => strval($job_id)));
+            if (!$job) throw new HTTP_Exception_404('Not found');
             $form = Database_Mongo::collection('forms')->findOne(array('_id' => new MongoId($form_id)));
         }
 
@@ -39,19 +65,34 @@ class Controller_Form extends Controller {
         if ($this->request->is_ajax()) {
             header('Content-type: application/json');
 
+            foreach ($form['data'] as $key => $values) if (is_array($values))
+                foreach ($values as $v => $input)
+                    if (Arr::get($input, 'type') == 'ticket' && !isset($input['value']))
+                        $form['data'][$key][$v]['value'] = Arr::get($input, 'fieldId') ? Columns::output(Arr::path($job, 'data.' . $input['fieldId']), Columns::get_type($input['fieldId'])) : $job['_id'];
+
             if ($_POST) {
                 foreach ($form['data'] as $key => $values) if (is_array($values))
                     foreach ($values as $v => $input)
                         if (Arr::get($input, 'name')) {
-                            $form['data'][$key][$v]['value'] = Columns::parse(Arr::get($_POST, $input['name']), Arr::get($input, 'type'));
+                            $form['data'][$key][$v]['value'] = Arr::get($_POST, $input['name']);
                         }
-                unset($form['_id']);
 
-                if ($id)
-                    Database_Mongo::collection('forms-data')->update(array('_id' => $id), $form);
-                else
+                unset($form['_id']);
+                $form['last_update'] = time();
+
+                if ($id) {
+                    $form['revision']++;
+                    Database_Mongo::collection('forms-data')->update(array('_id' => new MongoId($id)), $form);
+                } else {
+                    $form['job'] = $job_id;
+                    $form['created'] = time();
+                    $form['user_id'] = User::current('id');
+                    $form['revision'] = 1;
                     Database_Mongo::collection('forms-data')->insert($form);
+                }
+                die(json_encode(array('success' => true, 'url' => URL::base() . 'search/view/' . $form['job'] . '#forms')));
             }
+
             die(json_encode($form['data']));
         }
 

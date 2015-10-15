@@ -50,6 +50,9 @@
         <?php if (Group::current('allow_quality')):?>
             <li role="presentation" data-id="quality"><a class="refreshClick" href="#quality">Quality Reports</a></li>
         <?php endif;?>
+        <?php if ($forms):?>
+            <li role="presentation" data-id="forms"><a class="refreshClick" href="#forms">Forms</a></li>
+        <?php endif;?>
         <?php if (Group::current('time_machine')):?>
             <li role="presentation" class="yellow" data-id="time-machine"><a class="refreshClick" href="#time">Time Machine</a></li>
         <?php endif;?>
@@ -290,10 +293,19 @@
         <?php if (Group::current('allow_quality')):?>
             <div data-id="quality" class="panel-body hidden">
                 <table class="table">
-                <?php foreach ($quality as $item):?>
-                    <tr><td><a href="<?=URL::base()?>search/quality?id=<?=$item['_id']?>"><?=Arr::get($item, 'requestdate')?> by <?=Arr::get($item, 'prepared', 'Unknown')?>, Rev. <?=Arr::get($item, 'revision', 1)?></a></td></tr>
-                <?php endforeach;?>
-                <tr><td><a href="<?=URL::base()?>search/quality?job=<?=$job['_id']?>" class="btn btn-success">Create new report</a></td></tr>
+                    <?php foreach ($quality as $item):?>
+                        <tr><td><a href="<?=URL::base()?>search/quality?id=<?=$item['_id']?>"><?=Arr::get($item, 'requestdate')?> by <?=Arr::get($item, 'prepared', 'Unknown')?>, Rev. <?=Arr::get($item, 'revision', 1)?></a></td></tr>
+                    <?php endforeach;?>
+                    <tr><td><a href="<?=URL::base()?>search/quality?job=<?=$job['_id']?>" class="btn btn-success">Create new report</a></td></tr>
+                </table>
+            </div>
+        <?php endif;?>
+        <?php if ($forms):?>
+            <div data-id="forms" class="panel-body hidden">
+                <table class="table">
+                    <?php foreach ($forms as $form):?>
+                        <tr><td><a href="<?=URL::base()?>form/fill?id=<?=$form['_id']?>"><?=date('d-m-Y', $form['created'])?>. <?=Arr::get($form, 'name', 'Unknown Form')?> by <?=User::get($form['user_id'], 'login')?>. Last update: <?=date('d-m-Y H:i', $form['last_update'])?> (Rev. <?=$form['revision']?>)</a></td></tr>
+                    <?php endforeach;?>
                 </table>
             </div>
         <?php endif;?>
@@ -378,6 +390,9 @@
         <?php endif;?>
         <?php if (Group::current('allow_quality')):?>
             <li role="presentation" data-id="quality"><a href="javascript:;">Quality Reports</a></li>
+        <?php endif;?>
+        <?php if ($forms):?>
+            <li role="presentation" data-id="forms"><a class="refreshClick" href="#forms">Forms</a></li>
         <?php endif;?>
         <?php if (Group::current('time_machine')):?>
             <li role="presentation" class="yellow" data-id="time-machine"><a href="javascript:;">Time Machine</a></li>

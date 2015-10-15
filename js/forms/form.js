@@ -631,8 +631,9 @@ $(function () {
             type    : 'POST',
             data    : form,
             success : function(data){
-                dump(data);
-                //window.location.reload();
+
+                //dump(data);
+                window.location = data.url;
             },
             error   : function(e){
                 alert(e.responseText);

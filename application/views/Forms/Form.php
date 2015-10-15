@@ -16,7 +16,7 @@
 
 <script type="application/javascript">
     $(document).on('ready', function () {
-        $.get(utils.baseUrl() + 'form/fill?<?=$id ? 'id=' . $id : 'form=' . $form_id?>', function(data) {
+        $.get(utils.baseUrl() + 'form/fill?<?=$id ? 'id=' . $id : 'form=' . $_GET['form']?>', function(data) {
             form.init($('#form-builder-container'), data, false);
         });
     });
