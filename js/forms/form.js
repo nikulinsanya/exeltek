@@ -71,7 +71,10 @@ window.form = (function() {
                 if (editable) {
                     this.setHandlers();
                     this.editorEvents();
+                }else{
+                    $(container).addClass('form_generated');
                 }
+
             }else{
                 $('.add-row').trigger('click');
                 this.setHandlers();

@@ -89,7 +89,8 @@
             /*padding: 5px;*/
         }
         .tmp-label{
-            max-width: 150px;
+            max-width: 2000px;
+            min-width: 200px;
             overflow: hidden;
             display: inline-block;
             padding: 0px 5px;
@@ -107,7 +108,7 @@
         }
 
         .config-select-container{
-            border: 1px solid #ccc;
+            border: 1px solid #f7f7f7;
             padding: 5px;
         }
         .available-options-select{
@@ -180,17 +181,17 @@
     </style>
 </head>
 <body>
-<div>
+<div style="border:1px solid #f7f7f7;">
         <?php foreach ($form as $line) if (is_string($line)):
                 echo $line;
             else:
-                echo '<table><tr>';
+                echo '<div style="padding:20px 5px;"><table><tr>';
                 foreach ($line as $input):
                     echo '<td>';
                     $value = Arr::get($input, 'value');
                     switch (Arr::get($input, 'type')):
                         case 'label':
-                            echo '<label class="tmp-label">' . $value . '</label>';
+                            echo '<div><b><label class="tmp-label">' . $value . '</label></b></div>';
                             break;
                         case 'canvas':
                             echo '<img src="' . $value . '" />';
@@ -201,7 +202,7 @@
                     endswitch;
                     echo '<td>';
                 endforeach;
-                echo "</tr></table>";
+                echo "</tr></table></div>";
             endif;?>
 </div>
 </body>
