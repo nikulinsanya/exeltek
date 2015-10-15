@@ -80,7 +80,7 @@ class Controller_Search_Quality extends Controller
                 if ($image_id && file_put_contents(DOCROOT . 'storage/' . $image_id, $content)) {
                     unset($data['mime']);
                     $data = array(
-                        'filename' => trim(preg_replace('/-{2,}/', '-', preg_replace('/[^0-9a-z\-]/i', '-', 'Signatures / ' . Arr::path($job, 'data.14') . ' / ' . Arr::path($job, 'data.8') . ' / Submission-' . date('dmY-His') . '-signature.png')), '-'),
+                        'filename' => 'Reports / ' . Arr::path($job, 'data.14') . ' / ' . $data['address'] . ' / ' . $data['filename'],
                         'uploaded' => time(),
                         'user_id' => User::current('id'),
                         'job_id' => $job['_id'],

@@ -626,8 +626,16 @@ $(function () {
         }
     });
 
-    $('#form-save').click(function() {
+    $('.form-save').click(function() {
         var form = $(this).parents('form').serializeArray();
+
+        if ($(this).hasClass('btn-info'))
+            if (confirm('Do you really want to convert this file to PDF? After this, form data can\'t  be edited!'))
+                form.push({
+                    name: 'print',
+                    value: ''
+                });
+            else return false;
 
         $('form').find('canvas').each(function(){
             form.push({

@@ -178,10 +178,14 @@
         #newFormContainer{
             display: none;
         }
+        h3 {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 <div style="border:1px solid #f7f7f7;">
+    <h3><?=$name?></h3>
         <?php foreach ($form as $line) if (is_string($line)):
                 echo $line;
             else:
