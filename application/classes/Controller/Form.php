@@ -134,6 +134,8 @@ class Controller_Form extends Controller {
         if (isset($_GET['load'])) {
             header('Content-type: application/json');
 
+            $job = Database_Mongo::collection('jobs')->findOne(array('_id' => $form['job']));
+
             foreach ($form['data'] as $key => $values) if (is_array($values))
                 foreach ($values as $v => $input)
                     if (Arr::get($input, 'type') == 'ticket' && !isset($input['value']))
