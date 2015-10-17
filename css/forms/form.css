@@ -66,6 +66,7 @@ html, body {
     overflow: hidden;
     text-overflow: ellipsis;
     margin-top: 10px;
+    overflow: visible;
 
 }
 .add-value{
@@ -203,4 +204,29 @@ hr{
 
 #form-type, #form-name{
     width: 200px;
+}
+
+.selectize-control.single .selectize-input, .selectize-control.single .selectize-input input{
+    height: 27px;
+}
+
+.selectize-control.multi .selectize-input, .selectize-control.multi .selectize-input input{
+    /*height: 27px;*/
+}
+
+.selectize-control.single .item{
+    position: relative;
+    top: 3px;
+}
+
+.selectize-control.single .selectize-input input{
+    display: none!important;
+}
+
+.selectize-input{
+    padding: 0 8px;
+}
+
+.selectize-control.multi .selectize-input.has-items{
+    padding: 5px 8px 0px 8px;
 }

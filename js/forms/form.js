@@ -287,6 +287,7 @@ window.form = (function() {
                     self.initPlugins();
                     self.refreshCanvasWithData(json);
                 }
+                self.initPlugins();
 
             });
         },
@@ -411,6 +412,7 @@ window.form = (function() {
                 }
 
                 $('.value.selected').html(select);
+//                $(select).selectize();
                 $(select).multiselect('refresh');
             });
 
@@ -436,6 +438,7 @@ window.form = (function() {
             }
 
             $('.field-type-select').val(type);
+//            $('.field-type-select').selectize();
             $('.field-type-select').multiselect('refresh');
             $('.config-value-container').find('input').val(value).focus();
             $('.field-placeholder').val(placeholder);
@@ -527,7 +530,8 @@ window.form = (function() {
                 }
                 $('.ticket-input-select select').html(html.join(''));
 
-                $('.ticket-input-select select').selectize();
+//                $('.ticket-input-select select').selectize();
+                $('.ticket-input-select select').multiselect('refresh');
                 if(value){
                     $('.ticket-input-select select').val(value);
                     text = $('.ticket-input-select select').find('option:selected').text();
@@ -556,7 +560,8 @@ window.form = (function() {
                 $('<a class="btn btn-danger clear-canvas">X</a>').insertAfter($(this));
             });
 
-            $('select.selectize').selectize();
+//            $('select.selectize').selectize();
+            $('select.selectize').multiselect('refresh');
             $('.datepicker').datepicker({
                 dateFormat: 'dd-mm-yy'
             });
@@ -576,7 +581,8 @@ window.form = (function() {
             $('.datepicker').datepicker({
                 dateFormat: 'dd-mm-yy'
             });
-            $('select.selectize').selectize();
+            $('select.selectize').multiselect('refresh');
+//            $('select.selectize').selectize();
         },
 
         guid: function () {
