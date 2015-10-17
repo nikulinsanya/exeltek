@@ -253,11 +253,27 @@ window.form = (function() {
                                             '</div>');
                                     break;
                                 case 'select':
-                                    var options = [];
+                                    var options = [],
+                                        i, v,
+                                        selected = false;
 
-                                    $(el.values).each(function(){
-                                        options.push('<option value="'+this+'"' + (el.value == this ? ' selected' : '') + '>'+this+'</option>');
-                                    });
+                                    name;
+
+                                    if(el.multiple && el.name.indexOf('[]')==-1){
+                                        el.name += '[]';
+                                    }
+
+                                    for(i in el.values){
+                                        v = el.values[i];
+                                        if(utils.isArray(el.value)){
+                                            selected = el.value.indexOf(v)!=-1;
+                                        }else{
+                                            selected = (el.value == v);
+                                        }
+                                        options.push('<option value="'+v+'"' + (selected ? ' selected' : '') + '>'+v+'</option>');
+                                    }
+
+
                                     html.push(
                                         '<div class="form-block">',
                                             '<div class="value" data-type="select" data-value="" data-placeholder="',
@@ -634,7 +650,6 @@ $(function () {
 
     $('.form-save').click(function() {
         var form = $(this).parents('form').serializeArray();
-
         if ($(this).hasClass('btn-info'))
             if (confirm('Do you really want to convert this file to PDF? After this, form data can\'t  be edited!'))
                 form.push({
@@ -655,8 +670,6 @@ $(function () {
             type    : 'POST',
             data    : form,
             success : function(data){
-
-                //dump(data);
                 window.location = data.url;
             },
             error   : function(e){
