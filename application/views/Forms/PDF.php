@@ -200,6 +200,9 @@
                         case 'canvas':
                             echo '<img src="' . $value . '" />';
                             break;
+                        case 'select':
+                            echo '<span>' . (is_array($value) ? implode(', ',$value) : $value) . '</span>';
+                            break;
                         default:
                             echo '<span>' . $value . '</span>';
                             break;
