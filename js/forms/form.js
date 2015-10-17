@@ -317,8 +317,8 @@ window.form = (function() {
                 if(typeof(json[i]) != 'string'){
                     for(j = 0;j<json[i].length;j++){
                         el = json[i][j];
-                        if(el.type == 'canvas'){
-                            canvas = $('canvas[name="'+el.name+'"]').get(0),
+                        if(el.type == 'canvas' && el.value){
+                            canvas = $('canvas[name="'+el.name+'"]').get(0);
                             self.loadCanvas(canvas,el.value);
                         }
                     }
