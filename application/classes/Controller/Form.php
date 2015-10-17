@@ -56,6 +56,7 @@ class Controller_Form extends Controller {
             $job = Database_Mongo::collection('jobs')->findOne(array('_id' => strval($job_id)));
             if (!$job) throw new HTTP_Exception_404('Not found');
             $form = Database_Mongo::collection('forms')->findOne(array('_id' => new MongoId($form_id)));
+            $form['job'] = $job_id;
         }
 
         if (!$form) throw new HTTP_Exception_404('Not found');
@@ -85,7 +86,6 @@ class Controller_Form extends Controller {
                     $form['revision']++;
                     Database_Mongo::collection('forms-data')->update(array('_id' => new MongoId($id)), $form);
                 } else {
-                    $form['job'] = $job_id;
                     $form['created'] = time();
                     $form['user_id'] = User::current('id');
                     $form['revision'] = 1;
