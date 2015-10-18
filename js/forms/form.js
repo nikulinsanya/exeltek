@@ -253,11 +253,27 @@ window.form = (function() {
                                             '</div>');
                                     break;
                                 case 'select':
-                                    var options = [];
+                                    var options = [],
+                                        i, v,
+                                        selected = false;
 
-                                    $(el.values).each(function(){
-                                        options.push('<option value="'+this+'"' + (el.value == this ? ' selected' : '') + '>'+this+'</option>');
-                                    });
+                                    name;
+
+                                    if(el.multiple && el.name.indexOf('[]')==-1){
+                                        el.name += '[]';
+                                    }
+
+                                    for(var x in el.values){
+                                        v = el.values[x];
+                                        if(utils.isArray(el.value)){
+                                            selected = el.value.indexOf(v)!=-1;
+                                        }else{
+                                            selected = (el.value == v);
+                                        }
+                                        options.push('<option value="'+v+'"' + (selected ? ' selected' : '') + '>'+v+'</option>');
+                                    }
+
+
                                     html.push(
                                         '<div class="form-block">',
                                             '<div class="value" data-type="select" data-value="" data-placeholder="',
@@ -287,6 +303,7 @@ window.form = (function() {
                     self.initPlugins();
                     self.refreshCanvasWithData(json);
                 }
+                self.initPlugins();
 
             });
         },
@@ -300,8 +317,8 @@ window.form = (function() {
                 if(typeof(json[i]) != 'string'){
                     for(j = 0;j<json[i].length;j++){
                         el = json[i][j];
-                        if(el.type == 'canvas'){
-                            canvas = $('canvas[name="'+el.name+'"]').get(0),
+                        if(el.type == 'canvas' && el.value){
+                            canvas = $('canvas[name="'+el.name+'"]').get(0);
                             self.loadCanvas(canvas,el.value);
                         }
                     }
@@ -411,6 +428,7 @@ window.form = (function() {
                 }
 
                 $('.value.selected').html(select);
+//                $(select).selectize();
                 $(select).multiselect('refresh');
             });
 
@@ -436,6 +454,7 @@ window.form = (function() {
             }
 
             $('.field-type-select').val(type);
+//            $('.field-type-select').selectize();
             $('.field-type-select').multiselect('refresh');
             $('.config-value-container').find('input').val(value).focus();
             $('.field-placeholder').val(placeholder);
@@ -527,7 +546,8 @@ window.form = (function() {
                 }
                 $('.ticket-input-select select').html(html.join(''));
 
-                $('.ticket-input-select select').selectize();
+//                $('.ticket-input-select select').selectize();
+                $('.ticket-input-select select').multiselect('refresh');
                 if(value){
                     $('.ticket-input-select select').val(value);
                     text = $('.ticket-input-select select').find('option:selected').text();
@@ -556,7 +576,8 @@ window.form = (function() {
                 $('<a class="btn btn-danger clear-canvas">X</a>').insertAfter($(this));
             });
 
-            $('select.selectize').selectize();
+//            $('select.selectize').selectize();
+            $('select.selectize').multiselect('refresh');
             $('.datepicker').datepicker({
                 dateFormat: 'dd-mm-yy'
             });
@@ -576,7 +597,8 @@ window.form = (function() {
             $('.datepicker').datepicker({
                 dateFormat: 'dd-mm-yy'
             });
-            $('select.selectize').selectize();
+            $('select.selectize').multiselect('refresh');
+//            $('select.selectize').selectize();
         },
 
         guid: function () {
@@ -628,7 +650,6 @@ $(function () {
 
     $('.form-save').click(function() {
         var form = $(this).parents('form').serializeArray();
-
         if ($(this).hasClass('btn-info'))
             if (confirm('Do you really want to convert this file to PDF? After this, form data can\'t  be edited!'))
                 form.push({
@@ -649,8 +670,6 @@ $(function () {
             type    : 'POST',
             data    : form,
             success : function(data){
-
-                //dump(data);
                 window.location = data.url;
             },
             error   : function(e){

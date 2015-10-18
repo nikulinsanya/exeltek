@@ -14,7 +14,7 @@
             <div class="col-xs-12 col-md-6">
                 <label class="date-range-label">Ticket ID:</label>
             <span class="filter-select-container">
-                <input type="text" class="form-control" id="ticket-id" placeholder="Ticket ID" name="ticket" value="<?=Arr::get($_GET, 'ticket')?>" />
+                <input type="text" class="form-control multiline" placeholder="Ticket ID" name="ticket" value="<?=Arr::get($_GET, 'ticket')?>" />
             </span>
             </div>
 
