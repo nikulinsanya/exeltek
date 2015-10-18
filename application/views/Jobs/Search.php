@@ -146,7 +146,7 @@
                     </div>
                     <div class="modal-body" id="filter-form">
                         <div class="col-xs-4 col-sm-4 col-md-2">
-                            <input type="text" class="form-control" id="ticket-id" placeholder="Ticket ID" name="ticket" value="<?=Arr::get($_GET, 'ticket')?>" />
+                            <input type="text" class="form-control multiline" data-separator="," placeholder="Ticket ID" name="ticket" value="<?=Arr::get($_GET, 'ticket')?>" />
                         </div>
                         <div class="col-xs-4 col-sm-4 col-md-2">
                             <?=Form::select('region', array('' => 'All regions') + $regions, Arr::get($_GET, 'region'), array('class' => 'form-control'))?>
@@ -335,7 +335,7 @@
                 <ul class="collapse dropdown-menu dropdown-menu-right"  id="filter-<?=$id?>" data-id="<?=$id?>">
                     <li class="dropdown-header">Add filter:</li>
                     <li><?=Form::select(NULL, $actions, false, array('class' => 'selectize'))?></li>
-                    <li><?=Form::input(NULL, NULL, array('class' => 'form-control' . (Columns::get_type($id) == 'date' ? ' datepicker' : ''), 'placeholder' => 'Filtering value'))?></li>
+                    <li><?=Form::input(NULL, NULL, array('class' => 'form-control multiline' . (Columns::get_type($id) == 'date' ? ' datepicker' : ''), 'data-separator' => '|', 'placeholder' => 'Filtering value'))?></li>
                     <li class="dropdown-header buttons-row">
                         <button class="btn btn-success table-filter" type="button">Apply</button>
                         <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-<?=$id?>">Cancel</button>
