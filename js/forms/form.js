@@ -263,8 +263,8 @@ window.form = (function() {
                                         el.name += '[]';
                                     }
 
-                                    for(i in el.values){
-                                        v = el.values[i];
+                                    for(var x in el.values){
+                                        v = el.values[x];
                                         if(utils.isArray(el.value)){
                                             selected = el.value.indexOf(v)!=-1;
                                         }else{
