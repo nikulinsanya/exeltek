@@ -96,7 +96,9 @@ window.formbuilder = (function() {
                                 html.push(
                                     '<option value="',
                                     data[i].id,
-                                    '">',
+                                    '" ',
+                                    cell && cell.attr('data-value') == data[i].id ? 'selected="selected"' : '',
+                                    '>',
                                     data[i].name,
                                     '</option>');
                             }
@@ -257,6 +259,9 @@ window.formbuilder = (function() {
             }
             container.append(html.join());
             this.updateCanvases();
+            if(!this._editable){
+                this.updateTicketLabels();
+            }
         },
 
         loadElement: function(element){
@@ -366,6 +371,17 @@ window.formbuilder = (function() {
                 img.src = $(this).attr('data-value');
             })
 
+        },
+
+        updateTicketLabels: function(){
+            var self = this;
+            getColumns().then(function(data){
+                self._formContainer.find('td[data-type="ticket"]').each(function(){
+                    var val = $(this).attr('data-value');
+                    var result = $.grep(data, function(e){ return e.id == val});
+                    $(this).find('span').text(result && result[0].name);
+                })
+            });
         },
 
         initSortable: function(){
