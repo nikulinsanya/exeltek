@@ -14,8 +14,7 @@ window.formbuilder = (function() {
                 alert('Wrong form container');
                 return;
             }
-            if (editable == undefined) editable = true;
-
+            this._editable = editable;
             this._formContainer = $(container);
 
             if(json){
@@ -27,7 +26,6 @@ window.formbuilder = (function() {
         fillCellForm: function(cell){
             var type = cell.attr('data-type'),
                 $parent = $('#addField');
-
             switch (type) {
                 case 'label':
                 case 'text':
@@ -55,7 +53,6 @@ window.formbuilder = (function() {
                         }
                         $('#field-type').html(html.join(''));
                     });
-
                     break;
                 case 'options':
                     $('#options-preview').html(cell.find('select').html());
@@ -68,11 +65,13 @@ window.formbuilder = (function() {
                     break;
             }
         },
-        refreshFieldForm: function(){
-            var type = $('#fieldType').val(),
+        refreshFieldForm: function(cell){
+            var type = cell && cell.attr('data-type') || $('#fieldType').val(),
                 $parent = $('#addField');
+            if(cell){
+                $('#fieldType').val(type);
+            }
             $parent.find('.type-config').hide();
-debugger;
             switch (type) {
                 case 'label':
                     $('.placeholder-type-config').show();
@@ -164,6 +163,7 @@ debugger;
                         ctxOrign = $canvas[0].getContext('2d');
                     $selectedCell.attr('data-value',value);
                     $selectedCell.html($canvas);
+                    $selectedCell.attr('data-type','signature');
                     $canvas.removeAttr('id');
                     ctxOrign.drawImage($('#signature-canvas')[0],0,0);
                     break;
@@ -223,16 +223,15 @@ debugger;
                         };
                         value = $(this).attr('data-value');
 
-//                        if ($(this).attr('data-type') == 'signature'){
-//                            value = $(this).find('canvas')[0].toDataURL();
-//                        }
-
                         input = {
                             type : $(this).attr('data-type'),
                             placeholder: $(this).attr('data-placeholder'),
-                            name: self.guid(),
+                            name: $(this).attr('data-name') || self.guid(),
                             value:value
                         };
+                        if ($(this).attr('data-type') == 'options'){
+                            input.options = $(this).find('option').map(function(){return $(this).val()}).toArray().join(',')
+                        }
 
                         tds.items.push(input);
 
@@ -256,17 +255,18 @@ debugger;
             for(i=0;i<data.length;i++){
                 html.push(self.loadElement(data[i]));
             }
-            console.log(html.join());
             container.append(html.join());
+            this.updateCanvases();
         },
 
         loadElement: function(element){
             var i,
                 self = this,
                 html = [];
+
             switch (element.type){
                 case 'table':
-                    html.push('<div class="table-container"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs">Remove</button><table class="table-responsive table table-bordered editable-table"><tbody class="ui-sortable">');
+                    html.push('<div class="table-container ',this._editable ? 'user-edit' : '','"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs">Remove</button><table class="table-responsive table table-bordered editable-table"><tbody class="ui-sortable">');
                     for(i=0;i<element.items.length;i++){
                         html.push(self.loadElement(element.items[i]));
                     }
@@ -280,35 +280,70 @@ debugger;
                     html.push('</tr>');
                     break;
                 case 'td':
-                    html.push(self.loadElement(element.items[0]));
+                    if(element.items[0]){
+                        html.push(self.loadElement(element.items[0]));
+                    }else{
+                        html.push('<td class="editable-cell" data-type="label"></td>');
+                    }
                     break;
                 case 'label':
-                case 'text':
-                case 'date':
-                case 'ticket':
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
                         '<span>',element.placeholder,'</span>',
+                        '<input name="',element.name,'" type="hidden" value="',element.placeholder,'"></input>',
+                        '</td>'
+                    );
+                    break;
+                case 'text':
+                    html.push('<td class="editable-cell" data-type="',
+                        element.type,
+                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
+                        '<input name="',element.name,'" type="text" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
+                        '</td>'
+                    );
+                    break;
+                case 'date':
+                    html.push('<td class="editable-cell" data-type="',
+                        element.type,
+                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
+                        '<input name="',element.name,'" type="text" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
+                        '</td>'
+                    );
+                    break;
+                case 'ticket':
+                    html.push('<td class="editable-cell" data-type="',
+                        element.type,
+                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
+                        '<span>TICKETFIELD',element.placeholder,'</span>',
+                        '<input name="',element.name,'" type="hidden" value="',element.value,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'signature':
-                    html.push('<td data-type="',
+                    html.push('<td class="editable-cell" data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
-                        '<span>SIGNATURE</span>',
+                        '<canvas width="200" height="100"></canvas>',
+                        '<input name="',element.name,'" type="hidden" value="',element.value,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'options':
-                    html.push('<td data-type="',
+                    var options = [], i,
+                        available = element.options && element.options.split(',') || [];
+                    for(i=0;i<available.length;i++){
+                        options.push( '<option value="',
+                            available[i],
+                            '">',
+                            available[i],
+                            '</option>');
+                    }
+                    html.push('<td class="editable-cell" data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
-                        '<select>',
-                        '<option value="11">',
-                        111,
-                        '</option>',
+                        '<select name="',element.name,'">',
+                       options.join(''),
                         '</select>',
                         '</td>'
                     );
@@ -318,7 +353,25 @@ debugger;
             return html.join('');
         },
 
+        updateCanvases: function(){
+            this._formContainer.find('td[data-type="signature"]').each(function(){
+                var canvas = $(this).find('canvas').get(0);
+                var context = canvas.getContext('2d');
+                var img = new Image();
+
+                img.onload = function() {
+                    context.drawImage(this, 0, 0, canvas.width, canvas.height);
+                }
+
+                img.src = $(this).attr('data-value');
+            })
+
+        },
+
         initSortable: function(){
+            if(this._editable){
+                return false;
+            }
             var self = this;
             $('tbody').sortable({
                 placeholder: "ui-state-highlight"
@@ -332,6 +385,18 @@ debugger;
         },
 
         setHandlers: function(){
+            if(this._editable){
+                this._formContainer.find('canvas').each(function(){
+                    new SignaturePad(this);
+                });
+
+                this._formContainer.find('td[data-type="date"] input').datepicker({
+                    dateFormat: 'dd-mm-yy'
+                });
+
+                return false;
+            }
+
             var self = this;
             $('.add-table').on('click',function(){
                 $('#addTable').modal('show');
@@ -341,7 +406,7 @@ debugger;
                 $(this).addClass('selected-cell');
                 $('#addField').modal('show');
                 self.fillCellForm($(this));
-                self.refreshFieldForm();
+                self.refreshFieldForm($(this));
             });
             this._formContainer.on('click','.remove-table',function(e){
                 var self = this;

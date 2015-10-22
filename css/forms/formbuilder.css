@@ -63,6 +63,19 @@
     display:block;
 }
 
+
+.table-container.user-edit:hover>button{
+    display:none;
+}
+.table-container.user-edit:hover>i{
+    display:none;
+}
+
+.user-edit .editable-cell:hover{
+    cursor: default;
+    background: #fff;
+}
+
 #addField canvas,
 .editable-cell canvas{
     border:1px solid #ccc;
@@ -78,3 +91,8 @@
 }
 
 .ui-state-highlight { height: 1.5em; line-height: 1.2em; }
+
+
+.content form{
+    border:none;
+}
