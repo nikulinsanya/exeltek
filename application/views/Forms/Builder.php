@@ -14,7 +14,7 @@
 </ul>
 
 <div id="form-builder" class="hidden">
-    <div class="col-xs-12">
+    <div>
         <label>Form type:</label>
         <select id="form-type" class="form-control">
             <option value="">Please, select form type</option>
@@ -23,14 +23,125 @@
             <?php endforeach;?>
         </select>
     </div>
-    <div class="col-xs-12">
+    <div>
         <label>Form name:</label>
         <input id="form-name" type="text" class="form-control" placeholder="Please, enter form name here" />
+    </div>
+
+    <div class="builderactions">
+        <button class="btn btn-info add-table">Insert table</button>
+        <button class="btn btn-success right" id="form-save">Save form</button>
     </div>
     <div class="container" id="form-builder-container"></div>
 </div>
 
-<link href="<?= URL::base() ?>css/forms/form.css" rel="stylesheet">
+
+<div class="modal fade"  id="addTable" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document" style="width:300px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Insert table</h4>
+            </div>
+            <div class="modal-body text-center" id="new-table-details">
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="form-label">Cols:</span> <input type="number" id="cols-number" value="2">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="form-label">Rows:</span> <input type="number" id="rows-number" value="2">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" class="tableRowButtons">
+                <button class="btn btn-warning" data-dismiss="modal">Close</button>
+                <button class="btn btn-success confirm-insert-table">Insert table</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade"  id="addField" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document" style="width:600px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Add field</h4>
+            </div>
+            <div class="modal-body text-center" id="new-cell-details">
+                <div class="row">
+                    <div class="row" class="placeholder-type-config">
+                        <div class="col-md-4" >
+                            <span class="form-label">Type</span>
+                        </div>
+                        <div class="col-md-8" >
+                            <select id="fieldType">
+                                <option value="label">Label</option>
+                                <option value="text">Text</option>
+                                <option value="date">Date</option>
+                                <option value="ticket">Ticket</option>
+                                <option value="options">Options</option>
+                                <option value="signature">Signature</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row type-config placeholder-type-config">
+                        <div class="col-md-4" >
+                            <span class="form-label">Placeholder</span>
+                        </div>
+                        <div class="col-md-8" >
+                            <input type="text" id="placeholder-type">
+                        </div>
+                    </div>
+                    <div class="row type-config ticket-type-config">
+                        <div class="col-md-4">
+                            <span class="form-label">Ticket field</span>
+                        </div>
+                        <div class="col-md-8">
+                            <select id="field-type">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row type-config signature-type-config">
+                        <div class="col-md-4">
+                            <span class="form-label">Signature</span>
+                        </div>
+                        <div class="col-md-8">
+                            <canvas width="200" height="100" id="signature-canvas"></canvas>
+                        </div>
+                    </div>
+                    <div class="row type-config options-type-config">
+                        <div class="col-md-4">
+                            <span class="form-label">Options</span>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" id="option-type-value">
+                            <button class="btn btn-success btn-xs" id="add-option">Add option</button>
+                        </div>
+                    </div>
+                    <div class="row type-config options-type-config">
+                        <div class="col-md-4">
+                            <span class="form-label">Preview</span>
+                        </div>
+                        <div class="col-md-8">
+                            <select id="options-preview">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" class="tableRowButtons">
+                <button class="btn btn-warning" data-dismiss="modal">Close</button>
+                <button class="btn btn-success" id="confirm-insert-field">Add field</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link href="<?= URL::base() ?>css/forms/formbuilder.css" rel="stylesheet">
 <script src="<?= URL::base() ?>js/lib/signature_pad.min.js"></script>
 
-<script src="<?= URL::base() ?>js/forms/form.js"></script>
+<script src="<?= URL::base() ?>js/forms/formbuilder.js"></script>

@@ -10,15 +10,23 @@
     </div>
 </form>
 
-<link href="<?= URL::base() ?>css/forms/form.css" rel="stylesheet">
+<!--<link href="--><?//= URL::base() ?><!--css/forms/form.css" rel="stylesheet">-->
+<!--<script src="--><?//= URL::base() ?><!--js/lib/signature_pad.min.js"></script>-->
+<!---->
+<!--<script src="--><?//= URL::base() ?><!--js/forms/form.js"></script>-->
+<link href="<?= URL::base() ?>css/forms/formbuilder.css" rel="stylesheet">
 <script src="<?= URL::base() ?>js/lib/signature_pad.min.js"></script>
 
-<script src="<?= URL::base() ?>js/forms/form.js"></script>
+<script src="<?= URL::base() ?>js/forms/formbuilder.js"></script>
+
+
+
 
 <script type="application/javascript">
     $(document).on('ready', function () {
         $.get(utils.baseUrl() + 'form/fill?load&<?=$id ? 'id=' . $id : 'form=' . $_GET['form']?>', function(data) {
-            form.init($('#form-builder-container'), data, false);
+            formbuilder.initForm('#form-builder-container',data, true);
+//            form.init($('#form-builder-container'), data, false);
         });
     });
 </script>

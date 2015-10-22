@@ -16,6 +16,7 @@ window.form = (function() {
 '            <div>'+
 '                <button class="add-row btn btn-success">Add row</button>'+
 '                <button class="add-line btn btn-danger">Add Line</button>'+
+'                <button class="add-table btn btn-info">Add Table</button>'+
 '                <button class="save-form btn btn-warning">Save form</button>'+
 '                <div class="fields-config">'+
 '                    <div class="config-row">'+
@@ -99,6 +100,12 @@ window.form = (function() {
                 $('.form-container').append(row);
             });
 
+            $('.add-table').on('click', function(){
+                var row = rowTemplate.clone();
+                row.show();
+                $('.form-container').append(row);
+            });
+
             $('.add-line').on('click', function(){
                 var row = '<hr><button class="tmp-gen remove-hr tmp-gen btn btn-danger"> - </button>'
                 $('.form-container').append(row);
@@ -136,6 +143,10 @@ window.form = (function() {
                     self.sendForm();
                 }
             });
+        },
+
+        showTableModal: function(){
+
         },
 
         sendForm: function(){
