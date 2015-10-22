@@ -664,7 +664,9 @@ $(function () {
         }else{
             //restore action
             //action = ul.find('select').val();
-            add(ul.find('input.form-control').val());
+            var input = ul.find('input.form-control');
+            var value = input.val().split(input.attr('data-separator'));
+            value.forEach(add);
         }
 
         filter.parents('form').attr('hold', '').submit();
@@ -932,18 +934,21 @@ $(function () {
     });
     
     var ticket_id_unfocus = function() {
-        var val = $(this).val().replace(/\n/g, ',');
-        $('#ticket-id').show();
+        var target = $(this).next();
+        var separator = target.attr('data-separator');
+        var val = $(this).val().replace(/\n/g, separator);
+        target.show();
         $(this).remove();
-        if ($('#ticket-id').val() != val) {
-            $('#ticket-id').val(val);
-            $('#ticket-id').trigger('change');
+        if (target.val() != val) {
+            target.val(val);
+            target.trigger('change');
         }
     }
     
-    $('#ticket-id').focus(function() {
+    $('.multiline').focus(function() {
+        var separator = $(this).attr('data-separator');
         $('form').prop('hold', true);
-        var val = $(this).val().replace(/,/g, "\n");
+        var val = $(this).val().replace(separator, "\n");
         var textarea = $('<textarea class="form-control" width="100%"></textarea>').val(val).focusout(ticket_id_unfocus);
         $(this).hide().before(textarea);
         textarea.focus();
