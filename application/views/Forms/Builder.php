@@ -30,7 +30,7 @@
 
     <div class="builderactions">
         <button class="btn btn-info add-table">Insert table</button>
-        <button class="btn btn-success save-form right">Save form</button>
+        <button class="btn btn-success right" id="form-save">Save form</button>
     </div>
     <div class="container" id="form-builder-container"></div>
 </div>

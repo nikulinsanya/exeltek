@@ -18,14 +18,61 @@ window.formbuilder = (function() {
 
             this._formContainer = $(container);
 
+            if(json){
+                this.loadJson(json);
+            }
+            this.initSortable();
             this.setHandlers();
+        },
+        fillCellForm: function(cell){
+            var type = cell.attr('data-type'),
+                $parent = $('#addField');
 
+            switch (type) {
+                case 'label':
+                case 'text':
+                case 'date':
+                    $('#placeholder-type').val(cell.attr('data-placeholder'));
+                    break;
+                case 'ticket':
+                    var html = [],
+                        ticketId = cell.attr('data-ticket-id');
+                    $('.ticket-type-config').show();
+                    $('#field-type').html('');
+                    getColumns().then(function(data){
+                        data.sort(function(a,b){
+                            return a.name<b.name ? -1 : 1;
+                        });
+                        for(i in data){
+                            html.push(
+                                '<option value="',
+                                data[i].id,
+                                '"',
+                                data[i].id == ticketId ? ' selected="selected" ' : '',
+                                '>',
+                                data[i].name,
+                                '</option>');
+                        }
+                        $('#field-type').html(html.join(''));
+                    });
+
+                    break;
+                case 'options':
+                    $('#options-preview').html(cell.find('select').html());
+                    break;
+                case 'signature':
+                    var origCanvas = cell.find('canvas')[0],
+                        $canvas = $('#signature-canvas'),
+                        ctxOrign = origCanvas.getContext('2d');
+                    ctxOrign.drawImage($canvas[0],0,0);
+                    break;
+            }
         },
         refreshFieldForm: function(){
             var type = $('#fieldType').val(),
                 $parent = $('#addField');
             $parent.find('.type-config').hide();
-
+debugger;
             switch (type) {
                 case 'label':
                     $('.placeholder-type-config').show();
@@ -37,28 +84,29 @@ window.formbuilder = (function() {
                     $('.placeholder-type-config').show();
                     break;
                 case 'ticket':
-                    var html = [];
                     $('.ticket-type-config').show();
-                    $('#field-type').html('');
-                    getColumns().then(function(data){
-                        data.sort(function(a,b){
-                            return a.name<b.name ? -1 : 1;
-                        })
-                        for(i in data){
-                            html.push(
-                                '<option value="',
-                                data[i].id,
-                                '">',
-                                data[i].name,
-                                '</option>');
-                        }
-                        $('#field-type').html(html.join(''));
-                    });
-
+                    if(!$('#field-type').find('option').length){
+                        var html = [];
+                        $('.ticket-type-config').show();
+                        $('#field-type').html('');
+                        getColumns().then(function(data){
+                            data.sort(function(a,b){
+                                return a.name<b.name ? -1 : 1;
+                            });
+                            for(i in data){
+                                html.push(
+                                    '<option value="',
+                                    data[i].id,
+                                    '">',
+                                    data[i].name,
+                                    '</option>');
+                            }
+                            $('#field-type').html(html.join(''));
+                        });
+                    }
                     break;
                 case 'options':
                     $('.options-type-config').show();
-                    $('#options-preview').html('');
                     break;
                 case 'signature':
                     $('.signature-type-config').show();
@@ -95,29 +143,192 @@ window.formbuilder = (function() {
                     break;
                 case 'ticket':
                     var value = $('#field-type').val(),
-                        ticket = $('#field-type').find('option:selected').text()
+                        ticket = $('#field-type').find('option:selected').text();
                     $selectedCell.attr('data-type','ticket');
-                    $selectedCell.attr('data-ticket-id',value);
-                    $selectedCell.html('<span>'+value+'</span>');
+                    $selectedCell.attr('data-value',value);
+                    $selectedCell.html('<span>'+ticket+'</span>');
                     $('#field-type').val('');
                     break;
                 case 'options':
                     var value = $('#options-preview').val(),
                         select = $('#options-preview').clone();
-                    $selectedCell.attr('data-type','ticket');
-                    $selectedCell.attr('data-options-id',value);
+                    select.removeAttr('id');
+                    $selectedCell.attr('data-type','options');
+                    $selectedCell.attr('data-value',value);
                     $selectedCell.html(select);
                     $('#options-preview').val('');
                     break;
                 case 'signature':
-                    var value = $('#options-preview').val(),
-                        $canvas = $('#signature-canvas').clone();
+                    var $canvas  = $('#signature-canvas').clone(),
+                        value    = $canvas[0].toDataURL(),
+                        ctxOrign = $canvas[0].getContext('2d');
+                    $selectedCell.attr('data-value',value);
                     $selectedCell.html($canvas);
+                    $canvas.removeAttr('id');
+                    ctxOrign.drawImage($('#signature-canvas')[0],0,0);
                     break;
             }
 
             $('#addField').modal('hide');
             $('.selected-cell').removeClass('selected-cell');
+        },
+        guid: function () {
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16)
+                    .substring(1);
+            }
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                s4() + '-' + s4() + s4() + s4();
+        },
+
+        sendForm: function(){
+            var self = this,
+                json = self.serializeForm(),
+                id = $('#form-builder').attr('data-id');
+            return $.ajax({
+                url : utils.baseUrl() + 'form/save?id=' + id + '&type=' + $('#form-type').val() + '&name=' + encodeURIComponent($('#form-name').val()),
+                type: 'POST',
+                data: JSON.stringify(json),
+                success: function(){
+                    window.location.reload(true);
+                }
+            });
+        },
+
+        serializeForm: function(){
+            var i, j,
+                table,
+                value,
+                json = [],
+                self = this,
+                container = this._formContainer,
+                tables = container.find('table'),
+                obj, trs,tds, input;
+
+            tables.each(function(){
+                obj = {
+                    type:'table',
+                    items:[]
+                };
+                $(this).find('tr').each(function(){
+                    trs = {
+                        type:'tr',
+                        items:[]
+                    };
+                    $(this).find('td').each(function(){
+                        tds = {
+                            type:'td',
+                            items:[]
+                        };
+                        value = $(this).attr('data-value');
+
+//                        if ($(this).attr('data-type') == 'signature'){
+//                            value = $(this).find('canvas')[0].toDataURL();
+//                        }
+
+                        input = {
+                            type : $(this).attr('data-type'),
+                            placeholder: $(this).attr('data-placeholder'),
+                            name: self.guid(),
+                            value:value
+                        };
+
+                        tds.items.push(input);
+
+                        trs.items.push(tds);
+                    });
+                    obj.items.push(trs);
+                });
+                json.push(obj);
+            });
+
+            return(json);
+        },
+
+        loadJson: function(data){
+            var i, j,
+                html = [],
+                self = this,
+
+                container = this._formContainer;
+
+            for(i=0;i<data.length;i++){
+                html.push(self.loadElement(data[i]));
+            }
+            console.log(html.join());
+            container.append(html.join());
+        },
+
+        loadElement: function(element){
+            var i,
+                self = this,
+                html = [];
+            switch (element.type){
+                case 'table':
+                    html.push('<div class="table-container"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs">Remove</button><table class="table-responsive table table-bordered editable-table"><tbody class="ui-sortable">');
+                    for(i=0;i<element.items.length;i++){
+                        html.push(self.loadElement(element.items[i]));
+                    }
+                    html.push('</tbody></table></div>');
+                    break;
+                case 'tr':
+                    html.push('<tr>');
+                    for(i=0;i<element.items.length;i++){
+                        html.push(self.loadElement(element.items[i]));
+                    }
+                    html.push('</tr>');
+                    break;
+                case 'td':
+                    html.push(self.loadElement(element.items[0]));
+                    break;
+                case 'label':
+                case 'text':
+                case 'date':
+                case 'ticket':
+                    html.push('<td class="editable-cell" data-type="',
+                        element.type,
+                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
+                        '<span>',element.placeholder,'</span>',
+                        '</td>'
+                    );
+                    break;
+                case 'signature':
+                    html.push('<td data-type="',
+                        element.type,
+                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
+                        '<span>SIGNATURE</span>',
+                        '</td>'
+                    );
+                    break;
+                case 'options':
+                    html.push('<td data-type="',
+                        element.type,
+                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
+                        '<select>',
+                        '<option value="11">',
+                        111,
+                        '</option>',
+                        '</select>',
+                        '</td>'
+                    );
+                    break;
+            }
+
+            return html.join('');
+        },
+
+        initSortable: function(){
+            var self = this;
+            $('tbody').sortable({
+                placeholder: "ui-state-highlight"
+            });
+            $('tbody').disableSelection();
+
+            self._formContainer.sortable({
+                placeholder: "ui-state-highlight"
+            });
+            self._formContainer.disableSelection();
         },
 
         setHandlers: function(){
@@ -129,6 +340,7 @@ window.formbuilder = (function() {
                 $('.selected-cell').removeClass('selected-cell');
                 $(this).addClass('selected-cell');
                 $('#addField').modal('show');
+                self.fillCellForm($(this));
                 self.refreshFieldForm();
             });
             this._formContainer.on('click','.remove-table',function(e){
@@ -158,7 +370,7 @@ window.formbuilder = (function() {
                     rows = $('#rows-number').val(),
                     html = [],
                     i,j;
-                html.push('<div class="table-container"><button class="btn btn-danger remove-table btn-xs">Remove</button><table class="table-responsive table table-bordered editable-table">');
+                html.push('<div class="table-container"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs">Remove</button><table class="table-responsive table table-bordered editable-table"><tbody>');
                 for (i = 0;i<rows;i++){
                     html.push('<tr>');
                     for (j = 0;j<cols;j++){
@@ -168,9 +380,16 @@ window.formbuilder = (function() {
                     }
                     html.push('</tr>');
                 }
-                html.push('</table></div>')
+                html.push('</tbody></table></div>')
                 self._formContainer.append(html.join(''));
                 $('#addTable').modal('hide');
+                self.initSortable();
+            });
+
+            $('#form-save').on('click', function(){
+                if(confirm('Save form and close the editor?')){
+                    self.sendForm();
+                }
             });
         }
     }
@@ -187,18 +406,19 @@ $(function () {
             $('#form-name').val('');
             $('#form-type').val('');
             formbuilder.initForm('#form-builder-container');
-//            form.init($('#form-builder-container'), []);
             $('#form-builder').removeClass('hidden');
         } else {
             $.get(utils.baseUrl() + 'form/load?id=' + id, function(data) {
                 $('#form-builder').attr('data-id', id);
                 $('#form-name').val(data.name);
                 $('#form-type').val(data.type);
-                form.init($('#form-builder-container'), data.data);
+                formbuilder.initForm('#form-builder-container',data.data);
                 $('#form-builder').removeClass('hidden');
             });
         }
     });
+
+
 
     $('.form-save').click(function() {
         var form = $(this).parents('form').serializeArray();
