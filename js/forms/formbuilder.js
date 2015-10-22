@@ -38,9 +38,6 @@ window.formbuilder = (function() {
                     $('.ticket-type-config').show();
                     $('#field-type').html('');
                     getColumns().then(function(data){
-                        data.sort(function(a,b){
-                            return a.name<b.name ? -1 : 1;
-                        });
                         for(i in data){
                             html.push(
                                 '<option value="',
