@@ -14,7 +14,7 @@
             <div class="col-xs-12 col-md-6">
                 <label class="date-range-label">Ticket ID:</label>
             <span class="filter-select-container">
-                <input type="text" class="form-control multiline" placeholder="Ticket ID" name="ticket" value="<?=Arr::get($_GET, 'ticket')?>" />
+                <input type="text" class="form-control multiline" placeholder="Ticket ID" data-separator="," name="ticket" value="<?=Arr::get($_GET, 'ticket')?>" />
             </span>
             </div>
 
@@ -61,10 +61,11 @@
                 <div class="col-xs-12 col-md-6">
                     <label class="date-range-label">Contractors :</label>
                     <span class="filter-select-container">
-                    <select name="company" class="form-control multiselect">
+                    <select name="company[]" class="form-control multiselect" multiple>
                         <option value="">All contractors</option>
-                        <?php foreach ($companies as $key => $value):?>
-                            <option value="<?=$key?>" <?=$key == Arr::get($_GET, 'company') ? 'selected' : ''?>><?=$value?></option>
+                        <?php $company = Arr::get($_GET, 'company', array());
+                            foreach ($companies as $key => $value):?>
+                            <option value="<?=$key?>" <?=in_array($key, $company) ? 'selected' : ''?>><?=$value?></option>
                         <?php endforeach;?>
                     </select>
                 </span>

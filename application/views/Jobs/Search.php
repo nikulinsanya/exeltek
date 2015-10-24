@@ -113,7 +113,7 @@
     <div class="modal fade" id="filterModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <form class="filters-form" action="" method="get">
+                <form class="filters-form" action="" method="post">
 
                     <!--template filter row-->
                     <!--@todo - move to js templates -->

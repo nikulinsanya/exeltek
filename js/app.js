@@ -514,6 +514,12 @@ $(function () {
             $(this).append('<input type="hidden" name="company" value="' + ($(select).val() && $(select).val().join(',') || '') + '">');
             $(select).remove();
         }
+
+        var data = $(this).serializeArray();
+        $.post(utils.baseUrl() + 'search', data, function(data) {
+            window.location = utils.baseUrl() + 'search?id=' + data.id;
+        });
+        return false;
     });
 
 
@@ -948,7 +954,7 @@ $(function () {
     $('.multiline').focus(function() {
         var separator = $(this).attr('data-separator');
         $('form').prop('hold', true);
-        var val = $(this).val().replace(separator, "\n");
+        var val = $(this).val().replace(new RegExp(separator, 'g'), "\n");
         var textarea = $('<textarea class="form-control" width="100%"></textarea>').val(val).focusout(ticket_id_unfocus);
         $(this).hide().before(textarea);
         textarea.focus();

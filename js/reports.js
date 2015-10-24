@@ -1093,6 +1093,26 @@ $(function () {
                 $('#tabs').tab();
 
                 $('#exportTickets').off().on('click',exportTickets);
+                $('#showTickets').off().on('click', function() {
+                    var parent = $('#my-tab-content').find('.tab-pane.active');
+
+                    var list = [];
+                    parent.find('[data-item]').each(function(i, e) {
+                        list.push($(e).attr('data-item'));
+                    });
+
+                    var id = false;
+                    $.ajax({
+                        url: utils.baseUrl() + 'search',
+                        method: 'POST',
+                        data: {ticket: list.toString()},
+                        async: false,
+                        success: function (data) {
+                            window.open(utils.baseUrl() + 'search?id=' + data.id, '_blank');
+                        },
+                    });
+
+                });
             }
         })
     }

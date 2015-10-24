@@ -33,8 +33,16 @@ class Controller_Reports_Financial extends Controller {
         if (Group::current('allow_assign'))
             $companies = DB::select('id', 'name')->from('companies')->order_by('name', 'asc')->execute()->as_array('id', 'name');
 
-        if (!Group::current('allow_assign') || Arr::get($_GET, 'company'))
-            $query['user_id'] = array('$in' => DB::select('id')->from('users')->where('company_id', '=', Group::current('allow_assign') ? $_GET['company'] : User::current('company_id'))->execute()->as_array(NULL, 'id'));
+        if (!Group::current('allow_assign') || Arr::get($_GET, 'company')) {
+            if (Group::current('allow_assign')) {
+                $company = $_GET['company'];
+                if (!is_array($company))
+                    $company = explode(',', $company);
+
+                $company = array_map('intval', $company);
+            } else $company = array(User::current('company_id'));
+            $query['user_id'] = array('$in' => DB::select('id')->from('users')->where('company_id', 'IN', $company)->execute()->as_array(NULL, 'id'));
+        }
 
         $jobs = array();
 
