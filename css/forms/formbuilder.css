@@ -96,3 +96,13 @@
 .content form{
     border:none;
 }
+
+.remove-column>span,
+.remove-row>span{
+    margin-left: 5px;
+}
+
+.tmp-cell{
+    padding: 0px!important;
+    width: 30px;
+}

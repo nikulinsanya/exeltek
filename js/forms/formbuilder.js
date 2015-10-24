@@ -212,11 +212,10 @@ window.formbuilder = (function() {
                     data:[]
                 };
 
-                $(this).find('tr').each(function(){
+                $(this).find('tr').not('.tmp-cell').each(function(){
                     data = [];
-                    $(this).find('td').each(function(){
+                    $(this).find('td').not('.tmp-cell').each(function(){
                         value = $(this).attr('data-value');
-
                         input = {
                             type : $(this).attr('data-type'),
                             placeholder: $(this).attr('data-placeholder'),
@@ -262,11 +261,27 @@ window.formbuilder = (function() {
             switch (element.type){
                 case 'table':
                     html.push('<div class="table-container ',this._editable ? 'user-edit' : '','"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs">Remove</button><table class="table-responsive table table-bordered editable-table"><tbody class="ui-sortable">');
+
+                    if(!this._editable){
+                        html.push('<tr class="tmp-cell">');
+                        html.push('<td class="tmp-cell"></td>');
+
+                        for(j=0;j<element.data[1].length;j++){
+                            html.push('<td class="tmp-cell"><button class="btn btn-danger btn-xs remove-column" data-c="',j+1,'"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-down"></span></button></td>');
+                        }
+                        html.push('</tr>');
+                    }
+
+                    var t = false;
                     for(i=0;i<element.data.length;i++){
                         html.push('<tr>');
-                        if(!element.data[i].length){
+                        if(!element.data[i].length && (t || !this._editable)){
                             html.push('<td class="editable-cell" data-type="label"></td>');
                         }
+                        if(!this._editable){
+                            html.push('<td class="tmp-cell"><button class="btn btn-danger btn-xs remove-row"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-right"></span></button></td>');
+                        }
+                        t = true;
                         for(j=0;j<element.data[i].length;j++){
                             current = element.data[i][j];
                             html.push(self.loadElement(current));
@@ -339,7 +354,9 @@ window.formbuilder = (function() {
                     for(i=0;i<available.length;i++){
                         options.push( '<option value="',
                             available[i],
-                            '">',
+                            '" ',
+                            element.value == available[i] ? 'selected="selected"' : '',
+                            '>',
                             available[i],
                             '</option>');
                     }
@@ -433,6 +450,36 @@ window.formbuilder = (function() {
                 }
             });
 
+            this._formContainer.on('click','.remove-column',function(e){
+                var self = this,
+                    index,
+                    i,
+                    table,
+                    cols;
+                if(confirm('Do you want to remove column?')){
+                    table = $(this).parents('table').first();
+                    index = $(this).attr('data-c');
+
+                    table.find('tr').each(function(){
+                        cols = $(this).find('td');
+                        if(cols[index]){
+                            cols[index].remove();
+                        }
+                    });
+                    table.find('[data-c]').each(function(){
+                        $(this).attr('data-c',$(this).attr('data-c')-1);
+                    });
+
+                }
+            });
+
+            this._formContainer.on('click','.remove-row',function(e){
+                var self = this;
+                if(confirm('Do you want to remove row?')){
+                    $(self).parents('tr').first().remove();
+                }
+            });
+
 
             $('.confirm-insert-field').on('click',function(){
                 $('#addField').modal('hide');
@@ -459,8 +506,15 @@ window.formbuilder = (function() {
                     html = [],
                     i,j;
                 html.push('<div class="table-container"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs">Remove</button><table class="table-responsive table table-bordered editable-table"><tbody>');
+                html.push('<tr class="tmp-cell">');
+                html.push('<td class="tmp-cell"></td>');
+                for (j = 0;j<cols;j++){
+                    html.push('<td class="tmp-cell"><button class="btn btn-danger btn-xs remove-column" data-c="',j+1,'"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-down"></span></button></td>');
+                }
+                html.push('</tr>');
                 for (i = 0;i<rows;i++){
                     html.push('<tr>');
+                    html.push('<td class="tmp-cell"><button class="btn btn-danger btn-xs remove-row"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-right"></span></button></td>');
                     for (j = 0;j<cols;j++){
                         html.push('<td class="editable-cell">');
 
@@ -520,7 +574,7 @@ $(function () {
 
         $('form').find('canvas').each(function(){
             form.push({
-                name:$(this).attr('name'),
+                name:$(this).parent().attr('data-name'),
                 value: $(this).get(0).toDataURL()
             });
         });
