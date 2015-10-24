@@ -409,6 +409,7 @@ window.formbuilder = (function() {
             }
             var self = this;
             $('tbody').sortable({
+                items: "tr:not('.tmp-cell')",
                 placeholder: "ui-state-highlight"
             });
             $('tbody').disableSelection();
@@ -505,7 +506,7 @@ window.formbuilder = (function() {
                     rows = $('#rows-number').val(),
                     html = [],
                     i,j;
-                html.push('<div class="table-container"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs">Remove</button><table class="table-responsive table table-bordered editable-table"><tbody>');
+                html.push('<div class="table-container"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs"><i class="glyphicon glyphicon-trash"></i></button><table class="table-responsive table table-bordered editable-table"><tbody>');
                 html.push('<tr class="tmp-cell">');
                 html.push('<td class="tmp-cell"></td>');
                 for (j = 0;j<cols;j++){
