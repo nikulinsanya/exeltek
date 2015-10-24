@@ -24,6 +24,11 @@ class Controller_Form extends Controller {
             ->bind('name', $form['name'])
             ->bind('form', $form['data']);
 
+        if (isset($_GET['raw'])) {
+            echo $view;
+            die();
+        }
+
         require_once(APPPATH . 'mpdf/mpdf.php');
         $pdf = new mPDF();
         $pdf->ignore_invalid_utf8 = true;
