@@ -86,9 +86,6 @@ window.formbuilder = (function() {
                         $('.ticket-type-config').show();
                         $('#field-type').html('');
                         getColumns().then(function(data){
-                            data.sort(function(a,b){
-                                return a.name<b.name ? -1 : 1;
-                            });
                             for(i in data){
                                 html.push(
                                     '<option value="',
@@ -185,6 +182,7 @@ window.formbuilder = (function() {
             var self = this,
                 json = self.serializeForm(),
                 id = $('#form-builder').attr('data-id');
+
             return $.ajax({
                 url : utils.baseUrl() + 'form/save?id=' + id + '&type=' + $('#form-type').val() + '&name=' + encodeURIComponent($('#form-name').val()),
                 type: 'POST',
@@ -203,44 +201,39 @@ window.formbuilder = (function() {
                 self = this,
                 container = this._formContainer,
                 tables = container.find('table'),
-                obj, trs,tds, input;
+                obj, trs,tds, input,
+                c, r,
+                item,
+                data;
 
             tables.each(function(){
                 obj = {
                     type:'table',
-                    items:[]
+                    data:[]
                 };
+
                 $(this).find('tr').each(function(){
-                    trs = {
-                        type:'tr',
-                        items:[]
-                    };
+                    data = [];
                     $(this).find('td').each(function(){
-                        tds = {
-                            type:'td',
-                            items:[]
-                        };
                         value = $(this).attr('data-value');
 
                         input = {
                             type : $(this).attr('data-type'),
                             placeholder: $(this).attr('data-placeholder'),
-                            name: $(this).attr('data-name') || self.guid(),
+                            name: ['label','ticket'].indexOf($(this).attr('data-type')) == -1 ?
+                                $(this).attr('data-name') || self.guid():
+                                '',
                             value:value
                         };
                         if ($(this).attr('data-type') == 'options'){
                             input.options = $(this).find('option').map(function(){return $(this).val()}).toArray().join(',')
                         }
-
-                        tds.items.push(input);
-
-                        trs.items.push(tds);
+                        data.push(input);
                     });
-                    obj.items.push(trs);
+                    obj.data.push(data);
                 });
                 json.push(obj);
             });
-
             return(json);
         },
 
@@ -250,11 +243,10 @@ window.formbuilder = (function() {
                 self = this,
 
                 container = this._formContainer;
-
             for(i=0;i<data.length;i++){
                 html.push(self.loadElement(data[i]));
             }
-            container.append(html.join());
+            container.append(html.join(''));
             this.updateCanvases();
             if(!this._editable){
                 this.updateTicketLabels();
@@ -262,16 +254,26 @@ window.formbuilder = (function() {
         },
 
         loadElement: function(element){
-            var i,
+            var i, j,
                 self = this,
+                current,
                 html = [];
 
             switch (element.type){
                 case 'table':
                     html.push('<div class="table-container ',this._editable ? 'user-edit' : '','"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs">Remove</button><table class="table-responsive table table-bordered editable-table"><tbody class="ui-sortable">');
-                    for(i=0;i<element.items.length;i++){
-                        html.push(self.loadElement(element.items[i]));
+                    for(i=0;i<element.data.length;i++){
+                        html.push('<tr>');
+                        if(!element.data[i].length){
+                            html.push('<td class="editable-cell" data-type="label"></td>');
+                        }
+                        for(j=0;j<element.data[i].length;j++){
+                            current = element.data[i][j];
+                            html.push(self.loadElement(current));
+                        }
+                        html.push('</tr>');
                     }
+
                     html.push('</tbody></table></div>');
                     break;
                 case 'tr':
@@ -291,9 +293,9 @@ window.formbuilder = (function() {
                 case 'label':
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
+                        '" data-placeholder="',element.placeholder,'"  data-value="',element.value,'">',
                         '<span>',element.placeholder,'</span>',
-                        '<input name="',element.name,'" type="hidden" value="',element.placeholder,'"></input>',
+                        '<input type="hidden" value="',element.placeholder,'"></input>',
                         '</td>'
                     );
                     break;
@@ -316,9 +318,9 @@ window.formbuilder = (function() {
                 case 'ticket':
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
+                        '" data-placeholder="',element.placeholder,'" data-value="',element.value,'">',
                         '<span>TICKETFIELD',element.placeholder,'</span>',
-                        '<input name="',element.name,'" type="hidden" value="',element.value,'"></input>',
+                        '<input type="hidden" value="',element.value,'"></input>',
                         '</td>'
                     );
                     break;
@@ -349,6 +351,9 @@ window.formbuilder = (function() {
                         '</select>',
                         '</td>'
                     );
+                    break;
+                default:
+                    html.push('<td class="editable-cell" data-type="label"></td>');
                     break;
             }
 
