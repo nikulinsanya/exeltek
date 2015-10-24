@@ -186,31 +186,31 @@
 <body>
 <div style="border:1px solid #f7f7f7;">
     <h3><?=$name?></h3>
-        <?php foreach ($form as $line) if (is_string($line)):
-                echo $line;
-            else:
-                echo '<div style="padding:20px 5px;"><table><tr>';
-                foreach ($line as $input):
-                    echo '<td>';
-                    $value = Arr::get($input, 'value');
-                    switch (Arr::get($input, 'type')):
-                        case 'label':
-                            echo '<div><b><label class="tmp-label">' . $value . '</label></b></div>';
-                            break;
-                        case 'canvas':
-                            echo '<img src="' . $value . '" />';
-                            break;
-                        case 'select':
-                            echo '<span>' . (is_array($value) ? implode(', ',$value) : $value) . '</span>';
-                            break;
-                        default:
-                            echo '<span>' . $value . '</span>';
-                            break;
-                    endswitch;
-                    echo '<td>';
+        <?php foreach ($form as $table):?>
+            <table>
+                <?php foreach ($table['data'] as $cells): echo '<tr>';
+                    foreach ($cells as $input): echo '<td>';
+                        $value = Arr::get($input, 'value');
+                        switch (Arr::get($input, 'type')):
+                            case 'label':
+                                echo '<span>' . Arr::get($input, 'placeholder') . '</span>';
+                                break;
+                            case 'canvas':
+                                echo '<img src="' . $value . '" />';
+                                break;
+                            case 'select':
+                                echo '<span>' . (is_array($value) ? implode(', ',$value) : $value) . '</span>';
+                                break;
+                            default:
+                                echo '<span>' . $value . '</span>';
+                                break;
+                        endswitch;
+                        echo '</td>';
+                    endforeach;
+                    echo '</tr>';
                 endforeach;
-                echo "</tr></table></div>";
-            endif;?>
+                echo '</table>';
+            endforeach;?>
 </div>
 </body>
 </html>

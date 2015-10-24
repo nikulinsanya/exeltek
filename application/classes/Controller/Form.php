@@ -47,6 +47,15 @@ class Controller_Form extends Controller {
             if (!$job) throw new HTTP_Exception_404('Not found');
             $form = Database_Mongo::collection('forms')->findOne(array('_id' => new MongoId($form_id)));
             $form['job'] = $job_id;
+            foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
+                foreach ($table['data'] as $row => $cells)
+                    foreach ($cells as $cell => $input)
+                        if (Arr::get($input, 'type') == 'ticket')
+                            $form['data'][$key]['data'][$row][$cell] = array(
+                                'type' => 'label',
+                                'placeholder' => Arr::get($input, 'value') ? Columns::output(Arr::path($job, 'data.' . $input['value']), Columns::get_type($input['value'])) : $job['_id'],
+                            );
+
         }
 
         if (!$form) throw new HTTP_Exception_404('Not found');
@@ -57,17 +66,12 @@ class Controller_Form extends Controller {
 
             $job = Database_Mongo::collection('jobs')->findOne(array('_id' => $form['job']));
 
-            foreach ($form['data'] as $key => $values) if (is_array($values))
-                foreach ($values as $v => $input)
-                    if (Arr::get($input, 'type') == 'ticket' && !isset($input['value']))
-                        $form['data'][$key][$v]['value'] = Arr::get($input, 'fieldId') ? Columns::output(Arr::path($job, 'data.' . $input['fieldId']), Columns::get_type($input['fieldId'])) : $job['_id'];
-
             if ($_POST) {
-                foreach ($form['data'] as $key => $values) if (is_array($values))
-                    foreach ($values as $v => $input)
-                        if (Arr::get($input, 'name')) {
-                            $form['data'][$key][$v]['value'] = Arr::get($_POST, $input['name']);
-                        }
+                foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
+                    foreach ($table['data'] as $row => $cells)
+                        foreach ($cells as $cell => $input)
+                            if (Arr::get($input, 'name'))
+                                $form['data'][$key]['data'][$row][$cell]['value'] = Arr::get($_POST, $input['name']);
 
                 unset($form['_id']);
                 $form['last_update'] = time();
