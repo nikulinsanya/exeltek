@@ -433,6 +433,35 @@ window.formbuilder = (function() {
                 }
             });
 
+            this._formContainer.on('click','.remove-column',function(e){
+                var self = this,
+                    index,
+                    i,
+                    table,
+                    cols;
+                if(confirm('Do you want to remove column?')){
+                    table = $(this).parents('table').first();
+                    index = $(this).attr('data-c');
+                    cols = table.find('tr').first().find('td');
+
+                    table.find('tr').each(function(){
+                       cols = $(this).find('td');
+                        cols[index].remove();
+                    });
+                    table.find('[data-c]').each(function(){
+                        $(this).attr('data-c',$(this).attr('data-c')-1);
+                    });
+
+                }
+            });
+
+            this._formContainer.on('click','.remove-row',function(e){
+                var self = this;
+                if(confirm('Do you want to remove row?')){
+                    $(self).parents('tr').first().remove();
+                }
+            });
+
 
             $('.confirm-insert-field').on('click',function(){
                 $('#addField').modal('hide');
@@ -459,8 +488,15 @@ window.formbuilder = (function() {
                     html = [],
                     i,j;
                 html.push('<div class="table-container"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs">Remove</button><table class="table-responsive table table-bordered editable-table"><tbody>');
+                html.push('<tr>');
+                html.push('<td class="tmp-cell"></td>');
+                for (j = 0;j<cols;j++){
+                    html.push('<td class="tmp-cell"><button class="btn btn-danger btn-xs remove-column" data-c="',j+1,'"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-down"></span></button></td>');
+                }
+                html.push('</tr>');
                 for (i = 0;i<rows;i++){
                     html.push('<tr>');
+                    html.push('<td class="tmp-cell"><button class="btn btn-danger btn-xs remove-row"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-right"></span></button></td>');
                     for (j = 0;j<cols;j++){
                         html.push('<td class="editable-cell">');
 
