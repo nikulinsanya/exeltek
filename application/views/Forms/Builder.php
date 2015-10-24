@@ -115,7 +115,7 @@
                     </div>
                     <div class="row type-config options-type-config">
                         <div class="col-md-4">
-                            <span class="form-label">Options</span>
+                            <span class="form-label">Add option</span>
                         </div>
                         <div class="col-md-8">
                             <input type="text" id="option-type-value">
@@ -128,7 +128,7 @@
                         </div>
                         <div class="col-md-8">
                             <select id="options-preview">
-                            </select>
+                            </select><button class="btn btn-danger btn-xs" id="remove-option">Remove option</button>
                         </div>
                     </div>
                 </div>
