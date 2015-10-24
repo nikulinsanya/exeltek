@@ -445,6 +445,11 @@ window.formbuilder = (function() {
                 $('#options-preview').append('<option value="'+value+'">'+value+'</option>');
                 $('#option-type-value').val('');
             });
+            $('#remove-option').on('click',function(){
+                var value = $('#options-preview').val();
+                $("#options-preview option[value='"+value+"']").remove();
+            });
+
 
             $('#confirm-insert-field').on('click',self.confirmAddField);
 
