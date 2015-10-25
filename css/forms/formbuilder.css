@@ -119,3 +119,8 @@
 [data-type="date"] input{
     border-radius: 3px;
 }
+
+
+table.table.not-bordered>tbody>tr>td {
+    border:none!important;
+}
