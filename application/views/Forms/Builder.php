@@ -96,6 +96,15 @@
                         </select>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="form-label">Cells border:</span>
+                        <select id="cells-border">
+                            <option value="">Yes</option>
+                            <option value="not-bordered">No</option>
+                        </select>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer" class="tableRowButtons">
                 <button class="btn btn-warning" data-dismiss="modal">Close</button>
@@ -164,7 +173,7 @@
                         </div>
                         <div class="col-md-8">
                             <input type="text" id="option-type-value">
-                            <button class="btn btn-success btn-xs" id="add-option">Add option</button>
+                            <a class="btn btn-success btn-xs" id="add-option">Add option</a>
                         </div>
                     </div>
                     <div class="row type-config options-type-config">
@@ -173,7 +182,7 @@
                         </div>
                         <div class="col-md-8">
                             <select id="options-preview">
-                            </select><button class="btn btn-danger btn-xs" id="remove-option">Remove option</button>
+                            </select><a class="btn btn-danger btn-xs" id="remove-option">Remove option</a>
                         </div>
                     </div>
                 </div>

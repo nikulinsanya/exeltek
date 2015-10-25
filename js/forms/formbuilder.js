@@ -226,6 +226,7 @@ window.formbuilder = (function() {
                 obj = {
                     type:'table',
                     style: $(this).attr('data-style'),
+                    class: $(this).attr('data-class'),
                     data:[]
                 };
 
@@ -277,7 +278,7 @@ window.formbuilder = (function() {
 
             switch (element.type){
                 case 'table':
-                    html.push('<div class="table-container ',this._editable ? 'user-edit' : '','"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs"><i class="glyphicon glyphicon-trash"></i></button><button class="btn btn-info config-table btn-xs"><i class="glyphicon glyphicon-cog"></i></button><table style="'+element.style+'" class="table-responsive table table-bordered editable-table"><tbody class="ui-sortable">');
+                    html.push('<div class="table-container ',this._editable ? 'user-edit' : '','"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs"><i class="glyphicon glyphicon-trash"></i></button><button class="btn btn-info config-table btn-xs"><i class="glyphicon glyphicon-cog"></i></button><table style="'+element.style+'" class="table-responsive table table-bordered editable-table '+element.class+'"><tbody class="ui-sortable">');
 
                     if(!this._editable){
                         html.push('<tr class="tmp-cell">');
@@ -578,13 +579,15 @@ window.formbuilder = (function() {
                 var table = $('.selected-table'),
                     borderVal = $('#table-border').val()|| '0',
                     borderColor = $('#table-color').val() || '#ccc',
-                    style = "border:"+borderVal+"px solid " +borderColor;
-
-
+                    style = "border:"+borderVal+"px solid " +borderColor,
+                    className = $('#cells-border').val() || '';
 
                 table
                     .attr('data-style',style)
-                    .attr('style',style);
+                    .attr('style',style)
+                    .attr('data-class',className);
+
+                table.removeClass('not-bordered').addClass(className);
 
                 table.removeClass('selected-table');
                 $('#configTable').modal('hide');
