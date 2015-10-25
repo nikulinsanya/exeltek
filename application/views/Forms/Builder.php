@@ -107,6 +107,7 @@
 
 <div class="modal fade"  id="addField" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document" style="width:600px;">
+        <form id="form-insert-field">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -122,6 +123,8 @@
                             <select id="fieldType">
                                 <option value="label">Label</option>
                                 <option value="text">Text</option>
+                                <option value="number">Number</option>
+                                <option value="float">Float</option>
                                 <option value="date">Date</option>
                                 <option value="ticket">Ticket</option>
                                 <option value="options">Options</option>
@@ -177,9 +180,10 @@
             </div>
             <div class="modal-footer" class="tableRowButtons">
                 <button class="btn btn-warning" data-dismiss="modal">Close</button>
-                <button class="btn btn-success" id="confirm-insert-field">Add field</button>
+                <button class="btn btn-success" id="confirm-insert-field">Save</button>
             </div>
         </div>
+        </form>
     </div>
 </div>
 
