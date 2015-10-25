@@ -52,6 +52,7 @@
 }
 .table-container:hover>i{
     display: block;
+    cursor: move;
 }
 .table-container>button{
     display: none;
@@ -59,6 +60,10 @@
     left:15px;
     top:0px;
 }
+.table-container>button.config-table{
+    left:40px;
+}
+
 .table-container:hover>button{
     display:block;
 }
@@ -105,4 +110,8 @@
 .tmp-cell{
     padding: 0px!important;
     width: 30px;
+}
+
+#configTable select{
+    width: 120px;
 }

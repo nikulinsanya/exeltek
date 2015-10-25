@@ -63,6 +63,48 @@
     </div>
 </div>
 
+<div class="modal fade"  id="configTable" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document" style="width:300px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Table settings</h4>
+            </div>
+            <div class="modal-body text-center" id="table-settings">
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="form-label">Border:</span>
+                        <select id="table-border">
+                            <option value="" selected="selected">Select border</option>
+                            <option value="0">None</option>
+                            <option value="1">1px</option>
+                            <option value="2">2px</option>
+                            <option value="3">3px</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="form-label">Border color:</span>
+                        <select id="table-color">
+                            <option value="" selected="selected">Select color</option>
+                            <option value="black">Black</option>
+                            <option value="gray">Gray</option>
+                            <option value="red">Red</option>
+                            <option value="blue">Blue</option>
+                            <option value="green">Green</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" class="tableRowButtons">
+                <button class="btn btn-warning" data-dismiss="modal">Close</button>
+                <button class="btn btn-success confirm-table-settings">Apply</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade"  id="addField" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document" style="width:600px;">
         <div class="modal-content">
