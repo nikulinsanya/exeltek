@@ -29,6 +29,8 @@ window.formbuilder = (function() {
             switch (type) {
                 case 'label':
                 case 'text':
+                case 'number':
+                case 'float':
                 case 'date':
                     $('#placeholder-type').val(cell.attr('data-placeholder'));
                     break;
@@ -71,11 +73,9 @@ window.formbuilder = (function() {
             $parent.find('.type-config').hide();
             switch (type) {
                 case 'label':
-                    $('.placeholder-type-config').show();
-                    break;
                 case 'text':
-                    $('.placeholder-type-config').show();
-                    break;
+                case 'number':
+                case 'float':
                 case 'date':
                     $('.placeholder-type-config').show();
                     break;
@@ -105,11 +105,13 @@ window.formbuilder = (function() {
                     break;
                 case 'signature':
                     $('.signature-type-config').show();
-                    new SignaturePad($('.signature-type-config').find('canvas').get(0));
+//                    new SignaturePad($('.signature-type-config').find('canvas').get(0));
                     break;
             }
+            $('#placeholder-type').trigger('focus');
         },
-        confirmAddField: function(){
+        confirmAddField: function(e){
+            e.preventDefault();
             var type = $('#fieldType').val(),
                 $selectedCell = $('.selected-cell');
 
@@ -127,6 +129,20 @@ window.formbuilder = (function() {
                     $selectedCell.attr('data-type','text');
                     $selectedCell.attr('data-placeholder',value);
                     $selectedCell.html('<input type="text" placeholder="'+value+'">');
+                    $('#placeholder-type').val('');
+                    break;
+                case 'number':
+                    var value = $('#placeholder-type').val();
+                    $selectedCell.attr('data-type','number');
+                    $selectedCell.attr('data-placeholder',value);
+                    $selectedCell.html('<input type="number" placeholder="'+value+'">');
+                    $('#placeholder-type').val('');
+                    break;
+                case 'float':
+                    var value = $('#placeholder-type').val();
+                    $selectedCell.attr('data-type','float');
+                    $selectedCell.attr('data-placeholder',value);
+                    $selectedCell.html('<input type="number" step="0.01" placeholder="'+value+'">');
                     $('#placeholder-type').val('');
                     break;
                 case 'date':
@@ -323,6 +339,22 @@ window.formbuilder = (function() {
                         '</td>'
                     );
                     break;
+                case 'number':
+                    html.push('<td class="editable-cell" data-type="',
+                        element.type,
+                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
+                        '<input name="',element.name,'" type="number" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
+                        '</td>'
+                    );
+                    break;
+                case 'float':
+                    html.push('<td class="editable-cell" data-type="',
+                        element.type,
+                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
+                        '<input name="',element.name,'" step="0.01" type="number" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
+                        '</td>'
+                    );
+                    break;
                 case 'date':
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
@@ -444,6 +476,10 @@ window.formbuilder = (function() {
                 $('#addField').modal('show');
                 self.fillCellForm($(this));
                 self.refreshFieldForm($(this));
+
+                setTimeout(function(){
+                    $('#placeholder-type').focus();
+                },500);
             });
             this._formContainer.on('click','.remove-table',function(e){
                 var self = this;
@@ -459,9 +495,6 @@ window.formbuilder = (function() {
                 table.addClass('selected-table');
                 $('#configTable').modal('show');
             });
-
-
-
             this._formContainer.on('click','.remove-column',function(e){
                 var self = this,
                     index,
@@ -511,6 +544,8 @@ window.formbuilder = (function() {
 
 
             $('#confirm-insert-field').on('click',self.confirmAddField);
+
+            $('#form-insert-field').on('submit',self.confirmAddField)
 
             $('.confirm-insert-table').on('click',function(){
                 var cols = $('#cols-number').val(),

@@ -115,3 +115,7 @@
 #configTable select{
     width: 120px;
 }
+
+[data-type="date"] input{
+    border-radius: 3px;
+}
