@@ -267,7 +267,7 @@ window.formbuilder = (function() {
                         html.push('<tr class="tmp-cell">');
                         html.push('<td class="tmp-cell"></td>');
 
-                        for(j=0;j<element.data[1].length;j++){
+                        for(j=0;j<element.data[0].length;j++){
                             html.push('<td class="tmp-cell"><button class="btn btn-danger btn-xs remove-column" data-c="',j+1,'"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-down"></span></button></td>');
                         }
                         html.push('</tr>');
