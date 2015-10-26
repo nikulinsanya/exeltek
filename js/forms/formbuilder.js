@@ -653,7 +653,7 @@ $(function () {
                 window.location = data.url;
             },
             error   : function(e){
-                alert(e.responseText);
+                $('html').html(e.responseText);
             }
         });
     });

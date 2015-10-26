@@ -109,6 +109,7 @@
                       <?php if (Group::current('allow_finance')):?>
                           <li class="<?=Request::current()->directory() == 'Reports' && Request::current()->controller() == 'Financial' ? 'active' : ''?>"><a href="<?=URL::base()?>reports/financial">Financial</a></li>
                       <?php endif;?>
+                      <li class="<?=Request::current()->directory() == '' && Request::current()->controller() == 'Form' ? 'active' : ''?>"><a href="<?=URL::base()?>form/unbinded">Forms</a></li>
                   </ul>
               </li>
             <?php if (Group::current('allow_reports')):?>

@@ -3,6 +3,8 @@
 class Controller_Form extends Controller {
 
     public function action_index() {
+        if (!Group::current('is_admin')) throw new HTTP_Exception_403('Forbidden');
+
         $result = Database_Mongo::collection('forms')->find(array(), array('type' => 1, 'name' => 1))->sort(array('type' => 1, 'name' => 1));
         $forms = array();
         foreach ($result as $form)
@@ -47,19 +49,33 @@ class Controller_Form extends Controller {
             $form = Database_Mongo::collection('forms-data')->findOne(array('_id' => new MongoId($id)));
             $form_id = false;
         } else {
-            list($form_id, $job_id) = explode('/', Arr::get($_GET, 'form', ''));
-            $job = Database_Mongo::collection('jobs')->findOne(array('_id' => strval($job_id)));
-            if (!$job) throw new HTTP_Exception_404('Not found');
+            $data = explode('/', Arr::get($_GET, 'form', ''));
+            $form_id = $data[0];
             $form = Database_Mongo::collection('forms')->findOne(array('_id' => new MongoId($form_id)));
-            $form['job'] = $job_id;
-            foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
-                foreach ($table['data'] as $row => $cells)
-                    foreach ($cells as $cell => $input)
-                        if (Arr::get($input, 'type') == 'ticket')
-                            $form['data'][$key]['data'][$row][$cell] = array(
-                                'type' => 'label',
-                                'placeholder' => Arr::get($input, 'value') ? Columns::output(Arr::path($job, 'data.' . $input['value']), Columns::get_type($input['value'])) : $job['_id'],
-                            );
+            $form['company'] = User::current('company_id');
+
+            switch ($form['type']) {
+                case Form::FORM_TYPE_COMMON:
+                    break;
+
+                case Form::FORM_TYPE_TICKET:
+                    $job_id = $data[1];
+                    $form['job'] = $job_id;
+                    $job = Database_Mongo::collection('jobs')->findOne(array('_id' => strval($job_id)));
+                    if (!$job) throw new HTTP_Exception_404('Not found');
+                    if (!Group::current('show_all_jobs') && !in_array(User::current('company_id'), array_merge(Arr::get($job, 'companies', array()), Arr::get($job, 'ex', array()))))
+                        throw new HTTP_Exception_404('Not found');
+
+                    foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
+                        foreach ($table['data'] as $row => $cells)
+                            foreach ($cells as $cell => $input)
+                                if (Arr::get($input, 'type') == 'ticket')
+                                    $form['data'][$key]['data'][$row][$cell] = array(
+                                        'type' => 'label',
+                                        'placeholder' => Arr::get($input, 'value') ? Columns::output(Arr::path($job, 'data.' . $input['value']), Columns::get_type($input['value'])) : $job['_id'],
+                                    );
+                    break;
+            }
 
         }
 
@@ -69,7 +85,8 @@ class Controller_Form extends Controller {
         if (isset($_GET['load']) || $_POST) {
             header('Content-type: application/json');
 
-            $job = Database_Mongo::collection('jobs')->findOne(array('_id' => $form['job']));
+            if (isset($form['job']))
+                $job = Database_Mongo::collection('jobs')->findOne(array('_id' => is_array($form['job']) ? array('$in' => $form['job']) : $form['job']));
 
             if ($_POST) {
                 foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
@@ -89,6 +106,7 @@ class Controller_Form extends Controller {
                     $form['user_id'] = User::current('id');
                     $form['revision'] = 1;
                     Database_Mongo::collection('forms-data')->insert($form);
+                    $id = strval($form['_id']);
                 }
                 if (isset($_POST['print'])) {
                     $view = View::factory('Forms/PDF')
@@ -104,39 +122,64 @@ class Controller_Form extends Controller {
 
                     $name = trim(preg_replace('/-{2,}/', '-', preg_replace('/[^a-z0-9]/i', '-', $form['name'])), '-');
 
-                    $data = array(
-                        'filename' => $name . date('dmY-His') . '.pdf',
-                        'mime' => 'application/pdf',
-                        'uploaded' => time(),
-                        'user_id' => User::current('id'),
-                        'job_id' => $job['_id'],
-                        'folder' => 'Reports',
-                        'fda_id' => Arr::path($job, 'data.14'),
-                        'address' => trim(preg_replace('/-{2,}/', '-', preg_replace('/[^0-9a-z\-]/i', '-', Arr::path($job, 'data.8'))), '-'),
-                        'title' => '',
-                    );
-                    Database::instance()->begin();
-                    $result = DB::insert('attachments', array_keys($data))->values(array_values($data))->execute();
-                    $image_id = Arr::get($result, 0);
+                    switch ($form['type']) {
+                        case Form::FORM_TYPE_COMMON:
+                            $jobs = array(0);
+                            break;
+                        case Form::FORM_TYPE_TICKET:
+                            $jobs = array($job['_id']);
+                            break;
+                    }
 
-                    if ($image_id && file_put_contents(DOCROOT . 'storage/' . $image_id, $content)) {
-                        unset($data['mime']);
+                    $company = DB::select('name')->from('companies')->where('id', '=', $form['company'])->execute()->get('name');
+
+                    foreach ($jobs as $job) {
+                        if ($job)
+                            $job = Database_Mongo::collection('jobs')->findOne(array('_id' => $job), array('data.8' => 1, 'data.14' => 1));
+
                         $data = array(
-                            'filename' => 'Reports / ' . Arr::path($job, 'data.14') . ' / ' . $data['address'] . ' / ' . $data['filename'],
+                            'filename' => $name . ' (' . $company . ') -' . date('dmY-His') . '.pdf',
+                            'mime' => 'application/pdf',
                             'uploaded' => time(),
-                            'user_id' => User::current('id'),
-                            'job_id' => $form['job'],
-                            'action' => 1,
+                            'user_id' => $form['user_id'],
+                            'job_id' => $job ? $job['_id'] : 0,
+                            'folder' => 'Reports',
+                            'fda_id' => $job ? Arr::path($job, 'data.14') : 'Unbinded',
+                            'address' => $job ? trim(preg_replace('/-{2,}/', '-', preg_replace('/[^0-9a-z\-]/i', '-', Arr::path($job, 'data.8'))), '-') : 'Unbinded',
+                            'title' => '',
                         );
-                        DB::insert('upload_log', array_keys($data))->values(array_values($data))->execute();
-                        Database::instance()->commit();
-                        Database_Mongo::collection('forms-data')->remove(array('_id' => new MongoId($id)));
-                    } else Messages::save('Error occurred during report processing... Please try again later');
+                        Database::instance()->begin();
+                        $result = DB::insert('attachments', array_keys($data))->values(array_values($data))->execute();
+                        $image_id = Arr::get($result, 0);
+
+                        if ($image_id && file_put_contents(DOCROOT . 'storage/' . $image_id, $content)) {
+                            unset($data['mime']);
+                            $data = array(
+                                'filename' => 'Reports / ' . ($job ? Arr::path($job, 'data.14') : 'Unbinded') . ' / ' . ($job ? $data['address'] : 'Unbinded') . ' / ' . $data['filename'],
+                                'uploaded' => time(),
+                                'user_id' => User::current('id'),
+                                'job_id' => $job ? $job['_id'] : 0,
+                                'action' => 1,
+                            );
+                            DB::insert('upload_log', array_keys($data))->values(array_values($data))->execute();
+                            Database::instance()->commit();
+                            Database_Mongo::collection('forms-data')->remove(array('_id' => new MongoId($id)));
+                        } else Messages::save('Error occurred during report processing... Please try again later');
+                    }
 
                     $target = 'attachments';
                 } else $target = 'forms';
                 header('Content-type: application/json');
-                die(json_encode(array('success' => true, 'url' => URL::base() . 'search/view/' . $form['job'] . '#' . $target)));
+                switch ($form['type']) {
+                    case Form::FORM_TYPE_TICKET:
+                        $url = URL::base() . 'search/view/' . $form['job'] . '#' . $target;
+                        break;
+
+                    case Form::FORM_TYPE_COMMON:
+                        $url = URL::base() . 'form/unbinded';
+                        break;
+                }
+                die(json_encode(array('success' => true, 'url' => $url)));
             }
 
             die(json_encode($form['data']));
@@ -151,6 +194,7 @@ class Controller_Form extends Controller {
     }
 
     public function action_save() {
+        if (!Group::current('is_admin')) throw new HTTP_Exception_403('Forbidden');
 
         $id = Arr::get($_GET, 'id');
         $type = intval(Arr::get($_GET, 'type'));
@@ -172,6 +216,8 @@ class Controller_Form extends Controller {
     }
 
     public function action_load() {
+        if (!Group::current('is_admin')) throw new HTTP_Exception_403('Forbidden');
+
         $id = Arr::get($_GET, 'id');
         if (!$id) throw new HTTP_Exception_404('Not found');
 
@@ -185,6 +231,48 @@ class Controller_Form extends Controller {
             'name' => $form['name'],
             'data' => $form['data'],
         )));
+    }
+
+    public function action_unbinded() {
+        $query = array('type' => Form::FORM_TYPE_COMMON);
+
+        $forms = array();
+        $result = Database_Mongo::collection('forms')->find($query, array('name' => 1));
+        foreach ($result as $form)
+            $forms[strval($form['_id'])] = $form['name'];
+
+        if (Group::current('show_all_jobs')) {
+            if (isset($_GET['company'])) {
+                $company = is_array($_GET['company']) ? $_GET['company'] : explode(',', $_GET['company']);
+                $query['company'] = array('$in' => array_map('intval', $company));
+            }
+        } else $query['company'] = array('$in' => array(User::current('company_id')));
+        $result = Database_Mongo::collection('forms-data')->find($query, array('data' => 0))->sort(array('last_update' => -1));
+
+        $companies = array();
+        $list = array();
+        foreach ($result as $form) {
+            $companies[$form['company']] = 1;
+            $list[] = $form;
+        }
+
+        if ($companies)
+            $companies = DB::select('id', 'name')->from('companies')->where('id', 'IN', array_keys($companies))->execute()->as_array('id', 'name');
+
+        $files = DB::select()->from('attachments')->where('fda_id', '=', 'Unbinded')->order_by('uploaded', 'DESC');
+
+        if (isset($query['company']))
+            $files->and_where('user_id', 'IN', DB::select('id')->from('users')->where('company_id', 'IN', $query['company']['$in']));
+
+        $files = $files->execute()->as_array();
+
+        $view = View::factory('Forms/Unbinded')
+            ->bind('forms', $forms)
+            ->bind('companies', $companies)
+            ->bind('list', $list)
+            ->bind('files', $files);
+
+        $this->response->body($view);
     }
 
 }
