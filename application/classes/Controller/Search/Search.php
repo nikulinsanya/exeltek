@@ -22,7 +22,8 @@ class Controller_Search_Search extends Controller {
             header('Content-type: application/json');
             die(json_encode(array('success' => true, 'id' => $search_id)));
         } elseif (!$_GET && Session::instance()->get('search-settings')) {
-            $params = json_decode(Session::instance()->get('search-settings'));
+            $params = Session::instance()->get('search-settings');
+            if (!is_array($params)) $params = json_decode($params);
             if ($params !== NULL) {
                 $data = array(
                     'request' => $params,
