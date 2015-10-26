@@ -144,8 +144,8 @@ class Controller_Form extends Controller {
                             'user_id' => $form['user_id'],
                             'job_id' => $job ? $job['_id'] : 0,
                             'folder' => 'Reports',
-                            'fda_id' => $job ? Arr::path($job, 'data.14') : 'Unbinded',
-                            'address' => $job ? trim(preg_replace('/-{2,}/', '-', preg_replace('/[^0-9a-z\-]/i', '-', Arr::path($job, 'data.8'))), '-') : 'Unbinded',
+                            'fda_id' => $job ? Arr::path($job, 'data.14') : 'Unattached',
+                            'address' => $job ? trim(preg_replace('/-{2,}/', '-', preg_replace('/[^0-9a-z\-]/i', '-', Arr::path($job, 'data.8'))), '-') : 'Unattached',
                             'title' => '',
                         );
                         Database::instance()->begin();
@@ -155,7 +155,7 @@ class Controller_Form extends Controller {
                         if ($image_id && file_put_contents(DOCROOT . 'storage/' . $image_id, $content)) {
                             unset($data['mime']);
                             $data = array(
-                                'filename' => 'Reports / ' . ($job ? Arr::path($job, 'data.14') : 'Unbinded') . ' / ' . ($job ? $data['address'] : 'Unbinded') . ' / ' . $data['filename'],
+                                'filename' => 'Reports / ' . ($job ? Arr::path($job, 'data.14') : 'Unattached') . ' / ' . ($job ? $data['address'] : 'Unattached') . ' / ' . $data['filename'],
                                 'uploaded' => time(),
                                 'user_id' => User::current('id'),
                                 'job_id' => $job ? $job['_id'] : 0,
@@ -176,7 +176,7 @@ class Controller_Form extends Controller {
                         break;
 
                     case Form::FORM_TYPE_COMMON:
-                        $url = URL::base() . 'form/unbinded';
+                        $url = URL::base() . 'form/unattached';
                         break;
                 }
                 die(json_encode(array('success' => true, 'url' => $url)));
@@ -233,7 +233,7 @@ class Controller_Form extends Controller {
         )));
     }
 
-    public function action_unbinded() {
+    public function action_unattached() {
         $query = array('type' => Form::FORM_TYPE_COMMON);
 
         $forms = array();
@@ -259,14 +259,14 @@ class Controller_Form extends Controller {
         if ($companies)
             $companies = DB::select('id', 'name')->from('companies')->where('id', 'IN', array_keys($companies))->execute()->as_array('id', 'name');
 
-        $files = DB::select()->from('attachments')->where('fda_id', '=', 'Unbinded')->order_by('uploaded', 'DESC');
+        $files = DB::select()->from('attachments')->where('fda_id', '=', 'Unattached')->order_by('uploaded', 'DESC');
 
         if (isset($query['company']))
             $files->and_where('user_id', 'IN', DB::select('id')->from('users')->where('company_id', 'IN', $query['company']['$in']));
 
         $files = $files->execute()->as_array();
 
-        $view = View::factory('Forms/Unbinded')
+        $view = View::factory('Forms/Unattached')
             ->bind('forms', $forms)
             ->bind('companies', $companies)
             ->bind('list', $list)
