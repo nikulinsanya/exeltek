@@ -4,13 +4,49 @@ class Controller_Search_Search extends Controller {
 
     public function action_index()
     {
-        if (!$_GET && Session::instance()->get('search-settings')) {
-            $this->redirect(URL::query(Session::instance()->get('search-settings'), false));
-        } elseif ($_GET)
-            if (isset($_GET['clear']))
+        define('JOB_STATUS_COLUMN', 'data.44');
+
+        if (!rand(0, 1000)) {
+            Database_Mongo::collection('search')->remove(array('expires' => array('$lt' => time())));
+        }
+
+        if ($_POST) {
+            $data = array(
+                'request' => $_POST,
+                'expires' => time() + 3600,
+            );
+            Database_Mongo::collection('search')->insert($data);
+            $search_id = strval($data['_id']);
+            Session::instance()->set('search-settings', $search_id);
+
+            header('Content-type: application/json');
+            die(json_encode(array('success' => true, 'id' => $search_id)));
+        } elseif (!$_GET && Session::instance()->get('search-settings')) {
+            $params = json_decode(Session::instance()->get('search-settings'));
+            if ($params !== NULL) {
+                $data = array(
+                    'request' => $params,
+                    'expires' => time() + 3600,
+                );
+                Database_Mongo::collection('search')->insert($data);
+                $search_id = strval($data['_id']);
+                Session::instance()->set('search-settings', $search_id);
+            } else $search_id = Session::instance()->get('search-settings');
+
+            if ($search_id)
+                $this->redirect('search?id=' . $search_id);
+        } elseif (isset($_GET['clear'])) {
+            Session::instance()->delete('search-settings');
+            $_GET = array();
+        } elseif (isset($_GET['id'])) {
+            $data = Database_Mongo::collection('search')->findOne(array('_id' => new MongoId($_GET['id'])));
+
+            if ($data) {
+                Session::instance()->set('search-settings', $_GET['id']);
+                $_GET = $data['request'];
+            } else
                 Session::instance()->delete('search-settings');
-            else
-                Session::instance()->set('search-settings', $_GET);
+        }
 
         $actions = array(
             'contain',
@@ -32,8 +68,6 @@ class Controller_Search_Search extends Controller {
             '>=' => '$gte',
             '<>' => '$ne',
         );
-
-        define('JOB_STATUS_COLUMN', 'data.44');
 
         $columns = Columns::get_visible();
 

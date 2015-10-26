@@ -336,8 +336,9 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button class="btn btn-success"  data-dismiss="modal" id="exportTickets"><span class="glyphicon glyphicon-download"></span> Export</button>
-                        <button class="btn btn-warning"  data-dismiss="modal" id="hideModalTickets">Close</button>
+                        <button class="btn btn-info" id="showTickets"><span class="glyphicon glyphicon-th-list"></span> Show</button>
+                        <button class="btn btn-success" data-dismiss="modal" id="exportTickets"><span class="glyphicon glyphicon-download"></span> Export</button>
+                        <button class="btn btn-warning" data-dismiss="modal" id="hideModalTickets">Close</button>
                     </div>
                 </form>
             </div>
