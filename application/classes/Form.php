@@ -94,7 +94,7 @@ class Form extends Kohana_Form {
     public static $form_types = array(
         self::FORM_TYPE_TICKET => 'Ticket form',
         //self::FORM_TYPE_TICKET_GROUP => 'Group of tickets form',
-        self::FORM_TYPE_COMMON => 'Unbinded form',
+        self::FORM_TYPE_COMMON => 'Unattached form',
     );
     
     private $elements = array();
