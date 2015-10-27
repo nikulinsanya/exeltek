@@ -325,6 +325,15 @@ class Controller_Search_View extends Controller {
 
                 if ($update) {
                     Utils::calculate_financial($job);
+
+                    $status = preg_replace('/[^a-z]/', '', strtolower(Arr::path($update, array('$set', 'data.44'), '')));
+
+                    if ($status == 'built' && !Arr::path($job, 'data.263'))
+                        $update['$set']['data.263'] = time();
+
+                    if ($status == 'tested' && !Arr::path($job, 'data.264'))
+                        $update['$set']['data.264'] = time();
+
                     $update['$set']['companies'] = array_keys($companies);
 
                     $status = Arr::get($job, 'status', Enums::STATUS_UNALLOC);
