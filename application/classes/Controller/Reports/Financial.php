@@ -146,8 +146,8 @@ class Controller_Reports_Financial extends Controller {
         $partial = array();
         $full = array();
         $skip = array();
-        if (Group::current('allow_assign') && isset($_GET['approve']) && Arr::get($_GET, 'company')) {
-            $rates = Arr::get($rates, $_GET['company'], array());
+        if (Group::current('allow_assign') && isset($_GET['approve']) && Arr::get($_GET, 'company') && count($_GET['company']) == 1) {
+            $rates = Arr::get($rates, $_GET['company'][0], array());
             foreach ($submissions as $job => $list) {
                 $region = $jobs[$job]['region'];
                 $data = array();
@@ -203,11 +203,12 @@ class Controller_Reports_Financial extends Controller {
                 )));
             }
 
+            $count = count($jobs);
             $jobs = Database_Mongo::collection('jobs')->find(array('_id' => array('$in' => array_keys($jobs))));
             foreach ($jobs as $job)
                 Utils::calculate_financial($job);
 
-            Messages::save(sprintf('%d/%d tickets were successfully approved.', count($full), count($jobs)), 'success');
+            Messages::save(sprintf('%d/%d tickets were successfully approved.', count($full), $count), 'success');
             if ($partial) Messages::save(sprintf('%d tickets were partially approved.', count($partial)), 'warning');
             if ($discr) Messages::save(sprintf('%d tickets contain discrepancies.', count($discr)), 'danger');
             if ($duplicates) Messages::save(sprintf('%d tickets contain duplicates.', count($duplicates)), 'danger');
@@ -394,7 +395,7 @@ class Controller_Reports_Financial extends Controller {
         }
 
         $view = View::factory("Reports/Financial")
-            ->set('approve_all', ($start > 0) && (date('m', $start) == date('m', $end)) && Arr::get($_GET, 'company') && !Arr::get($_GET, 'fin-start'))
+            ->set('approve_all', ($start > 0) && (date('m', $start) == date('m', $end)) && Arr::get($_GET, 'company') && count($_GET['company']) == 1 && !Arr::get($_GET, 'fin-start'))
             ->bind('companies', $companies)
             ->bind('submissions', $submissions)
             ->bind('discrepancies', $discrepancies)
