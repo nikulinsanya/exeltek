@@ -963,3 +963,18 @@ button>span.glyphicon{
 #payment-buttons{
     margin-top: 10px;
 }
+.export-options{
+    padding: 0px;
+}
+
+.export-options button{
+    width: 100%;
+    margin-bottom: 0;
+    background: #fff;
+    border: none;
+    text-align: left;
+    padding: 5px 0px 5px 3px;
+}
+.export-options button:hover{
+    background: #ccc;
+}

@@ -131,3 +131,7 @@ table.table.not-bordered>tbody>tr>td {
 .modal-body .row{
     margin-bottom: 10px;
 }
+
+.modal-header{
+    font-size: 25px;
+}
