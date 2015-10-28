@@ -51,10 +51,10 @@ class Controller_Test extends Controller {
         $update = array();
 
         foreach ($built as $key => $value)
-            $update[$key]['$set']['data.263'] = $value;
+            $update[$key]['$set']['data.264'] = $value;
 
         foreach ($tested as $key => $value)
-            $update[$key]['$set']['data.264'] = $value;
+            $update[$key]['$set']['data.265'] = $value;
 
         foreach ($update as $key => $value)
             Database_Mongo::collection('jobs')->update(array('_id' => $key), $value);
