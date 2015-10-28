@@ -604,6 +604,14 @@ window.formbuilder = (function() {
 })(window);
 
 $(function () {
+    $('#form-type').on('change',function(e){
+        if($(this).val() != 1){
+            $('td[data-type="ticket"]').html('').attr('data-type','label');
+            $('#fieldType').find('option[value="ticket"]').attr('disabled','disabled');
+        }else{
+            $('#fieldType').find('option[value="ticket"]').removeAttr('disabled');
+        }
+    });
 
     $('.form-edit-link').click(function() {
         var id = $(this).attr('data-id');

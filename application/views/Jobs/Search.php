@@ -479,6 +479,7 @@
 <div class="col-xs-12 text-center">
 <?=$pager;?>
 </div>
+<div class="col-xs-12 text-center">
 <?php if (Group::current('allow_assign')):?>
     <div class="search-select-container">
         <?=Form::select('type', array('' => 'Please, select works type...') + $types, false, array('class' => 'form-control'))?>
@@ -487,24 +488,36 @@
         <?=Form::select('company', array('' => 'Please, select company...', -1 => 'Unassign jobs') + $companies, false, array('class' => 'form-control'))?>
     </div>
 <?php endif;?>
+</div>
 <div class="col-xs-12 search-buttons-bottom">
     <?php if (Group::current('allow_assign')):?>
-    <button type="submit" class="btn btn-warning assign-jobs">Assign jobs</button>
-    <button type="submit" class="btn btn-danger archive-jobs">Archive jobs</button>
-    <button type="submit" class="btn btn-success complete-jobs">Complete jobs</button>
-    <button type="submit" class="btn btn-primary reset-jobs">Reset jobs</button>
+    <button type="submit" class="btn btn-warning assign-jobs"><span class="glyphicon glyphicon-pushpin"></span> Assign jobs</button>
+    <button type="submit" class="btn btn-danger archive-jobs"><span class="glyphicon glyphicon-floppy-save"></span> Archive jobs</button>
+    <button type="submit" class="btn btn-success complete-jobs"><span class="glyphicon glyphicon-piggy-bank"></span> Complete jobs</button>
+    <button type="submit" class="btn btn-primary reset-jobs"><span class="glyphicon glyphicon-remove-circle"></span> Reset jobs</button>
     <button type="button" class="btn btn-success batch-jobs"><span class="glyphicon glyphicon-edit"></span>Batch Edit</button>
-    <button type="button" class="btn btn-primary export-attachments"><span class="glyphicon glyphicon-export"></span>Export Attachments</button>
     <?php endif;?>
-    <?php if (Group::current('allow_reports')):?>
-    <button type="submit" class="btn btn-info export-jobs"><span class="glyphicon glyphicon-export"></span>Export jobs</button>
-    <?php endif;?>
-    <button type="submit" class="btn btn-info export-result"><span class="glyphicon glyphicon-export"></span>Export search result</button>
-    <button type="submit" class="btn btn-info export-excel"><span class="glyphicon glyphicon-export"></span>Export search result (Excel)</button>
-    <button type="submit" class="btn btn-info export-map" id="export-map"><span class="glyphicon glyphicon-globe"></span>Export map</button>
+
+    <div class="btn-group">
+        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="glyphicon glyphicon-export"></span> Export options <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu export-options">
+            <?php if (Group::current('allow_assign')):?>
+                <li><button type="button" class="export-attachments"><span class="glyphicon glyphicon-paperclip"></span> Export Attachments</button></li>
+            <?php endif;?>
+            <?php if (Group::current('allow_reports')):?>
+                <li><button type="submit" class="export-jobs"><span class="glyphicon glyphicon-list-alt"></span>Export jobs</button></li>
+            <?php endif;?>
+            <li><button type="submit" class="export-result"><span class="glyphicon glyphicon-search"></span>Export search result</button></li>
+            <li><button type="submit" class="export-excel"><span class="glyphicon glyphicon-file"></span>Export to Excel</button></li>
+            <li><button type="submit" class="export-map" id="export-map"><span class="glyphicon glyphicon-globe"></span>Export map</button></li>
+        </ul>
+    </div>
     <?php if (Group::current('allow_finance') && Group::current('show_all_jobs')):?>
-        <button type="submit" class="btn btn-success" id="payment-jobs"><span class="glyphicon glyphicon-usd"></span>Add payment</button>
+                <button type="submit" class="btn btn-success" id="payment-jobs"><span class="glyphicon glyphicon-usd"></span>Add payment</button
     <?php endif;?>
+
 </div>
 <div class="clearfix">&nbsp;</div>
 

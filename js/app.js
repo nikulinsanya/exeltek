@@ -716,6 +716,16 @@ $(function () {
         $('#upload-dialog').modal({backdrop: 'static', keyboard: false});
     });
 
+    $('#search-table').on('change','input[type="checkbox"]', checkAbility);
+    function checkAbility(){
+        if($('#search-table td.checkbox-container input[type="checkbox"]:checked').length){
+            $('.search-buttons-bottom button').removeAttr('disabled');
+        }else{
+            $('.search-buttons-bottom button').attr('disabled','disabled');
+        }
+    }
+    checkAbility();
+
     $('#export-map').on('click',function (e) {
         if(!$('#search-table').find('[type="checkbox"]:checked').length){
             e.preventDefault();
@@ -738,6 +748,7 @@ $(function () {
 
         document.location = utils.baseUrl() + 'attachments/tickets?id=' + ids.toString();
     });
+
 
     $('#payment-jobs').click(function() {
         $(this).parents('form').attr('action', './search/payment');

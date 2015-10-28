@@ -6,6 +6,61 @@ class Controller_Test extends Controller {
         if (!Group::current('is_admin')) throw new HTTP_Exception_403('Forbidden');
     }
 
+    public function action_indexes() {
+        $columns = DB::select('column_id')->distinct(true)->from('group_columns')->where('search', '=', 2)->execute()->as_array(NULL, 'column_id');
+
+        foreach ($columns as $column) {
+            $index = array();
+            $type = Columns::get_type($column);
+            $name = 'data.' . $column;
+            switch ($type) {
+                case 'text':
+                    //$index[$name] = 'text';
+                    break;
+                default:
+                    $index[$name] = true;
+            }
+
+            if ($index)
+                Database_Mongo::collection('jobs')->ensureIndex($index, array('sparse' => true));
+        }
+
+        die('Done');
+    }
+
+    public function action_dates() {
+        $tested = array();
+        $built = array();
+
+        $jobs = Database_Mongo::collection('jobs')->find(array('data.44' => new MongoRegex('/.*built.*/i')), array('created' => 1));
+        foreach ($jobs as $job)
+            $built[$job['_id']] = $job['created'];
+
+        $jobs = Database_Mongo::collection('jobs')->find(array('data.44' => new MongoRegex('/.*tested.*/i')), array('created' => 1));
+        foreach ($jobs as $job)
+            $built[$job['_id']] = $tested[$job['_id']] = $job['created'];
+
+        $jobs = Database_Mongo::collection('archive')->find(array('data.44.new_value' => new MongoRegex('/.*built.*/i')), array('job_key' => 1, 'update_time' => 1));
+        foreach ($jobs as $job)
+            if (!isset($built[$job['job_key']]) || $built[$job['job_key']] > $job['update_time']) $built[$job['job_key']] = $job['update_time'];
+
+        $jobs = Database_Mongo::collection('archive')->find(array('data.44.new_value' => new MongoRegex('/.*tested.*/i')), array('job_key' => 1, 'update_time' => 1));
+        foreach ($jobs as $job)
+            if (!isset($tested[$job['job_key']]) || $tested[$job['job_key']] > $job['update_time']) $tested[$job['job_key']] = $job['update_time'];
+
+        $update = array();
+
+        foreach ($built as $key => $value)
+            $update[$key]['$set']['data.263'] = $value;
+
+        foreach ($tested as $key => $value)
+            $update[$key]['$set']['data.264'] = $value;
+
+        foreach ($update as $key => $value)
+            Database_Mongo::collection('jobs')->update(array('_id' => $key), $value);
+        die('Done');
+    }
+
     public function action_index() {
         header('Content-type: text/plain');
 
