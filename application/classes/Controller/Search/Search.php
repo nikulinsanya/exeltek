@@ -247,7 +247,22 @@ class Controller_Search_Search extends Controller {
 
         Pager::$count = $jobs->count($query);
 
-        $result = $jobs->find($query);
+        $columns = array(
+            'region' => 1,
+            'created' => 1,
+            'last_update' => 1,
+            'last_submit' => 1,
+            'companies' => 1,
+            'ex' => 1,
+        );
+
+        foreach (Columns::$settings as $key => $value)
+            $columns[$key] = 1;
+
+        foreach (Columns::get_search() as $column => $type)
+            $columns['data.' . $column] = 1;
+
+        $result = $jobs->find($query, $columns);
 
         $sort = Arr::get($_GET, 'sort');
         if (is_array($sort)) {
@@ -321,7 +336,7 @@ class Controller_Search_Search extends Controller {
                 $submissions[$value['_id']] = $value['count'];
         }
 
-        $result = Database_Mongo::collection('forms')->find(array(), array('_id', 'type', 'name'));
+        $result = Database_Mongo::collection('forms')->find(array(), array('_id' => 1, 'type' => 1, 'name' => 1));
         $forms = array();
         foreach ($result as $form)
             $forms[$form['type']][strval($form['_id'])] = $form['name'];

@@ -47,7 +47,7 @@ class Controller_Security_Columns extends Controller {
                     ':state' => $state,
                 )
             )->compile())->execute();
-        
+
         die(json_encode(array('success' => true)));
     }
     
@@ -69,7 +69,15 @@ class Controller_Security_Columns extends Controller {
                     ':state' => $state,
                 )
             )->compile())->execute();
-        
+
+        if ($state) {
+            if (Columns::get_type($id) != 'text')
+                Database_Mongo::collection('jobs')->ensureIndex(array('data.' . $id => true), array('sparse' => true));
+        } else {
+            if (!DB::select('group_id')->from('group_columns')->where('column_id', '=', $id)->and_where('search', '>', 0)->execute()->get('group_id'))
+                Database_Mongo::collection('jobs')->deleteIndex(array('data.' . $id => true));
+        }
+
         die(json_encode(array('success' => true)));
     }
 

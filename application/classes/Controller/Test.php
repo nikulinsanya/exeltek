@@ -6,6 +6,29 @@ class Controller_Test extends Controller {
         if (!Group::current('is_admin')) throw new HTTP_Exception_403('Forbidden');
     }
 
+    public function action_indexes() {
+        $columns = DB::select('column_id')->distinct(true)->from('group_columns')->where('search', '>', 0)->execute()->as_array(NULL, 'column_id');
+
+        foreach ($columns as $column) {
+            $index = array();
+            $type = Columns::get_type($column);
+            $name = 'data.' . $column;
+            switch ($type) {
+                case 'text':
+                    //$index[$name] = 'text';
+                    break;
+                default:
+                    $index[$name] = true;
+            }
+
+            if ($index)
+                Database_Mongo::collection('jobs')->ensureIndex($index, array('sparse' => true));
+        }
+
+        print_r($columns);
+        die();
+    }
+
     public function action_index() {
         header('Content-type: text/plain');
 
