@@ -953,6 +953,9 @@ $(function () {
     var ticket_id_unfocus = function() {
         var target = $(this).next();
         var separator = target.attr('data-separator');
+        if(!separator){
+            return false;
+        }
         var val = $(this).val()
             .replace(/\n/g, separator);
 
@@ -973,7 +976,7 @@ $(function () {
         }
     }
     
-    $('.multiline').focus(function() {
+    $('.multiline:not(".datepicker")').focus(function() {
         var separator = $(this).attr('data-separator');
         $('form').prop('hold', true);
         var val = $(this).val();
