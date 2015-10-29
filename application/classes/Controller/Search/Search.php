@@ -247,7 +247,7 @@ class Controller_Search_Search extends Controller {
 
         Pager::$count = $jobs->count($query);
 
-        $columns = array(
+        $show = array(
             'region' => 1,
             'created' => 1,
             'last_update' => 1,
@@ -257,12 +257,12 @@ class Controller_Search_Search extends Controller {
         );
 
         foreach (Columns::$settings as $key => $value)
-            $columns[$key] = 1;
+            $show[$key] = 1;
 
         foreach (Columns::get_search() as $column => $type)
-            $columns['data.' . $column] = 1;
+            $show['data.' . $column] = 1;
 
-        $result = $jobs->find($query, $columns);
+        $result = $jobs->find($query, $show);
 
         $sort = Arr::get($_GET, 'sort');
         if (is_array($sort)) {
