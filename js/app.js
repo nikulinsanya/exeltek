@@ -691,6 +691,35 @@ $(function () {
             ul.prev().click();
         };
     });
+
+    $('.date-table-filter').click(function() {
+        var ul = $(this).parent().parent();
+        var filter = $('#filter-form .add-filter').parents('.filter-row'),
+            id = ul.attr('data-id'),
+            endValue = $(this).parent().parent().find('input.end-date').val(),
+            startValue = $(this).parent().parent().find('input.start-date').val();
+
+        $('#filter-form').parents('form').attr('hold', '1');
+        if(startValue){
+            add(startValue,id,5);
+        }
+        if(endValue){
+            add(endValue,id,4);
+        }
+
+        filter.parents('form').attr('hold', '').submit();
+        function add (value,id, action) {
+            addFilterRow(
+                $('#filter-form .add-filter'),
+                {
+                    'field-select':id,
+                    'action-select':action,
+                    'action-value':value
+                }
+            );
+            ul.prev().click();
+        };
+    });
     
     $('.date-filter').click(function() {
         $(this).parent().parent().find('input').each(function(i, e) {
