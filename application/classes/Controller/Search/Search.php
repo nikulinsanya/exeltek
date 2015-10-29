@@ -249,9 +249,11 @@ class Controller_Search_Search extends Controller {
 
         $show = array(
             'region' => 1,
+            'status' => 1,
             'created' => 1,
             'last_update' => 1,
             'last_submit' => 1,
+            'assigned' => 1,
             'companies' => 1,
             'ex' => 1,
         );
