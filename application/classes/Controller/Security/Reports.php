@@ -34,8 +34,6 @@ class Controller_Security_Reports extends Controller
     }
 
     public function action_update() {
-        Database_Mongo::collection('api')->insert($_REQUEST);
-
         $id = Arr::get($_REQUEST, 'id');
 
         $name = Arr::get($_REQUEST, 'name');
