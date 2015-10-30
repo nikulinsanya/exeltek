@@ -28,7 +28,7 @@ $(function () {
             success:function(data){
                 $('#table-cell').val('');
                 $('#table-header').html('');
-                $('#table-list').append('<li><a class="edit-table-item" href="#" data-id="'+data.id+'">'+name+'</a></li>')
+                $('#table-list').append('<li class="edit-table-item" href="#" data-id="'+data.id+'">'+name+'</li>')
                 $('#configTable').modal('hide');
             },
             error: function(data){
