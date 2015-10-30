@@ -3,7 +3,7 @@
 <h2>Table list</h2>
 <ul id="table-list">
     <?php foreach ($reports as $id => $name):?>
-    <li><a class="edit-table-item" href="#" data-id="<?=$id?>"><?=$name?></a></li>
+    <li class="edit-table-item" href="#" data-id="<?=$id?>"><?=$name?></li>
     <?php endforeach;?>
 </ul>
 <?php endif;?>
@@ -34,10 +34,7 @@
                         <input type="button" class="btn btn-info" value="Add cell" id="add-cell">
                     </div>
                 </div>
-                <table class="table table-responsive table-bordered" id="table-preview">
-                    <tr id="table-header">
-
-                    </tr>
+                <table class="table table-responsive table-bordered" id="table-header">
                 </table>
             </div>
 
