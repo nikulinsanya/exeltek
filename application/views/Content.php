@@ -140,6 +140,7 @@
                     <li class="<?=Request::current()->directory() == 'Security' && Request::current()->controller() == 'Rates' ? 'active' : ''?>"><a href="<?=URL::base()?>security/rates">Rates</a></li>
                     <li class="<?=Request::current()->directory() == 'Security' && Request::current()->controller() == 'Columns' ? 'active' : ''?>"><a href="<?=URL::base()?>security/columns">Columns</a></li>
                     <li class="<?=Request::current()->directory() == '' && Request::current()->controller() == 'Form' ? 'active' : ''?>"><a href="<?=URL::base()?>form">Forms</a></li>
+                    <li class="<?=Request::current()->directory() == 'Security' && Request::current()->controller() == 'Reports' ? 'active' : ''?>"><a href="<?=URL::base()?>security/reports">Reports</a></li>
                 </ul>
             </li>
             <?php endif;?>
