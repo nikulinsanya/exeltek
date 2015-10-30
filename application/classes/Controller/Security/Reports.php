@@ -49,6 +49,7 @@ class Controller_Security_Reports extends Controller
 
         Database::instance()->commit();
 
+        header('Content-type: application/json');
         die(json_encode(array('success' => true, 'id' => $id)));
     }
 
