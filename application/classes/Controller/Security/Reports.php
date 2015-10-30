@@ -20,7 +20,7 @@ class Controller_Security_Reports extends Controller
     }
 
     public function action_load() {
-        $id = Arr::get($_GET['id']);
+        $id = Arr::get($_GET, 'id');
 
         $report = DB::select('id', 'name')->from('reports')->execute()->current();
 

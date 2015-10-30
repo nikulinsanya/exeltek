@@ -42,6 +42,7 @@
             </div>
 
             <div class="modal-footer" class="tableRowButtons">
+                <input type="hidden" id="table-id" />
                 <button class="btn btn-warning" data-dismiss="modal">Close</button>
                 <button class="btn btn-success" id="save-form">Save form</button>
             </div>

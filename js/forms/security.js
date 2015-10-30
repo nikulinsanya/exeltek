@@ -1,11 +1,13 @@
 $(function () {
     $('#generate-report').on('click',function(e){
+        $('#table-name').val('');
         $('#configTable').modal('show');
+        $('#table-id').val('');
     });
 
     $('#save-form').on('click',function(e){
         var data=[],
-            id = false,
+            id = $('#table-id').val(),
             guid = utils.guid(),
             obj,
             name = $('#table-name').val();
@@ -13,6 +15,7 @@ $(function () {
             alert('Table name is empty.');
             return false;
         }
+
         $('#table-header th').each(function(){
             obj = {};
             obj[guid] = $(this).text();
@@ -23,9 +26,11 @@ $(function () {
             url: utils.baseUrl() +'security/reports/update?'+(id ? 'id='+id+'&' : '')+'name='+name,
             type:'POST',
             data:data,
-            success:function(){
+            dataType:'JSON',
+            success:function(data){
                 $('#table-cell').val('');
                 $('#table-header').html('');
+                $('#table-list').append('<li><a class="edit-table-item" href="#" data-id="'+data.id+'">'+name+'</a></li>')
                 $('#configTable').modal('hide');
             },
             error:function(){
@@ -66,8 +71,12 @@ $(function () {
         $.ajax({
             type:'get',
             url: utils.baseUrl() + 'security/reports/load?id='+id,
+            dataType:'json',
             success:function(data){
-                debugger;
+                console.log(data);
+
+                $('#table-id').val(data.id);
+                $('#table-name').val(data.name);
                 $('#configTable').modal('show');
             }
         });
