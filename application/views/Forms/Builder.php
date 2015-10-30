@@ -185,6 +185,21 @@
                             </select><a class="btn btn-danger btn-xs" id="remove-option">Remove option</a>
                         </div>
                     </div>
+<!--                    <div class="row" class="placeholder-type-config">-->
+<!--                        <div class="col-md-4" >-->
+<!--                            <span class="form-label">Destination</span>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-8" >-->
+<!--                            <select id="destination">-->
+<!--                                <option value="label">1</option>-->
+<!--                                <option value="text">2</option>-->
+<!--                                <option value="number">3</option>-->
+<!--                                <option value="float">4</option>-->
+<!--                                <option value="date">5</option>-->
+<!--                                <option value="ticket">6</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
             </div>
             <div class="modal-footer" class="tableRowButtons">
