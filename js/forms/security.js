@@ -3,6 +3,7 @@ $(function () {
         $('#table-name').val('');
         $('#configTable').modal('show');
         $('#table-id').val('');
+        $('#table-header').html('');
     });
 
     $('#save-form').on('click',function(e){
@@ -45,15 +46,15 @@ $(function () {
     $('#add-cell').on('click',function(e){
         var html = [];
         html.push(
-            '<th class="editable-cell">',
+            '<tr><th class="editable-cell">',
             $('#table-cell').val(),
-            '</th>'
+            '</th></tr>'
         );
         $('#table-header').append(html.join(''));
         $('#table-cell').val('');
     });
 
-    $('#table-preview').on('click','.editable-cell',function(e){
+    $('#table-header').on('click','.editable-cell',function(e){
         e.preventDefault();
         var text = $(this).text();
         $(this).html('<input type="text" value="'+text+'" class="editable-input">');
@@ -61,7 +62,7 @@ $(function () {
 
     });
 
-    $('#table-preview').on('blur','.editable-input',function(e){
+    $('#table-header').on('blur','.editable-input',function(e){
         e.preventDefault();
         var parent = $(this).parent();
         parent.html($(this).val());
@@ -79,11 +80,11 @@ $(function () {
             success:function(data){
                 for(var i in data.data){
                     html.push(
-                        '<th class="editable-cell" data-guid="',
+                        '<tr><th class="editable-cell" data-guid="',
                         i,
                         '">',
                         data.data[i],
-                        '</th>'
+                        '</th></tr>'
                     )
                 }
                 $('#table-header').html(html.join(''));

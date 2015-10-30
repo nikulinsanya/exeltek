@@ -34,10 +34,7 @@
                         <input type="button" class="btn btn-info" value="Add cell" id="add-cell">
                     </div>
                 </div>
-                <table class="table table-responsive table-bordered" id="table-preview">
-                    <tr id="table-header">
-
-                    </tr>
+                <table class="table table-responsive table-bordered" id="table-header">
                 </table>
             </div>
 
