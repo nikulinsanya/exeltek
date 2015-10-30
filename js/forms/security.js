@@ -6,24 +6,22 @@ $(function () {
     });
 
     $('#save-form').on('click',function(e){
-        var data=[],
-            id = $('#table-id').val(),
-            guid = utils.guid(),
-            obj,
+        var id = $('#table-id').val(),
             name = $('#table-name').val();
+
         if(!name){
             alert('Table name is empty.');
             return false;
         }
 
+        var data = {id: id, name: name, data: {} };
+
         $('#table-header th').each(function(){
-            obj = {};
-            obj[guid] = $(this).text();
-            data.push(obj);
+            data.data[utils.guid()] = $(this).text();
         });
 
         $.ajax({
-            url: utils.baseUrl() +'security/reports/update?'+(id ? 'id='+id+'&' : '')+'name='+name,
+            url: utils.baseUrl() +'security/reports/update',
             type:'POST',
             data:data,
             dataType:'JSON',
