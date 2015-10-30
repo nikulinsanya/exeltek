@@ -181,6 +181,8 @@ window.formbuilder = (function() {
                     break;
             }
 
+            $selectedCell.attr('data-destination',$('#destination').val());
+
             $('#addField').modal('hide');
             $('.selected-cell').removeClass('selected-cell');
         },
@@ -219,7 +221,7 @@ window.formbuilder = (function() {
                 tables = container.find('table'),
                 obj, trs,tds, input,
                 c, r,
-                item,
+                destination,
                 data;
 
             tables.each(function(){
@@ -234,13 +236,16 @@ window.formbuilder = (function() {
                     data = [];
                     $(this).find('td').not('.tmp-cell').each(function(){
                         value = $(this).attr('data-value');
+                        destination = $(this).attr('data-destination');
                         input = {
                             type : $(this).attr('data-type'),
                             placeholder: $(this).attr('data-placeholder'),
                             name: ['label','ticket'].indexOf($(this).attr('data-type')) == -1 ?
                                 $(this).attr('data-name') || self.guid():
                                 '',
-                            value:value
+                            value:value,
+                            destination: destination
+
                         };
                         if ($(this).attr('data-type') == 'options'){
                             input.options = $(this).find('option').map(function(){return $(this).val()}).toArray().join(',')
@@ -326,7 +331,9 @@ window.formbuilder = (function() {
                 case 'label':
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
-                        '" data-placeholder="',element.placeholder,'"  data-value="',element.value,'">',
+                        '" data-placeholder="',element.placeholder,'"  data-value="',element.value,'" data-destination="',
+                        element.placeholder,
+                        '">',
                         '<span>',element.placeholder,'</span>',
                         '<input type="hidden" value="',element.placeholder,'"></input>',
                         '</td>'
@@ -335,7 +342,9 @@ window.formbuilder = (function() {
                 case 'text':
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
+                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
+                        element.placeholder,
+                        '">',
                         '<input name="',element.name,'" type="text" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
                     );
@@ -343,7 +352,9 @@ window.formbuilder = (function() {
                 case 'number':
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
+                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
+                        element.placeholder,
+                        '">',
                         '<input name="',element.name,'" type="number" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
                     );
@@ -351,7 +362,9 @@ window.formbuilder = (function() {
                 case 'float':
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
+                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
+                        element.placeholder,
+                        '">',
                         '<input name="',element.name,'" step="0.01" type="number" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
                     );
@@ -359,7 +372,9 @@ window.formbuilder = (function() {
                 case 'date':
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
+                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
+                        element.placeholder,
+                        '">',
                         '<input name="',element.name,'" type="text" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
                     );
@@ -367,7 +382,9 @@ window.formbuilder = (function() {
                 case 'ticket':
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
-                        '" data-placeholder="',element.placeholder,'" data-value="',element.value,'">',
+                        '" data-placeholder="',element.placeholder,'" data-value="',element.value,'" data-destination="',
+                        element.placeholder,
+                        '">',
                         '<span>TICKETFIELD',element.placeholder,'</span>',
                         '<input type="hidden" value="',element.value,'"></input>',
                         '</td>'
@@ -376,7 +393,9 @@ window.formbuilder = (function() {
                 case 'signature':
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
+                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
+                        element.placeholder,
+                        '">',
                         '<canvas width="200" height="100"></canvas>',
                         '<input name="',element.name,'" type="hidden" value="',element.value,'"></input>',
                         '</td>'
@@ -396,7 +415,9 @@ window.formbuilder = (function() {
                     }
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'">',
+                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
+                        element.placeholder,
+                        '">',
                         '<select name="',element.name,'">',
                        options.join(''),
                         '</select>',
