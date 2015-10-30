@@ -10,8 +10,11 @@ class Controller_Form extends Controller {
         foreach ($result as $form)
             $forms[$form['type']][strval($form['_id'])] = $form['name'];
 
+        $reports = DB::select('id', 'name')->from('reports')->execute()->as_array('id', 'name');
+
         $view = View::factory('Forms/Builder')
-            ->bind('forms', $forms);
+            ->bind('forms', $forms)
+            ->bind('reports', $reports);
 
         $this->response->body($view);
     }
@@ -204,6 +207,7 @@ class Controller_Form extends Controller {
         $form = array(
             'type' => $type,
             'name' => $name,
+            'report' => intval(Arr::get($_GET, 'report')),
             'data' => $data,
         );
 
@@ -229,6 +233,7 @@ class Controller_Form extends Controller {
             'success' => true,
             'type' => $form['type'],
             'name' => $form['name'],
+            'report' => Arr::get($form, 'report'),
             'data' => $form['data'],
         )));
     }

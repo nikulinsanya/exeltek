@@ -202,7 +202,7 @@ window.formbuilder = (function() {
                 id = $('#form-builder').attr('data-id');
 
             return $.ajax({
-                url : utils.baseUrl() + 'form/save?id=' + id + '&type=' + $('#form-type').val() + '&name=' + encodeURIComponent($('#form-name').val()),
+                url : utils.baseUrl() + 'form/save?id=' + id + '&type=' + $('#form-type').val() + '&report=' + $('#form-report').val() + '&name=' + encodeURIComponent($('#form-name').val()),
                 type: 'POST',
                 data: JSON.stringify(json),
                 success: function(){
@@ -642,6 +642,7 @@ $(function () {
             $('#form-builder').attr('data-id', '');
             $('#form-name').val('');
             $('#form-type').val('');
+            $('#form-report').val('');
             formbuilder.initForm('#form-builder-container');
             $('#form-builder').removeClass('hidden');
         } else {
@@ -649,6 +650,7 @@ $(function () {
                 $('#form-builder').attr('data-id', id);
                 $('#form-name').val(data.name);
                 $('#form-type').val(data.type);
+                $('#form-report').val(data.report);
                 formbuilder.initForm('#form-builder-container',data.data);
                 $('#form-builder').removeClass('hidden');
             });

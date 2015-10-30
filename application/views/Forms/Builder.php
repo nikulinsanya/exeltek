@@ -27,6 +27,15 @@
         <label>Form name:</label>
         <input id="form-name" type="text" class="form-control" placeholder="Please, enter form name here" />
     </div>
+    <div>
+        <label>Report type:</label>
+        <select id="form-report" class="form-control">
+            <option value="">Please, select report type</option>
+            <?php foreach ($reports as $type => $name):?>
+                <option value="<?=$type?>"><?=$name?></option>
+            <?php endforeach;?>
+        </select>
+    </div>
 
     <div class="builderactions">
         <button class="btn btn-info add-table">Insert table</button>
