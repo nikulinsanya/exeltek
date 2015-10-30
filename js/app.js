@@ -729,7 +729,11 @@ $(function () {
     });
     
     $('.filter-clear').click(function () {
+        var custom = $(this).hasClass('date-clear');
         $(this).parent().parent().find('input').each(function(i, e) {
+            if(custom){
+                $(this).val('');
+            }
             $($(e).attr('data-target')).val('');
         });
         $('#filter-form .add-filter').parents('form').attr('hold', '').submit();
