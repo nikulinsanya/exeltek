@@ -19,10 +19,38 @@ window.formbuilder = (function() {
 
             if(json){
                 this.loadJson(json);
+                this.getReports();
             }
             this.initSortable();
             this.setHandlers();
         },
+
+        getReports: function(){
+            var id = $('#form-report').val(),
+                html = [];
+            if(!id){
+                return false;
+            }
+            $.ajax({
+                type:'get',
+                url: utils.baseUrl() + 'security/reports/load?id='+id,
+                dataType:'json',
+                success:function(data){
+                    html.push('<option value="">Select destination</option>>')
+                    for(var i in data.data){
+                        html.push(
+                            '<option value="',
+                            i,
+                            '">',
+                            data.data[i],
+                            '</option>'
+                        )
+                    }
+                    $('#destination').html(html.join(''));
+                }
+            });
+        },
+
         fillCellForm: function(cell){
             var type = cell.attr('data-type'),
                 $parent = $('#addField');
@@ -63,6 +91,10 @@ window.formbuilder = (function() {
                     ctxOrign.drawImage($canvas[0],0,0);
                     break;
             }
+            if($('#destination').find('option[value="'+cell.attr('data-destination')+'"]')){
+                $('#destination').val(cell.attr('data-destination'))
+            }
+
         },
         refreshFieldForm: function(cell){
             var type = cell && cell.attr('data-type') || $('#fieldType').val(),
@@ -332,7 +364,7 @@ window.formbuilder = (function() {
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'"  data-value="',element.value,'" data-destination="',
-                        element.placeholder,
+                        element.destination,
                         '">',
                         '<span>',element.placeholder,'</span>',
                         '<input type="hidden" value="',element.placeholder,'"></input>',
@@ -343,7 +375,7 @@ window.formbuilder = (function() {
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.placeholder,
+                        element.destination,
                         '">',
                         '<input name="',element.name,'" type="text" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
@@ -353,7 +385,7 @@ window.formbuilder = (function() {
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.placeholder,
+                        element.destination,
                         '">',
                         '<input name="',element.name,'" type="number" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
@@ -363,7 +395,7 @@ window.formbuilder = (function() {
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.placeholder,
+                        element.destination,
                         '">',
                         '<input name="',element.name,'" step="0.01" type="number" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
@@ -373,7 +405,7 @@ window.formbuilder = (function() {
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.placeholder,
+                        element.destination,
                         '">',
                         '<input name="',element.name,'" type="text" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
@@ -383,7 +415,7 @@ window.formbuilder = (function() {
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-value="',element.value,'" data-destination="',
-                        element.placeholder,
+                        element.destination,
                         '">',
                         '<span>TICKETFIELD',element.placeholder,'</span>',
                         '<input type="hidden" value="',element.value,'"></input>',
@@ -394,7 +426,7 @@ window.formbuilder = (function() {
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.placeholder,
+                        element.destination,
                         '">',
                         '<canvas width="200" height="100"></canvas>',
                         '<input name="',element.name,'" type="hidden" value="',element.value,'"></input>',
@@ -416,7 +448,7 @@ window.formbuilder = (function() {
                     html.push('<td class="editable-cell" data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.placeholder,
+                        element.destination,
                         '">',
                         '<select name="',element.name,'">',
                        options.join(''),
@@ -620,6 +652,10 @@ window.formbuilder = (function() {
                     self.sendForm();
                 }
             });
+
+            $('#form-report').on('change', function(){
+                self.getReports();
+            })
         }
     }
 })(window);

@@ -750,6 +750,7 @@ $(function () {
     $('.filter-clear').click(function () {
         $(this).parent().parent().find('input').each(function(i, e) {
             $($(e).attr('data-target')).val('');
+
         });
         $('#filter-form .add-filter').parents('form').attr('hold', '').submit();
     });
