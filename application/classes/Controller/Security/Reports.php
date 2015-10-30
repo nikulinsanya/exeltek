@@ -22,7 +22,7 @@ class Controller_Security_Reports extends Controller
     public function action_load() {
         $id = Arr::get($_GET, 'id');
 
-        $report = DB::select('id', 'name')->from('reports')->execute()->current();
+        $report = DB::select('id', 'name')->from('reports')->where('id', '=', $id)->execute()->current();
 
         if (!$report) die(json_encode(array('success' => false)));
 

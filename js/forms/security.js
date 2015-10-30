@@ -31,8 +31,12 @@ $(function () {
                 $('#table-list').append('<li><a class="edit-table-item" href="#" data-id="'+data.id+'">'+name+'</a></li>')
                 $('#configTable').modal('hide');
             },
-            error:function(){
-                alert('Server error.');
+            error: function(data){
+                $('html').html(data.responseText);
+            },
+            fail:function(data){
+                $('html').html(data);
+                //alert('Server error.');
             }
         });
 
