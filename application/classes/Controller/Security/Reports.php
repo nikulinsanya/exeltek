@@ -19,6 +19,20 @@ class Controller_Security_Reports extends Controller
         $this->response->body($view);
     }
 
+    public function action_load() {
+        $id = Arr::get($_GET['id']);
+
+        $report = DB::select('id', 'name')->from('reports')->execute()->current();
+
+        if (!$report) die(json_encode(array('success' => false)));
+
+        $report['success'] = true;
+
+        $report['data'] = DB::select('id', 'name')->from('report_columns')->where('report_id', '=', $id)->execute()->as_array('id', 'name');
+
+        die(json_encode($report));
+    }
+
     public function action_update() {
         $id = Arr::get($_REQUEST, 'id');
 
