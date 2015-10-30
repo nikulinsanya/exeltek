@@ -3,6 +3,7 @@ $(function () {
         $('#table-name').val('');
         $('#configTable').modal('show');
         $('#table-id').val('');
+        $('#table-header').html('');
     });
 
     $('#save-form').on('click',function(e){
