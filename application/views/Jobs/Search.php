@@ -335,8 +335,8 @@
             <?php if(Columns::get_type($id) == 'date'):?>
             <ul class="collapse dropdown-menu" id="filter-<?=$id?>" data-id="<?=$id?>">
                 <li class="dropdown-header">Add filter:</li>
-                <li><?=Form::input(NULL, Arr::get($_GET, 'submit-start'), array('data-target' => '#submit-start','class' => 'start-date form-control datepicker', 'placeholder' => 'Start date'))?></li>
-                <li><?=Form::input(NULL, Arr::get($_GET, 'submit-end'), array('data-target' => '#submit-end', 'class' => 'end-date form-control datepicker', 'placeholder' => 'End date'))?></li>
+                <li><?=Form::input(NULL, isset($query['data.' . $id]['$gt']) ? date('d-m-Y', $query['data.' . $id]['$gt']) : '', array('data-target' => '#submit-start','class' => 'start-date form-control datepicker', 'placeholder' => 'Start date'))?></li>
+                <li><?=Form::input(NULL, isset($query['data.' . $id]['$lte']) ? date('d-m-Y', $query['data.' . $id]['$lte']) : '', array('data-target' => '#submit-end', 'class' => 'end-date form-control datepicker', 'placeholder' => 'End date'))?></li>
                 <li class="dropdown-header buttons-row">
                     <button class="btn btn-success date-table-filter" type="button">Apply</button>
                     <button class="btn btn-warning filter-clear" type="button">Clear</button>
