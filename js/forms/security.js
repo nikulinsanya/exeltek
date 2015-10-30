@@ -17,7 +17,7 @@ $(function () {
         var data = {id: id, name: name, data: {} };
 
         $('#table-header th').each(function(){
-            data.data[utils.guid()] = $(this).text();
+            data.data[$(this).attr('data-guid') || utils.guid()] = $(this).text();
         });
 
         $.ajax({
@@ -64,15 +64,25 @@ $(function () {
     });
 
     $('#table-list').on('click','.edit-table-item',function(){
-        var id = $(this).attr('data-id');
+        var id = $(this).attr('data-id'),
+            html = [],
+            guid;
 
         $.ajax({
             type:'get',
             url: utils.baseUrl() + 'security/reports/load?id='+id,
             dataType:'json',
             success:function(data){
-                console.log(data);
-
+                for(var i in data.data){
+                    html.push(
+                        '<th class="editable-cell" data-guid="',
+                        i,
+                        '">',
+                        data.data[i],
+                        '</th>'
+                    )
+                }
+                $('#table-header').html(html.join(''));
                 $('#table-id').val(data.id);
                 $('#table-name').val(data.name);
                 $('#configTable').modal('show');
