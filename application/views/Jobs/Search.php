@@ -339,7 +339,7 @@
                 <li><?=Form::input(NULL, isset($query['data.' . $id]['$lte']) ? date('d-m-Y', $query['data.' . $id]['$lte']) : '', array('data-target' => '#submit-end', 'class' => 'end-date form-control datepicker', 'placeholder' => 'End date'))?></li>
                 <li class="dropdown-header buttons-row">
                     <button class="btn btn-success date-table-filter" type="button">Apply</button>
-                    <button class="btn btn-warning filter-clear date-clear" type="button">Clear</button>
+                    <button class="btn btn-warning date-clear" type="button">Clear</button>
                     <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-<?=$id?>">Cancel</button>
                 </li>
             </ul>

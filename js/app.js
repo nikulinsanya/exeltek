@@ -727,13 +727,28 @@ $(function () {
         });
         $('#filter-form .add-filter').parents('form').attr('hold', '').submit();
     });
-    
-    $('.filter-clear').click(function () {
-        var custom = $(this).hasClass('date-clear');
-        $(this).parent().parent().find('input').each(function(i, e) {
-            if(custom){
-                $(this).val('');
+
+    $('.date-clear').click(function () {
+        var ul = $(this).parent().parent(),
+            id = ul.attr('data-id');
+        ul.find('input').each(function(i, e) {
+            $(this).val('');
+            $($(e).attr('data-target')).val('');
+        });
+
+        $('[name="columns[]"]').each(function(){
+            if($(this).val() == id){
+                $(this).parent().parent().remove();
             }
+        });
+
+
+
+        $('#filter-form .add-filter').parents('form').attr('hold', '').submit();
+    });
+
+    $('.filter-clear').click(function () {
+        $(this).parent().parent().find('input').each(function(i, e) {
             $($(e).attr('data-target')).val('');
         });
         $('#filter-form .add-filter').parents('form').attr('hold', '').submit();
