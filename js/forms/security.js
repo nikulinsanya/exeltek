@@ -58,7 +58,19 @@ $(function () {
         e.preventDefault();
         var parent = $(this).parent();
         parent.html($(this).val());
+    });
 
+    $('#table-list').on('click','.edit-table-item',function(){
+        var id = $(this).attr('data-id');
+
+        $.ajax({
+            type:'get',
+            url: utils.baseUrl() + 'security/reports/load?id='+id,
+            success:function(data){
+                debugger;
+                $('#configTable').modal('show');
+            }
+        });
     });
 
 

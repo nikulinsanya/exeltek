@@ -1,9 +1,12 @@
 <input type="button" class="btn btn-success" value="Generate report" id="generate-report">
-<ul>
+<?php if(sizeof($reports) > 0):?>
+<h2>Table list</h2>
+<ul id="table-list">
     <?php foreach ($reports as $id => $name):?>
-    <li><a href="javascript:;" data-id="<?=$id?>"><?=$name?></a></li>
+    <li><a class="edit-table-item" href="#" data-id="<?=$id?>"><?=$name?></a></li>
     <?php endforeach;?>
 </ul>
+<?php endif;?>
 
 
 <div class="modal fade"  id="configTable" tabindex="-1" role="dialog">
