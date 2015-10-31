@@ -180,6 +180,7 @@ class Controller_Form extends Controller {
 
                             if ($report) {
                                 $report['attachment_id'] = $image_id;
+                                $report['report_id'] = intval(Arr::get($form, 'report'));
                                 Database_Mongo::collection('reports')->insert($report);
                             }
                         } else Messages::save('Error occurred during report processing... Please try again later');
