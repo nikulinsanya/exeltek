@@ -36,7 +36,7 @@ window.formbuilder = (function() {
                 url: utils.baseUrl() + 'security/reports/load?id='+id,
                 dataType:'json',
                 success:function(data){
-                    html.push('<option value="">Select destination</option>>')
+                    html.push('<option value="">Select destination</option>')
                     for(var i in data.data){
                         html.push(
                             '<option value="',
@@ -266,9 +266,14 @@ window.formbuilder = (function() {
 
                 $(this).find('tr').not('.tmp-cell').each(function(){
                     data = [];
+                    var destinations = [];
+                    $('#destination>option').each(function(i, e) {
+                        destinations[$(e).attr('value')] = 1;
+                    });
                     $(this).find('td').not('.tmp-cell').each(function(){
                         value = $(this).attr('data-value');
                         destination = $(this).attr('data-destination');
+                        if (destinations[destination] == undefined) destination = '';
                         input = {
                             type : $(this).attr('data-type'),
                             placeholder: $(this).attr('data-placeholder'),
