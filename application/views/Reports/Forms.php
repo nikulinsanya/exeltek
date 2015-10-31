@@ -7,6 +7,12 @@
         <?php endforeach;?>
     </select>
 </div>
-<table class="table">
+<div class="col-xs-12">
+<div class="well well-lg" id="attachments" style="margin-top: 10px;">
 
-</table>
+</div>
+</div>
+
+
+<link href="<?= URL::base() ?>css/forms/formbuilder.css" rel="stylesheet">
+<script src="<?= URL::base() ?>js/forms/reports.js"></script>
