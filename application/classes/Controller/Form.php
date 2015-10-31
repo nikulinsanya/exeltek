@@ -112,6 +112,16 @@ class Controller_Form extends Controller {
                     $id = strval($form['_id']);
                 }
                 if (isset($_POST['print'])) {
+                    $columns = DB::select('id')->from('report_columns')->where('report_id', '=', Arr::get($form, 'report'))->execute()->as_array('id', 'id');
+                    $report = array();
+                    if ($columns) {
+                        foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
+                            foreach ($table['data'] as $row => $cells)
+                                foreach ($cells as $cell => $input)
+                                    if (Arr::get($input, 'destination') && isset($columns[$input['destination']]))
+                                        $report[$input['destination']] = Arr::get($input, 'value');
+                    }
+
                     $view = View::factory('Forms/PDF')
                         ->bind('name', $form['name'])
                         ->bind('form', $form['data']);
@@ -167,6 +177,11 @@ class Controller_Form extends Controller {
                             DB::insert('upload_log', array_keys($data))->values(array_values($data))->execute();
                             Database::instance()->commit();
                             Database_Mongo::collection('forms-data')->remove(array('_id' => new MongoId($id)));
+
+                            if ($report) {
+                                $report['attachment_id'] = $image_id;
+                                Database_Mongo::collection('reports')->insert($report);
+                            }
                         } else Messages::save('Error occurred during report processing... Please try again later');
                     }
 
