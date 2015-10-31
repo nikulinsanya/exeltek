@@ -8,10 +8,13 @@
     </select>
 </div>
 <div class="col-xs-12">
-<div class="well well-lg" id="attachments" style="margin-top: 10px;">
+    <div id="reports" style="margin-top: 10px;"></div>
+</div>
 
+<div class="col-xs-12">
+    <div id="attachments" style="margin-top: 10px;"></div>
 </div>
-</div>
+
 
 
 <link href="<?= URL::base() ?>css/forms/formbuilder.css" rel="stylesheet">
