@@ -282,19 +282,23 @@ class Columns {
     }
     
     public static function output($value, $type, $export = false) {
-        if ($type == 'date')
-            return $value ? date('d-m-Y', $value) : '';
-        elseif ($type == 'datetime')
-            return $value ? date('d-m-Y H:i', $value) : '';
-        elseif ($type == 'float')
-            return floatval($value);
-        elseif ($type == 'int')
-            return intval($value);
-        elseif ($type == 'bool')
-            return $export ? ($value ? 1 : 0) : '<span class="glyphicon glyphicon-' . $value ? 'ok text-success' : 'remove text-danger' . '"></span>';
-        elseif ($type == 'text')
-            return $export ? $value : nl2br(HTML::chars($value));
-        else
-            return $export ? $value : HTML::chars($value);        
+        try {
+            if ($type == 'date')
+                return $value ? date('d-m-Y', $value) : '';
+            elseif ($type == 'datetime')
+                return $value ? date('d-m-Y H:i', $value) : '';
+            elseif ($type == 'float')
+                return floatval($value);
+            elseif ($type == 'int')
+                return intval($value);
+            elseif ($type == 'bool')
+                return $export ? ($value ? 1 : 0) : '<span class="glyphicon glyphicon-' . $value ? 'ok text-success' : 'remove text-danger' . '"></span>';
+            elseif ($type == 'text')
+                return $export ? $value : nl2br(HTML::chars($value));
+            else
+                return $export ? $value : HTML::chars($value);
+        } catch (Exception $e) {
+            return '';
+        }
     }
 }

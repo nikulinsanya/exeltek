@@ -11,7 +11,7 @@ $(function () {
                     for(j in data.columns){
                         html.push(
                             '<th>',
-                                data.columns[j],
+                                data.columns[j].name,
                             '</th>'
                         );
                     }

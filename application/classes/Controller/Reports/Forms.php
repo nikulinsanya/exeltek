@@ -18,23 +18,20 @@ class Controller_Reports_Forms extends Controller
         );
         $result = Database_Mongo::collection('reports')->find($query);
 
-        $attachments = array();
-
         $reports = array();
+        $columns = DB::select('id', 'name', 'type')->from('report_columns')->where('report_id', '=', $query['report_id'])->execute()->as_array('id');
         foreach ($result as $report) {
-            $report['_id'] = strval($report['_id']);
-            $reports[$report['_id']] = $report;
+            $id = strval($report['_id']);
+            $data = array(
+                'attachment' => Arr::get($report, 'attachment', 'Unknown file'),
+                'attachment_id' => Arr::get($report, 'attachment_id', 0),
+            );
+            foreach ($columns as $key => $column)
+                $data[$key] = Arr::get($report, $key) ? Columns::output($report[$key], $column['type']) : '';
 
-            $attachments[$report['attachment_id']] = 1;
+            $reports[$id] = $data;
         }
 
-        if ($attachments) {
-            $attachments = DB::select('id', 'filename')->from('attachments')->where('id', 'IN', array_keys($attachments))->execute()->as_array('id', 'filename');
-            foreach ($reports as $id => $report)
-                $reports[$id]['attachment'] = Arr::get($attachments, $report['attachment_id'], 'Unknown file');
-        }
-
-        $columns = DB::select('id', 'name')->from('report_columns')->where('report_id', '=', $query['report_id'])->execute()->as_array('id', 'name');
 
         header('Content-type: application/json');
         die(json_encode(array('success' => true, 'columns' => $columns, 'data' => $reports)));
