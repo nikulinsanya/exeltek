@@ -11,11 +11,5 @@
     <div id="reports" style="margin-top: 10px;"></div>
 </div>
 
-<div class="col-xs-12">
-    <div id="attachments" style="margin-top: 10px;"></div>
-</div>
-
-
-
 <link href="<?= URL::base() ?>css/forms/formbuilder.css" rel="stylesheet">
 <script src="<?= URL::base() ?>js/forms/reports.js"></script>
