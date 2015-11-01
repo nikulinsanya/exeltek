@@ -18,7 +18,10 @@ $(function () {
         var data = {id: id, name: name, data: {} };
 
         $('#table-header th').each(function(){
-            data.data[$(this).attr('data-guid') || utils.guid()] = $(this).text();
+            data.data[$(this).attr('data-guid') || utils.guid()] = {
+                name: $(this).text(),
+                type: $(this).attr('data-type'),
+            };
         });
 
         $.ajax({
@@ -46,7 +49,9 @@ $(function () {
     $('#add-cell').on('click',function(e){
         var html = [];
         html.push(
-            '<tr><th class="editable-cell">',
+            '<tr><th class="editable-cell" data-type="',
+            $('#cell-type').val(),
+            '">',
             $('#table-cell').val(),
             '</th></tr>'
         );
@@ -82,8 +87,10 @@ $(function () {
                     html.push(
                         '<tr><th class="editable-cell" data-guid="',
                         i,
+                        '" data-type="',
+                        data.data[i].type,
                         '">',
-                        data.data[i],
+                        data.data[i].name,
                         '</th></tr>'
                     )
                 }

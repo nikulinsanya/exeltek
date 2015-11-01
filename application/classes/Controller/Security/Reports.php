@@ -28,7 +28,7 @@ class Controller_Security_Reports extends Controller
 
         $report['success'] = true;
 
-        $report['data'] = DB::select('id', 'name')->from('report_columns')->where('report_id', '=', $id)->execute()->as_array('id', 'name');
+        $report['data'] = DB::select('id', 'name', 'type')->from('report_columns')->where('report_id', '=', $id)->execute()->as_array('id');
 
         die(json_encode($report));
     }
@@ -53,10 +53,10 @@ class Controller_Security_Reports extends Controller
         }
 
         if ($data) {
-            $query = DB::insert('report_columns', array('report_id', 'id', 'name'));
+            $query = DB::insert('report_columns', array('report_id', 'id', 'name', 'type'));
 
             foreach ($data as $key => $value)
-                $query->values(array($id, $key, $value));
+                $query->values(array($id, $key, Arr::get($value, 'name', ''), Arr::get($value, 'type', '')));
 
             $query->execute();
         }

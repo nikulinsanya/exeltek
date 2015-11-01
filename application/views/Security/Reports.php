@@ -26,7 +26,14 @@
                     <div class="row">
                     <div class="col-md-12">
                         <span class="form-label">New cell:</span>
-                        <input type="text" id="table-cell" placeholder="Header name"/>
+                        <input type="text" id="table-cell" placeholder="Column name"/>
+                        <select id="cell-type">
+                            <option value="">String (default)</option>
+                            <option value="text">Text</option>
+                            <option value="int">Integer number</option>
+                            <option value="float">Floating-point number</option>
+                            <option value="date">Date</option>
+                        </select>
                     </div>
                     </div>
                 <div class="row">
