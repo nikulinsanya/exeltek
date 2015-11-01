@@ -156,3 +156,10 @@ table.table.not-bordered>tbody>tr>td {
 #table-list li:last-of-type{
     border-bottom: 1px solid #B0B7FF;
 }
+
+.editable-cell.active a{
+    float:right;
+}
+.editable-cell.active select{
+    margin-left: 10px;
+}
