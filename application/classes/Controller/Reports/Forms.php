@@ -12,6 +12,14 @@ class Controller_Reports_Forms extends Controller
         $this->response->body($view);
     }
 
+    public function action_load() {
+        $id = intval(Arr::get($_GET, 'id'));
+        $columns = DB::select('id', 'name', 'type')->from('report_columns')->where('report_id', '=', $id)->execute()->as_array('id');
+
+        header('Content-type: application/json');
+        die(json_encode(array('success' => true, 'columns' => $columns)));
+    }
+
     public function action_search() {
         $query = array(
             'report_id' => intval(Arr::get($_GET, 'id')),
