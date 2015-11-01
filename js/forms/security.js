@@ -4,6 +4,7 @@ $(function () {
         $('#configTable').modal('show');
         $('#table-id').val('');
         $('#table-header').html('');
+        $('#configTable').attr('isnew','true');
     });
 
     $('#save-form').on('click',function(e){
@@ -20,7 +21,7 @@ $(function () {
         $('#table-header th').each(function(){
             data.data[$(this).attr('data-guid') || utils.guid()] = {
                 name: $(this).text(),
-                type: $(this).attr('data-type'),
+                type: $(this).attr('data-type')
             };
         });
 
@@ -32,8 +33,13 @@ $(function () {
             success:function(data){
                 $('#table-cell').val('');
                 $('#table-header').html('');
-                $('#table-list').append('<li class="edit-table-item" href="#" data-id="'+data.id+'">'+name+'</li>');
+                if($('#configTable').attr('isnew')){
+                    $('#configTable').removeAttr('isnew');
+                    $('#table-list').append('<li class="edit-table-item" href="#" data-id="'+data.id+'">'+name+'</li>');
+                }
+
                 $('#configTable').modal('hide');
+
             },
             error: function(data){
                 $('html').html(data.responseText);
@@ -61,16 +67,28 @@ $(function () {
 
     $('#table-header').on('click','.editable-cell',function(e){
         e.preventDefault();
-        var text = $(this).text();
-        $(this).html('<input type="text" value="'+text+'" class="editable-input">');
-        $(this).find('input').focus();
+        if(!$(this).hasClass('active')){
+            $(this).addClass('active');
+            var text = $(this).text(),
+                options = $('#cell-type').html(),
+                self = this,
+                select,
+                input,
+                button;
+            $(this).html('<input type="text" value="'+text+'" class="editable-input"><select>'+options+'</select><a class="btn btn-success">Save</a>');
+            input = $(this).find('input');
+            input.focus();
+            select = $(this).find('select');
+            select.val($(this).attr('data-type'));
+            button = $(this).find('a');
+            button.off().on('click',function(e){
+                e.preventDefault();
+                $(self).attr('data-type',select.val());
+                $(self).removeClass('active')
+                $(self).html(input.val());
+            })
+        }
 
-    });
-
-    $('#table-header').on('blur','.editable-input',function(e){
-        e.preventDefault();
-        var parent = $(this).parent();
-        parent.html($(this).val());
     });
 
     $('#table-list').on('click','.edit-table-item',function(){

@@ -40,9 +40,9 @@ window.formbuilder = (function() {
                     for(var i in data.data){
                         html.push(
                             '<option value="',
-                            i,
+                            data.data[i]['id'],
                             '">',
-                            data.data[i],
+                            data.data[i]['name'],
                             '</option>'
                         )
                     }
