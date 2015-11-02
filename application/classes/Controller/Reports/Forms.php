@@ -3,6 +3,13 @@
 class Controller_Reports_Forms extends Controller
 {
 
+    public function before() {
+        parent::before();
+
+        if (!Group::current('show_all_jobs'))
+            throw new HTTP_Exception_403('Forbidden');
+    }
+
     public function action_index() {
         $reports = DB::select()->from('reports')->execute()->as_array('id', 'name');
 
