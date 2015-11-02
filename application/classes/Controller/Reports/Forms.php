@@ -38,10 +38,10 @@ class Controller_Reports_Forms extends Controller
             $key = $column['id'];
             $type = $column['type'];
             if (isset($_POST[$key]['from']))
-                $query[$key]['$gte'] = Columns::input($_POST[$key]['from'], $type);
+                $query[$key]['$gte'] = Columns::parse($_POST[$key]['from'], $type);
 
             if (isset($_POST[$key]['to']))
-                $query[$key]['$lte'] = Columns::input($_POST[$key]['to'], $type);
+                $query[$key]['$lte'] = Columns::parse($_POST[$key]['to'], $type);
 
             if (isset($_POST[$key]['value'])) {
                 $values = explode('|', $_POST[$key]['value']);

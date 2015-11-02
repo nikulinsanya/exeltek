@@ -5,12 +5,34 @@ $(function () {
 
     $('#reports').on('click','.apply-filter',function(e){
         e.preventDefault();
+        collectFilters();
+    });
+    $('#reports').on('click','.filter-clear',function(e){
+        e.preventDefault();
+        $(this).parents('th').find('input[type="text"]').val('');
+        collectFilters();
+    });
+
+    $('#reports').on('click','.dropdown-toggle',function(e){
+        e.preventDefault();
+        $('.dropdown-menu.collapse.in').removeClass('in');
+    });
+
+    $('#filter-list').on('click','.clear-all',function(e){
+        e.preventDefault();
+        $('tr.table-header').find('input[type="text"]').val('');
+        collectFilters();
+    });
+
+
+
+
+    function collectFilters(){
         var data = {},
             obj,
             key,
-            table = $(this).parents('table').first(),
-            parent = $(this).parents('tr').first(),
-            self = $(this);
+            parent = $('.table-header'),
+            extendedList = {};
 
         parent.find('th[data-type]').each(function(){
             var th = $(this);
@@ -21,27 +43,56 @@ $(function () {
                 case 'date':
                     key = th.attr('data-guid');
                     var from = th.find('.from').val();
-                    if (from)
+                    if (from){
                         obj.from = from;
+                        extendedList[th.find('a').text().replace(/[^\w\s]/gi, '') + ' > '] = from;
+                    }
                     var to = th.find('.to').val();
-                    if (to)
+                    if (to){
                         obj.to = to;
+                        extendedList[th.find('a').text().replace(/[^\w\s]/gi, '') + ' < '] = to;
+                    }
                     break;
                 default:
                     key = th.attr('data-guid');
                     var value = th.find('.text').val();
-                    if (value)
+                    if (value){
                         obj.value = value;
+                        extendedList[th.find('a').text().replace(/[^\w\s]/gi, '') + ' contain '] = value.replace(/\|/g,' <b>or</b> ');
+                    }
                     break;
             }
-            if (obj)
-                data[key] = obj;
+
+            data[key] = obj;
 
         });
+        displayFilters(extendedList);
+
         loadItems(data).then(function(data){
             $('.dropdown-menu.collapse.in').removeClass('in');
         });
-    });
+    }
+
+    function displayFilters(data){
+        var container = $('#filter-list'),
+            i,
+            html = [];
+        if(Object.keys(data).length){
+            html.push('<h4>Filters:</h4><ul>');
+            for(i in data){
+                html.push(
+                    '<li>',
+                    '<b>',
+                    i,
+                    '</b>',
+                    data[i],
+                    '</li>')
+            }
+            html.push('</ul><a class="btn btn-danger clear-all">Clear all</a>');
+        }
+        container.html(html.join(''));
+
+    }
 
     function loadHeaders(){
         $.ajax({
@@ -119,6 +170,9 @@ $(function () {
     function initPlugins(){
         $('.multiline').focus(function() {
             var separator = $(this).attr('data-separator');
+            if(!separator){
+                return false;
+            }
             $('form').prop('hold', true);
             var val = $(this).val();
             while (val.indexOf(separator) !== -1)
@@ -128,16 +182,20 @@ $(function () {
             textarea.focus();
             $('form').prop('hold', false);
         });
-        $('.datepicker').datepicker({
-            dateFormat: 'dd-mm-yy'
+        $('.datepicker').datetimepicker({
+            format: 'DD-MM-YYYY'
         });
+
     }
 
     function ticket_id_unfocus() {
         var target = $(this).next();
         var separator = target.attr('data-separator');
-        $(this).remove();
 
+        $(this).remove();
+        if(!separator){
+            return false;
+        }
         var val = $(this).val()
             .replace(/\n/g, separator);
 

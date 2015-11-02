@@ -259,7 +259,8 @@ window.formbuilder = (function() {
             tables.each(function(){
                 obj = {
                     type:'table',
-                    style: $(this).attr('data-style'),
+                    style: $(this).attr('style'),
+                    'data-style': $(this).attr('data-style'),
                     class: $(this).attr('data-class'),
                     data:[]
                 };
@@ -320,7 +321,7 @@ window.formbuilder = (function() {
 
             switch (element.type){
                 case 'table':
-                    html.push('<div class="table-container ',this._editable ? 'user-edit' : '','"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs"><i class="glyphicon glyphicon-trash"></i></button><button class="btn btn-info config-table btn-xs"><i class="glyphicon glyphicon-cog"></i></button><table style="'+element.style+'" class="table-responsive table table-bordered editable-table '+element.class+'"><tbody class="ui-sortable">');
+                    html.push('<div class="table-container ',this._editable ? 'user-edit' : '','"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs"><i class="glyphicon glyphicon-trash"></i></button><button class="btn btn-info config-table btn-xs"><i class="glyphicon glyphicon-cog"></i></button><table data-style=\''+element['data-style']+'\' style="'+element.style+'" class="table-responsive table table-bordered editable-table '+element.class+'"><tbody class="ui-sortable">');
 
                     if(!this._editable){
                         html.push('<tr class="tmp-cell">');
@@ -548,10 +549,27 @@ window.formbuilder = (function() {
             });
             this._formContainer.on('click','.config-table',function(e){
                 var self  = this,
+                    dataStyle = $(this).parents('.table-container').find('table').attr('data-style'),
                     table = $(this).parent().find('table').first();
 
                 $('.selected-table').removeClass('selected-table');
                 table.addClass('selected-table');
+
+                if(dataStyle){
+
+                    try{
+                        dataStyle = JSON.parse(dataStyle);
+                        $('#table-border').val(dataStyle.border);
+                        $('#table-color').val(dataStyle.borderColor);
+                        if(table.hasClass('not-bordered')){
+                            $('#cells-border').val('not-bordered');
+                        }
+                    }catch(e){
+
+                    }
+
+                }
+
                 $('#configTable').modal('show');
             });
             this._formContainer.on('click','.remove-column',function(e){
@@ -641,8 +659,8 @@ window.formbuilder = (function() {
                     className = $('#cells-border').val() || '';
 
                 table
-                    .attr('data-style',style)
                     .attr('style',style)
+                    .attr('data-style',JSON.stringify({border:borderVal,borderColor:borderColor}))
                     .attr('data-class',className);
 
                 table.removeClass('not-bordered').addClass(className);
