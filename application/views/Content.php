@@ -110,6 +110,7 @@
                           <li class="<?=Request::current()->directory() == 'Reports' && Request::current()->controller() == 'Financial' ? 'active' : ''?>"><a href="<?=URL::base()?>reports/financial">Financial</a></li>
                       <?php endif;?>
                       <li class="<?=Request::current()->directory() == '' && Request::current()->controller() == 'Form' ? 'active' : ''?>"><a href="<?=URL::base()?>form/unattached">Unattached Forms</a></li>
+                      <li class="<?=Request::current()->directory() == 'Reports' && Request::current()->controller() == 'Forms' ? 'active' : ''?>"><a href="<?=URL::base()?>reports/forms">Forms Reports</a></li>
                   </ul>
               </li>
             <?php if (Group::current('allow_reports')):?>
@@ -140,6 +141,7 @@
                     <li class="<?=Request::current()->directory() == 'Security' && Request::current()->controller() == 'Rates' ? 'active' : ''?>"><a href="<?=URL::base()?>security/rates">Rates</a></li>
                     <li class="<?=Request::current()->directory() == 'Security' && Request::current()->controller() == 'Columns' ? 'active' : ''?>"><a href="<?=URL::base()?>security/columns">Columns</a></li>
                     <li class="<?=Request::current()->directory() == '' && Request::current()->controller() == 'Form' ? 'active' : ''?>"><a href="<?=URL::base()?>form">Forms</a></li>
+                    <li class="<?=Request::current()->directory() == 'Security' && Request::current()->controller() == 'Reports' ? 'active' : ''?>"><a href="<?=URL::base()?>security/reports">Reports</a></li>
                 </ul>
             </li>
             <?php endif;?>

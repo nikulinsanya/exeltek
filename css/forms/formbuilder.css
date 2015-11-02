@@ -135,3 +135,40 @@ table.table.not-bordered>tbody>tr>td {
 .modal-header{
     font-size: 25px;
 }
+
+#table-list{
+    list-style: none;
+    padding-left: 5px;
+}
+
+#table-list li{
+    background: #F9F9FF;
+    padding: 10px;
+    cursor:pointer;
+    border-top: 1px solid #B0B7FF;
+    border-left: 1px solid #B0B7FF;
+    border-right: 1px solid #B0B7FF;
+}
+#table-list li:hover{
+    background: #f4f4fa;
+}
+
+#table-list li:last-of-type{
+    border-bottom: 1px solid #B0B7FF;
+}
+
+.editable-cell.active a{
+    float:right;
+}
+.editable-cell.active select{
+    margin-left: 10px;
+}
+
+.table-header th[data-type]:hover{
+    background-color: #E4F0FF;
+    cursor: pointer;
+}
+
+.table-header th[data-type] ul{
+    padding: 10px;
+}

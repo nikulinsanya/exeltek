@@ -221,7 +221,8 @@ class Controller_Search_Search extends Controller {
                 else
                     $query['data.' . $column]['$in'] = array($value);
             } else
-                $query['data.' . $column] = array($op => $value);
+                $query['data.' . $column][$op] = $value;
+
         }
 
         foreach ($query as $key => $ops) if (substr($key, 0, 5) == 'data.' && count($ops) == 1 && key($ops) == '$eq')
@@ -355,7 +356,8 @@ class Controller_Search_Search extends Controller {
             ->bind('types', $types)
             ->bind('sort', $sort)
             ->bind('companies', $companies)
-            ->bind('forms', $forms);
+            ->bind('forms', $forms)
+            ->bind('query', $query);
         $this->response->body($view);
     }
 }

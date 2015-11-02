@@ -691,6 +691,35 @@ $(function () {
             ul.prev().click();
         };
     });
+
+    $('.date-table-filter').click(function() {
+        var ul = $(this).parent().parent();
+        var filter = $('#filter-form .add-filter').parents('.filter-row'),
+            id = ul.attr('data-id'),
+            endValue = $(this).parent().parent().find('input.end-date').val(),
+            startValue = $(this).parent().parent().find('input.start-date').val();
+
+        $('#filter-form').parents('form').attr('hold', '1');
+        if(startValue){
+            add(startValue,id,5);
+        }
+        if(endValue){
+            add(endValue,id,4);
+        }
+
+        filter.parents('form').attr('hold', '').submit();
+        function add (value,id, action) {
+            addFilterRow(
+                $('#filter-form .add-filter'),
+                {
+                    'field-select':id,
+                    'action-select':action,
+                    'action-value':value
+                }
+            );
+            ul.prev().click();
+        };
+    });
     
     $('.date-filter').click(function() {
         $(this).parent().parent().find('input').each(function(i, e) {
@@ -698,10 +727,30 @@ $(function () {
         });
         $('#filter-form .add-filter').parents('form').attr('hold', '').submit();
     });
-    
+
+    $('.date-clear').click(function () {
+        var ul = $(this).parent().parent(),
+            id = ul.attr('data-id');
+        ul.find('input').each(function(i, e) {
+            $(this).val('');
+            $($(e).attr('data-target')).val('');
+        });
+
+        $('[name="columns[]"]').each(function(){
+            if($(this).val() == id){
+                $(this).parent().parent().remove();
+            }
+        });
+
+
+
+        $('#filter-form .add-filter').parents('form').attr('hold', '').submit();
+    });
+
     $('.filter-clear').click(function () {
         $(this).parent().parent().find('input').each(function(i, e) {
             $($(e).attr('data-target')).val('');
+
         });
         $('#filter-form .add-filter').parents('form').attr('hold', '').submit();
     });
@@ -953,6 +1002,9 @@ $(function () {
     var ticket_id_unfocus = function() {
         var target = $(this).next();
         var separator = target.attr('data-separator');
+        if(!separator){
+            return false;
+        }
         var val = $(this).val()
             .replace(/\n/g, separator);
 
@@ -972,8 +1024,8 @@ $(function () {
             target.trigger('change');
         }
     }
-    
-    $('.multiline').focus(function() {
+
+    $('.multiline:not(".datepicker")').focus(function() {
         var separator = $(this).attr('data-separator');
         $('form').prop('hold', true);
         var val = $(this).val();

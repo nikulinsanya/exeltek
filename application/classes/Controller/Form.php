@@ -10,8 +10,11 @@ class Controller_Form extends Controller {
         foreach ($result as $form)
             $forms[$form['type']][strval($form['_id'])] = $form['name'];
 
+        $reports = DB::select('id', 'name')->from('reports')->execute()->as_array('id', 'name');
+
         $view = View::factory('Forms/Builder')
-            ->bind('forms', $forms);
+            ->bind('forms', $forms)
+            ->bind('reports', $reports);
 
         $this->response->body($view);
     }
@@ -109,6 +112,16 @@ class Controller_Form extends Controller {
                     $id = strval($form['_id']);
                 }
                 if (isset($_POST['print'])) {
+                    $columns = DB::select('id')->from('report_columns')->where('report_id', '=', Arr::get($form, 'report'))->execute()->as_array('id', 'id');
+                    $report = array();
+                    if ($columns) {
+                        foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
+                            foreach ($table['data'] as $row => $cells)
+                                foreach ($cells as $cell => $input)
+                                    if (Arr::get($input, 'destination') && isset($columns[$input['destination']]))
+                                        $report[$input['destination']] = Arr::get($input, 'value');
+                    }
+
                     $view = View::factory('Forms/PDF')
                         ->bind('name', $form['name'])
                         ->bind('form', $form['data']);
@@ -137,10 +150,13 @@ class Controller_Form extends Controller {
                         if ($job)
                             $job = Database_Mongo::collection('jobs')->findOne(array('_id' => $job), array('data.8' => 1, 'data.14' => 1));
 
+                        $filename = $name . ' (' . $company . ') -' . date('dmY-His') . '.pdf';
+                        $uploaded = time();
+
                         $data = array(
-                            'filename' => $name . ' (' . $company . ') -' . date('dmY-His') . '.pdf',
+                            'filename' => $filename,
                             'mime' => 'application/pdf',
-                            'uploaded' => time(),
+                            'uploaded' => $uploaded,
                             'user_id' => $form['user_id'],
                             'job_id' => $job ? $job['_id'] : 0,
                             'folder' => 'Reports',
@@ -156,7 +172,7 @@ class Controller_Form extends Controller {
                             unset($data['mime']);
                             $data = array(
                                 'filename' => 'Reports / ' . ($job ? Arr::path($job, 'data.14') : 'Unattached') . ' / ' . ($job ? $data['address'] : 'Unattached') . ' / ' . $data['filename'],
-                                'uploaded' => time(),
+                                'uploaded' => $uploaded,
                                 'user_id' => User::current('id'),
                                 'job_id' => $job ? $job['_id'] : 0,
                                 'action' => 1,
@@ -164,6 +180,21 @@ class Controller_Form extends Controller {
                             DB::insert('upload_log', array_keys($data))->values(array_values($data))->execute();
                             Database::instance()->commit();
                             Database_Mongo::collection('forms-data')->remove(array('_id' => new MongoId($id)));
+
+                            if ($report) {
+                                $data = $report;
+                                $report = array(
+                                    'report_id' => intval(Arr::get($form, 'report')),
+                                    'attachment_id' => $image_id,
+                                    'attachment' => $filename,
+                                    'uploaded' => $uploaded,
+                                );
+                                $columns = DB::select('id', 'type')->from('report_columns')->where('report_id', '=', $report['report_id'])->execute()->as_array('id', 'type');
+                                foreach ($columns as $key => $value)
+                                    $report[$key] = Arr::get($data, $key) ? Columns::parse($data[$key], $value) : '';
+
+                                Database_Mongo::collection('reports')->insert($report);
+                            }
                         } else Messages::save('Error occurred during report processing... Please try again later');
                     }
 
@@ -204,6 +235,7 @@ class Controller_Form extends Controller {
         $form = array(
             'type' => $type,
             'name' => $name,
+            'report' => intval(Arr::get($_GET, 'report')),
             'data' => $data,
         );
 
@@ -229,6 +261,7 @@ class Controller_Form extends Controller {
             'success' => true,
             'type' => $form['type'],
             'name' => $form['name'],
+            'report' => Arr::get($form, 'report'),
             'data' => $form['data'],
         )));
     }

@@ -27,6 +27,15 @@
         <label>Form name:</label>
         <input id="form-name" type="text" class="form-control" placeholder="Please, enter form name here" />
     </div>
+    <div>
+        <label>Report type:</label>
+        <select id="form-report" class="form-control">
+            <option value="">Please, select report type</option>
+            <?php foreach ($reports as $type => $name):?>
+                <option value="<?=$type?>"><?=$name?></option>
+            <?php endforeach;?>
+        </select>
+    </div>
 
     <div class="builderactions">
         <button class="btn btn-info add-table">Insert table</button>
@@ -183,6 +192,16 @@
                         <div class="col-md-8">
                             <select id="options-preview">
                             </select><a class="btn btn-danger btn-xs" id="remove-option">Remove option</a>
+                        </div>
+                    </div>
+                    <div class="row" class="placeholder-type-config">
+                        <div class="col-md-4" >
+                            <span class="form-label">Destination</span>
+                        </div>
+                        <div class="col-md-8" >
+                            <select id="destination">
+                                <option value="">None</option>
+                            </select>
                         </div>
                     </div>
                 </div>
