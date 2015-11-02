@@ -128,9 +128,10 @@ $(function () {
             textarea.focus();
             $('form').prop('hold', false);
         });
-        $('.datepicker').datepicker({
-            dateFormat: 'dd-mm-yy'
+        $('.datepicker').datetimepicker({
+            format: 'DD-MM-YYYY'
         });
+
     }
 
     function ticket_id_unfocus() {
