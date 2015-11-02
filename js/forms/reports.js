@@ -58,7 +58,7 @@ $(function () {
                     var value = th.find('.text').val();
                     if (value){
                         obj.value = value;
-                        extendedList[th.find('a').text().replace(/[^\w\s]/gi, '') + ' contain '] = value;
+                        extendedList[th.find('a').text().replace(/[^\w\s]/gi, '') + ' contain '] = value.replace(/\|/g,' <b>or</b> ');
                     }
                     break;
             }
