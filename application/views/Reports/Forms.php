@@ -30,7 +30,7 @@
     <div id="textfilter">
         <ul class="dropdown-menu collapse">
             <li>
-                <input type="text" class="text form-control multiline" placeholder="Contain text"/>
+                <input type="text" class="text form-control multiline" data-separator="|" placeholder="Contain text"/>
             </li>
             <li class="dropdown-header buttons-row">
                 <button class="btn btn-success apply-filter dropdown-toggle" type="button">Apply</button>
