@@ -134,9 +134,8 @@ $(function () {
     function ticket_id_unfocus() {
         var target = $(this).next();
         var separator = target.attr('data-separator');
-        if(!separator){
-            return false;
-        }
+        $(this).remove();
+
         var val = $(this).val()
             .replace(/\n/g, separator);
 
@@ -150,7 +149,6 @@ $(function () {
             val = val.substring(0, val.length - separator.length);
 
         target.show();
-        $(this).remove();
         if (target.val() != val) {
             target.val(val);
             target.trigger('change');
