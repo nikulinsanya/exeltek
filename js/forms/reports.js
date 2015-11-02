@@ -5,7 +5,7 @@ $(function () {
 
     $('#reports').on('click','.apply-filter',function(e){
         e.preventDefault();
-        var data = [],
+        var data = {},
             obj,
             key,
             table = $(this).parents('table').first(),
@@ -14,26 +14,28 @@ $(function () {
 
         parent.find('th[data-type]').each(function(){
             var th = $(this);
+            obj = {};
             switch (th.attr('data-type')){
                 case 'float':
                 case 'number':
                 case 'date':
                     key = th.attr('data-guid');
-                    obj = {};
-                    obj[key] = {
-                        from:th.find('.from').val(),
-                        to:th.find('.to').val()
-                    }
+                    var from = th.find('.from').val();
+                    if (from)
+                        obj.from = from;
+                    var to = th.find('.to').val();
+                    if (to)
+                        obj.to = to;
                     break;
                 default:
                     key = th.attr('data-guid');
-                    obj = {};
-                    obj[key] = {
-                        value:th.find('.text').val()
-                    }
+                    var value = th.find('.text').val();
+                    if (value)
+                        obj.value = value;
                     break;
             }
-            data.push(obj);
+            if (obj)
+                data[key] = obj;
 
         });
         loadItems(data).then(function(data){
@@ -84,7 +86,7 @@ $(function () {
         return $.ajax({
             url: utils.baseUrl() +'reports/forms/search?id='+$('#form-reports').val(),
             type:'POST',
-            data:data,
+            data: data === undefined ? '' : data,
             dataType:'JSON',
             success:function(data){
                 var html = [], i, j;

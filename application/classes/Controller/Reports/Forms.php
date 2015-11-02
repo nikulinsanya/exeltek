@@ -24,10 +24,28 @@ class Controller_Reports_Forms extends Controller
         $query = array(
             'report_id' => intval(Arr::get($_GET, 'id')),
         );
+        $columns = DB::select('id', 'name', 'type')->from('report_columns')->where('report_id', '=', $query['report_id'])->execute()->as_array('id');
+
+
+        if ($_POST) foreach ($columns as $column) if (isset($_POST[$column['id']])) {
+            $key = $column['id'];
+            $type = $column['type'];
+            if (isset($_POST[$key]['from']))
+                $query[$key]['$gte'] = Columns::input($_POST[$key]['from'], $type);
+
+            if (isset($_POST[$key]['to']))
+                $query[$key]['$lte'] = Columns::input($_POST[$key]['to'], $type);
+
+            if (isset($_POST[$key]['value'])) {
+                $values = explode('|', $_POST[$key]['value']);
+                foreach ($values as $value) if ($value)
+                    $query[$key]['$in'][] = new MongoRegex('/' . $value . '/i');
+            }
+        }
+        Database_Mongo::collection('api')->insert(array('post' => $_POST, 'columns' => $columns, 'query' => $query));
         $result = Database_Mongo::collection('reports')->find($query);
 
         $reports = array();
-        $columns = DB::select('id', 'name', 'type')->from('report_columns')->where('report_id', '=', $query['report_id'])->execute()->as_array('id');
         foreach ($result as $report) {
             $id = strval($report['_id']);
             $data = array(
