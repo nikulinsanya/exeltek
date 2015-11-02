@@ -49,7 +49,6 @@ class Controller_Reports_Forms extends Controller
                     $query[$key]['$in'][] = new MongoRegex('/' . $value . '/i');
             }
         }
-        Database_Mongo::collection('api')->insert(array('post' => $_POST, 'columns' => $columns, 'query' => $query));
         $result = Database_Mongo::collection('reports')->find($query);
 
         $reports = array();
