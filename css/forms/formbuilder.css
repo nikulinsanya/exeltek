@@ -163,3 +163,12 @@ table.table.not-bordered>tbody>tr>td {
 .editable-cell.active select{
     margin-left: 10px;
 }
+
+.table-header th[data-type]:hover{
+    background-color: #E4F0FF;
+    cursor: pointer;
+}
+
+.table-header th[data-type] ul{
+    padding: 10px;
+}

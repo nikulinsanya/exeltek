@@ -1024,7 +1024,7 @@ $(function () {
             target.trigger('change');
         }
     }
-    
+
     $('.multiline:not(".datepicker")').focus(function() {
         var separator = $(this).attr('data-separator');
         $('form').prop('hold', true);
