@@ -8,6 +8,7 @@
     </select>
 </div>
 <div class="col-xs-12">
+    <div id="filter-list"></div>
     <div id="reports" style="margin-top: 10px;"></div>
 </div>
 
@@ -22,8 +23,8 @@
             </li>
             <li class="dropdown-header buttons-row">
                 <button class="btn btn-success apply-filter dropdown-toggle" type="button">Apply</button>
-                <button class="btn btn-warning date-clear dropdown-toggle" type="button">Clear</button>
-                <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="collapse">Cancel</button>
+                <button class="btn btn-warning filter-clear dropdown-toggle" type="button">Clear</button>
+                <button class="btn btn-danger dropdown-toggle" type="button" >Cancel</button>
             </li>
         </ul>
     </div>
@@ -34,8 +35,8 @@
             </li>
             <li class="dropdown-header buttons-row">
                 <button class="btn btn-success apply-filter dropdown-toggle" type="button">Apply</button>
-                <button class="btn btn-warning date-clear dropdown-toggle" type="button">Clear</button>
-                <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="collapse">Cancel</button>
+                <button class="btn btn-warning filter-clear dropdown-toggle" type="button">Clear</button>
+                <button class="btn btn-danger dropdown-toggle" type="button">Cancel</button>
             </li>
         </ul>
     </div>
@@ -49,8 +50,8 @@
             </li>
             <li class="dropdown-header buttons-row">
                 <button class="btn btn-success apply-filter dropdown-toggle" type="button">Apply</button>
-                <button class="btn btn-warning date-clear dropdown-toggle" type="button">Clear</button>
-                <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="collapse">Cancel</button>
+                <button class="btn btn-warning filter-clear dropdown-toggle" type="button">Clear</button>
+                <button class="btn btn-danger dropdown-toggle" type="button">Cancel</button>
             </li>
         </ul>
     </div>
