@@ -192,7 +192,7 @@ class Controller_Search_Search extends Controller {
                 elseif ($op == '<=')
                     $value += 86399;
 
-                if ($op == '=') {
+                if ($op == '=' && date('His', $value) === '000000') {
                     $query['data.' . $column]['$lte'] = $value + 86399;
                     $op = '>=';
                 }
