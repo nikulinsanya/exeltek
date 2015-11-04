@@ -76,6 +76,7 @@ class Controller_Form extends Controller {
                                     $form['data'][$key]['data'][$row][$cell] = array(
                                         'type' => 'label',
                                         'placeholder' => Arr::get($input, 'value') ? Columns::output(Arr::path($job, 'data.' . $input['value']), Columns::get_type($input['value'])) : $job['_id'],
+                                        'destination' => Arr::get($input, 'destination'),
                                     );
                     break;
             }
