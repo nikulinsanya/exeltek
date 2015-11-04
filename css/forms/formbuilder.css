@@ -172,3 +172,7 @@ table.table.not-bordered>tbody>tr>td {
 .table-header th[data-type] ul{
     padding: 10px;
 }
+
+table .ui-icon {
+    float: left ;
+}

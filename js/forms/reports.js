@@ -185,7 +185,6 @@ $(function () {
         $('.datepicker').datetimepicker({
             format: 'DD-MM-YYYY'
         });
-
     }
 
     function ticket_id_unfocus() {
@@ -235,4 +234,5 @@ $(function () {
 
         return $('<div>').append($(html).clone()).html();
     }
+
 });
