@@ -184,11 +184,14 @@ class Controller_Search_Search extends Controller {
             if (substr(Columns::get_type($column), 0, 4) == 'enum' && Enums::is_multi(substr(Columns::get_type($column), 5)) && $op == '=' && $value)
                 $op = 'contain';
 
-            if (Columns::get_type($column) == 'date')
+            if (Columns::get_type($column) == 'date') {
                 if ($op === 'contain')
                     $op = '=';
                 elseif ($op === 'does not contain')
                     $op = '<>';
+                elseif ($op == '<=')
+                    $value += 86399;
+            }
 
             if ($op === 'contain') {
                 $op = '$eq';
