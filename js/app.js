@@ -711,6 +711,8 @@ $(function () {
             endValue = $(this).parent().parent().find('input.end-date').val(),
             startValue = $(this).parent().parent().find('input.start-date').val();
 
+        $('select[name="columns[]"]>option:selected[value="' + id + '"]').parent().parent().parent().remove();
+
         $('#filter-form').parents('form').attr('hold', '1');
         if (startValue == endValue) {
             if (startValue)

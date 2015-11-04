@@ -334,9 +334,17 @@
             </a>
             <?php if(Columns::get_type($id) == 'date'):?>
             <ul class="collapse dropdown-menu" id="filter-<?=$id?>" data-id="<?=$id?>">
+                <?php
+                    if (isset($query['data.' . $id]) && !is_array($query['data.' . $id])) {
+                        $start = $end = $query['data.' . $id];
+                    } else {
+                        $start = isset($query['data.' . $id]['$gte']) ? $query['data.' . $id]['$gte'] : 0;
+                        $end = isset($query['data.' . $id]['$lte']) ? $query['data.' . $id]['$lte'] : 0;
+                    }
+                ?>
                 <li class="dropdown-header">Add filter:</li>
-                <li><?=Form::input(NULL, isset($query['data.' . $id]['$gt']) ? date('d-m-Y', $query['data.' . $id]['$gt']) : '', array('data-target' => '#submit-start','class' => 'start-date form-control datepicker', 'placeholder' => 'Start date'))?></li>
-                <li><?=Form::input(NULL, isset($query['data.' . $id]['$lte']) ? date('d-m-Y', $query['data.' . $id]['$lte']) : '', array('data-target' => '#submit-end', 'class' => 'end-date form-control datepicker', 'placeholder' => 'End date'))?></li>
+                <li><?=Form::input(NULL, $start ? date('d-m-Y', $start) : '', array('class' => 'start-date form-control datepicker', 'placeholder' => 'Start date'))?></li>
+                <li><?=Form::input(NULL, $end ? date('d-m-Y', $end) : '', array('class' => 'end-date form-control datepicker', 'placeholder' => 'End date'))?></li>
                 <li class="dropdown-header buttons-row">
                     <button class="btn btn-success date-table-filter" type="button">Apply</button>
                     <button class="btn btn-warning date-clear" type="button">Clear</button>
