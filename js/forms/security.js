@@ -84,8 +84,9 @@ $(function () {
             button.off().on('click',function(e){
                 e.preventDefault();
                 $(self).attr('data-type',select.val());
-                $(self).removeClass('active')
-                $(self).html(input.val());
+                $(self).removeClass('active');
+                $(self).html('<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>'+input.val());
+                setSortable();
             })
         }
 
@@ -115,16 +116,20 @@ $(function () {
                 $('#table-header').html(html.join(''));
                 $('#table-id').val(data.id);
                 $('#table-name').val(data.name);
-
+                setSortable();
                 $('#configTable').modal('show');
 
-                $('#table-header tbody').sortable({
-                    items: "tr",
-                    placeholder: "ui-state-highlight"
-                });
+
             }
         });
     });
+
+    function setSortable(){
+        $('#table-header tbody').sortable({
+            items: "tr",
+            placeholder: "ui-state-highlight"
+        });
+    }
 
 
 });
