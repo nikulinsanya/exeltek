@@ -191,6 +191,11 @@ class Controller_Search_Search extends Controller {
                     $op = '<>';
                 elseif ($op == '<=')
                     $value += 86399;
+
+                if ($op == '=') {
+                    $query['data.' . $column]['$lte'] = $value + 86399;
+                    $op = '>=';
+                }
             }
 
             if ($op === 'contain') {
