@@ -568,6 +568,12 @@ window.formbuilder = (function() {
 
                     }
 
+                }else{
+                    $('#table-border').val($('#table-border').find('option').first().val());
+                    $('#table-color').val($('#table-color').find('option').first().val());
+                    if(table.hasClass('not-bordered')){
+                        $('#cells-border').val('not-bordered');
+                    }
                 }
 
                 $('#configTable').modal('show');
