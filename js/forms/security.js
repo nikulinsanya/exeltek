@@ -107,7 +107,7 @@ $(function () {
                         i,
                         '" data-type="',
                         data.data[i].type,
-                        '">',
+                        '"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>',
                         data.data[i].name,
                         '</th></tr>'
                     )
@@ -115,7 +115,13 @@ $(function () {
                 $('#table-header').html(html.join(''));
                 $('#table-id').val(data.id);
                 $('#table-name').val(data.name);
+
                 $('#configTable').modal('show');
+
+                $('#table-header tbody').sortable({
+                    items: "tr",
+                    placeholder: "ui-state-highlight"
+                });
             }
         });
     });
