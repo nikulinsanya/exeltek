@@ -28,7 +28,7 @@ class Controller_Security_Reports extends Controller
 
         $report['success'] = true;
 
-        $report['data'] = DB::select('id', 'name', 'type')->from('report_columns')->where('report_id', '=', $id)->execute()->as_array('id');
+        $report['data'] = DB::select('id', 'name', 'type')->from('report_columns')->where('report_id', '=', $id)->order_by('auto_id', 'ASC')->execute()->as_array('id');
 
         die(json_encode($report));
     }
@@ -55,6 +55,8 @@ class Controller_Security_Reports extends Controller
         if ($data) {
             $query = DB::insert('report_columns', array('report_id', 'id', 'name', 'type'));
 
+            Database_Mongo::collection('api')->insert($data);
+            unset($data['_id']);
             foreach ($data as $key => $value)
                 $query->values(array($id, $key, Arr::get($value, 'name', ''), Arr::get($value, 'type', '')));
 
