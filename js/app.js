@@ -712,11 +712,14 @@ $(function () {
             startValue = $(this).parent().parent().find('input.start-date').val();
 
         $('#filter-form').parents('form').attr('hold', '1');
-        if(startValue){
-            add(startValue,id,5);
-        }
-        if(endValue){
-            add(endValue,id,4);
+        if (startValue == endValue) {
+            if (startValue)
+                add(startValue, id, 2);
+        } else {
+            if (startValue)
+                add(startValue, id, 6);
+            if (endValue)
+                add(endValue, id, 4);
         }
 
         filter.parents('form').attr('hold', '').submit();
