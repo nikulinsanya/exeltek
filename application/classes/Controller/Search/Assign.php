@@ -19,6 +19,7 @@ class Controller_Search_Assign extends Controller {
         elseif (DB::select('id')->from('job_types')->where('id', '=', $type)->execute()->get('id') &&
             ($company == -1 || DB::select('id')->from('companies')->where('id', '=', $company)->execute()->get('id')))  {
 
+            $assign_time = time();
             $jobs = Database_Mongo::collection('jobs');
             $result = $jobs->find(array('_id' => array('$in' => $ids)));
             $count = 0;
@@ -64,14 +65,16 @@ class Controller_Search_Assign extends Controller {
 
                 if ($company == -1)
                     unset($job['assigned'][$type]);
-                else
+                else {
                     $job['assigned'][$type] = $company;
+                    $update['$set']['data.266'] = $assign_time;
+                }
 
                 if (Arr::get($job, 'assigned'))
                     $update['$set']['assigned'] = $job['assigned'];
                 else
                     $update['$unset']['assigned'] = 1;
-                $update['$set']['last_update'] = time();
+                $update['$set']['last_update'] = $assign_time;
 
                 $companies = array();
                 if (Arr::get($job, 'assigned'))
@@ -92,7 +95,7 @@ class Controller_Search_Assign extends Controller {
                 $jobs->update(array('_id' => $job['_id']), $update);
 
                 $values[] = array(
-                    'time' => time(),
+                    'time' => $assign_time,
                     'user_id' => User::current('id'),
                     'company_id' => max($company, 0),
                     'job_id' => $job['_id'],
@@ -115,7 +118,7 @@ class Controller_Search_Assign extends Controller {
 
                 $users = DB::select('id')->from('users')->where('company_id', '=', $company)->execute()->as_array(NULL, 'id');
 
-                $message = $count . ' tickets were allocated on ' . date('d-m-Y H:i');
+                $message = $count . ' tickets were allocated on ' . date('d-m-Y H:i', $assign_time) . '. <a href="javascript:;" class="tickets-search-assign" data-date="' . date('d-m-Y H:i:s', $assign_time) . '">View ticket(s)</a>';
                 $insert = DB::insert('notifications', array('user_id', 'message'));
 
                 foreach ($users as $user)

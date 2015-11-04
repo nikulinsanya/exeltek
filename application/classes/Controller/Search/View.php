@@ -101,11 +101,13 @@ class Controller_Search_View extends Controller {
         User::get(array_keys($users));
 
         if ($_POST) {
+            $update_time = time();
+
             if (!Arr::path($_FILES, 'attachment.error', -1) && is_uploaded_file($_FILES['attachment']['tmp_name'])) {
                 $data = array(
                     'filename' => $_FILES['attachment']['name'],
                     'mime' => $_FILES['attachment']['type'],
-                    'uploaded' => time(),
+                    'uploaded' => $update_time,
                     'user_id' => User::current('id'),
                     'job_id' => $id,
                 );
@@ -181,14 +183,14 @@ class Controller_Search_View extends Controller {
                     Database_Mongo::collection('submissions')->update(
                         array('_id' => array('$in' => $ignored)),
                         array(
-                            '$set' => array('admin_id' => User::current('id'), 'process_time' => time()),
+                            '$set' => array('admin_id' => User::current('id'), 'process_time' => $update_time),
                             '$unset' => array('active' => 1)
                         ),
                         array('multiple' => 1));
                     Database_Mongo::collection('submissions')->update(
                         array('_id' => array('$in' => $accepted)),
                         array(
-                            '$set' => array('admin_id' => User::current('id'), 'process_time' => time(), 'active' => -1),
+                            '$set' => array('admin_id' => User::current('id'), 'process_time' => $update_time, 'active' => -1),
                         ),
                         array('multiple' => 1));
                 }
@@ -199,7 +201,7 @@ class Controller_Search_View extends Controller {
                     if ($ass < 1) $ass = $value ? 1 : -1;
 
                     $values[] = array(
-                        'time' => time(),
+                        'time' => $update_time,
                         'user_id' => User::current('id'),
                         'company_id' => max($value, 0),
                         'job_id' => $job['_id'],
@@ -212,8 +214,11 @@ class Controller_Search_View extends Controller {
                         $job['assigned'][$key] = $value;
                         $users = DB::select('id')->from('users')->where('company_id', '=', $value)->execute()->as_array(NULL, 'id');
 
-                        $message = '1 ticket was allocated on ' . date('d-m-Y H:i');
+                        $update['$set']['data.266'] = $update_time;
+
+                        $message = '1 ticket was allocated on ' . date('d-m-Y H:i', $update_time) . '. <a href="' . URL::base() . 'search/view/' . $job['_id'] . '">View ticket</a>';
                         $insert = DB::insert('notifications', array('user_id', 'message'));
+
 
                         foreach ($users as $user)
                             $insert->values(array($user, $message));
@@ -329,10 +334,10 @@ class Controller_Search_View extends Controller {
                     $status = preg_replace('/[^a-z]/', '', strtolower(Arr::path($update, array('$set', 'data.44'), '')));
 
                     if ($status == 'built' && !Arr::path($job, 'data.264'))
-                        $update['$set']['data.264'] = time();
+                        $update['$set']['data.264'] = $update_time;
 
                     if ($status == 'tested' && !Arr::path($job, 'data.265'))
-                        $update['$set']['data.265'] = time();
+                        $update['$set']['data.265'] = $update_time;
 
                     $update['$set']['companies'] = array_keys($companies);
 
@@ -342,7 +347,7 @@ class Controller_Search_View extends Controller {
                     } elseif (!$companies && $status == Enums::STATUS_ALLOC) {
                         $update['$unset']['status'] = 1;
                     }
-                    $update['$set']['last_update'] = time();
+                    $update['$set']['last_update'] = $update_time;
                     if (isset($update['$set']['data.8']))
                         $update['$set']['address'] = MapQuest::parse($update['$set']['data.8']);
                     elseif (isset($update['$unset']['data.8']))
@@ -354,7 +359,7 @@ class Controller_Search_View extends Controller {
                         $archive['fields'] = array_keys($archive['data']);
                         $archive['job_key'] = $id;
                         $archive['user_id'] = User::current('id');
-                        $archive['update_time'] = time();
+                        $archive['update_time'] = $update_time;
                         $archive['update_type'] = 2;
                         $archive['filename'] = 'MANUAL';
                         Database_Mongo::collection('archive')->insert($archive);
@@ -370,7 +375,7 @@ class Controller_Search_View extends Controller {
                     if ($status == Enums::STATUS_PENDING && !$count) {
 
                         $update = array('$set' => array(
-                            'last_update' => time(),
+                            'last_update' => $update_time,
                             'status' => Enums::STATUS_COMPLETE,
                         ));
 
@@ -386,7 +391,7 @@ class Controller_Search_View extends Controller {
                         $status = Enums::STATUS_UNALLOC;
 
                     if ($status != Arr::get($job, 'status', Enums::STATUS_UNALLOC)) {
-                        $update = array('$set' => array('last_update' => time()));
+                        $update = array('$set' => array('last_update' => $update_time));
 
                         if ($status == Enums::STATUS_UNALLOC)
                             $update['$unset']['status'] = 1;
@@ -400,7 +405,7 @@ class Controller_Search_View extends Controller {
                     }
                 } elseif ($ass == 1 && in_array(Arr::get($job, 'status', Enums::STATUS_UNALLOC), array(Enums::STATUS_COMPLETE, Enums::STATUS_ARCHIVE))) {
                     $update = array('$set' => array(
-                        'last_update' => time(),
+                        'last_update' => $update_time,
                         'status' => Enums::STATUS_ALLOC,
                     ));
                     Database_Mongo::collection('jobs')->update(
@@ -424,7 +429,7 @@ class Controller_Search_View extends Controller {
                         'job_key' => $id,
                         'user_id' => User::current('id'),
                         'active' => 1,
-                        'update_time' => time(),
+                        'update_time' => $update_time,
                     );
                     if (Arr::get($_POST, 'location'))
                         $submission['location'] = $_POST['location'];
@@ -468,7 +473,7 @@ class Controller_Search_View extends Controller {
                     }
 
                     if ($update) {
-                        $update['$set']['last_update'] = time();
+                        $update['$set']['last_update'] = $update_time;
                         Database_Mongo::collection('jobs')->update(
                             array('_id' => $id),
                             $update
@@ -479,7 +484,7 @@ class Controller_Search_View extends Controller {
                             $archive['fields'] = array_keys($archive['data']);
                             $archive['job_key'] = $id;
                             $archive['user_id'] = User::current('id');
-                            $archive['update_time'] = time();
+                            $archive['update_time'] = $update_time;
                             $archive['update_type'] = 2;
                             $archive['filename'] = 'MANUAL';
                             Database_Mongo::collection('archive')->insert($archive);

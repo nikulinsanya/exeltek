@@ -492,6 +492,18 @@ $(function () {
     });
 
 
+    $('.tickets-search-assign').click(function(e) {
+        var date = $(this).attr('data-date');
+
+        var data = {};
+        data['columns[]'] = 266;
+        data['actions[]'] = 2;
+        data['values[]'] = date;
+        $.post(utils.baseUrl() + 'search', data, function(data) {
+            window.location = utils.baseUrl() + 'search?id=' + data.id;
+        });
+        return false;
+    });
 
     $('.filters-form').submit(function (e) {
         $('#filterModal').modal('hide');
