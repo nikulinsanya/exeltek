@@ -254,6 +254,8 @@ window.formbuilder = (function() {
                 obj, trs,tds, input,
                 c, r,
                 destination,
+                widthSettings,
+                width,
                 data;
 
             tables.each(function(){
@@ -262,8 +264,16 @@ window.formbuilder = (function() {
                     style: $(this).attr('style'),
                     'data-style': $(this).attr('data-style'),
                     class: $(this).attr('data-class'),
+                    'width-settings': [],
                     data:[]
                 };
+                widthSettings = [];
+                $(this).find('tr.tmp-cell').first().find('td').each(function(){
+                    widthSettings.push($(this).width());
+                });
+                obj['width-settings'] = widthSettings;
+
+
 
                 $(this).find('tr').not('.tmp-cell').each(function(){
                     data = [];
@@ -292,6 +302,7 @@ window.formbuilder = (function() {
                     });
                     obj.data.push(data);
                 });
+
                 json.push(obj);
             });
             return(json);
@@ -328,7 +339,10 @@ window.formbuilder = (function() {
                         html.push('<td class="tmp-cell"></td>');
 
                         for(j=0;j<element.data[0].length;j++){
-                            html.push('<td class="tmp-cell"><button class="btn btn-danger btn-xs remove-column" data-c="',j+1,'"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-down"></span></button></td>');
+                            html.push(
+                                '<td class="tmp-cell" ',
+                                element['width-settings'] ? ('style="width:'+element['width-settings'][j+1]+'px;"') : '',
+                                '><button class="btn btn-danger btn-xs remove-column" data-c="',j+1,'"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-down"></span></button></td>');
                         }
                         html.push('</tr>');
                     }
@@ -513,6 +527,33 @@ window.formbuilder = (function() {
             self._formContainer.disableSelection();
         },
 
+        initResize: function(){
+            $("#form-builder-container table.editable-table").colResizable({
+                liveDrag: true,
+                minWidth: 70,
+                gripInnerHtml:"<div class='grip'></div>",
+                draggingClass:"dragging",
+                headerOnly:true,
+                onResize:self.onSampleResized
+            });
+//            $("#form-builder-container table.editable-table").resizable({
+//                minHeight: 50,
+//                minWidth: 70,
+//                stop:function(e,ui){
+//                    var table = $(e.target);
+//                    table.find('tr').first().find('td').each(function(){
+//                        $(this).attr('style','width:'+$(this).width()+'px;');
+//                    });
+//
+//                }
+//            });
+        },
+
+        onSampleResized: function(e){
+            var table = $(e.currentTarget);
+            console.log(table);
+        },
+
         setHandlers: function(){
             if(this._editable){
                 this._formContainer.find('canvas').each(function(){
@@ -656,6 +697,7 @@ window.formbuilder = (function() {
                 self._formContainer.append(html.join(''));
                 $('#addTable').modal('hide');
                 self.initSortable();
+                self.initResize();
             });
             $('.confirm-table-settings').on('click',function(){
                 var table = $('.selected-table'),
@@ -718,6 +760,7 @@ $(function () {
                 $('#form-report').val(data.report);
                 formbuilder.initForm('#form-builder-container',data.data);
                 $('#form-builder').removeClass('hidden');
+                formbuilder.initResize();
             });
         }
     });

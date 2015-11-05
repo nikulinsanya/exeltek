@@ -56,6 +56,7 @@
 .table-container:hover>i{
     display: block;
     cursor: move;
+    z-index: 9;
 }
 .table-container>button{
     display: none;
@@ -69,6 +70,7 @@
 
 .table-container:hover>button{
     display:block;
+    z-index: 9;
 }
 
 
@@ -175,4 +177,39 @@ table.table.not-bordered>tbody>tr>td {
 
 table .ui-icon {
     float: left ;
+}
+
+
+
+.grip{
+    width:20px;
+    height:30px;
+    margin-top:-3px;
+    background-image:url('../../img/grip.png');
+    margin-left:-5px;
+    position:relative;
+    z-index:88;
+    cursor:e-resize;
+}
+
+.grip:hover{
+    background-position-x:-20px;
+}
+
+.dragging .grip{
+    background-position-x:-40px;
+}
+
+table tr:first-of-type>td>.remove-column{
+    margin-left: 5px;
+}
+
+table tr.tmp-cell:first-of-type>td.tmp-cell:first-of-type{
+    width: 50px!important;
+    max-width: 50px!important;
+    min-width: 50px!important;
+}
+
+.JCLRgrips>.JCLRgrip:first-of-type{
+    display: none;
 }
