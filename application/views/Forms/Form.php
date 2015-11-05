@@ -16,7 +16,7 @@
 <!--<script src="--><?//= URL::base() ?><!--js/forms/form.js"></script>-->
 <link href="<?= URL::base() ?>css/forms/formbuilder.css" rel="stylesheet">
 <script src="<?= URL::base() ?>js/lib/signature_pad.min.js"></script>
-
+<script src="<?= URL::base() ?>js/lib/jquery/colResizable-1.5.min.js"></script>
 <script src="<?= URL::base() ?>js/forms/formbuilder.js"></script>
 
 
