@@ -114,6 +114,10 @@
                         </select>
                     </div>
                 </div>
+                <div class="row">
+                    <button class="btn btn-warning add-row" data-dismiss="modal">Add Row</button>
+                    <button class="btn btn-success add-column" data-dismiss="modal">Add Column</button>
+                </div>
             </div>
             <div class="modal-footer" class="tableRowButtons">
                 <button class="btn btn-warning" data-dismiss="modal">Close</button>

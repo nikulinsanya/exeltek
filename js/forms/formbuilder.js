@@ -528,6 +528,7 @@ window.formbuilder = (function() {
         },
 
         initResize: function(){
+            $("#form-builder-container table.editable-table").colResizable({disable:true});
             $("#form-builder-container table.editable-table").colResizable({
                 liveDrag: true,
                 minWidth: 70,
@@ -536,17 +537,6 @@ window.formbuilder = (function() {
                 headerOnly:true,
                 onResize:self.onSampleResized
             });
-//            $("#form-builder-container table.editable-table").resizable({
-//                minHeight: 50,
-//                minWidth: 70,
-//                stop:function(e,ui){
-//                    var table = $(e.target);
-//                    table.find('tr').first().find('td').each(function(){
-//                        $(this).attr('style','width:'+$(this).width()+'px;');
-//                    });
-//
-//                }
-//            });
         },
 
         onSampleResized: function(e){
@@ -715,6 +705,48 @@ window.formbuilder = (function() {
 
                 table.removeClass('selected-table');
                 $('#configTable').modal('hide');
+            });
+
+            $('.add-row').on('click',function(){
+                var table = $('.selected-table'),
+                    row = table.find('tr').last().clone();
+                row.find('td:not(".tmp-cell")').each(function(){
+                    $(this).html('');
+                    var attrs = this.attributes;
+                    var toRemove = [];
+                    var element = $(this);
+
+                    for (attr in attrs) {
+                        if (typeof attrs[attr] === 'object' &&
+                            typeof attrs[attr].name === 'string' &&
+                            (/^data-/).test(attrs[attr].name)) {
+                            toRemove.push(attrs[attr].name);
+                        }
+                    }
+
+                    for (var i = 0; i < toRemove.length; i++) {
+                        element.removeAttr(toRemove[i]);
+                    }
+                });
+
+
+                table.removeClass('selected-table').append(row);
+                $('#configTable').modal('hide');
+                self.initResize();
+            });
+
+            $('.add-column').on('click',function(){
+                var table   = $('.selected-table'),
+                    firstTd = table.find('tr').first().find('td').last().clone();
+
+                table.find('tr').first().append(firstTd);
+                table.find('tr:not(".tmp-cell")').each(function(){
+                    $(this).append('<td class="editable-cell"></td>');
+                });
+
+                table.removeClass('selected-table');
+                $('#configTable').modal('hide');
+                self.initResize();
             });
 
 
