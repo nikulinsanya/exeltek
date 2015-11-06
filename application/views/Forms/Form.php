@@ -26,7 +26,6 @@
     $(document).on('ready', function () {
         $.get(utils.baseUrl() + 'form/fill?load&<?=$id ? 'id=' . $id : 'form=' . $_GET['form']?>', function(data) {
             formbuilder.initForm('#form-builder-container',data, true);
-//            form.init($('#form-builder-container'), data, false);
         });
     });
 </script>
