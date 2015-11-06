@@ -359,6 +359,9 @@ window.formbuilder = (function() {
                         t = true;
                         for(j=0;j<element.data[i].length;j++){
                             current = element.data[i][j];
+                            if(this._editable && element['width-settings']){
+                                current['width-settings'] = element['width-settings'][j+1]
+                            }
                             html.push(self.loadElement(current));
                         }
                         html.push('</tr>');
@@ -381,7 +384,9 @@ window.formbuilder = (function() {
                     }
                     break;
                 case 'label':
-                    html.push('<td class="editable-cell" data-type="',
+                    html.push('<td class="editable-cell"',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'px;"') : '',
+                        ' data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'"  data-value="',element.value,'" data-destination="',
                         element.destination,
