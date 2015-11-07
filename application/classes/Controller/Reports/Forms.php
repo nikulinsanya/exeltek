@@ -51,6 +51,10 @@ class Controller_Reports_Forms extends Controller
         }
         $result = Database_Mongo::collection('reports')->find($query);
 
+        Pager::$count = $result->count();
+
+        $result->skip(Pager::offset())->limit(Pager::limit());
+
         $reports = array();
         foreach ($result as $report) {
             $id = strval($report['_id']);
@@ -63,7 +67,6 @@ class Controller_Reports_Forms extends Controller
 
             $reports[$id] = $data;
         }
-
 
         header('Content-type: application/json');
         die(json_encode(array('success' => true, 'columns' => $columns, 'data' => $reports)));

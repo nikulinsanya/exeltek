@@ -234,7 +234,7 @@ window.formbuilder = (function() {
                 id = $('#form-builder').attr('data-id');
 
             return $.ajax({
-                url : utils.baseUrl() + 'form/save?id=' + id + '&type=' + $('#form-type').val() + '&report=' + $('#form-report').val() + '&name=' + encodeURIComponent($('#form-name').val()),
+                url : utils.baseUrl() + 'form/save?id=' + id + '&type=' + $('#form-type').val() + '&report=' + $('#form-report').val() + '&name=' + encodeURIComponent($('#form-name').val()) + '&geo=' + ($('#allow-geo').prop('checked') ? '1' : ''),
                 type: 'POST',
                 data: JSON.stringify(json),
                 success: function(){
@@ -795,6 +795,7 @@ $(function () {
                 $('#form-name').val(data.name);
                 $('#form-type').val(data.type);
                 $('#form-report').val(data.report);
+                $('#allow-geo').prop('checked', data.geo);
                 formbuilder.initForm('#form-builder-container',data.data);
                 $('#form-builder').removeClass('hidden');
                 formbuilder.initResize();

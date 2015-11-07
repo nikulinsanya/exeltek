@@ -771,6 +771,14 @@ $(function () {
         });
         $('#filter-form .add-filter').parents('form').attr('hold', '').submit();
     });
+
+    if ($('.geolocation').length > 0) {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(data) {
+                $('.geolocation').val(data.coords.latitude + ',' + data.coords.longitude);
+            });
+        }
+    }
     
     $('.upload').click(function() {
         if (navigator.geolocation) {
