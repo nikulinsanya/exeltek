@@ -5,6 +5,7 @@
 <form id="form-data">
     <div class="container" id="form-builder-container"></div>
     <div class="col-xs-12">
+        <input type="hidden" name="hidden">
         <button type="button" class="btn btn-success form-save">Save</button>
         <button type="button" class="btn btn-info form-save">Save & Print</button>
     </div>

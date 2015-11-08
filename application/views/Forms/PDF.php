@@ -40,10 +40,13 @@
 <div style="border:1px solid #f7f7f7;">
     <h3><?=$name?></h3>
         <?php foreach ($form as $table):?>
-            <table class="table-responsive table table-bordered editable-table <?=isset($table['class']) ? $table['class'] : ''?>" style="<?=isset($table['style']) ? $table['style'] : ''?>">
+            <table class="table-responsive table table-bordered editable-table <?=isset($table['class']) ? $table['class'] : ''?>" style="<?=(isset($table['style']) && $table['style']!='undefined') ? $table['style'].' width:100%;' : 'width:100%;'?>">
                 <tbody>
-                <?php foreach ($table['data'] as $cells): echo '<tr>';
-                    foreach ($cells as $input): echo '<td>';
+                <?php $i = 1;
+                foreach ($table['data'] as $cells): echo '<tr>';
+                    foreach ($cells as $input):
+                        $width = '100px;';
+                        echo '<td style="width:'.$width.'">';
                         $value = Arr::get($input, 'value');
                         switch (Arr::get($input, 'type')):
                             case 'label':
