@@ -113,14 +113,14 @@ class Controller_Form extends Controller {
                                     break;
                                 case 'timestamp':
                                     $form['data'][$key]['data'][$row][$cell] = array(
-                                        'type' => 'label',
+                                        'type' => 'timestamp',
                                         'placeholder' => Arr::get($form_data, 'last_update') ? date('d-m-Y H:i', $form_data['last_update']) : '',
                                         'destination' => Arr::get($input, 'destination'),
                                     );
                                     break;
                                 case 'revision':
                                     $form['data'][$key]['data'][$row][$cell] = array(
-                                        'type' => 'label',
+                                        'type' => 'revision',
                                         'placeholder' => Arr::get($form_data, 'revision', 1),
                                         'destination' => Arr::get($input, 'destination'),
                                     );
@@ -165,13 +165,24 @@ class Controller_Form extends Controller {
                 if (isset($_POST['print'])) {
                     $columns = DB::select('id')->from('report_columns')->where('report_id', '=', Arr::get($form, 'report'))->execute()->as_array('id', 'id');
                     $report = array();
-                    if ($columns) {
-                        foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
-                            foreach ($table['data'] as $row => $cells)
-                                foreach ($cells as $cell => $input)
-                                    if (Arr::get($input, 'destination') && isset($columns[$input['destination']]))
-                                        $report[$input['destination']] = Arr::get($input, 'value');
-                    }
+
+                    foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
+                        foreach ($table['data'] as $row => $cells)
+                            foreach ($cells as $cell => $input) {
+                                switch (Arr::get($input, 'type')) {
+                                    case 'revision':
+                                        $input['placeholder'] = Arr::get($form_data, 'revision', 1);
+                                        break;
+                                    case 'timestamp':
+                                        $input['placeholder'] = Arr::get($form_data, 'last_update') ? date('d-m-Y H:i', $form_data['last_update']) : '';
+                                        break;
+                                }
+                                if (Arr::get($input, 'name'))
+                                    $input['value'] = Arr::path($form_data, array('data', $input['name']), '');
+
+                                if (Arr::get($input, 'destination') && isset($columns[$input['destination']]))
+                                    $report[$input['destination']] = Arr::get($input, in_array(Arr::get($input, 'type', ''), array('text', 'number', 'float', 'date')) ? 'value' : 'placeholder');
+                            }
 
                     $view = View::factory('Forms/PDF')
                         ->bind('name', $form['name'])
@@ -208,7 +219,7 @@ class Controller_Form extends Controller {
                             'filename' => $filename,
                             'mime' => 'application/pdf',
                             'uploaded' => $uploaded,
-                            'user_id' => $form['user_id'],
+                            'user_id' => $form_data['user_id'],
                             'job_id' => $job ? $job['_id'] : 0,
                             'folder' => 'Reports',
                             'fda_id' => $job ? Arr::path($job, 'data.14') : 'Unattached',
@@ -240,6 +251,10 @@ class Controller_Form extends Controller {
                                     'attachment' => $filename,
                                     'uploaded' => $uploaded,
                                 );
+
+                                if (isset($form_data['geo']))
+                                    $report['geo'] = $form_data['geo'];
+
                                 $columns = DB::select('id', 'type')->from('report_columns')->where('report_id', '=', $report['report_id'])->execute()->as_array('id', 'type');
                                 foreach ($columns as $key => $value)
                                     $report[$key] = Arr::get($data, $key) ? Columns::parse($data[$key], $value) : '';

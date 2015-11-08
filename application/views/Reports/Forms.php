@@ -8,31 +8,47 @@
             <?php endforeach;?>
         </select>
     </div>
-    <div id="filter-list"></div>
 </form>
-<?php if ($filters):?>
+<?php if ($filters): ?>
 <div class="col-xs-12">
+    <div id="filter-list"></div>
     <?=View::factory('Pager')?>
     <div id="reports" style="margin-top: 10px;">
         <table class="table">
             <tr class="table-header">
                 <th>File name</th>
                 <?php if ($geo):?>
-                    <th>Geolocation</th>
+                    <th>Location</th>
                 <?php endif;?>
                 <?php foreach ($columns as $column):?>
                 <th class="dropdown needs-filter" data-type="<?=$column['type']?>" data-guid="<?=$column['id']?>">
                     <a href="#" class="dropdown-toggle" data-toggle="collapse" data-target="#<?=$column['id']?>">
                         <?=$column['name']?>
                     </a>
-<!--                    dependent on the 'type'-->
                     <ul class="dropdown-menu collapse" id="<?=$column['id']?>">
-                        <li>
-                            <input type="text" class="from form-control datepicker" placeholder="Start date"/>
-                        </li>
-                        <li>
-                            <input type="text" class="to form-control datepicker" placeholder="End date"/>
-                        </li>
+                        <?php switch ($column['type']):
+                            case 'date':?>
+                            <li>
+                                <input type="text" class="from form-control datepicker" placeholder="Start date" value="<?=Arr::path($filters, array($column['id'], '$gte')) ? date('d-m-Y', $filters[$column['id']]['$gte']) : ''?>"/>
+                            </li>
+                            <li>
+                                <input type="text" class="to form-control datepicker" placeholder="End date" value="<?=Arr::path($filters, array($column['id'], '$lte')) ? date('d-m-Y', $filters[$column['id']]['$lte']) : ''?>"/>
+                            </li>
+                        <?php break;
+                            case 'number':
+                            case 'float':?>
+                            <li>
+                                <input type="text" class="from form-control" placeholder="> than" value="<?=Arr::path($filters, array($column['id'], '$gte'), '')?>"/>
+                            </li>
+                            <li>
+                                <input type="text" class="to form-control" placeholder="< than" value="<?=Arr::path($filters, array($column['id'], '$lte'), '')?>" />
+                            </li>
+                        <?php break;
+                            default:?>
+                            <li>
+                                <input type="text" class="text form-control multiline" data-separator="|" placeholder="Contain text" value="<?=implode('|', array_map('strval', Arr::path($filters, array($column['id'], '$in'), array())))?>" />
+                            </li>
+                        <?php endswitch;?>
                         <li class="dropdown-header buttons-row">
                             <button class="btn btn-success apply-filter dropdown-toggle" type="button">Apply</button>
                             <button class="btn btn-warning filter-clear dropdown-toggle" type="button">Clear</button>
@@ -45,12 +61,18 @@
             </tr>
             <?php if ($reports): foreach ($reports as $report):?>
             <tr>
-                <td><a href="<?=URL::base()?>download/attachment/<?=$report['attachment_id']?>"><?=Arr::get($report, 'attachment', 'Unknown file')?></a></td>
+                <td><a href="<?=URL::base()?>download/attachment/<?=$report['attachment_id']?>"><?=$report['attachment']?></a></td>
                 <?php if ($geo):?>
-                    <td></td>
+                    <td>
+                        <?php if (Arr::get($report, 'geo')):?>
+                        <a target="_blank" href="https://www.google.com/maps/@<?=$report['geo']?>,19z">View on map</a>
+                        <?php else:?>
+                        &nbsp;
+                        <?php endif;?>
+                    </td>
                 <?php endif;?>
                 <?php foreach ($columns as $column):?>
-                    <td><?=Arr::get($report, $column['id']) ? Columns::output($report[$column['id']], $column['type']) : '&nbsp;'?></td>
+                    <td><?=Arr::get($report, $column['id'], '&nbsp;')?></td>
                 <?php endforeach;?>
             </tr>
             <?php endforeach; else:?>
@@ -62,53 +84,6 @@
     </div>
 </div>
 <?php endif;?>
-
-<div id="templates" style="display: none;">
-    <div id="datefilter">
-        <ul class="dropdown-menu collapse">
-            <li>
-                <input type="text" class="from form-control datepicker" placeholder="Start date"/>
-            </li>
-            <li>
-                <input type="text" class="to form-control datepicker" placeholder="End date"/>
-            </li>
-            <li class="dropdown-header buttons-row">
-                <button class="btn btn-success apply-filter dropdown-toggle" type="button">Apply</button>
-                <button class="btn btn-warning filter-clear dropdown-toggle" type="button">Clear</button>
-                <button class="btn btn-danger dropdown-toggle" type="button" >Cancel</button>
-            </li>
-        </ul>
-    </div>
-    <div id="textfilter">
-        <ul class="dropdown-menu collapse">
-            <li>
-                <input type="text" class="text form-control multiline" data-separator="|" placeholder="Contain text"/>
-            </li>
-            <li class="dropdown-header buttons-row">
-                <button class="btn btn-success apply-filter dropdown-toggle" type="button">Apply</button>
-                <button class="btn btn-warning filter-clear dropdown-toggle" type="button">Clear</button>
-                <button class="btn btn-danger dropdown-toggle" type="button">Cancel</button>
-            </li>
-        </ul>
-    </div>
-    <div id="numberfilter">
-        <ul class="dropdown-menu collapse">
-            <li>
-                <input type="text" class="from form-control" placeholder="> than"/>
-            </li>
-            <li>
-                <input type="text" class="to form-control" placeholder="< than"/>
-            </li>
-            <li class="dropdown-header buttons-row">
-                <button class="btn btn-success apply-filter dropdown-toggle" type="button">Apply</button>
-                <button class="btn btn-warning filter-clear dropdown-toggle" type="button">Clear</button>
-                <button class="btn btn-danger dropdown-toggle" type="button">Cancel</button>
-            </li>
-        </ul>
-    </div>
-</div>
-
-
 
 <link href="<?= URL::base() ?>css/forms/formbuilder.css" rel="stylesheet">
 <script src="<?= URL::base() ?>js/forms/reports.js"></script>

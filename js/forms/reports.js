@@ -140,9 +140,6 @@ $(function () {
             textarea.focus();
             $('form').prop('hold', false);
         });
-        $('.datepicker').datetimepicker({
-            format: 'DD-MM-YYYY'
-        });
     }
 
     function ticket_id_unfocus() {

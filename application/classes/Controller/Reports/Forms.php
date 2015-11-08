@@ -70,12 +70,66 @@ class Controller_Reports_Forms extends Controller
                 foreach ($columns as $key => $column)
                     $data[$key] = Arr::get($report, $key) ? Columns::output($report[$key], $column['type']) : '';
 
-                if (isset($report['geo']))
+                if (isset($report['geo'])) {
                     $geo = true;
+                    $data['geo'] = $report['geo'];
+                }
 
                 $reports[$id] = $data;
             }
 
+            if (isset($_GET['export'])) {
+                $header = array('Name');
+                foreach ($columns as $column)
+                    $header[] = $column['name'];
+
+                $data = array($header);
+
+                foreach ($reports as $report) {
+                    $row = array($report['attachment']);
+
+                    foreach ($columns as $column)
+                        $row[] = Arr::get($report, $column['id']) ? Columns::output($report[$column['id']], $column['type']) : '';
+
+                    $data[] = $row;
+                }
+
+                switch ($_GET['export']) {
+                    case 'excel':
+                        $excel = new PHPExcel();
+                        $sheet = $excel->getActiveSheet();
+                        $sheet->setTitle('Search Results');
+                        $sheet->fromArray($data, NULL, 'A1');
+
+                        foreach (range('A', $sheet->getHighestDataColumn()) as $col) {
+                            $sheet->getColumnDimension($col)->setAutoSize(true);
+                        }
+
+                        $name = tempnam(sys_get_temp_dir(), 'excel');
+
+                        header('Content-type: application/xlsx');
+                        header('Content-disposition: filename="' . Arr::get($tables, $query['report_id'], 'Unknown') . '.xlsx"');
+
+                        $writer = new PHPExcel_Writer_Excel2007($excel);
+                        $writer->save($name);
+                        readfile($name);
+                        unlink($name);
+                        break;
+                    default:
+                        header('Content-type: text/csv');
+                        header('Content-disposition: attachment;filename="' . Arr::get($tables, $query['report_id'], 'Unknown') . '.csv"');
+                        $file = fopen('php://output', 'w');
+
+                        foreach ($data as $row)
+                            fputcsv($file, $row);
+
+                        fclose($file);
+
+                        break;
+                }
+
+                die();
+            }
         } else {
             $columns = array();
             $reports = array();
