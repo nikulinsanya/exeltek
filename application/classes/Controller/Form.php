@@ -206,7 +206,7 @@ class Controller_Form extends Controller {
                             break;
                     }
 
-                    $company = DB::select('name')->from('companies')->where('id', '=', $form['company'])->execute()->get('name');
+                    $company = DB::select('name')->from('companies')->where('id', '=', User::get($form_data['user_id'], 'company_id'))->execute()->get('name');
 
                     foreach ($jobs as $job) {
                         if ($job)
