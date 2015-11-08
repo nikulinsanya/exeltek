@@ -234,7 +234,7 @@ window.formbuilder = (function() {
                 id = $('#form-builder').attr('data-id');
 
             return $.ajax({
-                url : utils.baseUrl() + 'form/save?id=' + id + '&type=' + $('#form-type').val() + '&report=' + $('#form-report').val() + '&name=' + encodeURIComponent($('#form-name').val()),
+                url : utils.baseUrl() + 'form/save?id=' + id + '&type=' + $('#form-type').val() + '&report=' + $('#form-report').val() + '&name=' + encodeURIComponent($('#form-name').val()) + '&geo=' + ($('#allow-geo').prop('checked') ? '1' : ''),
                 type: 'POST',
                 data: JSON.stringify(json),
                 success: function(){
@@ -254,6 +254,8 @@ window.formbuilder = (function() {
                 obj, trs,tds, input,
                 c, r,
                 destination,
+                widthSettings,
+                width,
                 data;
 
             tables.each(function(){
@@ -262,8 +264,22 @@ window.formbuilder = (function() {
                     style: $(this).attr('style'),
                     'data-style': $(this).attr('data-style'),
                     class: $(this).attr('data-class'),
+                    'width-settings': [],
                     data:[]
                 };
+                widthSettings = [];
+                $(this).find('tr.tmp-cell').first().find('td').each(function(){
+
+                    if($(this).attr('data-resized')){
+                        widthSettings.push($(this).outerWidth()+'px;');
+                    }else{
+                        widthSettings.push('auto;');
+                    }
+
+                });
+                obj['width-settings'] = widthSettings;
+
+
 
                 $(this).find('tr').not('.tmp-cell').each(function(){
                     data = [];
@@ -278,7 +294,7 @@ window.formbuilder = (function() {
                         input = {
                             type : $(this).attr('data-type'),
                             placeholder: $(this).attr('data-placeholder'),
-                            name: ['label','ticket'].indexOf($(this).attr('data-type')) == -1 ?
+                            name: ['label','ticket','revision','timestamp'].indexOf($(this).attr('data-type')) == -1 ?
                                 $(this).attr('data-name') || self.guid():
                                 '',
                             value:value,
@@ -292,6 +308,7 @@ window.formbuilder = (function() {
                     });
                     obj.data.push(data);
                 });
+
                 json.push(obj);
             });
             return(json);
@@ -325,10 +342,13 @@ window.formbuilder = (function() {
 
                     if(!this._editable){
                         html.push('<tr class="tmp-cell">');
-                        html.push('<td class="tmp-cell"></td>');
+                        html.push('<td class="tmp-cell dummy-cell"  style="width:auto;"></td>');
 
                         for(j=0;j<element.data[0].length;j++){
-                            html.push('<td class="tmp-cell"><button class="btn btn-danger btn-xs remove-column" data-c="',j+1,'"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-down"></span></button></td>');
+                            html.push(
+                                '<td class="tmp-cell" ',
+                                element['width-settings'] ? 'data-resized="true" style="width:'+element['width-settings'][j+1]+'"' : '',
+                                '><button class="btn btn-danger btn-xs remove-column" data-c="',j+1,'"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-down"></span></button></td>');
                         }
                         html.push('</tr>');
                     }
@@ -345,6 +365,9 @@ window.formbuilder = (function() {
                         t = true;
                         for(j=0;j<element.data[i].length;j++){
                             current = element.data[i][j];
+                            if(this._editable && element['width-settings']){
+                                current['width-settings'] = element['width-settings'][j+1]
+                            }
                             html.push(self.loadElement(current));
                         }
                         html.push('</tr>');
@@ -367,7 +390,11 @@ window.formbuilder = (function() {
                     }
                     break;
                 case 'label':
-                    html.push('<td class="editable-cell" data-type="',
+                case 'revision':
+                case 'timestamp':
+                    html.push('<td class="editable-cell"',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        ' data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'"  data-value="',element.value,'" data-destination="',
                         element.destination,
@@ -378,7 +405,9 @@ window.formbuilder = (function() {
                     );
                     break;
                 case 'text':
-                    html.push('<td class="editable-cell" data-type="',
+                    html.push('<td class="editable-cell" ',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
@@ -388,7 +417,9 @@ window.formbuilder = (function() {
                     );
                     break;
                 case 'number':
-                    html.push('<td class="editable-cell" data-type="',
+                    html.push('<td class="editable-cell" ',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
@@ -398,7 +429,9 @@ window.formbuilder = (function() {
                     );
                     break;
                 case 'float':
-                    html.push('<td class="editable-cell" data-type="',
+                    html.push('<td class="editable-cell" ',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
@@ -408,7 +441,9 @@ window.formbuilder = (function() {
                     );
                     break;
                 case 'date':
-                    html.push('<td class="editable-cell" data-type="',
+                    html.push('<td class="editable-cell" ',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
@@ -418,7 +453,9 @@ window.formbuilder = (function() {
                     );
                     break;
                 case 'ticket':
-                    html.push('<td class="editable-cell" data-type="',
+                    html.push('<td class="editable-cell" ',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-value="',element.value,'" data-destination="',
                         element.destination,
@@ -429,7 +466,9 @@ window.formbuilder = (function() {
                     );
                     break;
                 case 'signature':
-                    html.push('<td class="editable-cell" data-type="',
+                    html.push('<td class="editable-cell" ',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
@@ -451,7 +490,9 @@ window.formbuilder = (function() {
                             available[i],
                             '</option>');
                     }
-                    html.push('<td class="editable-cell" data-type="',
+                    html.push('<td class="editable-cell" ',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
@@ -463,7 +504,9 @@ window.formbuilder = (function() {
                     );
                     break;
                 default:
-                    html.push('<td class="editable-cell" data-type="label"></td>');
+                    html.push('<td class="editable-cell" ',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        ' data-type="label"></td>');
                     break;
             }
 
@@ -511,6 +554,18 @@ window.formbuilder = (function() {
                 placeholder: "ui-state-highlight"
             });
             self._formContainer.disableSelection();
+        },
+
+        initResize: function(){
+            var self = this;
+            $("#form-builder-container table.editable-table").each(function(){
+               $(this).find('tr').first().find('td:not(".dummy-cell")').resizable({
+                   handles: "e",
+                   stop:function(e,ui){
+                       $(e.target).attr('data-resized',true);
+                   }
+               });
+            })
         },
 
         setHandlers: function(){
@@ -568,6 +623,12 @@ window.formbuilder = (function() {
 
                     }
 
+                }else{
+                    $('#table-border').val($('#table-border').find('option').first().val());
+                    $('#table-color').val($('#table-color').find('option').first().val());
+                    if(table.hasClass('not-bordered')){
+                        $('#cells-border').val('not-bordered');
+                    }
                 }
 
                 $('#configTable').modal('show');
@@ -631,9 +692,9 @@ window.formbuilder = (function() {
                     i,j;
                 html.push('<div class="table-container"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs"><i class="glyphicon glyphicon-trash"></i></button><button class="btn btn-info config-table btn-xs"><i class="glyphicon glyphicon-cog"></i></button><table class="table-responsive table table-bordered editable-table"><tbody>');
                 html.push('<tr class="tmp-cell">');
-                html.push('<td class="tmp-cell"></td>');
+                html.push('<td class="tmp-cell  dummy-cell"></td>');
                 for (j = 0;j<cols;j++){
-                    html.push('<td class="tmp-cell"><button class="btn btn-danger btn-xs remove-column" data-c="',j+1,'"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-down"></span></button></td>');
+                    html.push('<td class="tmp-cell" style="width:auto;"><button class="btn btn-danger btn-xs remove-column" data-c="',j+1,'"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-down"></span></button></td>');
                 }
                 html.push('</tr>');
                 for (i = 0;i<rows;i++){
@@ -650,6 +711,7 @@ window.formbuilder = (function() {
                 self._formContainer.append(html.join(''));
                 $('#addTable').modal('hide');
                 self.initSortable();
+                self.initResize();
             });
             $('.confirm-table-settings').on('click',function(){
                 var table = $('.selected-table'),
@@ -667,6 +729,48 @@ window.formbuilder = (function() {
 
                 table.removeClass('selected-table');
                 $('#configTable').modal('hide');
+            });
+
+            $('.add-row').on('click',function(){
+                var table = $('.selected-table'),
+                    row = table.find('tr').last().clone();
+                row.find('td:not(".tmp-cell")').each(function(){
+                    $(this).html('');
+                    var attrs = this.attributes;
+                    var toRemove = [];
+                    var element = $(this);
+
+                    for (attr in attrs) {
+                        if (typeof attrs[attr] === 'object' &&
+                            typeof attrs[attr].name === 'string' &&
+                            (/^data-/).test(attrs[attr].name)) {
+                            toRemove.push(attrs[attr].name);
+                        }
+                    }
+
+                    for (var i = 0; i < toRemove.length; i++) {
+                        element.removeAttr(toRemove[i]);
+                    }
+                });
+
+
+                table.removeClass('selected-table').append(row);
+                $('#configTable').modal('hide');
+                self.initResize();
+            });
+
+            $('.add-column').on('click',function(){
+                var table   = $('.selected-table'),
+                    firstTd = table.find('tr').first().find('td').last().clone();
+
+                table.find('tr').first().append(firstTd);
+                table.find('tr:not(".tmp-cell")').each(function(){
+                    $(this).append('<td class="editable-cell"></td>');
+                });
+
+                table.removeClass('selected-table');
+                $('#configTable').modal('hide');
+                self.initResize();
             });
 
 
@@ -710,8 +814,10 @@ $(function () {
                 $('#form-name').val(data.name);
                 $('#form-type').val(data.type);
                 $('#form-report').val(data.report);
+                $('#allow-geo').prop('checked', data.geo);
                 formbuilder.initForm('#form-builder-container',data.data);
                 $('#form-builder').removeClass('hidden');
+                formbuilder.initResize();
             });
         }
     });

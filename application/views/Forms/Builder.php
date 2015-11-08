@@ -36,6 +36,12 @@
             <?php endforeach;?>
         </select>
     </div>
+    <div>
+        <label class="control-label">
+            <input type="checkbox" id="allow-geo"/>
+            Use geolocation data
+        </label>
+    </div>
 
     <div class="builderactions">
         <button class="btn btn-info add-table">Insert table</button>
@@ -114,6 +120,10 @@
                         </select>
                     </div>
                 </div>
+                <div class="row">
+                    <button class="btn btn-warning add-row" data-dismiss="modal">Add Row</button>
+                    <button class="btn btn-success add-column" data-dismiss="modal">Add Column</button>
+                </div>
             </div>
             <div class="modal-footer" class="tableRowButtons">
                 <button class="btn btn-warning" data-dismiss="modal">Close</button>
@@ -147,6 +157,8 @@
                                 <option value="ticket">Ticket</option>
                                 <option value="options">Options</option>
                                 <option value="signature">Signature</option>
+                                <option value="timestamp">Timestamp</option>
+                                <option value="revision"><Revision></Revision></option>
                             </select>
                         </div>
                     </div>
@@ -217,5 +229,6 @@
 
 <link href="<?= URL::base() ?>css/forms/formbuilder.css" rel="stylesheet">
 <script src="<?= URL::base() ?>js/lib/signature_pad.min.js"></script>
+<script src="<?= URL::base() ?>js/lib/jquery/colResizable-1.5.min.js"></script>
 
 <script src="<?= URL::base() ?>js/forms/formbuilder.js"></script>

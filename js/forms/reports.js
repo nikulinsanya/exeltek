@@ -1,6 +1,12 @@
 $(function () {
     $('#form-reports').on('change',function(e){
-        loadHeaders();
+        var id = $(this).val();
+        if (id)
+            $.post(utils.baseUrl() + 'reports/forms', {id: $(this).val()}, function(data) {
+                window.location = utils.baseUrl() + 'reports/forms?id=' + data.id;
+            });
+        else
+            window.location = utils.baseUrl() + 'reports/forms';
     });
 
     $('#reports').on('click','.apply-filter',function(e){
@@ -24,10 +30,19 @@ $(function () {
         collectFilters();
     });
 
+    (function addNecessaryHtml(){
+        $('.table-header').on('mousedown','th',function(e){
+            if(e.target.nodeName == 'A')
+                $('.dropdown-menu.collapse.in').removeClass('in');
+        });
+        collectFilters(true);
+        initPlugins();
+    })();
 
 
 
-    function collectFilters(){
+
+    function collectFilters(updateOnly){
         var data = {},
             obj,
             key,
@@ -39,6 +54,7 @@ $(function () {
             obj = {};
             switch (th.attr('data-type')){
                 case 'float':
+                case 'int':
                 case 'number':
                 case 'date':
                     key = th.attr('data-guid');
@@ -67,10 +83,9 @@ $(function () {
 
         });
         displayFilters(extendedList);
-
-        loadItems(data).then(function(data){
-            $('.dropdown-menu.collapse.in').removeClass('in');
-        });
+        if(!updateOnly) {
+            loadItems(data);
+        }
     }
 
     function displayFilters(data){
@@ -94,72 +109,15 @@ $(function () {
 
     }
 
-    function loadHeaders(){
-        $.ajax({
-            url: utils.baseUrl() +'reports/forms/load?id='+$('#form-reports').val(),
-            type:'GET',
-            dataType:'JSON',
-            success:function(data){
-                var html = [], i, j;
-                html.push('<h3>Reports</h3><table class="table table-bordered table-responsive" id="report-list"><tr class="table-header"><th>Report</th>');
-                for(j in data.columns){
-                    html.push(
-                        '<th class="dropdown" data-type="',
-                        data.columns[j].type,
-                        '" data-guid="',
-                        data.columns[j].id,
-                        '">',
-                        '<a  class="dropdown-toggle" data-toggle="collapse" data-target="#',
-                        data.columns[j].id,
-                        '">',
-                            data.columns[j].name,
-                        '</a>',
-                        getFilterTemplate(data.columns[j].type,data.columns[j].id),
-                        '</th>'
-                    );
-                }
-                html.push('</tr>');
-                html.push('</table>');
-                $('#reports').html(html.join(''));
-                $('.table-header').on('mousedown','th',function(e){
-                    if(e.target.nodeName == 'A')
-                    $('.dropdown-menu.collapse.in').removeClass('in');
-                });
-                loadItems();
-
-            },
-            error: function(){
-                alert('Nothing found');
-            }
-        });
-    }
     function loadItems(data){
+        data.id = $('#form-reports').val();
         return $.ajax({
-            url: utils.baseUrl() +'reports/forms/search?id='+$('#form-reports').val(),
+            url: utils.baseUrl() +'reports/forms',
             type:'POST',
             data: data === undefined ? '' : data,
             dataType:'JSON',
             success:function(data){
-                var html = [], i, j;
-
-                for(i in data.data){
-                    html.push('<tr><td>');
-                    var id = data.data[i].attachment_id;
-                    html.push('<a href="', utils.baseUrl(), 'download/attachment/', id, '">', data.data[i].attachment, '</a>');
-                    html.push('</td>');
-                    for(j in data.columns){
-                        html.push(
-                            '<td>',
-                            data.data[i][j] == undefined ? '' : data.data[i][j],
-                            '</td>'
-                        );
-                    }
-                    html.push('</tr>');
-                }
-                $('#report-list').find('tr:not(".table-header")').remove();
-
-                $('#report-list .table-header').after(html.join(''));
-                initPlugins();
+                window.location = utils.baseUrl() + 'reports/forms?id=' + data.id;
             },
             error: function(data){
                 alert('Nothing found');
@@ -182,10 +140,6 @@ $(function () {
             textarea.focus();
             $('form').prop('hold', false);
         });
-        $('.datepicker').datetimepicker({
-            format: 'DD-MM-YYYY'
-        });
-
     }
 
     function ticket_id_unfocus() {
@@ -213,26 +167,5 @@ $(function () {
             target.val(val);
             target.trigger('change');
         }
-    }
-
-
-
-    function getFilterTemplate(type,name){
-        var html;
-        switch (type){
-            case 'number':
-            case 'float':
-                html =  $('#numberfilter').html();
-                break;
-            case'date':
-                html =  $('#datefilter').html();
-                break;
-            default:
-                html = $('#textfilter').html();
-                break;
-        }
-        html = $(html).attr('id',name);
-
-        return $('<div>').append($(html).clone()).html();
     }
 });

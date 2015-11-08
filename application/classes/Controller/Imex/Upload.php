@@ -277,6 +277,8 @@ class Controller_Imex_Upload extends Controller {
         $updated = 0;
         $skipped = 0;
         $deleted = 0;
+
+        $update_time = time();
         
         $jobs = Database_Mongo::collection('jobs');
         $archive = Database_Mongo::collection('archive');
@@ -344,7 +346,7 @@ class Controller_Imex_Upload extends Controller {
                             if (isset($data[44])) {
                                 $status = preg_replace('/[^a-z]/', '', strtolower(Arr::path($diff, '44.old_value')));
                                 $status2 = preg_replace('/[^a-z]/', '', strtolower(Arr::get($new, 'data.44')));
-                                $status_updated = isset($new['data.44']);
+                                $status_updated = isset($new['$set']['data.44']);
 
                                 $discrepancy = array();
                                 if ($status_updated && (($status == 'tested' && $status2 != 'tested') || ($status == 'built' && ($status2 != 'built' && $status2 != 'tested')) ||
@@ -358,7 +360,7 @@ class Controller_Imex_Upload extends Controller {
                                 if ($discrepancy) {
                                     $discrepancy = array(
                                         'job_key' => $id,
-                                        'update_time' => time(),
+                                        'update_time' => $update_time,
                                         'user_id' => User::current('id'),
                                         'filename' => $filename,
                                         'data' => $discrepancy,
@@ -369,7 +371,18 @@ class Controller_Imex_Upload extends Controller {
                                 }
                             }
                             if ($new) {
-                                $new['$set']['last_update'] = time();
+                                $status = preg_replace('/[^a-z]/', '', strtolower(Arr::path($new, array('$set', 'data.44'))));
+
+                                if ($status == 'built' && !Arr::path($job, 'data.264'))
+                                    $new['$set']['data.264'] = $update_time;
+
+                                if ($status == 'tested' && !Arr::path($job, 'data.265')) {
+                                    $new['$set']['data.265'] = $update_time;
+                                    if (!Arr::path($job, 'data.264'))
+                                        $new['$set']['data.264'] = $update_time;
+                                }
+
+                                $new['$set']['last_update'] = $update_time;
                                 if (isset($new['$set']['data.8']))
                                     $new['$set']['address'] = MapQuest::parse($new['$set']['data.8']);
                                 elseif (isset($new['$unset']['data.8']))
@@ -383,7 +396,7 @@ class Controller_Imex_Upload extends Controller {
                                 if ($diff) {
                                     $archive->insert(array(
                                         'job_key' => $id,
-                                        'update_time' => time(),
+                                        'update_time' => $update_time,
                                         'update_type' => 2,
                                         'user_id' => User::current('id'),
                                         'filename' => $filename,
@@ -400,8 +413,8 @@ class Controller_Imex_Upload extends Controller {
                         $job = array(
                             '_id' => $id,
                             'region' => $region,
-                            'created' => time(),
-                            'last_update' => time(),
+                            'created' => $update_time,
+                            'last_update' => $update_time,
                             'data' => $data,
                         );
                         if (isset($data[8]))
@@ -410,7 +423,7 @@ class Controller_Imex_Upload extends Controller {
                         $jobs->insert($job);
                         $archive->insert(array(
                             'job_key' => $id,
-                            'update_time' => time(),
+                            'update_time' => $update_time,
                             'update_type' => 1,
                             'user_id' => User::current('id'),
                             'filename' => $filename,
@@ -457,7 +470,7 @@ class Controller_Imex_Upload extends Controller {
                     $values = array(
                         'job_key' => $id,
                         'update_type' => 3,
-                        'update_time' => time(),
+                        'update_time' => $update_time,
                         'user_id' => User::current('id'),
                         'filename' => $filename,
                         'data' => array(),
