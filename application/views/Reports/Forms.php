@@ -15,13 +15,17 @@
     <?=View::factory('Pager')?>
     <div id="reports" style="margin-top: 10px;">
         <table class="table">
-            <tr>
+            <tr class="table-header">
                 <th>File name</th>
                 <?php if ($geo):?>
                     <th>Geolocation</th>
                 <?php endif;?>
                 <?php foreach ($columns as $column):?>
-                <th><?=$column['name']?></th>
+                <th class="dropdown needs-filter" data-type="<?=$column['type']?>" data-guid="<?=$column['id']?>">
+                    <a href="#" class="dropdown-toggle" data-toggle="collapse" data-target="#<?=$column['id']?>">
+                        <?=$column['name']?>
+                    </a>
+                </th>
                 <?php endforeach;?>
             </tr>
             <?php if ($reports): foreach ($reports as $report):?>
