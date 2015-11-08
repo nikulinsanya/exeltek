@@ -75,11 +75,11 @@ table.editable-table{
 }
 
 
-.table-container.user-edit:hover>button{
-    display:none;
+.table-container.user-edit>button{
+    display:none!important;
 }
-.table-container.user-edit:hover>i{
-    display:none;
+.table-container.user-edit>i{
+    display:none!important;
 }
 
 .user-edit .editable-cell:hover{
