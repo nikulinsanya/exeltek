@@ -45,7 +45,7 @@
                 <?php $fl = true; $i = 0; foreach ($table['data'] as $cells): ?>
                     <tr>
                     <?php foreach ($cells as $input): if ($fl) $width = Arr::path($table, array('width-settings', ++$i)); else $width = 0;?>
-                        <td <?=$width ? 'style="width: ' . $width . 'px"' : ''?>>
+                        <td <?=$width ? 'style="width: ' . $width . '"' : ''?>>
                     <?php
                         $value = Arr::get($input, 'value');
                         switch (Arr::get($input, 'type')):
