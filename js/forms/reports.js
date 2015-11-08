@@ -31,9 +31,6 @@ $(function () {
     });
 
     (function addNecessaryHtml(){
-        $('.needs-filter').each(function(){
-            $(this).append(getFilterTemplate($(this).attr('data-type'),$(this).attr('data-guid'))).removeClass('need-filter');
-        });
         $('.table-header').on('mousedown','th',function(e){
             if(e.target.nodeName == 'A')
                 $('.dropdown-menu.collapse.in').removeClass('in');
@@ -174,27 +171,4 @@ $(function () {
             target.trigger('change');
         }
     }
-
-
-
-    function getFilterTemplate(type,name){
-        var html;
-        switch (type){
-            case 'number':
-            case 'int':
-            case 'float':
-                html =  $('#numberfilter').html();
-                break;
-            case'date':
-                html =  $('#datefilter').html();
-                break;
-            default:
-                html = $('#textfilter').html();
-                break;
-        }
-        html = $(html).attr('id',name);
-
-        return $('<div>').append($(html).clone()).html();
-    }
-
 });

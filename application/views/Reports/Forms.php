@@ -25,6 +25,21 @@
                     <a href="#" class="dropdown-toggle" data-toggle="collapse" data-target="#<?=$column['id']?>">
                         <?=$column['name']?>
                     </a>
+<!--                    dependent on the 'type'-->
+                    <ul class="dropdown-menu collapse" id="<?=$column['id']?>">
+                        <li>
+                            <input type="text" class="from form-control datepicker" placeholder="Start date"/>
+                        </li>
+                        <li>
+                            <input type="text" class="to form-control datepicker" placeholder="End date"/>
+                        </li>
+                        <li class="dropdown-header buttons-row">
+                            <button class="btn btn-success apply-filter dropdown-toggle" type="button">Apply</button>
+                            <button class="btn btn-warning filter-clear dropdown-toggle" type="button">Clear</button>
+                            <button class="btn btn-danger dropdown-toggle" type="button" >Cancel</button>
+                        </li>
+                    </ul>
+<!--                    -->
                 </th>
                 <?php endforeach;?>
             </tr>
