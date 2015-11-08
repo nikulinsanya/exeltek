@@ -158,6 +158,7 @@
                                 <option value="options">Options</option>
                                 <option value="signature">Signature</option>
                                 <option value="timestamp">Timestamp</option>
+                                <option value="revision">Revision</option>
                             </select>
                         </div>
                     </div>

@@ -103,12 +103,29 @@ class Controller_Form extends Controller {
                 foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
                     foreach ($table['data'] as $row => $cells)
                         foreach ($cells as $cell => $input)
-                            if (Arr::get($input, 'type') == 'ticket')
-                                $form['data'][$key]['data'][$row][$cell] = array(
-                                    'type' => 'label',
-                                    'placeholder' => Arr::get($input, 'value') ? Columns::output(Arr::path($job, 'data.' . $input['value']), Columns::get_type($input['value'])) : $job['_id'],
-                                    'destination' => Arr::get($input, 'destination'),
-                                );
+                            switch (Arr::get($input, 'type')) {
+                                case 'ticket':
+                                    $form['data'][$key]['data'][$row][$cell] = array(
+                                        'type' => 'label',
+                                        'placeholder' => Arr::get($input, 'value') ? Columns::output(Arr::path($job, 'data.' . $input['value']), Columns::get_type($input['value'])) : $job['_id'],
+                                        'destination' => Arr::get($input, 'destination'),
+                                    );
+                                    break;
+                                case 'timestamp':
+                                    $form['data'][$key]['data'][$row][$cell] = array(
+                                        'type' => 'label',
+                                        'placeholder' => Arr::get($form_data, 'last_update') ? date('d-m-Y H:i', $form_data['last_update']) : '',
+                                        'destination' => Arr::get($input, 'destination'),
+                                    );
+                                    break;
+                                case 'revision':
+                                    $form['data'][$key]['data'][$row][$cell] = array(
+                                        'type' => 'label',
+                                        'placeholder' => Arr::get($form_data, 'revision', 1),
+                                        'destination' => Arr::get($input, 'destination'),
+                                    );
+                                    break;
+                            }
                 break;
         }
 

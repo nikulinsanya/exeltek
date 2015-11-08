@@ -288,7 +288,7 @@ window.formbuilder = (function() {
                         input = {
                             type : $(this).attr('data-type'),
                             placeholder: $(this).attr('data-placeholder'),
-                            name: ['label','ticket'].indexOf($(this).attr('data-type')) == -1 ?
+                            name: ['label','ticket','revision','timestamp'].indexOf($(this).attr('data-type')) == -1 ?
                                 $(this).attr('data-name') || self.guid():
                                 '',
                             value:value,
@@ -384,6 +384,8 @@ window.formbuilder = (function() {
                     }
                     break;
                 case 'label':
+                case 'revision':
+                case 'timestamp':
                     html.push('<td class="editable-cell"',
                         element['width-settings'] ? ('style="width:'+element['width-settings']+'px;"') : '',
                         ' data-type="',
