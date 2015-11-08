@@ -269,7 +269,13 @@ window.formbuilder = (function() {
                 };
                 widthSettings = [];
                 $(this).find('tr.tmp-cell').first().find('td').each(function(){
-                    widthSettings.push($(this).width());
+
+                    if($(this).attr('data-resized')){
+                        widthSettings.push($(this).outerWidth()+'px;');
+                    }else{
+                        widthSettings.push('auto;');
+                    }
+
                 });
                 obj['width-settings'] = widthSettings;
 
@@ -336,12 +342,12 @@ window.formbuilder = (function() {
 
                     if(!this._editable){
                         html.push('<tr class="tmp-cell">');
-                        html.push('<td class="tmp-cell"></td>');
+                        html.push('<td class="tmp-cell dummy-cell"  style="width:auto;"></td>');
 
                         for(j=0;j<element.data[0].length;j++){
                             html.push(
                                 '<td class="tmp-cell" ',
-                                element['width-settings'] ? ('style="width:'+element['width-settings'][j+1]+'px;"') : '',
+                                element['width-settings'] ? 'data-resized="true" style="width:'+element['width-settings'][j+1]+'"' : '',
                                 '><button class="btn btn-danger btn-xs remove-column" data-c="',j+1,'"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-down"></span></button></td>');
                         }
                         html.push('</tr>');
@@ -387,7 +393,7 @@ window.formbuilder = (function() {
                 case 'revision':
                 case 'timestamp':
                     html.push('<td class="editable-cell"',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'px;"') : '',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
                         ' data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'"  data-value="',element.value,'" data-destination="',
@@ -399,7 +405,9 @@ window.formbuilder = (function() {
                     );
                     break;
                 case 'text':
-                    html.push('<td class="editable-cell" data-type="',
+                    html.push('<td class="editable-cell" ',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
@@ -409,7 +417,9 @@ window.formbuilder = (function() {
                     );
                     break;
                 case 'number':
-                    html.push('<td class="editable-cell" data-type="',
+                    html.push('<td class="editable-cell" ',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
@@ -419,7 +429,9 @@ window.formbuilder = (function() {
                     );
                     break;
                 case 'float':
-                    html.push('<td class="editable-cell" data-type="',
+                    html.push('<td class="editable-cell" ',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
@@ -429,7 +441,9 @@ window.formbuilder = (function() {
                     );
                     break;
                 case 'date':
-                    html.push('<td class="editable-cell" data-type="',
+                    html.push('<td class="editable-cell" ',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
@@ -439,7 +453,9 @@ window.formbuilder = (function() {
                     );
                     break;
                 case 'ticket':
-                    html.push('<td class="editable-cell" data-type="',
+                    html.push('<td class="editable-cell" ',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-value="',element.value,'" data-destination="',
                         element.destination,
@@ -450,7 +466,9 @@ window.formbuilder = (function() {
                     );
                     break;
                 case 'signature':
-                    html.push('<td class="editable-cell" data-type="',
+                    html.push('<td class="editable-cell" ',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
@@ -472,7 +490,9 @@ window.formbuilder = (function() {
                             available[i],
                             '</option>');
                     }
-                    html.push('<td class="editable-cell" data-type="',
+                    html.push('<td class="editable-cell" ',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
@@ -484,7 +504,9 @@ window.formbuilder = (function() {
                     );
                     break;
                 default:
-                    html.push('<td class="editable-cell" data-type="label"></td>');
+                    html.push('<td class="editable-cell" ',
+                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        ' data-type="label"></td>');
                     break;
             }
 
@@ -535,20 +557,15 @@ window.formbuilder = (function() {
         },
 
         initResize: function(){
-            $("#form-builder-container table.editable-table").colResizable({disable:true});
-            $("#form-builder-container table.editable-table").colResizable({
-                liveDrag: true,
-                minWidth: 70,
-                gripInnerHtml:"<div class='grip'></div>",
-                draggingClass:"dragging",
-                headerOnly:true,
-                onResize:self.onSampleResized
-            });
-        },
-
-        onSampleResized: function(e){
-            var table = $(e.currentTarget);
-            console.log(table);
+            var self = this;
+            $("#form-builder-container table.editable-table").each(function(){
+               $(this).find('tr').first().find('td:not(".dummy-cell")').resizable({
+                   handles: "e",
+                   stop:function(e,ui){
+                       $(e.target).attr('data-resized',true);
+                   }
+               });
+            })
         },
 
         setHandlers: function(){
@@ -675,9 +692,9 @@ window.formbuilder = (function() {
                     i,j;
                 html.push('<div class="table-container"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs"><i class="glyphicon glyphicon-trash"></i></button><button class="btn btn-info config-table btn-xs"><i class="glyphicon glyphicon-cog"></i></button><table class="table-responsive table table-bordered editable-table"><tbody>');
                 html.push('<tr class="tmp-cell">');
-                html.push('<td class="tmp-cell"></td>');
+                html.push('<td class="tmp-cell  dummy-cell"></td>');
                 for (j = 0;j<cols;j++){
-                    html.push('<td class="tmp-cell"><button class="btn btn-danger btn-xs remove-column" data-c="',j+1,'"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-down"></span></button></td>');
+                    html.push('<td class="tmp-cell" style="width:auto;"><button class="btn btn-danger btn-xs remove-column" data-c="',j+1,'"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-down"></span></button></td>');
                 }
                 html.push('</tr>');
                 for (i = 0;i<rows;i++){
