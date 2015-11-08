@@ -36,6 +36,12 @@
             <?php endforeach;?>
         </select>
     </div>
+    <div>
+        <label class="control-label">
+            <input type="checkbox" id="allow-geo"/>
+            Use geolocation data
+        </label>
+    </div>
 
     <div class="builderactions">
         <button class="btn btn-info add-table">Insert table</button>
@@ -151,6 +157,8 @@
                                 <option value="ticket">Ticket</option>
                                 <option value="options">Options</option>
                                 <option value="signature">Signature</option>
+                                <option value="timestamp">Timestamp</option>
+                                <option value="revision">Revision</option>
                             </select>
                         </div>
                     </div>

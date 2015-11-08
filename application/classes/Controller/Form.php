@@ -21,9 +21,21 @@ class Controller_Form extends Controller {
 
     public function action_print() {
         $id = Arr::get($_GET, 'id');
-        $form = Database_Mongo::collection('forms-data')->findOne(array('_id' => new MongoId($id)));
+        $form_data = Database_Mongo::collection('forms-data')->findOne(array('_id' => new MongoId($id)));
+
+        if (!$form_data) throw new HTTP_Exception_404('Not found');
+
+        $form = Database_Mongo::collection('forms')->findOne(array('_id' => new MongoId($form_data['form_id'])));
 
         if (!$form) throw new HTTP_Exception_404('Not found');
+
+        foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
+            foreach ($table['data'] as $row => $cells)
+                foreach ($cells as $cell => $input)
+                    if (Arr::get($input, 'name'))
+                        $form['data'][$key]['data'][$row][$cell]['value'] = Arr::get($form_data['data'], $input['name']);
+
+
 
         $view = View::factory('Forms/PDF')
             ->bind('name', $form['name'])
@@ -49,69 +61,107 @@ class Controller_Form extends Controller {
     public function action_fill() {
         $id = Arr::get($_GET, 'id');
         if ($id) {
-            $form = Database_Mongo::collection('forms-data')->findOne(array('_id' => new MongoId($id)));
-            $form_id = false;
+            $form_data = Database_Mongo::collection('forms-data')->findOne(array('_id' => new MongoId($id)));
+            $form_id = $form_data['form_id'];
         } else {
             $data = explode('/', Arr::get($_GET, 'form', ''));
             $form_id = $data[0];
-            $form = Database_Mongo::collection('forms')->findOne(array('_id' => new MongoId($form_id)));
-            $form['company'] = User::current('company_id');
+            $form_data = array();
+        }
 
-            switch ($form['type']) {
-                case Form::FORM_TYPE_COMMON:
-                    break;
+        $form = Database_Mongo::collection('forms')->findOne(array('_id' => new MongoId($form_id)));
+        $form['company'] = User::current('company_id');
 
-                case Form::FORM_TYPE_TICKET:
+        if (!$form) throw new HTTP_Exception_404('Not found');
+
+        if (!$form_data) {
+            $form_data['form_id'] = $form_id;
+            $form_data['data'] = array();
+            foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
+                foreach ($table['data'] as $row => $cells)
+                    foreach ($cells as $cell => $input)
+                        if (Arr::get($input, 'name'))
+                            $form_data['data'][$input['name']] = '';
+        }
+
+        switch ($form['type']) {
+            case Form::FORM_TYPE_COMMON:
+                break;
+
+            case Form::FORM_TYPE_TICKET:
+                if (isset($form_data['job']))
+                    $job_id = $form_data['job'];
+                else {
                     $job_id = $data[1];
-                    $form['job'] = $job_id;
-                    $job = Database_Mongo::collection('jobs')->findOne(array('_id' => strval($job_id)));
-                    if (!$job) throw new HTTP_Exception_404('Not found');
-                    if (!Group::current('show_all_jobs') && !in_array(User::current('company_id'), array_merge(Arr::get($job, 'companies', array()), Arr::get($job, 'ex', array()))))
-                        throw new HTTP_Exception_404('Not found');
+                    $form_data['job'] = $job_id;
+                }
+                $job = Database_Mongo::collection('jobs')->findOne(array('_id' => strval($job_id)));
+                if (!$job) throw new HTTP_Exception_404('Not found');
+                if (!Group::current('show_all_jobs') && !in_array(User::current('company_id'), array_merge(Arr::get($job, 'companies', array()), Arr::get($job, 'ex', array()))))
+                    throw new HTTP_Exception_404('Not found');
 
-                    foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
-                        foreach ($table['data'] as $row => $cells)
-                            foreach ($cells as $cell => $input)
-                                if (Arr::get($input, 'type') == 'ticket')
+                foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
+                    foreach ($table['data'] as $row => $cells)
+                        foreach ($cells as $cell => $input)
+                            switch (Arr::get($input, 'type')) {
+                                case 'ticket':
                                     $form['data'][$key]['data'][$row][$cell] = array(
                                         'type' => 'label',
                                         'placeholder' => Arr::get($input, 'value') ? Columns::output(Arr::path($job, 'data.' . $input['value']), Columns::get_type($input['value'])) : $job['_id'],
                                         'destination' => Arr::get($input, 'destination'),
                                     );
-                    break;
-            }
-
+                                    break;
+                                case 'timestamp':
+                                    $form['data'][$key]['data'][$row][$cell] = array(
+                                        'type' => 'label',
+                                        'placeholder' => Arr::get($form_data, 'last_update') ? date('d-m-Y H:i', $form_data['last_update']) : '',
+                                        'destination' => Arr::get($input, 'destination'),
+                                    );
+                                    break;
+                                case 'revision':
+                                    $form['data'][$key]['data'][$row][$cell] = array(
+                                        'type' => 'label',
+                                        'placeholder' => Arr::get($form_data, 'revision', 1),
+                                        'destination' => Arr::get($input, 'destination'),
+                                    );
+                                    break;
+                            }
+                break;
         }
-
-        if (!$form) throw new HTTP_Exception_404('Not found');
-
 
         if (isset($_GET['load']) || $_POST) {
             header('Content-type: application/json');
 
-            if (isset($form['job']))
-                $job = Database_Mongo::collection('jobs')->findOne(array('_id' => is_array($form['job']) ? array('$in' => $form['job']) : $form['job']));
+
+            if (isset($form_data['job']))
+                $job = Database_Mongo::collection('jobs')->findOne(array('_id' => is_array($form_data['job']) ? array('$in' => $form_data['job']) : $form_data['job']));
 
             if ($_POST) {
-                foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
-                    foreach ($table['data'] as $row => $cells)
-                        foreach ($cells as $cell => $input)
-                            if (Arr::get($input, 'name'))
-                                $form['data'][$key]['data'][$row][$cell]['value'] = Arr::get($_POST, $input['name']);
+                $fl = false;
+                foreach ($form_data['data'] as $key => $value) if (Arr::get($_POST, $key) != $value) {
+                    $form_data['data'][$key] = Arr::get($_POST, $key);
+                    $fl = true;
+                }
 
-                unset($form['_id']);
-                $form['last_update'] = time();
+                if ($fl) {
+                    $form_data['last_update'] = time();
+
+                    if (Arr::get($form, 'geo'))
+                        $form_data['geo'] = Arr::get($_POST, 'geo');
+                }
 
                 if ($id) {
-                    $form['revision']++;
-                    Database_Mongo::collection('forms-data')->update(array('_id' => new MongoId($id)), $form);
+                    if ($fl)
+                        $form_data['revision']++;
+                    Database_Mongo::collection('forms-data')->update(array('_id' => new MongoId($id)), $form_data);
                 } else {
-                    $form['created'] = time();
-                    $form['user_id'] = User::current('id');
-                    $form['revision'] = 1;
-                    Database_Mongo::collection('forms-data')->insert($form);
+                    $form_data['created'] = time();
+                    $form_data['user_id'] = User::current('id');
+                    $form_data['revision'] = 1;
+                    Database_Mongo::collection('forms-data')->insert($form_data);
                     $id = strval($form['_id']);
                 }
+
                 if (isset($_POST['print'])) {
                     $columns = DB::select('id')->from('report_columns')->where('report_id', '=', Arr::get($form, 'report'))->execute()->as_array('id', 'id');
                     $report = array();
@@ -204,7 +254,7 @@ class Controller_Form extends Controller {
                 header('Content-type: application/json');
                 switch ($form['type']) {
                     case Form::FORM_TYPE_TICKET:
-                        $url = URL::base() . 'search/view/' . $form['job'] . '#' . $target;
+                        $url = URL::base() . 'search/view/' . $form_data['job'] . '#' . $target;
                         break;
 
                     case Form::FORM_TYPE_COMMON:
@@ -214,12 +264,19 @@ class Controller_Form extends Controller {
                 die(json_encode(array('success' => true, 'url' => $url)));
             }
 
+            foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
+                foreach ($table['data'] as $row => $cells)
+                    foreach ($cells as $cell => $input)
+                        if (Arr::get($input, 'name'))
+                            $form['data'][$key]['data'][$row][$cell]['value'] = Arr::get($form_data['data'], $input['name']);
+
             die(json_encode($form['data']));
         }
 
         $view = View::factory('Forms/Form')
             ->set('form_id', $form_id)
             ->set('id', $id)
+            ->set('allow_geo', Arr::get($form, 'geo'))
             ->set('name', $form['name']);
 
         $this->response->body($view);
@@ -236,6 +293,7 @@ class Controller_Form extends Controller {
         $form = array(
             'type' => $type,
             'name' => $name,
+            'geo' => Arr::get($_GET, 'geo') ? true : false,
             'report' => intval(Arr::get($_GET, 'report')),
             'data' => $data,
         );
@@ -262,6 +320,7 @@ class Controller_Form extends Controller {
             'success' => true,
             'type' => $form['type'],
             'name' => $form['name'],
+            'geo' => Arr::get($form, 'geo') ? true : false,
             'report' => Arr::get($form, 'report'),
             'data' => $form['data'],
         )));

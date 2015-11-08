@@ -234,7 +234,7 @@ window.formbuilder = (function() {
                 id = $('#form-builder').attr('data-id');
 
             return $.ajax({
-                url : utils.baseUrl() + 'form/save?id=' + id + '&type=' + $('#form-type').val() + '&report=' + $('#form-report').val() + '&name=' + encodeURIComponent($('#form-name').val()),
+                url : utils.baseUrl() + 'form/save?id=' + id + '&type=' + $('#form-type').val() + '&report=' + $('#form-report').val() + '&name=' + encodeURIComponent($('#form-name').val()) + '&geo=' + ($('#allow-geo').prop('checked') ? '1' : ''),
                 type: 'POST',
                 data: JSON.stringify(json),
                 success: function(){
@@ -294,7 +294,7 @@ window.formbuilder = (function() {
                         input = {
                             type : $(this).attr('data-type'),
                             placeholder: $(this).attr('data-placeholder'),
-                            name: ['label','ticket'].indexOf($(this).attr('data-type')) == -1 ?
+                            name: ['label','ticket','revision','timestamp'].indexOf($(this).attr('data-type')) == -1 ?
                                 $(this).attr('data-name') || self.guid():
                                 '',
                             value:value,
@@ -390,7 +390,9 @@ window.formbuilder = (function() {
                     }
                     break;
                 case 'label':
-                    html.push('<td class="editable-cell" ',
+                case 'revision':
+                case 'timestamp':
+                    html.push('<td class="editable-cell"',
                         element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
                         ' data-type="',
                         element.type,
@@ -812,6 +814,7 @@ $(function () {
                 $('#form-name').val(data.name);
                 $('#form-type').val(data.type);
                 $('#form-report').val(data.report);
+                $('#allow-geo').prop('checked', data.geo);
                 formbuilder.initForm('#form-builder-container',data.data);
                 $('#form-builder').removeClass('hidden');
                 formbuilder.initResize();

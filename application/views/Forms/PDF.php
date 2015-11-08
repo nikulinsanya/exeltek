@@ -40,13 +40,13 @@
 <div style="border:1px solid #f7f7f7;">
     <h3><?=$name?></h3>
         <?php foreach ($form as $table):?>
-            <table class="table-responsive table table-bordered editable-table <?=isset($table['class']) ? $table['class'] : ''?>" style="<?=(isset($table['style']) && $table['style']!='undefined') ? $table['style'].' width:100%;' : 'width:100%;'?>">
+            <table class="table-responsive table table-bordered editable-table <?=isset($table['class']) ? $table['class'] : ''?>" style="<?=isset($table['style']) ? $table['style'] : ''?>">
                 <tbody>
-                <?php $i = 1;
-                foreach ($table['data'] as $cells): echo '<tr>';
-                    foreach ($cells as $input):
-                        $width = '100px;';
-                        echo '<td style="width:'.$width.'">';
+                <?php $fl = true; $i = 0; foreach ($table['data'] as $cells): ?>
+                    <tr>
+                    <?php foreach ($cells as $input): if ($fl) $width = Arr::path($table, array('width-settings', ++$i)); else $width = 0;?>
+                        <td <?=$width ? 'style="width: ' . $width . 'px"' : ''?>>
+                    <?php
                         $value = Arr::get($input, 'value');
                         switch (Arr::get($input, 'type')):
                             case 'label':
@@ -62,12 +62,14 @@
                                 echo '<span>' . $value . '</span>';
                                 break;
                         endswitch;
-                        echo '</td>';
-                    endforeach;
-                    echo '</tr>';
-                endforeach;
-                echo '</tbody></table>';
-            endforeach;?>
+                    ?>
+                        </td>
+                    <?php endforeach; $fl = false;?>
+                    </tr>
+                <?php endforeach;?>
+                </tbody>
+            </table>
+        <?php endforeach;?>
 </div>
 </body>
 </html>
