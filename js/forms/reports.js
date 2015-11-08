@@ -1,6 +1,12 @@
 $(function () {
     $('#form-reports').on('change',function(e){
-        loadHeaders();
+        var id = $(this).val();
+        if (id)
+            $.post(utils.baseUrl() + 'reports/forms', {id: $(this).val()}, function(data) {
+                window.location = utils.baseUrl() + 'reports/forms?id=' + data.id;
+            });
+        else
+            window.location = utils.baseUrl() + 'reports/forms';
     });
 
     $('#reports').on('click','.apply-filter',function(e){
