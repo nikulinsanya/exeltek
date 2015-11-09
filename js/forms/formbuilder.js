@@ -60,6 +60,8 @@ window.formbuilder = (function() {
                 case 'number':
                 case 'float':
                 case 'date':
+                case 'timestamp':
+                case 'revision':
                     $('#placeholder-type').val(cell.attr('data-placeholder'));
                     break;
                 case 'ticket':
@@ -109,6 +111,8 @@ window.formbuilder = (function() {
                 case 'number':
                 case 'float':
                 case 'date':
+                case 'timestamp':
+                case 'revision':
                     $('.placeholder-type-config').show();
                     break;
                 case 'ticket':
@@ -149,6 +153,20 @@ window.formbuilder = (function() {
 
 
             switch (type) {
+                case 'timestamp':
+                    var value = $('#placeholder-type').val();
+                    $selectedCell.attr('data-type','timestamp');
+                    $selectedCell.attr('data-placeholder',value);
+                    $selectedCell.html('<span>'+value+'</span>');
+                    $('#placeholder-type').val('');
+                    break;
+                case 'revision':
+                    var value = $('#placeholder-type').val();
+                    $selectedCell.attr('data-type','revision');
+                    $selectedCell.attr('data-placeholder',value);
+                    $selectedCell.html('<span>'+value+'</span>');
+                    $('#placeholder-type').val('');
+                    break;
                 case 'label':
                     var value = $('#placeholder-type').val();
                     $selectedCell.attr('data-type','label');
