@@ -82,7 +82,18 @@
             <?php endif;?>
         </table>
     </div>
+
 </div>
+    <div class="btn-group pull-right">
+        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="glyphicon glyphicon-export"></span> Export options <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li><a href="?id=<?=$_GET['id']?>&export"><span class="glyphicon glyphicon-list-alt">Export to CSV</span></a></li>
+            <li><a href="?id=<?=$_GET['id']?>&export=excel"><span class="glyphicon glyphicon-file">Export to Excel</span></a></li>
+        </ul>
+    </div>
+
 <?php endif;?>
 
 <link href="<?= URL::base() ?>css/forms/formbuilder.css" rel="stylesheet">

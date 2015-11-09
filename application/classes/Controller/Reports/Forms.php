@@ -89,7 +89,7 @@ class Controller_Reports_Forms extends Controller
                     $row = array($report['attachment']);
 
                     foreach ($columns as $column)
-                        $row[] = Arr::get($report, $column['id']) ? Columns::output($report[$column['id']], $column['type']) : '';
+                        $row[] = Arr::get($report, $column['id'], '');
 
                     $data[] = $row;
                 }
