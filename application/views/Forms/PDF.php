@@ -49,6 +49,8 @@
                     <?php
                         $value = Arr::get($input, 'value');
                         switch (Arr::get($input, 'type')):
+                            case 'timestamp':
+                            case 'revision':
                             case 'label':
                                 echo '<span>' . Arr::get($input, 'placeholder') . '</span>';
                                 break;
