@@ -356,7 +356,7 @@ window.formbuilder = (function() {
 
             switch (element.type){
                 case 'table':
-                    html.push('<div class="table-container ',this._editable ? 'user-edit' : '','"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs"><i class="glyphicon glyphicon-trash"></i></button><button class="btn btn-info config-table btn-xs"><i class="glyphicon glyphicon-cog"></i></button><table data-style=\''+element['data-style']+'\' style="'+element.style+'" class="table-responsive table table-bordered editable-table '+element.class+'"><tbody class="ui-sortable">');
+                    html.push('<div class="table-container ',this._editable ? 'user-edit' : '','"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs"><i class="glyphicon glyphicon-trash"></i></button><button class="btn btn-info config-table btn-xs"><i class="glyphicon glyphicon-cog"></i></button><table data-style=\''+element['data-style']+'\' style="'+element.style+'" class="table-responsive table table-bordered editable-table '+element.class+'" '+(element.class ? ' data-class="'+element.class+'" ' : '') +'><tbody class="ui-sortable">');
 
                     if(!this._editable){
                         html.push('<tr class="tmp-cell">');
@@ -633,9 +633,7 @@ window.formbuilder = (function() {
 
                 $('.selected-table').removeClass('selected-table');
                 table.addClass('selected-table');
-
                 if(dataStyle){
-
                     try{
                         dataStyle = JSON.parse(dataStyle);
                         $('#table-border').val(dataStyle.border);
@@ -643,15 +641,28 @@ window.formbuilder = (function() {
                         if(table.hasClass('not-bordered')){
                             $('#cells-border').val('not-bordered');
                         }
+                        else{
+                            $('#cells-border').val('');
+                        }
                     }catch(e){
-
+                        $('#table-border').val($('#table-border').find('option').first().val());
+                        $('#table-color').val($('#table-color').find('option').first().val());
+                        if(table.hasClass('not-bordered')){
+                            $('#cells-border').val('not-bordered');
+                        }
+                        else{
+                            $('#cells-border').val('');
+                        }
                     }
 
                 }else{
+
                     $('#table-border').val($('#table-border').find('option').first().val());
                     $('#table-color').val($('#table-color').find('option').first().val());
                     if(table.hasClass('not-bordered')){
                         $('#cells-border').val('not-bordered');
+                    }else{
+                        $('#cells-border').val('');
                     }
                 }
 
