@@ -365,8 +365,10 @@ window.formbuilder = (function() {
                         for(j=0;j<element.data[0].length;j++){
                             html.push(
                                 '<td class="tmp-cell" ',
-                                element['width-settings'] ? 'data-resized="true" style="width:'+element['width-settings'][j+1]+'"' : '',
-                                '><button class="btn btn-danger btn-xs remove-column" data-c="',j+1,'"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-down"></span></button></td>');
+                                (element['width-settings'] && element['width-settings'][j+1]!='auto;' ? 'data-resized="true" style="width:'+element['width-settings'][j+1]+'"' : ''),
+                                '><button class="btn btn-danger btn-xs remove-column" data-c="',j+1,'"><span class="glyphicon glyphicon-trash"></span><span class="glyphicon glyphicon-arrow-down"></span></button>' ,
+                                (element['width-settings'] && element['width-settings'][j+1]!='auto;' ? '<a class="btn btn-warning btn-xs reset-width" style="float:right;"><i class="glyphicon glyphicon-resize-full"></i></a>' : ''),
+                                '</td>');
                         }
                         html.push('</tr>');
                     }
@@ -820,7 +822,7 @@ window.formbuilder = (function() {
             });
 
             $('.editable-table').on('click','a.reset-width',function(){
-                $(this).parent().attr('style','width:auto;');
+                $(this).parent().attr('style','width:auto;').removeAttr('data-resized');
                 $(this).remove();
             });
         }
