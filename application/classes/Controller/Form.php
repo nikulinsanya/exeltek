@@ -171,14 +171,14 @@ class Controller_Form extends Controller {
                             foreach ($cells as $cell => $input) {
                                 switch (Arr::get($input, 'type')) {
                                     case 'revision':
-                                        $input['placeholder'] = Arr::get($form_data, 'revision', 1);
+                                        $form['data'][$key]['data'][$row][$cell]['placeholder'] = $input['placeholder'] = Arr::get($form_data, 'revision', 1);
                                         break;
                                     case 'timestamp':
-                                        $input['placeholder'] = Arr::get($form_data, 'last_update') ? date('d-m-Y H:i', $form_data['last_update']) : '';
+                                        $form['data'][$key]['data'][$row][$cell]['placeholder'] = $input['placeholder'] = Arr::get($form_data, 'last_update') ? date('d-m-Y H:i', $form_data['last_update']) : '';
                                         break;
                                 }
                                 if (Arr::get($input, 'name'))
-                                    $input['value'] = Arr::path($form_data, array('data', $input['name']), '');
+                                    $form['data'][$key]['data'][$row][$cell]['value'] = $input['value'] = Arr::path($form_data, array('data', $input['name']), '');
 
                                 if (Arr::get($input, 'destination') && isset($columns[$input['destination']]))
                                     $report[$input['destination']] = Arr::get($input, in_array(Arr::get($input, 'type', ''), array('text', 'number', 'float', 'date')) ? 'value' : 'placeholder');
