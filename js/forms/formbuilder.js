@@ -585,7 +585,7 @@ window.formbuilder = (function() {
                            self.t = setTimeout(function () {
                                $(e.target).append('<a class="btn btn-warning btn-xs reset-width" style="display: none;float:right;"><i class="glyphicon glyphicon-resize-full"></i></a>');
                                $(e.target).stop().find('a.reset-width').show(100);
-                           }, 1git 00)
+                           }, 100)
                        }
                    }
                });
