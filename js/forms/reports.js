@@ -57,6 +57,7 @@ $(function () {
                 case 'int':
                 case 'number':
                 case 'date':
+                case 'datetime':
                     key = th.attr('data-guid');
                     var from = th.find('.from').val();
                     if (from){
