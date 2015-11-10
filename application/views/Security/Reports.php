@@ -33,6 +33,7 @@
                             <option value="int">Integer number</option>
                             <option value="float">Floating-point number</option>
                             <option value="date">Date</option>
+                            <option value="datetime">DateTime</option>
                         </select>
                     </div>
                     </div>

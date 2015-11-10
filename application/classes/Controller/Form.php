@@ -189,8 +189,10 @@ class Controller_Form extends Controller {
                         ->bind('form', $form['data']);
 
                     require_once(APPPATH . 'mpdf/mpdf.php');
-                    $pdf = new mPDF();
+                    $pdf = new mPDF('UTF-8', 'A4');
                     $pdf->ignore_invalid_utf8 = true;
+                    $pdf->shrink_tables_to_fit = 1;
+                    $pdf->keep_table_proportions = true;
 
                     $pdf->WriteHTML($view);
                     $content = $pdf->Output('', 'S');

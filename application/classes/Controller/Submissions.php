@@ -73,6 +73,8 @@ class Controller_Submissions extends Controller {
 
         $value = Arr::get($job, $submission['key'], '');
 
+        $update_time = time();
+
         if ($value != $submission['value']) {
             $archive = array(
                 'data' => array(
@@ -84,22 +86,35 @@ class Controller_Submissions extends Controller {
                 'fields' => substr($submission['key'], 5),
                 'job_key' => $job['_id'],
                 'user_id' => User::current('id'),
-                'update_time' => time(),
+                'update_time' => $update_time,
                 'update_type' => 2,
                 'filename' => 'MANUAL',
             );
 
             $update = array('$set' => array(
-                'last_update' => time(),
+                'last_update' => $update_time,
             ));
             if ($submission['value'])
                 $update['$set'][$submission['key']] = $submission['value'];
             else
                 $update['$unset'][$submission['key']] = 1;
 
+            if ($submission['key'] == 'data.44') {
+                $status = preg_replace('/[^a-z]/', '', strtolower($submission['value']));
+
+                if ($status == 'built' && !Arr::path($job, 'data.264'))
+                    $update['$set']['data.264'] = $update_time;
+
+                if ($status == 'tested' && !Arr::path($job, 'data.265')) {
+                    $update['$set']['data.265'] = $update_time;
+                    if (!Arr::path($job, 'data.264'))
+                        $update['$set']['data.264'] = $update_time;
+                }
+            }
+
             $company = intval(User::get($submission['user_id'], 'company_id'));
 
-            $sub = array('$set' => array('admin_id' => User::current('id'), 'process_time' => time(), 'active' => -1));
+            $sub = array('$set' => array('admin_id' => User::current('id'), 'process_time' => $update_time, 'active' => -1));
 
             $financial = floatval(DB::select('financial')->from('job_columns')->where('id', '=', substr($submission['key'], 5))->execute()->get('financial'));
 

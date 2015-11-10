@@ -68,7 +68,7 @@ class Controller_Reports_Forms extends Controller
                     'attachment_id' => Arr::get($report, 'attachment_id', 0),
                 );
                 foreach ($columns as $key => $column)
-                    $data[$key] = Arr::get($report, $key) ? Columns::output($report[$key], $column['type']) : '';
+                    $data[$key] = Arr::get($report, $key, '');
 
                 if (isset($report['geo'])) {
                     $geo = true;
@@ -89,7 +89,7 @@ class Controller_Reports_Forms extends Controller
                     $row = array($report['attachment']);
 
                     foreach ($columns as $column)
-                        $row[] = Arr::get($report, $column['id'], '');
+                        $row[] = Arr::get($report, $column['id']) ? Columns::output($report[$column['id']], $column['type'], true) : '';
 
                     $data[] = $row;
                 }

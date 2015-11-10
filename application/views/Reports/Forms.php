@@ -27,12 +27,13 @@
                     </a>
                     <ul class="dropdown-menu collapse" id="<?=$column['id']?>">
                         <?php switch ($column['type']):
-                            case 'date':?>
+                            case 'date':
+                            case 'datetime':?>
                             <li>
-                                <input type="text" class="from form-control datepicker" placeholder="Start date" value="<?=Arr::path($filters, array($column['id'], '$gte')) ? date('d-m-Y', $filters[$column['id']]['$gte']) : ''?>"/>
+                                <input type="text" class="from form-control <?=$column['type']?>picker" placeholder="Start date" value="<?=Columns::output(Arr::path($filters, array($column['id'], '$gte')), $column['type'])?>"/>
                             </li>
                             <li>
-                                <input type="text" class="to form-control datepicker" placeholder="End date" value="<?=Arr::path($filters, array($column['id'], '$lte')) ? date('d-m-Y', $filters[$column['id']]['$lte']) : ''?>"/>
+                                <input type="text" class="to form-control <?=$column['type']?>picker" placeholder="End date" value="<?=Columns::output(Arr::path($filters, array($column['id'], '$lte')), $column['type'])?>"/>
                             </li>
                         <?php break;
                             case 'number':
@@ -72,7 +73,7 @@
                     </td>
                 <?php endif;?>
                 <?php foreach ($columns as $column):?>
-                    <td><?=Arr::get($report, $column['id'], '&nbsp;')?></td>
+                    <td><?=Arr::get($report, $column['id']) ? Columns::output($report[$column['id']], $column['type']) : '&nbsp;'?></td>
                 <?php endforeach;?>
             </tr>
             <?php endforeach; else:?>
