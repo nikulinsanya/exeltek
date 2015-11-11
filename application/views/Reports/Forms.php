@@ -63,6 +63,7 @@
             </tr>
             <?php if ($reports): foreach ($reports as $report):?>
             <tr>
+
                 <td><input type="checkbox" class="select-reports checkbox" data-id="<?=$report['attachment_id']?>"/></td>
                 <td><a href="<?=URL::base()?>download/attachment/<?=$report['attachment_id']?>"><?=$report['attachment']?></a></td>
                 <?php if ($geo):?>
