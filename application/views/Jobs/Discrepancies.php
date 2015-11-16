@@ -2,7 +2,7 @@
     <div class="filter-info-container">
         <label class="date-range-label">Ticket ID</label>
         <span class="date-range-container">
-            <input type="text" class="form-control auto-complete" source="<?=URL::base()?>imex/reports/tickets/" name="ticket" value="<?=Arr::get($_GET, 'ticket')?>" />
+            <input type="text" class="form-control multiline" data-separator="," name="ticket" value="<?=Arr::get($_GET, 'ticket')?>" />
         </span>
         <div class="clearfix">&nbsp;</div>
 

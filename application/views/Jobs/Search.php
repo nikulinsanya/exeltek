@@ -477,7 +477,7 @@
             <?php if (Group::current('allow_submissions')):?>
             <a href="<?=URL::base()?>submissions?ticket=<?=$ticket['_id']?>" class="btn btn-danger col-xs-12" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-check"></span> Submissions</a>
             <?php endif;?>
-            <?php if (Arr::get($forms, Form::FORM_TYPE_TICKET)):?>
+            <?php if (Group::current('allow_custom_forms') && Arr::get($forms, Form::FORM_TYPE_TICKET)):?>
                 <div class="btn-group">
                     <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Forms <span class="caret"></span></button>
                     <ul class="dropdown-menu">

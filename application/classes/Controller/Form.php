@@ -2,6 +2,13 @@
 
 class Controller_Form extends Controller {
 
+    public function before() {
+        parent::before();
+
+        if (!Group::current('allow_custom_forms'))
+            throw new HTTP_Exception_403('Forbidden');
+    }
+
     public function action_index() {
         if (!Group::current('is_admin')) throw new HTTP_Exception_403('Forbidden');
 
@@ -21,7 +28,11 @@ class Controller_Form extends Controller {
 
     public function action_print() {
         $id = Arr::get($_GET, 'id');
-        $form_data = Database_Mongo::collection('forms-data')->findOne(array('_id' => new MongoId($id)));
+
+        $filters = array('_id' => new MongoId($id));
+        if (!Group::current('show_all_jobs'))
+            $filters['company'] = User::current('company_id');
+        $form_data = Database_Mongo::collection('forms-data')->findOne($filters);
 
         if (!$form_data) throw new HTTP_Exception_404('Not found');
 
@@ -61,7 +72,10 @@ class Controller_Form extends Controller {
     public function action_fill() {
         $id = Arr::get($_GET, 'id');
         if ($id) {
-            $form_data = Database_Mongo::collection('forms-data')->findOne(array('_id' => new MongoId($id)));
+            $filters = array('_id' => new MongoId($id));
+            if (!Group::current('show_all_jobs'))
+                $filters['company'] = User::current('company_id');
+            $form_data = Database_Mongo::collection('forms-data')->findOne($filters);
             $form_id = $form_data['form_id'];
         } else {
             $data = explode('/', Arr::get($_GET, 'form', ''));
@@ -70,7 +84,6 @@ class Controller_Form extends Controller {
         }
 
         $form = Database_Mongo::collection('forms')->findOne(array('_id' => new MongoId($form_id)));
-        $form['company'] = User::current('company_id');
 
         if (!$form) throw new HTTP_Exception_404('Not found');
 
@@ -157,6 +170,7 @@ class Controller_Form extends Controller {
                 } else {
                     $form_data['created'] = time();
                     $form_data['user_id'] = User::current('id');
+                    $form_data['company'] = User::current('company_id');
                     $form_data['revision'] = 1;
                     Database_Mongo::collection('forms-data')->insert($form_data);
                     $id = strval($form['_id']);
@@ -208,7 +222,7 @@ class Controller_Form extends Controller {
                             break;
                     }
 
-                    $company = DB::select('name')->from('companies')->where('id', '=', User::get($form_data['user_id'], 'company_id'))->execute()->get('name');
+                    $company = DB::select('name')->from('companies')->where('id', '=', $form_data['company'])->execute()->get('name');
 
                     foreach ($jobs as $job) {
                         if ($job)
@@ -249,6 +263,8 @@ class Controller_Form extends Controller {
                                 $data = $report;
                                 $report = array(
                                     'report_id' => intval(Arr::get($form, 'report')),
+                                    'user_id' => $form_data['user_id'],
+                                    'company' => $form_data['company'],
                                     'attachment_id' => $image_id,
                                     'attachment' => $filename,
                                     'uploaded' => $uploaded,

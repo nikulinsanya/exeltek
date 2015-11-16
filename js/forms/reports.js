@@ -30,6 +30,19 @@ $(function () {
         collectFilters();
     });
 
+    $('.add-items-to-request').on('click',  function(e){
+        e.preventDefault();
+        var url = $(this).attr('href'),
+            items = $('.select-reports[data-id]:checked'),
+            ids = items.map(function(){return $(this).attr('data-id')}).toArray();
+        url += '&ids=' + ids.join(',');
+        OpenInNewTab(url);
+    });
+    function OpenInNewTab(url) {
+        var win = window.open(url, '_blank');
+        win.focus();
+    }
+
     (function addNecessaryHtml(){
         $('.table-header').on('mousedown','th',function(e){
             if(e.target.nodeName == 'A')

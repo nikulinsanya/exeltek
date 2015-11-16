@@ -16,6 +16,7 @@
     <div id="reports" style="margin-top: 10px;">
         <table class="table">
             <tr class="table-header">
+                <th><input type="checkbox" class="checkbox check-all select-reports"/></th>
                 <th>File name</th>
                 <?php if ($geo):?>
                     <th>Location</th>
@@ -62,6 +63,8 @@
             </tr>
             <?php if ($reports): foreach ($reports as $report):?>
             <tr>
+
+                <td><input type="checkbox" class="select-reports checkbox" data-id="<?=$report['attachment_id']?>"/></td>
                 <td><a href="<?=URL::base()?>download/attachment/<?=$report['attachment_id']?>"><?=$report['attachment']?></a></td>
                 <?php if ($geo):?>
                     <td>
@@ -90,8 +93,10 @@
             <span class="glyphicon glyphicon-export"></span> Export options <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
-            <li><a href="?id=<?=$_GET['id']?>&export"><span class="glyphicon glyphicon-list-alt">Export to CSV</span></a></li>
-            <li><a href="?id=<?=$_GET['id']?>&export=excel"><span class="glyphicon glyphicon-file">Export to Excel</span></a></li>
+            <li><a href="?id=<?=$_GET['id']?>&export" class="add-items-to-request"><span class="glyphicon glyphicon-list-alt">Export to CSV</span></a></li>
+            <li><a href="?id=<?=$_GET['id']?>&export=excel" class="add-items-to-request"><span class="glyphicon glyphicon-file">Export to Excel</span></a></li>
+            <li><a href="?id=<?=$_GET['id']?>&export&all"><span class="glyphicon glyphicon-list-alt">Export all to CSV</span></a></li>
+            <li><a href="?id=<?=$_GET['id']?>&export=excel&all"><span class="glyphicon glyphicon-file">Export all to Excel</span></a></li>
         </ul>
     </div>
 

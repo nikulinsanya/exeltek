@@ -345,7 +345,8 @@ class Controller_Imex_Upload extends Controller {
                         if ($diff || $new) {
                             if (isset($data[44])) {
                                 $status = preg_replace('/[^a-z]/', '', strtolower(Arr::path($diff, '44.old_value')));
-                                $status2 = preg_replace('/[^a-z]/', '', strtolower(Arr::get($new, 'data.44')));
+                                $status2 = preg_replace('/[^a-z]/', '', strtolower(Arr::path($new, array('$set', 'data.44'))));
+
                                 $status_updated = isset($new['$set']['data.44']);
 
                                 $discrepancy = array();

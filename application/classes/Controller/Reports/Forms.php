@@ -6,7 +6,7 @@ class Controller_Reports_Forms extends Controller
     public function before() {
         parent::before();
 
-        if (!Group::current('show_all_jobs'))
+        if (!Group::current('allow_custom_forms'))
             throw new HTTP_Exception_403('Forbidden');
     }
 
@@ -22,9 +22,12 @@ class Controller_Reports_Forms extends Controller
 
             $query = array('report_id' => $id);
 
+            if (!Group::current('show_all_jobs'))
+                $query['company'] = User::current('company_id');
+
             $columns = DB::select('id', 'name', 'type')->from('report_columns')->where('report_id', '=', $query['report_id'])->execute()->as_array('id');
 
-            if ($_POST) foreach ($columns as $column) if (isset($_POST[$column['id']])) {
+            foreach ($columns as $column) if (isset($_POST[$column['id']])) {
                 $key = $column['id'];
                 $type = $column['type'];
                 if (isset($_POST[$key]['from']))
@@ -85,7 +88,9 @@ class Controller_Reports_Forms extends Controller
 
                 $data = array($header);
 
-                foreach ($reports as $report) {
+                $ids = (isset($_GET['ids']) && !isset($_GET['all'])) ? array_flip(explode(',', $_GET['ids'])) : array();
+
+                foreach ($reports as $report) if (!$ids || isset($ids[$report['attachment_id']])) {
                     $row = array($report['attachment']);
 
                     foreach ($columns as $column)
