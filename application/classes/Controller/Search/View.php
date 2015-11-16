@@ -561,9 +561,16 @@ class Controller_Search_View extends Controller {
         }
 
         $forms = array();
-        $result = Database_Mongo::collection('forms-data')->find(array('job' => $job['_id']), array('data' => 0))->sort(array('created' => -1));
-        foreach ($result as $form)
-            $forms[] = $form;
+        if (Group::current('allow_custom_forms')) {
+            $forms = array('job' => $job['_id']);
+            if (!Group::current('show_all_jobs'))
+                $forms['company'] = User::current('company_id');
+
+            $result = Database_Mongo::collection('forms-data')->find($forms, array('data' => 0))->sort(array('created' => -1));
+            $forms = array();
+            foreach ($result as $form)
+                $forms[] = $form;
+        }
 
 
         $view = View::factory('Jobs/View')

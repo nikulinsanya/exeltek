@@ -15,7 +15,15 @@ class Controller_Imex_Discrepancies extends Controller {
         $filters = array();
 
         if (Arr::get($_GET, 'ticket')) {
-            $filters['job_key'] = $_GET['ticket'];
+
+            $tickets = array();
+            foreach (explode(',', $_GET['ticket']) as $ticket)
+                if (preg_match('/^T1W[0-9]{12}$/', $ticket))
+                    $tickets[] = $ticket;
+                else
+                    $tickets[] = new MongoRegex('/.*' . $ticket . '.*/i');
+
+            $filters['job_key']['$in'] = $tickets;
         }
         if (Arr::get($_GET, 'file')) {
             $filters['filename'] = $_GET['file'];

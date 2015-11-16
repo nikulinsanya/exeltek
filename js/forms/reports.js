@@ -33,7 +33,7 @@ $(function () {
     $('.add-items-to-request').on('click',  function(e){
         e.preventDefault();
         var url = $(this).attr('href'),
-            items = $('.select-reports[data-id]'),
+            items = $('.select-reports[data-id]:checked'),
             ids = items.map(function(){return $(this).attr('data-id')}).toArray();
         url += '&ids=' + ids.join(',');
         OpenInNewTab(url);
