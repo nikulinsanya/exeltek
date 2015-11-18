@@ -38,6 +38,7 @@ $(function () {
                     $('#table-list').append('<li class="edit-table-item" href="#" data-id="'+data.id+'">'+name+'</li>');
                 }
 
+                $('.edit-table-item[data-id="'+id+'"]').text(name);
                 $('#configTable').modal('hide');
 
             },
