@@ -84,8 +84,7 @@ class Controller_Test extends Controller {
             }
             if ($fl) $ids[] = $job['_id'];
         }
-        print_r($ids);
-        //Database_Mongo::collection('jobs')->update(array('_id' => array('$in' => $ids)), array('$unset' => array('discrepancies' => 1)), array('multiple' => 1));
+        Database_Mongo::collection('jobs')->update(array('_id' => array('$in' => $ids)), array('$unset' => array('discrepancies' => 1)), array('multiple' => 1));
         die('Done. Total ' . count($ids) . ' job(s)');
 
     }
