@@ -355,7 +355,7 @@ class Controller_Imex_Upload extends Controller {
                                 )
                                     $discrepancy[44] = $diff[44];
 
-                                foreach (Columns::get_track() as $key) if (isset($diff[$key]) && !$diff[$key]['new_value'] && $diff[$key]['old_value'])
+                                foreach (Columns::get_track() as $key) if ($key != 44 && isset($diff[$key]) && !$diff[$key]['new_value'] && $diff[$key]['old_value'])
                                     $discrepancy[$key] = $diff[$key];
 
                                 if ($discrepancy) {
