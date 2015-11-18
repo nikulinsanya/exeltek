@@ -172,6 +172,7 @@ class Controller_Form extends Controller {
                     $form_data['user_id'] = User::current('id');
                     $form_data['company'] = User::current('company_id');
                     $form_data['revision'] = 1;
+                    $form_data['last_update'] = time();
                     Database_Mongo::collection('forms-data')->insert($form_data);
                     $id = strval($form['_id']);
                 }
