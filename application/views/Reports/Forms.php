@@ -57,7 +57,6 @@
                             <button class="btn btn-danger dropdown-toggle" type="button" >Cancel</button>
                         </li>
                     </ul>
-<!--                    -->
                 </th>
                 <?php endforeach;?>
             </tr>
@@ -76,7 +75,7 @@
                     </td>
                 <?php endif;?>
                 <?php foreach ($columns as $column):?>
-                    <td><?=Arr::get($report, $column['id']) ? Columns::output($report[$column['id']], $column['type']) : '&nbsp;'?></td>
+                    <td class="editable-form-cell" data-type="<?=$column['type']?>" data-guid="<?=$column['id']?>"><?=Arr::get($report, $column['id']) ? Columns::output($report[$column['id']], $column['type']) : '&nbsp;'?></td>
                 <?php endforeach;?>
             </tr>
             <?php endforeach; else:?>
