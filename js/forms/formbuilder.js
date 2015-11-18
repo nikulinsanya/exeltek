@@ -821,7 +821,7 @@ window.formbuilder = (function() {
                 self.getReports();
             });
 
-            $('.editable-table').on('click','a.reset-width',function(){
+            $('#form-builder-container').on('click','a.reset-width',function(){
                 $(this).parent().attr('style','width:auto;').removeAttr('data-resized');
                 $(this).remove();
             });

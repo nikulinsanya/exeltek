@@ -126,6 +126,14 @@ table.editable-table{
     border-radius: 3px;
 }
 
+[data-type="text"] input,
+[data-type="float"] input,
+[data-type="number"] input{
+    min-width: 80px;
+    max-width: 300px;
+    width: 100%;
+}
+
 
 table.not-bordered>tbody>tr>td {
     border:none!important;

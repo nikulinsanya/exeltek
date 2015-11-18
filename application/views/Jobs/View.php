@@ -268,8 +268,13 @@
                 </tr>
                 <?php $ticket = $job['discr']; $cnt = count($ticket['data']);
                     $fl = true;
-                    foreach($ticket['data'] as $key => $value): ?>
-                        <tr class="<?=$value['old_value'] == Arr::get($job['data'], $key) ? 'lgreen' : 'yellow'?> text-center">
+                    foreach($ticket['data'] as $key => $value):
+                        if ($key == 44)
+                            $equal = preg_replace('/[^a-z]/i', '', $value['old_value']) == preg_replace('/[^a-z]/i', '', Arr::get($job['data'], $key));
+                        else
+                            $equal = $value['old_value'] == Arr::get($job['data'], $key);
+                    ?>
+                        <tr class="<?=$equal ? 'lgreen' : 'yellow'?> text-center">
                             <?php if ($fl):?>
                                 <td class="lgreen" rowspan="<?=$cnt?>"><?=date('d-m-Y H:i', $ticket['update_time'])?></td>
                                 <td class="lgreen" rowspan="<?=$cnt?>"><?=User::get(Arr::get($ticket, 'user_id'), 'login') ? : 'Unknown'?></td>
@@ -280,7 +285,7 @@
                             <td><?=Columns::output($value['new_value'], Columns::get_type($key))?></td>
                             <td><?=Columns::output(Arr::path($job, array('data', $key)), Columns::get_type($key))?></td>
                             <td>
-                                <?php if ($value['old_value'] != Arr::get($job['data'], $key)):?>
+                                <?php if (!$equal):?>
                                     <input type="checkbox" class="ignore-discrepancy" <?=isset($value['ignore']) ? 'checked' : ''?> name="ignore-discrepancy[<?=$key?>]"/>
                                 <?php else: echo '&nbsp;'; endif;?>
                             </td>

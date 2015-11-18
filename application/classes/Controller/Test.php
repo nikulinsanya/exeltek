@@ -66,6 +66,30 @@ class Controller_Test extends Controller {
         die('Done');
     }
 
+    public function action_discrepancies() {
+        $list = Database_Mongo::collection('jobs')->find(array('discrepancies' => array('$nin' => array(NULL, '', 0))));
+        $ids = array();
+        foreach ($list as $job) {
+            $discr = Database_Mongo::collection('discrepancies')->find(array('job_key' => $job['_id']))->sort(array('update_time' => -1))->getNext();
+            $fl = true;
+            foreach ($discr['data'] as $key => $value) {
+                if ($key == 44) {
+                    $value['old_value'] = preg_replace('/[^a-z]/i', '', strtolower($value['old_value']));
+                    $job['data'][$key] = preg_replace('/[^a-z]/i', '', strtolower(Arr::get($job['data'], $key, '')));
+                }
+                if ($value['old_value'] != Arr::get($job['data'], $key, '')) {
+                    $fl = false;
+                    continue;
+                }
+            }
+            if ($fl) $ids[] = $job['_id'];
+        }
+        print_r($ids);
+        //Database_Mongo::collection('jobs')->update(array('_id' => array('$in' => $ids)), array('$unset' => array('discrepancies' => 1)), array('multiple' => 1));
+        die('Done. Total ' . count($ids) . ' job(s)');
+
+    }
+
     public function action_index() {
         header('Content-type: text/plain');
 
