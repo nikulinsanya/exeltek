@@ -309,7 +309,7 @@
             <div data-id="forms" class="panel-body hidden">
                 <table class="table">
                     <?php foreach ($forms as $form):?>
-                        <tr><td><a href="<?=URL::base()?>form/fill?id=<?=$form['_id']?>"><?=date('d-m-Y', $form['created'])?>. <?=Arr::get($form, 'name', 'Unknown Form')?> by <?=User::get($form['user_id'], 'login')?>. Last update: <?=date('d-m-Y H:i', $form['last_update'])?> (Rev. <?=$form['revision']?>)</a></td></tr>
+                        <tr><td><a href="<?=URL::base()?>form/fill?id=<?=$form['_id']?>"><?=date('d-m-Y', $form['created'])?>. <?=Arr::get($form, 'name', 'Unknown Form')?> by <?=User::get($form['user_id'], 'login')?>. Last update: <?=isset($form['last_update']) ? date('d-m-Y H:i', $form['last_update']) : 'Never'?> (Rev. <?=$form['revision']?>)</a></td></tr>
                     <?php endforeach;?>
                 </table>
             </div>
