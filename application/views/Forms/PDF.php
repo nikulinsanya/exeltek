@@ -60,6 +60,9 @@
                             case 'select':
                                 echo '<span>' . (is_array($value) ? implode(', ',$value) : $value) . '</span>';
                                 break;
+                            case 'options':
+                                echo '<span>' .(is_array($value) ? implode(', ',$value) : $value) . '</span>';
+                                break;
                             default:
                                 echo '<span>' . $value . '</span>';
                                 break;

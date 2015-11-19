@@ -20,6 +20,7 @@ window.formbuilder = (function() {
             if(json){
                 this.loadJson(json);
                 this.getReports();
+                this.applyColors();
             }
             this.initSortable();
             this.setHandlers();
@@ -51,6 +52,20 @@ window.formbuilder = (function() {
             });
         },
 
+        applyColors: function(){
+            $('.editable-cell[data-type="options"]').each(function(){
+                var select = $(this).find('select'),
+                    color = select.find('option[value="'+select.val()+'"]');
+                color = color.attr('data-color');
+                if (color) {
+                    $(this).css('background-color', color);
+                };
+                select.on('change',function(){
+                    var color = $(this).find('option[value="'+$(this).val()+'"]').attr('data-color');
+                   $(this).parent().css('background-color', color);
+                });
+            });
+        },
         fillCellForm: function(cell){
             var type = cell.attr('data-type'),
                 $parent = $('#addField');
@@ -212,10 +227,12 @@ window.formbuilder = (function() {
                     break;
                 case 'options':
                     var value = $('#options-preview').val(),
-                        select = $('#options-preview').clone();
+                        select = $('#options-preview').clone(),
+                        color = $('#options-preview').attr('data-color');
                     select.removeAttr('id');
                     $selectedCell.attr('data-type','options');
                     $selectedCell.attr('data-value',value);
+                    $selectedCell.attr('data-color',value);
                     $selectedCell.html(select);
                     $('#options-preview').val('');
                     break;
@@ -272,6 +289,7 @@ window.formbuilder = (function() {
                 obj, trs,tds, input,
                 c, r,
                 destination,
+                color,
                 widthSettings,
                 width,
                 data;
@@ -320,7 +338,8 @@ window.formbuilder = (function() {
 
                         };
                         if ($(this).attr('data-type') == 'options'){
-                            input.options = $(this).find('option').map(function(){return $(this).val()}).toArray().join(',')
+                            input.options = $(this).find('option').map(function(){return $(this).val()}).toArray().join(',');
+                            input.colors = $(this).find('option').map(function(){return $(this).attr('data-color')}).toArray().join(',');
                         }
                         data.push(input);
                     });
@@ -500,12 +519,17 @@ window.formbuilder = (function() {
                     break;
                 case 'options':
                     var options = [], i,
-                        available = element.options && element.options.split(',') || [];
+                        available = element.options && element.options.split(',') || [],
+                        colors = element.colors && element.colors.split(',') || [];
                     for(i=0;i<available.length;i++){
                         options.push( '<option value="',
                             available[i],
                             '" ',
                             element.value == available[i] ? 'selected="selected"' : '',
+                            ' ',
+                            'data-color="',
+                            colors[i],
+                            '"',
                             '>',
                             available[i],
                             '</option>');
@@ -620,6 +644,7 @@ window.formbuilder = (function() {
 
                 setTimeout(function(){
                     $('#placeholder-type').focus();
+                    $('#options-preview').trigger('change');
                 },500);
             });
             this._formContainer.on('click','.remove-table',function(e){
@@ -715,6 +740,15 @@ window.formbuilder = (function() {
             $('#remove-option').on('click',function(){
                 var value = $('#options-preview').val();
                 $("#options-preview option[value='"+value+"']").remove();
+                $('#option-color').val('');
+            });
+            $('#option-color').on('change', function(e){
+                $('#options-preview').find('option[value="'+$('#options-preview').val()+'"]').attr('data-color',$(this).val());
+            });
+
+            $('#options-preview').on('change',function(){
+                var color = $(this).find('option[value="'+$(this).val()+'"]').attr('data-color');
+                $('#option-color').val(color);
             });
 
 

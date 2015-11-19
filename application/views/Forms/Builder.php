@@ -204,7 +204,16 @@
                         </div>
                         <div class="col-md-8">
                             <select id="options-preview">
-                            </select><a class="btn btn-danger btn-xs" id="remove-option">Remove option</a>
+                            </select>
+                            <select id="option-color">
+                                <option value="">Related color</option>
+                                <option value="red">Red</option>
+                                <option value="yellow">Yellow</option>
+                                <option value="orange">Orange</option>
+                                <option value="green">Green</option>
+                                <option value="blue">Blue</option>
+                            </select>
+                            <a class="btn btn-danger btn-xs" id="remove-option">Remove option</a>
                         </div>
                     </div>
                     <div class="row" class="placeholder-type-config">
