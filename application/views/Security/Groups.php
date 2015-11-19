@@ -9,6 +9,7 @@
     <th>Financial reports</th>
     <th>Forms submission</th>
     <th>Custom forms submission</th>
+    <th>Editing custom forms reports</th>
     <th>Quality reports</th>
     <th>Time Machine</th>
     <th>Columns</th>
@@ -26,6 +27,7 @@
     <td><span class="glyphicon glyphicon-<?=$item['allow_finance'] ? 'ok text-success' : 'remove text-danger'?>"></span></td>
     <td><span class="glyphicon glyphicon-<?=$item['allow_forms'] ? 'ok text-success' : 'remove text-danger'?>"></span></td>
     <td><span class="glyphicon glyphicon-<?=$item['allow_custom_forms'] ? 'ok text-success' : 'remove text-danger'?>"></span></td>
+    <td><span class="glyphicon glyphicon-<?=$item['edit_custom_forms'] ? 'ok text-success' : 'remove text-danger'?>"></span></td>
     <td><span class="glyphicon glyphicon-<?=$item['allow_quality'] ? 'ok text-success' : 'remove text-danger'?>"></span></td>
     <td><span class="glyphicon glyphicon-<?=$item['time_machine'] ? 'ok text-success' : 'remove text-danger'?>"></span></td>
     <td><?=implode('<br/>', array_intersect_key(Columns::$fixed, array_flip(explode(',', $item['columns']))))?></td>

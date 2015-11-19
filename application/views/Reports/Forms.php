@@ -75,7 +75,7 @@
                     </td>
                 <?php endif;?>
                 <?php foreach ($columns as $column):?>
-                    <td <?=$column['visible'] == 'write' ? 'class="editable-form-cell" data-type="' . $column['type'] . '" data-guid="' . $column['id'] . '"' : ''?>>
+                    <td <?=Group::current('edit_custom_forms') && $column['visible'] == 'write' ? 'class="editable-form-cell" data-type="' . $column['type'] . '" data-guid="' . $column['id'] . '"' : ''?>>
                         <?=Arr::get($report, $column['id']) ? Columns::output($report[$column['id']], $column['type']) : '&nbsp;'?>
                     </td>
                 <?php endforeach;?>

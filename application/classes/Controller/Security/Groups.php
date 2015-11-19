@@ -36,6 +36,7 @@ class Controller_Security_Groups extends Controller {
             ->add('allow_finance', 'Financial reports', Form::BOOL)
             ->add('allow_forms', 'Forms submission', Form::BOOL)
             ->add('allow_custom_forms', 'Custom forms submission', Form::BOOL)
+            ->add('edit_custom_forms', 'Edit custom forms reports', Form::BOOL)
             ->add('allow_quality', 'Quality Reports', Form::BOOL)
             ->add('time_machine', 'Time Machine', Form::BOOL);
 
@@ -66,6 +67,7 @@ class Controller_Security_Groups extends Controller {
                 $value['allow_finance'] = 1;
                 $value['allow_forms'] = 0;
                 $value['allow_custom_forms'] = 1;
+                $value['edit_custom_forms'] = 1;
                 $value['allow_quality'] = 1;
                 $value['time_machine'] = 1;
                 $value['columns'] = implode(',', array_keys(Columns::$fixed));

@@ -152,6 +152,8 @@ class Controller_Reports_Forms extends Controller
     }
 
     public function action_update() {
+        if (!Group::current('edit_custom_forms')) throw new HTTP_Exception_403('Forbidden');
+
         $id = Arr::get($_POST, 'id');
         $key = Arr::get($_POST, 'key');
         $value = Arr::get($_POST, 'value');
