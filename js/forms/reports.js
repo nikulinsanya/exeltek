@@ -16,9 +16,10 @@ $(function () {
             return false;
         }
         var self  = this,
-            value = $(self).text(),
+            value = $(self).text().trim(),
             type  = $(self).attr('data-type'),
-            id    = $(self).attr('data-id'),
+            id    = $(self).attr('data-guid'),
+            report = $(self).parents('tr').attr('data-id'),
             input;
         switch (type) {
             case 'float':
@@ -53,7 +54,7 @@ $(function () {
         $(input).trigger('focus').on('blur', function(e) {
             $(self).html($(this).val());
             $(self).removeClass('in_edit_mode');
-            updateTebleOnFly(id,value);
+            updateTebleOnFly(report,id,$(this).val());
         })
 
     });
@@ -101,8 +102,24 @@ $(function () {
         initPlugins();
     })();
 
-    function updateTebleOnFly(){
-        console.log(arguments);
+    function updateTebleOnFly(report, id, value){
+        data = {
+            id: report,
+            key: id,
+            value: value
+        };
+        $.ajax({
+            url: utils.baseUrl() + 'reports/forms/update',
+            type:'POST',
+            data: data,
+            dataType:'JSON',
+            success:function(data){
+                //alert(dump(data, -1));
+            },
+            error:function(data){
+                $('html').html(data.responseText);
+            }
+        });
     }
 
 

@@ -3,6 +3,8 @@
 class Controller_Test extends Controller {
 
     public function before() {
+        parent::before();
+
         if (!Group::current('is_admin')) throw new HTTP_Exception_403('Forbidden');
     }
 
@@ -75,6 +77,9 @@ class Controller_Test extends Controller {
             foreach ($discr['data'] as $key => $value) {
                 if ($key == 44) {
                     $value['old_value'] = preg_replace('/[^a-z]/i', '', strtolower($value['old_value']));
+                    if ($value['old_value'] == preg_replace('/[^a-z]/i', '', strtolower($value['new_value'])))
+                        continue;
+
                     $job['data'][$key] = preg_replace('/[^a-z]/i', '', strtolower(Arr::get($job['data'], $key, '')));
                 }
                 if ($value['old_value'] != Arr::get($job['data'], $key, '')) {

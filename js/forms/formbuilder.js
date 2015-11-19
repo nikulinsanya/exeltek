@@ -895,4 +895,6 @@ $(function () {
             }
         });
     });
+
+    $('#form-data').submit(function() { return false;});
 });

@@ -35,6 +35,11 @@
                             <option value="date">Date</option>
                             <option value="datetime">DateTime</option>
                         </select>
+                        <select id="cell-visible">
+                            <option value="read">Read-only</option>
+                            <option value="write">Read/Write</option>
+                            <option value="hidden">Hidden</option>
+                        </select>
                     </div>
                     </div>
                 <div class="row">

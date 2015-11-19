@@ -21,7 +21,8 @@ $(function () {
         $('#table-header th').each(function(){
             data.data[$(this).attr('data-guid') || utils.guid()] = {
                 name: $(this).text(),
-                type: $(this).attr('data-type')
+                type: $(this).attr('data-type'),
+                visible: $(this).attr('data-visible')
             };
         });
 
@@ -58,6 +59,8 @@ $(function () {
         html.push(
             '<tr><th class="editable-cell" data-type="',
             $('#cell-type').val(),
+            '" data-visible="',
+            $('#cell-visible').val(),
             '">',
             $('#table-cell').val(),
             '</th></tr>'
@@ -72,19 +75,23 @@ $(function () {
             $(this).addClass('active');
             var text = $(this).text(),
                 options = $('#cell-type').html(),
+                visible = $('#cell-visible').html(),
                 self = this,
                 select,
                 input,
                 button;
-            $(this).html('<input type="text" value="'+text+'" class="editable-input"><select>'+options+'</select><a class="btn btn-success">Save</a>');
+            $(this).html('<input type="text" value="'+text+'" class="editable-input"><select class="data-type">'+options+'</select><select class="data-visible">' + visible + '</select><a class="btn btn-success">Save</a>');
             input = $(this).find('input');
             input.focus();
-            select = $(this).find('select');
+            select = $(this).find('select.data-type');
             select.val($(this).attr('data-type'));
+            vselect = $(this).find('select.data-visible');
+            vselect.val($(this).attr('data-visible'));
             button = $(this).find('a');
             button.off().on('click',function(e){
                 e.preventDefault();
                 $(self).attr('data-type',select.val());
+                $(self).attr('data-visible',vselect.val());
                 $(self).removeClass('active');
                 $(self).html('<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>'+input.val());
                 setSortable();
@@ -109,6 +116,8 @@ $(function () {
                         i,
                         '" data-type="',
                         data.data[i].type,
+                        '" data-visible="',
+                        data.data[i].visible == undefined ? 'read' : data.data[i].visible,
                         '"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>',
                         data.data[i].name,
                         '</th></tr>'
