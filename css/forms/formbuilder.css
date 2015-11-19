@@ -225,3 +225,8 @@ table tr.tmp-cell:first-of-type>td.tmp-cell{
 .JCLRgrips>.JCLRgrip:first-of-type{
     display: none;
 }
+
+.editable-form-cell:hover{
+    cursor: pointer;
+    background: #F8FFF8;
+}

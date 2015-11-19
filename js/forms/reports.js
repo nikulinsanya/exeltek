@@ -9,6 +9,56 @@ $(function () {
             window.location = utils.baseUrl() + 'reports/forms';
     });
 
+
+    $('#reports').on('mousedown','.editable-form-cell:not(".in_edit_mode")',function(e){
+        e.preventDefault();
+        if(e.target.nodeName != 'TD'){
+            return false;
+        }
+        var self  = this,
+            value = $(self).text().trim(),
+            type  = $(self).attr('data-type'),
+            id    = $(self).attr('data-guid'),
+            report = $(self).parents('tr').attr('data-id'),
+            input;
+        switch (type) {
+            case 'float':
+                input = $('<input type="number" step="0.01" class="tmp-edit-input" value="' + value + '"/>')
+                break;
+            case 'int':
+            case 'number':
+                input = $('<input type="number" class="tmp-edit-input" value="' + value + '"/>')
+                break;
+            case 'datetime':
+                input = $('<input type="text" class="datetimepicker tmp-edit-input" value="' + value + '"/>')
+                break;
+            case 'date':
+                input = $('<input type="text" class="datepicker tmp-edit-input" value="' + value + '"/>')
+                break;
+
+            default:
+                input = $('<input type="text" class="tmp-edit-input" value="' + value + '"/>')
+                break;
+        }
+        $(self).addClass('in_edit_mode');
+
+        $(self).html(input);
+
+        $(self).find('input.datepicker').datetimepicker({
+            format: 'DD-MM-YYYY'
+        });
+        $(self).find('.datetimepicker').datetimepicker({
+            format: 'DD-MM-YYYY HH:mm'
+        });
+
+        $(input).trigger('focus').on('blur', function(e) {
+            $(self).html($(this).val());
+            $(self).removeClass('in_edit_mode');
+            updateTebleOnFly(report,id,$(this).val());
+        })
+
+    });
+
     $('#reports').on('click','.apply-filter',function(e){
         e.preventDefault();
         collectFilters();
@@ -52,6 +102,25 @@ $(function () {
         initPlugins();
     })();
 
+    function updateTebleOnFly(report, id, value){
+        data = {
+            id: report,
+            key: id,
+            value: value
+        };
+        $.ajax({
+            url: utils.baseUrl() + 'reports/forms/update',
+            type:'POST',
+            data: data,
+            dataType:'JSON',
+            success:function(data){
+                //alert(dump(data, -1));
+            },
+            error:function(data){
+                $('html').html(data.responseText);
+            }
+        });
+    }
 
 
 

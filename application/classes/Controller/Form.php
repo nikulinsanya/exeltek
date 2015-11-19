@@ -196,7 +196,7 @@ class Controller_Form extends Controller {
                                     $form['data'][$key]['data'][$row][$cell]['value'] = $input['value'] = Arr::path($form_data, array('data', $input['name']), '');
 
                                 if (Arr::get($input, 'destination') && isset($columns[$input['destination']]))
-                                    $report[$input['destination']] = Arr::get($input, in_array(Arr::get($input, 'type', ''), array('text', 'number', 'float', 'date')) ? 'value' : 'placeholder');
+                                    $report[$input['destination']] = Arr::get($input, in_array(Arr::get($input, 'type', ''), array('text', 'number', 'float', 'date', 'options')) ? 'value' : 'placeholder');
                             }
 
                     $view = View::factory('Forms/PDF')

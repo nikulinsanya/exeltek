@@ -57,12 +57,11 @@
                             <button class="btn btn-danger dropdown-toggle" type="button" >Cancel</button>
                         </li>
                     </ul>
-<!--                    -->
                 </th>
                 <?php endforeach;?>
             </tr>
-            <?php if ($reports): foreach ($reports as $report):?>
-            <tr>
+            <?php if ($reports): foreach ($reports as $report): ?>
+            <tr data-id="<?=$report['id']?>">
 
                 <td><input type="checkbox" class="select-reports checkbox" data-id="<?=$report['attachment_id']?>"/></td>
                 <td><a href="<?=URL::base()?>download/attachment/<?=$report['attachment_id']?>"><?=$report['attachment']?></a></td>
@@ -76,7 +75,9 @@
                     </td>
                 <?php endif;?>
                 <?php foreach ($columns as $column):?>
-                    <td><?=Arr::get($report, $column['id']) ? Columns::output($report[$column['id']], $column['type']) : '&nbsp;'?></td>
+                    <td <?=Group::current('edit_custom_forms') && $column['visible'] == 'write' ? 'class="editable-form-cell" data-type="' . $column['type'] . '" data-guid="' . $column['id'] . '"' : ''?>>
+                        <?=Arr::get($report, $column['id']) ? Columns::output($report[$column['id']], $column['type']) : '&nbsp;'?>
+                    </td>
                 <?php endforeach;?>
             </tr>
             <?php endforeach; else:?>

@@ -25,7 +25,7 @@ class Controller_Reports_Forms extends Controller
             if (!Group::current('show_all_jobs'))
                 $query['company'] = User::current('company_id');
 
-            $columns = DB::select('id', 'name', 'type')->from('report_columns')->where('report_id', '=', $query['report_id'])->execute()->as_array('id');
+            $columns = DB::select('id', 'name', 'type', 'visible')->from('report_columns')->where('report_id', '=', $query['report_id'])->and_where('visible', '<>', 'hidden')->execute()->as_array('id');
 
             foreach ($columns as $column) if (isset($_POST[$column['id']])) {
                 $key = $column['id'];
@@ -52,7 +52,7 @@ class Controller_Reports_Forms extends Controller
             $query = Database_Mongo::collection('search')->findOne(array('_id' => new MongoId($_GET['id'])));
             if (!$query) $this->redirect('reports/forms');
 
-            $columns = DB::select('id', 'name', 'type')->from('report_columns')->where('report_id', '=', $query['report_id'])->execute()->as_array('id');
+            $columns = DB::select('id', 'name', 'type', 'visible')->from('report_columns')->where('report_id', '=', $query['report_id'])->and_where('visible', '<>', 'hidden')->execute()->as_array('id');
 
             unset($query['_id']);
             unset($query['expires']);
@@ -67,6 +67,7 @@ class Controller_Reports_Forms extends Controller
             foreach ($result as $report) {
                 $id = strval($report['_id']);
                 $data = array(
+                    'id' => $id,
                     'attachment' => Arr::get($report, 'attachment', 'Unknown file'),
                     'attachment_id' => Arr::get($report, 'attachment_id', 0),
                 );
@@ -148,6 +149,28 @@ class Controller_Reports_Forms extends Controller
             ->bind('columns', $columns);
 
         $this->response->body($view);
+    }
+
+    public function action_update() {
+        if (!Group::current('edit_custom_forms')) throw new HTTP_Exception_403('Forbidden');
+
+        $id = Arr::get($_POST, 'id');
+        $key = Arr::get($_POST, 'key');
+        $value = Arr::get($_POST, 'value');
+
+        $report = Database_Mongo::collection('reports')->findOne(array('_id' => new MongoId($id)));
+
+        if (!$report) throw new HTTP_Exception_404('Not found');
+
+        $info = DB::select('id', 'type', 'visible')->from('report_columns')->where('report_id', '=', Arr::get($report, 'report_id'))->and_where('id', '=', $key)->execute()->current();
+
+        if (Arr::get($info, 'visible') != 'write') throw new HTTP_Exception_404('Not found');
+
+        $value = Columns::parse($value, $info['type']);
+
+        $update = array('$set' => array($key => $value));
+
+        die(json_encode(array('success' => Database_Mongo::collection('reports')->update(array('_id' => new MongoId($id)), $update))));
     }
 
 }

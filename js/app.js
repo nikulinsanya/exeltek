@@ -16,16 +16,20 @@ $.fn.quickChange = function(handler) {
     });
 };
 
-function dump(obj) {
+function dump(obj, depth) {
+    if (depth == undefined) depth = 0;
     var out = "";
     if(obj && typeof(obj) == "object"){
         for (var i in obj) {
-            out += i + ": " + obj[i] + "\n";
+            out += i + ": " + (depth == 0 ? obj[i] : dump(obj[i], depth - 1)) + "\n";
         }
     } else {
         out = obj;
     }
-    alert(out);
+    if (depth == 0)
+        alert(out);
+    else
+        return out;
 }
 function inArray(needle, haystack) {
     var length = haystack.length;
