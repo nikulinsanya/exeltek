@@ -334,12 +334,12 @@ class Controller_Search_View extends Controller {
                     $status = preg_replace('/[^a-z]/', '', strtolower(Arr::path($update, array('$set', 'data.44'), '')));
 
                     if ($status == 'built' && !Arr::path($job, 'data.264'))
-                        $new['$set']['data.264'] = $update_time;
+                        $update['$set']['data.264'] = $update_time;
 
                     if ($status == 'tested' && !Arr::path($job, 'data.265')) {
-                        $new['$set']['data.265'] = $update_time;
+                        $update['$set']['data.265'] = $update_time;
                         if (!Arr::path($job, 'data.264'))
-                            $new['$set']['data.264'] = $update_time;
+                            $update['$set']['data.264'] = $update_time;
                     }
 
                     $update['$set']['companies'] = array_keys($companies);
