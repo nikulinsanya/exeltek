@@ -241,7 +241,7 @@ table tr.tmp-cell:first-of-type>td.tmp-cell{
     background: #F8FFF8;
 }
 .onoffswitch {
-    position: relative; width: 68px;
+    position: relative; width: 45px;
     -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
 }
 .onoffswitch-checkbox {
@@ -249,18 +249,18 @@ table tr.tmp-cell:first-of-type>td.tmp-cell{
 }
 .onoffswitch-label {
     display: block; overflow: hidden; cursor: pointer;
-    height: 36px; padding: 0; line-height: 36px;
-    border: 2px solid #CCCCCC; border-radius: 36px;
+    height: 25px; padding: 0; line-height: 25px;
+    border: 2px solid #CCCCCC; border-radius: 25px;
     background-color: #FFFFFF;
     transition: background-color 0.3s ease-in;
 }
 .onoffswitch-label:before {
     content: "";
-    display: block; width: 36px; margin: 0px;
+    display: block; width: 25px; margin: 0px;
     background: #FFFFFF;
     position: absolute; top: 0; bottom: 0;
-    right: 30px;
-    border: 2px solid #CCCCCC; border-radius: 36px;
+    right: 19px;
+    border: 2px solid #CCCCCC; border-radius: 25px;
     transition: all 0.3s ease-in 0s;
 }
 .onoffswitch-checkbox:checked + .onoffswitch-label {
