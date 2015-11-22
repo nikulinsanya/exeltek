@@ -142,6 +142,7 @@ window.formbuilder = (function() {
                 $('#fieldType').val(type);
             }
             $parent.find('.type-config').hide();
+            $('.ticket-type-hidden').show();
             switch (type) {
                 case 'label':
                 case 'text':
@@ -154,6 +155,7 @@ window.formbuilder = (function() {
                     break;
                 case 'ticket':
                     $('.ticket-type-config').show();
+                    $('.ticket-type-hidden').hide();
                     if(!$('#field-type').find('option').length){
                         var html = [];
                         $('.ticket-type-config').show();
@@ -172,6 +174,7 @@ window.formbuilder = (function() {
                             $('#field-type').html(html.join(''));
                         });
                     }
+
                     break;
                 case 'options':
                     $('.options-type-config').show();
