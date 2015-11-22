@@ -154,6 +154,7 @@ class Controller_Form extends Controller {
                     $columns = DB::select('id')->from('report_columns')->where('report_id', '=', Arr::get($form, 'report'))->execute()->as_array('id', 'id');
                     $report = array();
                     $colors = array();
+                    $update = array();
 
                     foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
                         foreach ($table['data'] as $row => $cells)
@@ -181,6 +182,13 @@ class Controller_Form extends Controller {
                                             $colors[$input['destination']] = $color;
                                     }
                                     $report[$input['destination']] = Arr::get($input, in_array(Arr::get($input, 'type', ''), array('text', 'number', 'float', 'date', 'options')) ? 'value' : 'placeholder');
+                                }
+
+                                if (Arr::get($input, 'assignTo')) {
+                                    $update[$input['assignTo']] = array(
+                                        'value' => Arr::get($input, in_array(Arr::get($input, 'type', ''), array('text', 'number', 'float', 'date', 'options')) ? 'value' : 'placeholder'),
+                                        'type' => Arr::get($input, 'assignAs', 'replace'),
+                                    );
                                 }
                             }
 
@@ -211,12 +219,83 @@ class Controller_Form extends Controller {
 
                     $company = DB::select('name')->from('companies')->where('id', '=', $form_data['company'])->execute()->get('name');
 
+                    $uploaded = time();
+
+                    $submissions = array();
+
+                    $submission = array(
+                        'user_id' => User::current('id'),
+                        'active' => 1,
+                        'update_time' => $uploaded,
+                    );
+
                     foreach ($jobs as $job) {
-                        if ($job)
-                            $job = Database_Mongo::collection('jobs')->findOne(array('_id' => $job), array('data.8' => 1, 'data.14' => 1));
+                        if ($job) {
+                            $job = Database_Mongo::collection('jobs')->findOne(array('_id' => $job), array('data' => 1));
+                            $new = array();
+                            $archive = array();
+                            foreach ($update as $key => $value) {
+                                if ($value['type'] == 'append') {
+                                    switch (Columns::get_type($key)) {
+                                        case 'int':
+                                        case 'number':
+                                        case 'float':
+                                            $value = Arr::path($job, 'data.' . $key, 0) + $value['value'];
+                                            break;
+                                        default:
+                                            $value = Arr::path($job, 'data.' . $key, '') . "\n" . $value['value'];
+                                            break;
+                                    }
+                                } else $value = $value['value'];
+
+                                if ($value) $value = Columns::parse($value, Columns::get_type($key));
+
+                                if (Group::current('allow_assign') || Columns::get_direct($key)) {
+                                    if ($value)
+                                        $new['$set']['data.' . $key] = $value;
+                                    else
+                                        $new['$unset']['data.' . $key] = 1;
+
+                                    if (!Group::current('allow_assign')) {
+                                        $submission['job_key'] = $job['_id'];
+                                        $submission['key'] = 'data.' . $key;
+                                        $submission['value'] = $value;
+                                        $submission['active'] = -1;
+                                        $submission['process_time'] = $uploaded;
+                                        Database_Mongo::collection('submissions')->insert($submission);
+                                        unset($submission['process_time']);
+                                        unset($submission['_id']);
+                                    }
+
+                                    $archive['data'][$key] = array(
+                                        'old_value' => Arr::path($job, 'data.' . $key, ''),
+                                        'new_value' => $value,
+                                    );
+                                } else {
+                                    $new['$set']['status'] = Enums::STATUS_PENDING;
+                                    $submissions[$job['_id']][$key] = $value;
+                                }
+                                if ($new) {
+                                    $new['$set']['last_update'] = $uploaded;
+                                    Database_Mongo::collection('jobs')->update(
+                                        array('_id' => $job['_id']),
+                                        $new
+                                    );
+
+                                    if ($archive) {
+                                        $archive['fields'] = array_keys($archive['data']);
+                                        $archive['job_key'] = $job['_id'];
+                                        $archive['user_id'] = User::current('id');
+                                        $archive['update_time'] = $uploaded;
+                                        $archive['update_type'] = 2;
+                                        $archive['filename'] = 'MANUAL';
+                                        Database_Mongo::collection('archive')->insert($archive);
+                                    }
+                                }
+                            }
+                        }
 
                         $filename = $name . ' (' . $company . ') -' . date('dmY-His') . '.pdf';
-                        $uploaded = time();
 
                         $data = array(
                             'filename' => $filename,
@@ -270,6 +349,15 @@ class Controller_Form extends Controller {
                                 Database_Mongo::collection('reports')->insert($report);
                             }
                         } else Messages::save('Error occurred during report processing... Please try again later');
+                    }
+
+                    foreach ($submissions as $job_key => $values) foreach ($values as $key => $value) {
+                        $submission['job_key'] = $job_key;
+                        $submission['key'] = 'data.' . $key;
+                        $submission['value'] = $value;
+                        $submission['active'] = 1;
+                        Database_Mongo::collection('submissions')->insert($submission);
+                        unset($submission['_id']);
                     }
 
                     $target = 'attachments';
