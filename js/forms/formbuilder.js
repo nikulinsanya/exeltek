@@ -73,14 +73,16 @@ window.formbuilder = (function() {
             getColumns().then(function(data){
                 html.push('<option value=""></option>');
                 for(i in data){
-                    html.push(
-                        '<option value="',
-                        data[i].id,
-                        '"',
-                        data[i].id == ticketId ? ' selected="selected" ' : '',
-                        '>',
-                        data[i].name,
-                        '</option>');
+                    if(data[i].id){
+                        html.push(
+                            '<option value="',
+                            data[i].id,
+                            '"',
+                            data[i].id == ticketId ? ' selected="selected" ' : '',
+                            '>',
+                            data[i].name,
+                            '</option>');
+                    }
                 }
                 $('#assign-to').html(html.join(''));
                 $('#assign-as').val(cell.attr('data-assign-as'));

@@ -46,6 +46,10 @@ table.editable-table{
     text-align: left;
     padding-left: 15px;
 }
+#new-cell-details .row>div select,
+#new-cell-details .row>div input{
+    width: 200px;
+}
 
 .table-container{
     position: relative;

@@ -258,7 +258,7 @@
                             <span class="form-label">Background</span>
                         </div>
                         <div class="col-md-8" >
-                            <input style="width:125px;" id="color" type="text"/>
+                            <input id="color" type="text"/>
                         </div>
                     </div>
                 </div>
