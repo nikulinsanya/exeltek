@@ -73,14 +73,16 @@ window.formbuilder = (function() {
             getColumns().then(function(data){
                 html.push('<option value=""></option>');
                 for(i in data){
-                    html.push(
-                        '<option value="',
-                        data[i].id,
-                        '"',
-                        data[i].id == ticketId ? ' selected="selected" ' : '',
-                        '>',
-                        data[i].name,
-                        '</option>');
+                    if(data[i].id){
+                        html.push(
+                            '<option value="',
+                            data[i].id,
+                            '"',
+                            data[i].id == ticketId ? ' selected="selected" ' : '',
+                            '>',
+                            data[i].name,
+                            '</option>');
+                    }
                 }
                 $('#assign-to').html(html.join(''));
                 $('#assign-as').val(cell.attr('data-assign-as'));
@@ -140,6 +142,7 @@ window.formbuilder = (function() {
                 $('#fieldType').val(type);
             }
             $parent.find('.type-config').hide();
+            $('.ticket-type-hidden').show();
             switch (type) {
                 case 'label':
                 case 'text':
@@ -152,6 +155,7 @@ window.formbuilder = (function() {
                     break;
                 case 'ticket':
                     $('.ticket-type-config').show();
+                    $('.ticket-type-hidden').hide();
                     if(!$('#field-type').find('option').length){
                         var html = [];
                         $('.ticket-type-config').show();
@@ -170,6 +174,7 @@ window.formbuilder = (function() {
                             $('#field-type').html(html.join(''));
                         });
                     }
+
                     break;
                 case 'options':
                     $('.options-type-config').show();

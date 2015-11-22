@@ -195,7 +195,7 @@
                             <canvas width="200" height="100" id="signature-canvas"></canvas>
                         </div>
                     </div>
-                    <div class="row" class="placeholder-type-config">
+                    <div class="row type-config ticket-type-hidden">
                         <div class="col-md-4">
                             <span class="form-label">Assign to</span>
                         </div>
@@ -203,7 +203,7 @@
                             <select id="assign-to"></select>
                         </div>
                     </div>
-                    <div class="row" class="placeholder-type-config">
+                    <div class="row type-config ticket-type-hidden">
                         <div class="col-md-4">
                             <span class="form-label">Assign as</span>
                         </div>
@@ -242,7 +242,7 @@
                             <a class="btn btn-danger btn-xs" id="remove-option">Remove option</a>
                         </div>
                     </div>
-                    <div class="row" class="placeholder-type-config">
+                    <div class="row">
                         <div class="col-md-4" >
                             <span class="form-label">Destination</span>
                         </div>
@@ -258,7 +258,7 @@
                             <span class="form-label">Background</span>
                         </div>
                         <div class="col-md-8" >
-                            <input style="width:125px;" id="color" type="text"/>
+                            <input id="color" type="text"/>
                         </div>
                     </div>
                 </div>
