@@ -56,6 +56,8 @@
                                 if ($color) $width .= 'background-color: ' . $color . '; ';
                             } catch (Exception $e) {
                             }
+                        }elseif (isset($input['color'])){
+                            $width .= 'background-color: ' . $input['color'] . '; ';
                         }
                         ?>
                         <td <?=$width ? 'style="' . $width . '"' : ''?>>

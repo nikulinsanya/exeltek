@@ -232,6 +232,15 @@
                             </select>
                         </div>
                     </div>
+
+                    <div class="row" class="placeholder-type-config">
+                        <div class="col-md-4">
+                            <span class="form-label">Background</span>
+                        </div>
+                        <div class="col-md-8" >
+                            <input style="width:100px;" id="color" type="text"/>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer" class="tableRowButtons">
@@ -244,7 +253,9 @@
 </div>
 
 <link href="<?= URL::base() ?>css/forms/formbuilder.css" rel="stylesheet">
+<link href="<?= URL::base() ?>css/jquery.colorpicker.css" rel="stylesheet">
 <script src="<?= URL::base() ?>js/lib/signature_pad.min.js"></script>
 <script src="<?= URL::base() ?>js/lib/jquery/colResizable-1.5.min.js"></script>
+<script src="<?= URL::base() ?>js/lib/jquery/jquery.colorpicker.js"></script>
 
 <script src="<?= URL::base() ?>js/forms/formbuilder.js"></script>
