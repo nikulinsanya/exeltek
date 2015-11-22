@@ -44,8 +44,23 @@
                 <tbody>
                 <?php $fl = true; $i = 0; foreach ($table['data'] as $cells): ?>
                     <tr>
-                    <?php foreach ($cells as $input): if ($fl) $width = Arr::path($table, array('width-settings', ++$i)); else $width = 0;?>
-                        <td <?=$width ? 'style="width: ' . $width . '"' : ''?>>
+                    <?php foreach ($cells as $input):
+                        if ($fl)
+                            $width = 'width: ' . Arr::path($table, array('width-settings', ++$i), 'auto; ');
+                        else
+                            $width = '';
+                        if (Arr::get($input, 'colors')) {
+                            try {
+                                $colors = array_combine(explode(',', $input['options']), explode(',', $input['colors']));
+                                $color = Arr::get($colors, $input['value']);
+                                if ($color) $width .= 'background-color: ' . $color . '; ';
+                            } catch (Exception $e) {
+                            }
+                        }elseif (isset($input['color'])){
+                            $width .= 'background-color: ' . $input['color'] . '; ';
+                        }
+                        ?>
+                        <td <?=$width ? 'style="' . $width . '"' : ''?>>
                     <?php
                         $value = Arr::get($input, 'value');
                         switch (Arr::get($input, 'type')):
@@ -60,6 +75,9 @@
                             case 'select':
                                 echo '<span>' . (is_array($value) ? implode(', ',$value) : $value) . '</span>';
                                 break;
+                            case 'options':
+                                echo '<span>' .(is_array($value) ? implode(', ',$value) : $value) . '</span>';
+                                break;
                             default:
                                 echo '<span>' . $value . '</span>';
                                 break;
@@ -72,6 +90,13 @@
                 </tbody>
             </table>
         <?php endforeach;?>
+    <?php if ($attachments):?>
+        <h4>Attachments:</h4>
+        <?php $i = 0; foreach ($attachments as $attachment): $i++;?>
+            <img style="float: left" src="data:image/png;base64,<?=base64_encode(file_get_contents(DOCROOT . 'storage/' . $attachment . '.thumb'))?>" />
+            <?=($i % 6 == 0) ? '<br/>' : ''?>
+        <?php endforeach;?>
+    <?php endif;?>
 </div>
 </body>
 </html>

@@ -88,6 +88,34 @@ $(function () {
         url += '&ids=' + ids.join(',');
         OpenInNewTab(url);
     });
+
+    $('#reports-remove').click(function(e) {
+        e.preventDefault();
+        var url = utils.baseUrl() + 'reports/forms/remove',
+            items = $('.select-reports[data-id]:checked'),
+            ids = items.map(function(){return $(this).attr('data-id')}).toArray();
+        var data = {
+            id: $('#form-reports').val(),
+            ids: ids.join(','),
+        };
+        if (prompt('To confirm please type in "delete" and hit ok') !== 'delete') return false;
+        $.ajax({
+            url: utils.baseUrl() + 'reports/forms/remove',
+            type:'POST',
+            data: data,
+            dataType:'JSON',
+            success:function(data){
+                items.each(function(i, e) {
+                    $(e).parents('tr').remove();
+                });
+                //alert(dump(data, -1));
+            },
+            error:function(data){
+                $('html').html(data.responseText);
+            }
+        });
+    });
+
     function OpenInNewTab(url) {
         var win = window.open(url, '_blank');
         win.focus();
@@ -99,7 +127,6 @@ $(function () {
                 $('.dropdown-menu.collapse.in').removeClass('in');
         });
         collectFilters(true);
-        initPlugins();
     })();
 
     function updateTebleOnFly(report, id, value){
@@ -205,23 +232,6 @@ $(function () {
             error: function(data){
                 alert('Nothing found');
             }
-        });
-    }
-
-    function initPlugins(){
-        $('.multiline').focus(function() {
-            var separator = $(this).attr('data-separator');
-            if(!separator){
-                return false;
-            }
-            $('form').prop('hold', true);
-            var val = $(this).val();
-            while (val.indexOf(separator) !== -1)
-                val = val.replace(separator, '\n');
-            var textarea = $('<textarea class="form-control" width="100%"></textarea>').val(val).focusout(ticket_id_unfocus);
-            $(this).hide().before(textarea);
-            textarea.focus();
-            $('form').prop('hold', false);
         });
     }
 

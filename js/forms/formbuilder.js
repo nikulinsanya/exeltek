@@ -20,6 +20,7 @@ window.formbuilder = (function() {
             if(json){
                 this.loadJson(json);
                 this.getReports();
+                this.applyColors();
             }
             this.initSortable();
             this.setHandlers();
@@ -51,6 +52,42 @@ window.formbuilder = (function() {
             });
         },
 
+        applyColors: function(){
+            $('.editable-cell[data-type="options"]').each(function(){
+                var select = $(this).find('select'),
+                    color = select.find('option[value="'+select.val()+'"]');
+                color = color.attr('data-color');
+                if (color) {
+                    $(this).css('background-color', color);
+                };
+                select.on('change',function(){
+                    var color = $(this).find('option[value="'+$(this).val()+'"]').attr('data-color');
+                   $(this).parent().css('background-color', color);
+                });
+            });
+        },
+        fillAssignFields: function(cell){
+            var html = [],
+                ticketId = cell.attr('data-assign-to'),
+                i;
+            getColumns().then(function(data){
+                html.push('<option value=""></option>');
+                for(i in data){
+                    if(data[i].id){
+                        html.push(
+                            '<option value="',
+                            data[i].id,
+                            '"',
+                            data[i].id == ticketId ? ' selected="selected" ' : '',
+                            '>',
+                            data[i].name,
+                            '</option>');
+                    }
+                }
+                $('#assign-to').html(html.join(''));
+                $('#assign-as').val(cell.attr('data-assign-as'));
+            });
+        },
         fillCellForm: function(cell){
             var type = cell.attr('data-type'),
                 $parent = $('#addField');
@@ -105,6 +142,7 @@ window.formbuilder = (function() {
                 $('#fieldType').val(type);
             }
             $parent.find('.type-config').hide();
+            $('.ticket-type-hidden').show();
             switch (type) {
                 case 'label':
                 case 'text':
@@ -117,6 +155,7 @@ window.formbuilder = (function() {
                     break;
                 case 'ticket':
                     $('.ticket-type-config').show();
+                    $('.ticket-type-hidden').hide();
                     if(!$('#field-type').find('option').length){
                         var html = [];
                         $('.ticket-type-config').show();
@@ -135,15 +174,26 @@ window.formbuilder = (function() {
                             $('#field-type').html(html.join(''));
                         });
                     }
+
                     break;
                 case 'options':
                     $('.options-type-config').show();
                     break;
                 case 'signature':
                     $('.signature-type-config').show();
-//                    new SignaturePad($('.signature-type-config').find('canvas').get(0));
                     break;
             }
+            if(cell && cell.attr('data-color')){
+                $('#color').val(cell.attr('data-color')).css('background-color',cell.attr('data-color'));
+            }else{
+                $('#color').val('').css('background-color','#fff');
+            }
+            if(cell && cell.attr('data-required')){
+                $('#required').attr('checked','checked');
+            }else{
+                $('#required').removeAttr('checked');
+            }
+
             $('#placeholder-type').trigger('focus');
         },
         confirmAddField: function(e){
@@ -178,7 +228,7 @@ window.formbuilder = (function() {
                     var value = $('#placeholder-type').val();
                     $selectedCell.attr('data-type','text');
                     $selectedCell.attr('data-placeholder',value);
-                    $selectedCell.html('<input type="text" placeholder="'+value+'">');
+                    $selectedCell.html('<textarea placeholder="'+value+'"></textarea>');
                     $('#placeholder-type').val('');
                     break;
                 case 'number':
@@ -212,10 +262,12 @@ window.formbuilder = (function() {
                     break;
                 case 'options':
                     var value = $('#options-preview').val(),
-                        select = $('#options-preview').clone();
+                        select = $('#options-preview').clone(),
+                        color = $('#options-preview').attr('data-color');
                     select.removeAttr('id');
                     $selectedCell.attr('data-type','options');
                     $selectedCell.attr('data-value',value);
+                    $selectedCell.attr('data-color',value);
                     $selectedCell.html(select);
                     $('#options-preview').val('');
                     break;
@@ -232,6 +284,21 @@ window.formbuilder = (function() {
             }
 
             $selectedCell.attr('data-destination',$('#destination').val());
+            if($('#color').val()){
+                $selectedCell.attr('data-color',$('#color').val());
+                $selectedCell.css('background-color',$('#color').val());
+            }
+            if($('#assign-to').val()){
+                var value = $('#assign-to').val();
+                $selectedCell.attr('data-assign-to', value);
+            }
+            if($('#assign-as').val()){
+                var value = $('#assign-as').val();
+                $selectedCell.attr('data-assign-as', value);
+            }
+            if($('#required').is(':checked')){
+                $selectedCell.attr('data-required', true);
+            }
 
             $('#addField').modal('hide');
             $('.selected-cell').removeClass('selected-cell');
@@ -246,13 +313,55 @@ window.formbuilder = (function() {
                 s4() + '-' + s4() + s4() + s4();
         },
 
+        checkRequiredFields: function(){
+            var container = this._formContainer || $('#form-data'),
+                tables = container.find('table'),
+                valid = true,
+                type;
+            $('.error').removeClass('error');
+            tables.find('td[data-required="true"]').each(function(){
+                type = $(this).attr('data-type');
+                switch (type) {
+                    case 'text':
+                        if(!$(this).find('textarea').val()){
+                            $(this).find('textarea').addClass('error');
+                            valid = false;
+                        }
+                        break;
+                    case 'number':
+                    case 'float':
+                    case 'date':
+                        if(!$(this).find('input[type="text"]').val()){
+                            $(this).find('input[type="text"]').addClass('error');
+                            valid = false;
+                        }
+                        break;
+                    case 'options':
+                        if(!$(this).find('select').val()){
+                            $(this).find('select').addClass('error');
+                            valid = false;
+                        }
+                        break;
+                    case 'signature':
+                        var canvas = $(this).find('canvas').get(0);
+                        if(!canvas || canvas.toDataURL() == document.getElementById('blank-canvas').toDataURL()){
+                            $(this).find('canvas').addClass('error');
+                            valid = false;
+                        }
+                        break;
+                }
+            });
+            return valid;
+        },
+
         sendForm: function(){
             var self = this,
                 json = self.serializeForm(),
                 id = $('#form-builder').attr('data-id');
 
             return $.ajax({
-                url : utils.baseUrl() + 'form/save?id=' + id + '&type=' + $('#form-type').val() + '&report=' + $('#form-report').val() + '&name=' + encodeURIComponent($('#form-name').val()) + '&geo=' + ($('#allow-geo').prop('checked') ? '1' : ''),
+                url : utils.baseUrl() + 'form/save?id=' + id + '&type=' + $('#form-type').val() + '&report=' + $('#form-report').val() +
+                    '&name=' + encodeURIComponent($('#form-name').val()) + '&geo=' + ($('#allow-geo').prop('checked') ? '1' : '') + '&attachment=' + ($('#allow-attachment').prop('checked') ? '1' : ''),
                 type: 'POST',
                 data: JSON.stringify(json),
                 success: function(){
@@ -272,6 +381,9 @@ window.formbuilder = (function() {
                 obj, trs,tds, input,
                 c, r,
                 destination,
+                color,
+                assignTo,
+                assignAs,
                 widthSettings,
                 width,
                 data;
@@ -306,8 +418,11 @@ window.formbuilder = (function() {
                         destinations[$(e).attr('value')] = 1;
                     });
                     $(this).find('td').not('.tmp-cell').each(function(){
-                        value = $(this).attr('data-value');
-                        destination = $(this).attr('data-destination');
+                        value       = $(this).attr('data-value') || '';
+                        destination = $(this).attr('data-destination') || '';
+                        color       = $(this).attr('data-color') || '';
+                        assignTo    = $(this).attr('data-assign-to') || '';
+                        assignAs    = $(this).attr('data-assign-as') || '';
                         if (destinations[destination] == undefined) destination = '';
                         input = {
                             type : $(this).attr('data-type'),
@@ -316,11 +431,15 @@ window.formbuilder = (function() {
                                 $(this).attr('data-name') || self.guid():
                                 '',
                             value:value,
-                            destination: destination
-
+                            destination: destination,
+                            color: color,
+                            assignTo: assignTo,
+                            assignAs: assignAs,
+                            required: !!$(this).attr('data-required')
                         };
                         if ($(this).attr('data-type') == 'options'){
-                            input.options = $(this).find('option').map(function(){return $(this).val()}).toArray().join(',')
+                            input.options = $(this).find('option').map(function(){return $(this).val()}).toArray().join(',');
+                            input.colors = $(this).find('option').map(function(){return $(this).attr('data-color')}).toArray().join(',');
                         }
                         data.push(input);
                     });
@@ -352,8 +471,9 @@ window.formbuilder = (function() {
             var i, j,
                 self = this,
                 current,
+                style,
+                dataColor,
                 html = [];
-
             switch (element.type){
                 case 'table':
                     html.push('<div class="table-container ',this._editable ? 'user-edit' : '','"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs"><i class="glyphicon glyphicon-trash"></i></button><button class="btn btn-info config-table btn-xs"><i class="glyphicon glyphicon-cog"></i></button><table data-style=\''+element['data-style']+'\' style="'+element.style+'" class="table-responsive table table-bordered editable-table '+element.class+'" '+(element.class ? ' data-class="'+element.class+'" ' : '') +'><tbody class="ui-sortable">');
@@ -412,87 +532,46 @@ window.formbuilder = (function() {
                 case 'label':
                 case 'revision':
                 case 'timestamp':
-                    html.push('<td class="editable-cell"',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
-                        ' data-type="',
-                        element.type,
-                        '" data-placeholder="',element.placeholder,'"  data-value="',element.value,'" data-destination="',
-                        element.destination,
-                        '">',
+                    html.push(this.getFilledTd(element),
                         '<span>',element.placeholder,'</span>',
                         '<input type="hidden" value="',element.placeholder,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'text':
-                    html.push('<td class="editable-cell" ',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
-                        '  data-type="',
-                        element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.destination,
-                        '">',
-                        '<input name="',element.name,'" type="text" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
+                    html.push(this.getFilledTd(element),
+                        //'<input name="',element.name,'" type="text" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
+                        '<textarea name="',element.name,'" placeholder="',element.placeholder,'">',element.value,'</textarea>',
                         '</td>'
                     );
                     break;
                 case 'number':
-                    html.push('<td class="editable-cell" ',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
-                        '  data-type="',
-                        element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.destination,
-                        '">',
+                    html.push(this.getFilledTd(element),
                         '<input name="',element.name,'" type="number" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'float':
-                    html.push('<td class="editable-cell" ',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
-                        '  data-type="',
-                        element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.destination,
-                        '">',
+                    html.push(this.getFilledTd(element),
                         '<input name="',element.name,'" step="0.01" type="number" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'date':
-                    html.push('<td class="editable-cell" ',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
-                        '  data-type="',
-                        element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.destination,
-                        '">',
+                    html.push(this.getFilledTd(element),
                         '<input name="',element.name,'" type="text" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'ticket':
-                    html.push('<td class="editable-cell" ',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
-                        '  data-type="',
-                        element.type,
-                        '" data-placeholder="',element.placeholder,'" data-value="',element.value,'" data-destination="',
-                        element.destination,
-                        '">',
+                    html.push(this.getFilledTd(element),
                         '<span>TICKETFIELD',element.placeholder,'</span>',
                         '<input type="hidden" value="',element.value,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'signature':
-                    html.push('<td class="editable-cell" ',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
-                        '  data-type="',
-                        element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.destination,
-                        '">',
+                    html.push(this.getFilledTd(element),
                         '<canvas width="200" height="100"></canvas>',
                         '<input name="',element.name,'" type="hidden" value="',element.value,'"></input>',
                         '</td>'
@@ -500,23 +579,22 @@ window.formbuilder = (function() {
                     break;
                 case 'options':
                     var options = [], i,
-                        available = element.options && element.options.split(',') || [];
+                        available = element.options && element.options.split(',') || [],
+                        colors = element.colors && element.colors.split(',') || [];
                     for(i=0;i<available.length;i++){
                         options.push( '<option value="',
                             available[i],
                             '" ',
                             element.value == available[i] ? 'selected="selected"' : '',
+                            ' ',
+                            'data-color="',
+                            colors[i],
+                            '"',
                             '>',
                             available[i],
                             '</option>');
                     }
-                    html.push('<td class="editable-cell" ',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
-                        '  data-type="',
-                        element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.destination,
-                        '">',
+                    html.push(this.getFilledTd(element),
                         '<select name="',element.name,'">',
                        options.join(''),
                         '</select>',
@@ -524,12 +602,56 @@ window.formbuilder = (function() {
                     );
                     break;
                 default:
-                    html.push('<td class="editable-cell" ',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                    style = element['width-settings'] ?
+                    'width:'+element['width-settings'] +';':
+                        '';
+                    style += element.color ?
+                    'background:'+ element.color +';':
+                        '';
+                    dataColor = element.color ?
+                    ' data-color="'+element.color+'" ' :
+                        '';
+                    html.push('<td class="editable-cell"',
+                        style  ? ('style="'+style+'"') : '',
                         ' data-type="label"></td>');
                     break;
             }
 
+            return html.join('');
+        },
+
+        getFilledTd: function(element){
+            var html = [],
+                style = element['width-settings'] ?
+            'width:'+element['width-settings'] +';':
+                '';
+            style += element.color ?
+            'background:'+ element.color +';':
+                '';
+            var dataColor = element.color ?
+            ' data-color="'+element.color+'" ' :
+                '',
+                assignTo = element.assignTo ?
+                ' data-assign-to="'+element.assignTo+'" ' :
+                    '',
+                assignAs = element.assignAs ?
+                ' data-assign-as="'+element.assignAs+'" ' :
+                    '',
+                required = element.required ?
+                ' data-required="true" ' :
+                    '';
+            html.push('<td class="editable-cell"',
+                style  ? ('style="'+style+'"') : '',
+                '  data-type="',
+                element.type,
+                '" data-placeholder="',element.placeholder,'" data-value="',element.value,'" data-destination="',
+                element.destination,
+                '" ',
+                dataColor,
+                assignTo,
+                assignAs,
+                required,
+                '>');
             return html.join('');
         },
 
@@ -574,6 +696,8 @@ window.formbuilder = (function() {
                 placeholder: "ui-state-highlight"
             });
             self._formContainer.disableSelection();
+
+
         },
         t:false,
         initResize: function(){
@@ -617,9 +741,11 @@ window.formbuilder = (function() {
                 $('#addField').modal('show');
                 self.fillCellForm($(this));
                 self.refreshFieldForm($(this));
+                self.fillAssignFields($(this));
 
                 setTimeout(function(){
                     $('#placeholder-type').focus();
+                    $('#options-preview').trigger('change');
                 },500);
             });
             this._formContainer.on('click','.remove-table',function(e){
@@ -715,8 +841,18 @@ window.formbuilder = (function() {
             $('#remove-option').on('click',function(){
                 var value = $('#options-preview').val();
                 $("#options-preview option[value='"+value+"']").remove();
+                $('#option-color').val('');
+            });
+            $('#option-color').on('change', function(e){
+                $('#options-preview').find('option[value="'+$('#options-preview').val()+'"]').attr('data-color',$(this).val());
             });
 
+            $('#options-preview').on('change',function(){
+                var color = $(this).find('option[value="'+$(this).val()+'"]').attr('data-color');
+                $('#option-color').val(color);
+            });
+
+            $('#color').colorPicker();
 
             $('#confirm-insert-field').on('click',self.confirmAddField);
 
@@ -857,6 +993,7 @@ $(function () {
                 $('#form-type').val(data.type);
                 $('#form-report').val(data.report);
                 $('#allow-geo').prop('checked', data.geo);
+                $('#allow-attachment').prop('checked', data.attachment);
                 formbuilder.initForm('#form-builder-container',data.data);
                 $('#form-builder').removeClass('hidden');
                 formbuilder.initResize();
@@ -864,17 +1001,19 @@ $(function () {
         }
     });
 
-
+    var files = [];
 
     $('.form-save').click(function() {
+        if(!formbuilder.checkRequiredFields()){
+            alert('Fill out the mandatory fields before saving the form');
+            return false;
+        }
+
         var form = $(this).parents('form').serializeArray();
-        if ($(this).hasClass('btn-info'))
-            if (confirm('Do you really want to convert this file to PDF? After this, form data can\'t  be edited!'))
-                form.push({
-                    name: 'print',
-                    value: ''
-                });
-            else return false;
+        var print = $(this).hasClass('btn-info');
+
+        if (print && !confirm('Do you really want to convert this file to PDF? After this, form data can\'t  be edited!'))
+            return false;
 
         $('form').find('canvas').each(function(){
             form.push({
@@ -888,7 +1027,28 @@ $(function () {
             type    : 'POST',
             data    : form,
             success : function(data){
-                window.location = data.url;
+                $('#form-data').attr('data-id', data.id);
+                if (files.length > 0) {
+                    $('#file-queue').find('a').remove();
+                    $('#file-queue>li').first().addClass('text-info');
+                    var file = files.shift();
+
+                    $('#form-upload').attr('data-redirect', print ? '' : data.url);
+
+                    $('#form-upload').fileupload("send", {
+                        files: [file],
+                        url: utils.baseUrl() + 'form/upload/' + $('#form-data').attr('data-id')
+                    });
+                } else {
+                    if (print) {
+                        var id = $('#form-data').attr('data-id');
+                        $.get(utils.baseUrl() + 'form/fill?print&id=' + id, function(data) {
+                            window.location = data.url;
+                        });
+                    } else {
+                        window.location = data.url;
+                    }
+                }
             },
             error   : function(e){
                 $('html').html(e.responseText);
@@ -897,4 +1057,56 @@ $(function () {
     });
 
     $('#form-data').submit(function() { return false;});
+
+    $('#form-upload').fileupload({
+        autoUpload: false,
+        dataType: 'json',
+        add: function(e, data) {
+            for (var i in data.files) {
+                files.push(data.files[i]);
+                $('#file-queue').append('<li><a href="javascript:;" class="text-danger remove-file"><span class="glyphicon glyphicon-remove"></span></a> ' + data.files[i].name + ' (' + bytesToSize(data.files[i].size) + ')</li>')
+            }
+        },
+        done: function (e, data) {
+            $('#file-queue>li').first().remove();
+            if (files.length > 0) {
+                var file = files.shift();
+                $('#form-upload').fileupload("send", {files: [file], url: utils.baseUrl() + 'form/upload/' + $('#form-data').attr('data-id')});
+            } else {
+                var url = $('#form-upload').attr('data-redirect');
+                if (url == '') {
+                    var id = $('#form-data').attr('data-id');
+                    $.get(utils.baseUrl() + 'form/fill?print&id=' + id, function(data) {
+                        window.location = data.url;
+                    });
+                } else {
+                    window.location = url;
+                }
+            }
+        },
+        fail: function (e, data) {
+            $('html').html(data.jqXHR.responseText);
+        }
+    }).prop('disabled', !$.support.fileInput)
+        .parent().addClass($.support.fileInput ? undefined : 'disabled');
+
+    $('#file-queue').on('click', '.remove-file', function() {
+        var id = $(this).parent().prevAll('li').length;
+        var f = [];
+        for (var i in files)
+            if (i != id) f.push(files[i]);
+
+        files = f;
+
+        $(this).parent().remove();
+    });
+
+    $('#attachments').on('click', '.remove-attachment', function(e) {
+        if (!confirm('Do you really want to remove this attachment?')) return;
+        var id = $('#form-data').attr('data-id');
+        var image = $(this).parent().attr('data-id');
+        $.get(utils.baseUrl() + 'form/remove/' + id + '?id=' + image, function() {
+            $('div[data-id="' + image+ '"]').remove();
+        });
+    });
 });

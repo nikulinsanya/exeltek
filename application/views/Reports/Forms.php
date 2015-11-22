@@ -48,7 +48,7 @@
                         <?php break;
                             default:?>
                             <li>
-                                <input type="text" class="text form-control multiline" data-separator="|" placeholder="Contain text" value="<?=implode('|', array_map('strval', Arr::path($filters, array($column['id'], '$in'), array())))?>" />
+                                <input type="text" class="text form-control multiline" data-separator="|" placeholder="Contain text" value="<?=implode('|', array_map(function ($v) { return ($v instanceof MongoRegex) ? $v->regex : strval($v); }, Arr::path($filters, array($column['id'], '$in'), array())))?>" />
                             </li>
                         <?php endswitch;?>
                         <li class="dropdown-header buttons-row">
@@ -59,6 +59,9 @@
                     </ul>
                 </th>
                 <?php endforeach;?>
+                <?php if ($attachments):?>
+                    <th>Attachments</th>
+                <?php endif;?>
             </tr>
             <?php if ($reports): foreach ($reports as $report): ?>
             <tr data-id="<?=$report['id']?>">
@@ -75,10 +78,22 @@
                     </td>
                 <?php endif;?>
                 <?php foreach ($columns as $column):?>
-                    <td <?=Group::current('edit_custom_forms') && $column['visible'] == 'write' ? 'class="editable-form-cell" data-type="' . $column['type'] . '" data-guid="' . $column['id'] . '"' : ''?>>
+                    <td <?=isset($report['colors'][$column['id']]) ? 'style="background-color: ' . $report['colors'][$column['id']] . ';"' : ''?>
+                        <?=Group::current('edit_custom_forms') && $column['visible'] == 'write' ? 'class="editable-form-cell" data-type="' . $column['type'] . '" data-guid="' . $column['id'] . '"' : ''?>>
                         <?=Arr::get($report, $column['id']) ? Columns::output($report[$column['id']], $column['type']) : '&nbsp;'?>
                     </td>
                 <?php endforeach;?>
+                <?php if ($attachments):?>
+                    <td>
+                        <?php $i = 0; foreach (Arr::get($report, 'attachments', array()) as $attachment):
+                            if ($i++ == 2):?>
+                                <div class="popover-block">
+                            <?php endif;?>
+                            <a href="<?=URL::base()?>download/attachment/<?=$attachment?>"><img src="<?=URL::base()?>download/thumb/<?=$attachment?>" /></a>
+                        <?php endforeach; if ($i > 2) echo '</div>';?>
+
+                    </td>
+                <?php endif;?>
             </tr>
             <?php endforeach; else:?>
                 <tr>
@@ -89,6 +104,9 @@
     </div>
 
 </div>
+    <?php if (Group::current('is_admin')):?>
+    <button type="button" class="btn btn-danger pull-right" id="reports-remove"><span class="glyphicon glyphicon-remove"></span> Remove</button>
+    <?php endif;?>
     <div class="btn-group pull-right">
         <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="glyphicon glyphicon-export"></span> Export options <span class="caret"></span>

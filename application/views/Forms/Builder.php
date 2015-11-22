@@ -42,6 +42,12 @@
             Use geolocation data
         </label>
     </div>
+    <div>
+        <label class="control-label">
+            <input type="checkbox" id="allow-attachment"/>
+            Allow attachments
+        </label>
+    </div>
 
     <div class="builderactions">
         <button class="btn btn-info add-table">Insert table</button>
@@ -189,6 +195,26 @@
                             <canvas width="200" height="100" id="signature-canvas"></canvas>
                         </div>
                     </div>
+                    <div class="row type-config ticket-type-hidden">
+                        <div class="col-md-4">
+                            <span class="form-label">Assign to</span>
+                        </div>
+                        <div class="col-md-8" >
+                            <select id="assign-to"></select>
+                        </div>
+                    </div>
+                    <div class="row type-config ticket-type-hidden">
+                        <div class="col-md-4">
+                            <span class="form-label">Assign as</span>
+                        </div>
+                        <div class="col-md-8" >
+                            <select id="assign-as">
+                                <option value=""></option>
+                                <option value="replace">Replace</option>
+                                <option value="append">Append</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="row type-config options-type-config">
                         <div class="col-md-4">
                             <span class="form-label">Add option</span>
@@ -203,11 +229,20 @@
                             <span class="form-label">Preview</span>
                         </div>
                         <div class="col-md-8">
-                            <select id="options-preview">
-                            </select><a class="btn btn-danger btn-xs" id="remove-option">Remove option</a>
+                            <select id="options-preview" style="width:150px;">
+                            </select>
+                            <select id="option-color" style="width:100px;">
+                                <option value="">Related color</option>
+                                <option value="red">Red</option>
+                                <option value="yellow">Yellow</option>
+                                <option value="orange">Orange</option>
+                                <option value="green">Green</option>
+                                <option value="blue">Blue</option>
+                            </select>
+                            <a class="btn btn-danger btn-xs" id="remove-option">Remove option</a>
                         </div>
                     </div>
-                    <div class="row" class="placeholder-type-config">
+                    <div class="row">
                         <div class="col-md-4" >
                             <span class="form-label">Destination</span>
                         </div>
@@ -215,6 +250,26 @@
                             <select id="destination">
                                 <option value="">None</option>
                             </select>
+                        </div>
+                    </div>
+
+                    <div class="row" class="placeholder-type-config">
+                        <div class="col-md-4">
+                            <span class="form-label">Background</span>
+                        </div>
+                        <div class="col-md-8" >
+                            <input id="color" type="text"/>
+                        </div>
+                    </div>
+                    <div class="row" class="placeholder-type-config">
+                        <div class="col-md-4">
+                            <span class="form-label">Is required?</span>
+                        </div>
+                        <div class="col-md-8" >
+                            <div class="onoffswitch">
+                                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="required" checked>
+                                <label class="onoffswitch-label" for="required"></label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -227,9 +282,12 @@
         </form>
     </div>
 </div>
+<canvas id="blank-canvas"></canvas>
 
 <link href="<?= URL::base() ?>css/forms/formbuilder.css" rel="stylesheet">
+<link href="<?= URL::base() ?>css/jquery.colorpicker.css" rel="stylesheet">
 <script src="<?= URL::base() ?>js/lib/signature_pad.min.js"></script>
 <script src="<?= URL::base() ?>js/lib/jquery/colResizable-1.5.min.js"></script>
+<script src="<?= URL::base() ?>js/lib/jquery/jquery.colorpicker.js"></script>
 
 <script src="<?= URL::base() ?>js/forms/formbuilder.js"></script>
