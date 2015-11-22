@@ -104,6 +104,9 @@
     </div>
 
 </div>
+    <?php if (Group::current('is_admin')):?>
+    <button type="button" class="btn btn-danger pull-right" id="reports-remove"><span class="glyphicon glyphicon-remove"></span> Remove</button>
+    <?php endif;?>
     <div class="btn-group pull-right">
         <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="glyphicon glyphicon-export"></span> Export options <span class="caret"></span>

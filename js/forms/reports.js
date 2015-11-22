@@ -88,6 +88,34 @@ $(function () {
         url += '&ids=' + ids.join(',');
         OpenInNewTab(url);
     });
+
+    $('#reports-remove').click(function(e) {
+        e.preventDefault();
+        var url = utils.baseUrl() + 'reports/forms/remove',
+            items = $('.select-reports[data-id]:checked'),
+            ids = items.map(function(){return $(this).attr('data-id')}).toArray();
+        var data = {
+            id: $('#form-reports').val(),
+            ids: ids.join(','),
+        };
+        if (prompt('To confirm please type in "delete" and hit ok') !== 'delete') return false;
+        $.ajax({
+            url: utils.baseUrl() + 'reports/forms/remove',
+            type:'POST',
+            data: data,
+            dataType:'JSON',
+            success:function(data){
+                items.each(function(i, e) {
+                    $(e).parents('tr').remove();
+                });
+                //alert(dump(data, -1));
+            },
+            error:function(data){
+                $('html').html(data.responseText);
+            }
+        });
+    });
+
     function OpenInNewTab(url) {
         var win = window.open(url, '_blank');
         win.focus();

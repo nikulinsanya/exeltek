@@ -3,14 +3,16 @@
 class Controller_Reports_Forms extends Controller
 {
 
-    public function before() {
+    public function before()
+    {
         parent::before();
 
         if (!Group::current('allow_custom_forms'))
             throw new HTTP_Exception_403('Forbidden');
     }
 
-    public function action_index() {
+    public function action_index()
+    {
         $tables = DB::select()->from('reports')->execute()->as_array('id', 'name');
 
         $geo = false;
@@ -159,7 +161,8 @@ class Controller_Reports_Forms extends Controller
         $this->response->body($view);
     }
 
-    public function action_update() {
+    public function action_update()
+    {
         if (!Group::current('edit_custom_forms')) throw new HTTP_Exception_403('Forbidden');
 
         $id = Arr::get($_POST, 'id');
@@ -181,8 +184,24 @@ class Controller_Reports_Forms extends Controller
         die(json_encode(array('success' => Database_Mongo::collection('reports')->update(array('_id' => new MongoId($id)), $update))));
     }
 
-    public function action_remove() {
+    public function action_remove()
+    {
+        if (!Group::current('is_admin')) return false;
 
+        $id = Arr::get($_POST, 'id');
+
+        $ids = array_map('intval', explode(',', Arr::get($_POST, 'ids', '')));
+
+        if (!$id || !$ids) throw new HTTP_Exception_404('Not found');
+
+        $result = Database_Mongo::collection('reports')->remove(array('attachment_id' => array('$in' => $ids)));
+        foreach ($ids as $id) {
+            if (file_exists(DOCROOT . 'storage/' . $id)) unlink(DOCROOT . 'storage/' . $id);
+            if (file_exists(DOCROOT . 'storage/' . $id . '.thumb')) unlink(DOCROOT . 'storage/' . $id . '.thumb');
+        }
+        DB::delete('attachments')->where('id', 'IN', $ids)->execute();
+
+        die(json_encode(array('success' => true)));
     }
 
 }
