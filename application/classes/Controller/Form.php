@@ -119,11 +119,10 @@ class Controller_Form extends Controller {
                         foreach ($cells as $cell => $input)
                             switch (Arr::get($input, 'type')) {
                                 case 'ticket':
-                                    $form['data'][$key]['data'][$row][$cell] = array(
-                                        'type' => 'label',
-                                        'placeholder' => Arr::get($input, 'value') ? Columns::output(Arr::path($job, 'data.' . $input['value']), Columns::get_type($input['value'])) : $job['_id'],
-                                        'destination' => Arr::get($input, 'destination'),
-                                    );
+                                    $form['data'][$key]['data'][$row][$cell]['type'] = 'label';
+                                    $form['data'][$key]['data'][$row][$cell]['placeholder'] = Arr::get($input, 'value') ? Columns::output(Arr::path($job, 'data.' . $input['value']), Columns::get_type($input['value'])) : $job['_id'];
+                                    $form['data'][$key]['data'][$row][$cell]['destination'] = Arr::get($input, 'destination');
+                                    unset($form['data'][$key]['data'][$row][$cell]['value']);
                                     break;
                                 case 'timestamp':
                                     $form['data'][$key]['data'][$row][$cell] = array(
