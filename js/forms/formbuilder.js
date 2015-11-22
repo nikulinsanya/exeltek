@@ -156,9 +156,14 @@ window.formbuilder = (function() {
                     break;
                 case 'signature':
                     $('.signature-type-config').show();
-//                    new SignaturePad($('.signature-type-config').find('canvas').get(0));
                     break;
             }
+            if(cell.attr('data-color')){
+                $('#color').val(cell.attr('data-color')).css('background-color',cell.attr('data-color'));
+            }else{
+                $('#color').val('').css('background-color','#fff');
+            }
+
             $('#placeholder-type').trigger('focus');
         },
         confirmAddField: function(e){
@@ -249,6 +254,10 @@ window.formbuilder = (function() {
             }
 
             $selectedCell.attr('data-destination',$('#destination').val());
+            if($('#color').val()){
+                $selectedCell.attr('data-color',$('#color').val());
+                $selectedCell.css('background-color',$('#color').val());
+            }
 
             $('#addField').modal('hide');
             $('.selected-cell').removeClass('selected-cell');
@@ -324,8 +333,9 @@ window.formbuilder = (function() {
                         destinations[$(e).attr('value')] = 1;
                     });
                     $(this).find('td').not('.tmp-cell').each(function(){
-                        value = $(this).attr('data-value');
+                        value       = $(this).attr('data-value');
                         destination = $(this).attr('data-destination');
+                        color       = $(this).attr('data-color');
                         if (destinations[destination] == undefined) destination = '';
                         input = {
                             type : $(this).attr('data-type'),
@@ -334,7 +344,8 @@ window.formbuilder = (function() {
                                 $(this).attr('data-name') || self.guid():
                                 '',
                             value:value,
-                            destination: destination
+                            destination: destination,
+                            color: color
 
                         };
                         if ($(this).attr('data-type') == 'options'){
@@ -371,8 +382,10 @@ window.formbuilder = (function() {
             var i, j,
                 self = this,
                 current,
+                style,
+                dataColor,
                 html = [];
-
+debugger;
             switch (element.type){
                 case 'table':
                     html.push('<div class="table-container ',this._editable ? 'user-edit' : '','"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs"><i class="glyphicon glyphicon-trash"></i></button><button class="btn btn-info config-table btn-xs"><i class="glyphicon glyphicon-cog"></i></button><table data-style=\''+element['data-style']+'\' style="'+element.style+'" class="table-responsive table table-bordered editable-table '+element.class+'" '+(element.class ? ' data-class="'+element.class+'" ' : '') +'><tbody class="ui-sortable">');
@@ -431,87 +444,164 @@ window.formbuilder = (function() {
                 case 'label':
                 case 'revision':
                 case 'timestamp':
+                    style = element['width-settings'] ?
+                        'width:'+element['width-settings'] +';':
+                        '';
+                    style += element.color ?
+                        'background:'+ element.color +';':
+                        '';
+                    dataColor = element.color ?
+                        ' data-color="'+element.color+'" ' :
+                        '';
                     html.push('<td class="editable-cell"',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                        style  ? ('style="'+style+'"') : '',
                         ' data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'"  data-value="',element.value,'" data-destination="',
                         element.destination,
-                        '">',
+                        '" ',
+                        dataColor,
+                        '>',
                         '<span>',element.placeholder,'</span>',
                         '<input type="hidden" value="',element.placeholder,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'text':
-                    html.push('<td class="editable-cell" ',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                    style = element['width-settings'] ?
+                    'width:'+element['width-settings'] +';':
+                        '';
+                    style += element.color ?
+                    'background:'+ element.color +';':
+                        '';
+                    dataColor = element.color ?
+                    ' data-color="'+element.color+'" ' :
+                        '';
+                    html.push('<td class="editable-cell"',
+                        style  ? ('style="'+style+'"') : '',
                         '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
-                        '">',
+                        '" ',
+                        dataColor,
+                        '>',
                         '<input name="',element.name,'" type="text" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'number':
-                    html.push('<td class="editable-cell" ',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                    style = element['width-settings'] ?
+                    'width:'+element['width-settings'] +';':
+                        '';
+                    style += element.color ?
+                    'background:'+ element.color +';':
+                        '';
+                    dataColor = element.color ?
+                    ' data-color="'+element.color+'" ' :
+                        '';
+                    html.push('<td class="editable-cell"',
+                        style  ? ('style="'+style+'"') : '',
                         '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
-                        '">',
+                        '" ',
+                        dataColor,
+                        '>',
                         '<input name="',element.name,'" type="number" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'float':
-                    html.push('<td class="editable-cell" ',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                    style = element['width-settings'] ?
+                    'width:'+element['width-settings'] +';':
+                        '';
+                    style += element.color ?
+                    'background:'+ element.color +';':
+                        '';
+                    dataColor = element.color ?
+                    ' data-color="'+element.color+'" ' :
+                        '';
+                    html.push('<td class="editable-cell"',
+                        style  ? ('style="'+style+'"') : '',
                         '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
-                        '">',
+                        '" ',
+                        dataColor,
+                        '>',
                         '<input name="',element.name,'" step="0.01" type="number" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'date':
-                    html.push('<td class="editable-cell" ',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                    style = element['width-settings'] ?
+                    'width:'+element['width-settings'] +';':
+                        '';
+                    style += element.color ?
+                    'background:'+ element.color +';':
+                        '';
+                    dataColor = element.color ?
+                    ' data-color="'+element.color+'" ' :
+                        '';
+                    html.push('<td class="editable-cell"',
+                        style  ? ('style="'+style+'"') : '',
                         '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
-                        '">',
+                        '" ',
+                        dataColor,
+                        '>',
                         '<input name="',element.name,'" type="text" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'ticket':
-                    html.push('<td class="editable-cell" ',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                    style = element['width-settings'] ?
+                    'width:'+element['width-settings'] +';':
+                        '';
+                    style += element.color ?
+                    'background:'+ element.color +';':
+                        '';
+                    dataColor = element.color ?
+                    ' data-color="'+element.color+'" ' :
+                        '';
+                    html.push('<td class="editable-cell"',
+                        style  ? ('style="'+style+'"') : '',
                         '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-value="',element.value,'" data-destination="',
                         element.destination,
-                        '">',
+                        '" ',
+                        dataColor,
+                        '>',
                         '<span>TICKETFIELD',element.placeholder,'</span>',
                         '<input type="hidden" value="',element.value,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'signature':
-                    html.push('<td class="editable-cell" ',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                    style = element['width-settings'] ?
+                    'width:'+element['width-settings'] +';':
+                        '';
+                    style += element.color ?
+                    'background:'+ element.color +';':
+                        '';
+                    dataColor = element.color ?
+                    ' data-color="'+element.color+'" ' :
+                        '';
+                    html.push('<td class="editable-cell"',
+                        style  ? ('style="'+style+'"') : '',
                         '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
-                        '">',
+                        '" ',
+                        dataColor,
+                        '>',
                         '<canvas width="200" height="100"></canvas>',
                         '<input name="',element.name,'" type="hidden" value="',element.value,'"></input>',
                         '</td>'
@@ -534,13 +624,24 @@ window.formbuilder = (function() {
                             available[i],
                             '</option>');
                     }
-                    html.push('<td class="editable-cell" ',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                    dataColor = element.color ?
+                    ' data-color="'+element.color+'" ' :
+                        '';
+                    style = element['width-settings'] ?
+                    'width:'+element['width-settings'] +';':
+                        '';
+                    style += element.color ?
+                    'background:'+ element.color +';':
+                        '';
+                    html.push('<td class="editable-cell"',
+                        style  ? ('style="'+style+'"') : '',
                         '  data-type="',
                         element.type,
                         '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
                         element.destination,
-                        '">',
+                        '" ',
+                        dataColor,
+                        '>',
                         '<select name="',element.name,'">',
                        options.join(''),
                         '</select>',
@@ -548,8 +649,17 @@ window.formbuilder = (function() {
                     );
                     break;
                 default:
-                    html.push('<td class="editable-cell" ',
-                        element['width-settings'] ? ('style="width:'+element['width-settings']+'"') : '',
+                    style = element['width-settings'] ?
+                    'width:'+element['width-settings'] +';':
+                        '';
+                    style += element.color ?
+                    'background:'+ element.color +';':
+                        '';
+                    dataColor = element.color ?
+                    ' data-color="'+element.color+'" ' :
+                        '';
+                    html.push('<td class="editable-cell"',
+                        style  ? ('style="'+style+'"') : '',
                         ' data-type="label"></td>');
                     break;
             }
@@ -598,6 +708,8 @@ window.formbuilder = (function() {
                 placeholder: "ui-state-highlight"
             });
             self._formContainer.disableSelection();
+
+
         },
         t:false,
         initResize: function(){
@@ -751,6 +863,13 @@ window.formbuilder = (function() {
                 $('#option-color').val(color);
             });
 
+            $('#color').colorPicker({
+                //renderCallback: function($elm, toggled) {
+                //    if(!toggled){
+                //        console.log($elm.val());
+                //    }
+                //}
+            });
 
             $('#confirm-insert-field').on('click',self.confirmAddField);
 
