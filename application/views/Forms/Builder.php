@@ -261,6 +261,17 @@
                             <input id="color" type="text"/>
                         </div>
                     </div>
+                    <div class="row" class="placeholder-type-config">
+                        <div class="col-md-4">
+                            <span class="form-label">Is required?</span>
+                        </div>
+                        <div class="col-md-8" >
+                            <div class="onoffswitch">
+                                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="required" checked>
+                                <label class="onoffswitch-label" for="required"></label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer" class="tableRowButtons">
@@ -271,6 +282,7 @@
         </form>
     </div>
 </div>
+<canvas id="blank-canvas"></canvas>
 
 <link href="<?= URL::base() ?>css/forms/formbuilder.css" rel="stylesheet">
 <link href="<?= URL::base() ?>css/jquery.colorpicker.css" rel="stylesheet">
