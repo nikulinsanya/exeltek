@@ -59,6 +59,9 @@
                     </ul>
                 </th>
                 <?php endforeach;?>
+                <?php if ($attachments):?>
+                    <th>Attachments</th>
+                <?php endif;?>
             </tr>
             <?php if ($reports): foreach ($reports as $report): ?>
             <tr data-id="<?=$report['id']?>">
@@ -79,6 +82,17 @@
                         <?=Arr::get($report, $column['id']) ? Columns::output($report[$column['id']], $column['type']) : '&nbsp;'?>
                     </td>
                 <?php endforeach;?>
+                <?php if ($attachments):?>
+                    <td>
+                        <?php $i = 0; foreach (Arr::get($report, 'attachments', array()) as $attachment):
+                            if ($i++ == 2):?>
+                                <div class="popover-block">
+                            <?php endif;?>
+                            <a href="<?=URL::base()?>download/attachment/<?=$attachment?>"><img src="<?=URL::base()?>download/thumb/<?=$attachment?>" /></a>
+                        <?php endforeach; if ($i > 2) echo '</div>';?>
+
+                    </td>
+                <?php endif;?>
             </tr>
             <?php endforeach; else:?>
                 <tr>

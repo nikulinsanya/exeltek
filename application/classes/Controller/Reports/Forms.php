@@ -14,6 +14,7 @@ class Controller_Reports_Forms extends Controller
         $tables = DB::select()->from('reports')->execute()->as_array('id', 'name');
 
         $geo = false;
+        $attachments = false;
 
         if ($_POST) {
             $id = intval(Arr::get($_POST, 'id'));
@@ -77,6 +78,11 @@ class Controller_Reports_Forms extends Controller
                 if (isset($report['geo'])) {
                     $geo = true;
                     $data['geo'] = $report['geo'];
+                }
+
+                if (Arr::get($report, 'attachments')) {
+                    $attachments = true;
+                    $data['attachments'] = $report['attachments'];
                 }
 
                 $reports[$id] = $data;
@@ -143,6 +149,7 @@ class Controller_Reports_Forms extends Controller
 
         $view = View::factory('Reports/Forms')
             ->set('geo', $geo)
+            ->set('attachments', $attachments)
             ->bind('tables', $tables)
             ->bind('reports', $reports)
             ->bind('filters', $query)
@@ -171,6 +178,10 @@ class Controller_Reports_Forms extends Controller
         $update = array('$set' => array($key => $value));
 
         die(json_encode(array('success' => Database_Mongo::collection('reports')->update(array('_id' => new MongoId($id)), $update))));
+    }
+
+    public function action_remove() {
+
     }
 
 }
