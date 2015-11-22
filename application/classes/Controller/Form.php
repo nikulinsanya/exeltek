@@ -154,6 +154,7 @@ class Controller_Form extends Controller {
                 if (isset($_GET['print'])) {
                     $columns = DB::select('id')->from('report_columns')->where('report_id', '=', Arr::get($form, 'report'))->execute()->as_array('id', 'id');
                     $report = array();
+                    $colors = array();
 
                     foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
                         foreach ($table['data'] as $row => $cells)
@@ -169,8 +170,19 @@ class Controller_Form extends Controller {
                                 if (Arr::get($input, 'name'))
                                     $form['data'][$key]['data'][$row][$cell]['value'] = $input['value'] = Arr::path($form_data, array('data', $input['name']), '');
 
-                                if (Arr::get($input, 'destination') && isset($columns[$input['destination']]))
+                                if (Arr::get($input, 'destination') && isset($columns[$input['destination']])) {
+                                    if (isset($input['colors'])) {
+                                        try {
+                                            $list = array_combine(explode(',', $input['options']), explode(',', $input['colors']));
+                                            $color = Arr::get($list, $input['value']);
+                                        } catch (Exception $e) {
+                                            $color = false;
+                                        }
+                                        if ($color)
+                                            $colors[$input['destination']] = $color;
+                                    }
                                     $report[$input['destination']] = Arr::get($input, in_array(Arr::get($input, 'type', ''), array('text', 'number', 'float', 'date', 'options')) ? 'value' : 'placeholder');
+                                }
                             }
 
                     $view = View::factory('Forms/PDF')
@@ -244,6 +256,7 @@ class Controller_Form extends Controller {
                                     'attachment_id' => $image_id,
                                     'attachment' => $filename,
                                     'uploaded' => $uploaded,
+                                    'colors' => $colors,
                                 );
 
                                 if (Arr::get($form_data, 'attachments'))

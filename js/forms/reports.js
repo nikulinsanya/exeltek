@@ -99,7 +99,6 @@ $(function () {
                 $('.dropdown-menu.collapse.in').removeClass('in');
         });
         collectFilters(true);
-        initPlugins();
     })();
 
     function updateTebleOnFly(report, id, value){
@@ -205,23 +204,6 @@ $(function () {
             error: function(data){
                 alert('Nothing found');
             }
-        });
-    }
-
-    function initPlugins(){
-        $('.multiline').focus(function() {
-            var separator = $(this).attr('data-separator');
-            if(!separator){
-                return false;
-            }
-            $('form').prop('hold', true);
-            var val = $(this).val();
-            while (val.indexOf(separator) !== -1)
-                val = val.replace(separator, '\n');
-            var textarea = $('<textarea class="form-control" width="100%"></textarea>').val(val).focusout(ticket_id_unfocus);
-            $(this).hide().before(textarea);
-            textarea.focus();
-            $('form').prop('hold', false);
         });
     }
 

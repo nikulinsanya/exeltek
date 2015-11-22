@@ -71,6 +71,7 @@ class Controller_Reports_Forms extends Controller
                     'id' => $id,
                     'attachment' => Arr::get($report, 'attachment', 'Unknown file'),
                     'attachment_id' => Arr::get($report, 'attachment_id', 0),
+                    'colors' => Arr::get($report, 'colors', array()),
                 );
                 foreach ($columns as $key => $column)
                     $data[$key] = Arr::get($report, $key, '');
