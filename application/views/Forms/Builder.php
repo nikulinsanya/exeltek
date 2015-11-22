@@ -229,9 +229,9 @@
                             <span class="form-label">Preview</span>
                         </div>
                         <div class="col-md-8">
-                            <select id="options-preview">
+                            <select id="options-preview" style="width:150px;">
                             </select>
-                            <select id="option-color">
+                            <select id="option-color" style="width:100px;">
                                 <option value="">Related color</option>
                                 <option value="red">Red</option>
                                 <option value="yellow">Yellow</option>
