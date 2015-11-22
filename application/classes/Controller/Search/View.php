@@ -532,15 +532,6 @@ class Controller_Search_View extends Controller {
             User::get(array_keys($ids));
         }
 
-        if (Group::current('allow_quality')) {
-            $result = Database_Mongo::collection('quality')->find(array('job_key' => $job['_id']), array('prepared' => 1, 'requestdate' => 1, 'revision' => 1))->sort(array('date' => -1));
-
-            $quality = array();
-            foreach ($result as $item)
-                $quality[] = $item;
-
-        }
-
         if (Group::current('allow_finance')) {
             $query = DB::select('company_id', 'payment_time', 'admin_id', array('payments.amount', 'total'), array('payment_jobs.amount', 'amount'))
                 ->from('payment_jobs')
@@ -594,8 +585,7 @@ class Controller_Search_View extends Controller {
             ->bind('submissions', $submissions)
             ->bind('values', $values)
             ->bind('archive', $archive)
-            ->bind('forms', $forms)
-            ->bind('quality', $quality);
+            ->bind('forms', $forms);
         $this->response->body($view);
     }
 
