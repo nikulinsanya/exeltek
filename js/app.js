@@ -17,7 +17,10 @@ $.fn.quickChange = function(handler) {
 };
 
 function dump(obj, depth) {
-    if (depth == undefined) depth = 0;
+    if (depth == undefined) {
+        ret = false;
+        depth = 0;
+    } else ret = true;
     var out = "";
     if(obj && typeof(obj) == "object"){
         for (var i in obj) {
@@ -26,7 +29,7 @@ function dump(obj, depth) {
     } else {
         out = obj;
     }
-    if (depth == 0)
+    if (!ret)
         alert(out);
     else
         return out;
@@ -51,19 +54,31 @@ function expandCollapseTreeView(expand){
     }
     $('.popover').popover('hide');
 }
+function bytesToSize(bytes) {
+    if(bytes == 0) return '0 B';
+    var k = 1024;
+    var sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    var i = Math.floor(Math.log(bytes) / Math.log(k));
+    return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+}
 
 $(function () {
-    function bytesToSize(bytes) {
-       if(bytes == 0) return '0 B';
-       var k = 1024;
-       var sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-       var i = Math.floor(Math.log(bytes) / Math.log(k));
-       return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
-    }
     $('#file-type').find('input').click(function() {
         $('#file-type').addClass('hidden');
         $('#upload').removeClass('hidden');
         $('#upload>h2').text($('#upload>h2').text() + ' (' + $(this).parent().text().trim() + '):')
+    });
+
+    $('.popover-block').each(function(i, e) {
+        var content = $(e).html();
+        var control = $('<button type="button" role="button" class="btn btn-info">View more</button>');
+        $(e).replaceWith(control);
+        control.popover({
+            content: content,
+            html: true,
+            placement: 'auto',
+            trigger: 'focus',
+        });
     });
 
     $('#payment-company').change(function() {
@@ -652,7 +667,7 @@ $(function () {
         }
     }
     
-    $('[confirm]').click(confirm_link);
+    $('body').on('click', '[confirm]', confirm_link);
     
     function remove_link(e) {
         var target = $(this).parents('table').parent('div');

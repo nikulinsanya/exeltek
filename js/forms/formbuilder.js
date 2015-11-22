@@ -278,7 +278,8 @@ window.formbuilder = (function() {
                 id = $('#form-builder').attr('data-id');
 
             return $.ajax({
-                url : utils.baseUrl() + 'form/save?id=' + id + '&type=' + $('#form-type').val() + '&report=' + $('#form-report').val() + '&name=' + encodeURIComponent($('#form-name').val()) + '&geo=' + ($('#allow-geo').prop('checked') ? '1' : ''),
+                url : utils.baseUrl() + 'form/save?id=' + id + '&type=' + $('#form-type').val() + '&report=' + $('#form-report').val() +
+                    '&name=' + encodeURIComponent($('#form-name').val()) + '&geo=' + ($('#allow-geo').prop('checked') ? '1' : '') + '&attachment=' + ($('#allow-attachment').prop('checked') ? '1' : ''),
                 type: 'POST',
                 data: JSON.stringify(json),
                 success: function(){
@@ -1010,6 +1011,7 @@ $(function () {
                 $('#form-type').val(data.type);
                 $('#form-report').val(data.report);
                 $('#allow-geo').prop('checked', data.geo);
+                $('#allow-attachment').prop('checked', data.attachment);
                 formbuilder.initForm('#form-builder-container',data.data);
                 $('#form-builder').removeClass('hidden');
                 formbuilder.initResize();
@@ -1017,17 +1019,14 @@ $(function () {
         }
     });
 
-
+    var files = [];
 
     $('.form-save').click(function() {
         var form = $(this).parents('form').serializeArray();
-        if ($(this).hasClass('btn-info'))
-            if (confirm('Do you really want to convert this file to PDF? After this, form data can\'t  be edited!'))
-                form.push({
-                    name: 'print',
-                    value: ''
-                });
-            else return false;
+        var print = $(this).hasClass('btn-info');
+
+        if (print && !confirm('Do you really want to convert this file to PDF? After this, form data can\'t  be edited!'))
+            return false;
 
         $('form').find('canvas').each(function(){
             form.push({
@@ -1041,7 +1040,28 @@ $(function () {
             type    : 'POST',
             data    : form,
             success : function(data){
-                window.location = data.url;
+                $('#form-data').attr('data-id', data.id);
+                if (files.length > 0) {
+                    $('#file-queue').find('a').remove();
+                    $('#file-queue>li').first().addClass('text-info');
+                    var file = files.shift();
+
+                    $('#form-upload').attr('data-redirect', print ? '' : data.url);
+
+                    $('#form-upload').fileupload("send", {
+                        files: [file],
+                        url: utils.baseUrl() + 'form/upload/' + $('#form-data').attr('data-id')
+                    });
+                } else {
+                    if (print) {
+                        var id = $('#form-data').attr('data-id');
+                        $.get(utils.baseUrl() + 'form/fill?print&id=' + id, function(data) {
+                            window.location = data.url;
+                        });
+                    } else {
+                        window.location = data.url;
+                    }
+                }
             },
             error   : function(e){
                 $('html').html(e.responseText);
@@ -1050,4 +1070,56 @@ $(function () {
     });
 
     $('#form-data').submit(function() { return false;});
+
+    $('#form-upload').fileupload({
+        autoUpload: false,
+        dataType: 'json',
+        add: function(e, data) {
+            for (var i in data.files) {
+                files.push(data.files[i]);
+                $('#file-queue').append('<li><a href="javascript:;" class="text-danger remove-file"><span class="glyphicon glyphicon-remove"></span></a> ' + data.files[i].name + ' (' + bytesToSize(data.files[i].size) + ')</li>')
+            }
+        },
+        done: function (e, data) {
+            $('#file-queue>li').first().remove();
+            if (files.length > 0) {
+                var file = files.shift();
+                $('#form-upload').fileupload("send", {files: [file], url: utils.baseUrl() + 'form/upload/' + $('#form-data').attr('data-id')});
+            } else {
+                var url = $('#form-upload').attr('data-redirect');
+                if (url == '') {
+                    var id = $('#form-data').attr('data-id');
+                    $.get(utils.baseUrl() + 'form/fill?print&id=' + id, function(data) {
+                        window.location = data.url;
+                    });
+                } else {
+                    window.location = url;
+                }
+            }
+        },
+        fail: function (e, data) {
+            $('html').html(data.jqXHR.responseText);
+        }
+    }).prop('disabled', !$.support.fileInput)
+        .parent().addClass($.support.fileInput ? undefined : 'disabled');
+
+    $('#file-queue').on('click', '.remove-file', function() {
+        var id = $(this).parent().prevAll('li').length;
+        var f = [];
+        for (var i in files)
+            if (i != id) f.push(files[i]);
+
+        files = f;
+
+        $(this).parent().remove();
+    });
+
+    $('#attachments').on('click', '.remove-attachment', function(e) {
+        if (!confirm('Do you really want to remove this attachment?')) return;
+        var id = $('#form-data').attr('data-id');
+        var image = $(this).parent().attr('data-id');
+        $.get(utils.baseUrl() + 'form/remove/' + id + '?id=' + image, function() {
+            $('div[data-id="' + image+ '"]').remove();
+        });
+    });
 });

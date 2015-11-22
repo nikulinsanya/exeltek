@@ -76,13 +76,15 @@ class Controller_Test extends Controller {
             $fl = true;
             foreach ($discr['data'] as $key => $value) {
                 if ($key == 44) {
-                    $value['old_value'] = preg_replace('/[^a-z]/i', '', strtolower($value['old_value']));
-                    if ($value['old_value'] == preg_replace('/[^a-z]/i', '', strtolower($value['new_value'])))
+                    $status = preg_replace('/[^a-z]/i', '', strtolower($value['old_value']));
+                    $status2 = preg_replace('/[^a-z]/i', '', strtolower($value['new_value']));
+                    if ((($status == 'tested' && $status2 != 'tested') || ($status == 'built' && ($status2 != 'built' && $status2 != 'tested')) ||
+                            ($status != $status2 && in_array($status2, array('deferred', 'dirty', 'heldnbn'), true)))
+                    ) {
+                        $fl = false;
                         continue;
-
-                    $job['data'][$key] = preg_replace('/[^a-z]/i', '', strtolower(Arr::get($job['data'], $key, '')));
-                }
-                if ($value['old_value'] != Arr::get($job['data'], $key, '')) {
+                    }
+                } elseif ($value['old_value'] != Arr::get($job['data'], $key, '')) {
                     $fl = false;
                     continue;
                 }

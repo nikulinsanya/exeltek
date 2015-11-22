@@ -42,6 +42,12 @@
             Use geolocation data
         </label>
     </div>
+    <div>
+        <label class="control-label">
+            <input type="checkbox" id="allow-attachment"/>
+            Allow attachments
+        </label>
+    </div>
 
     <div class="builderactions">
         <button class="btn btn-info add-table">Insert table</button>

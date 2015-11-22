@@ -334,12 +334,12 @@ class Controller_Search_View extends Controller {
                     $status = preg_replace('/[^a-z]/', '', strtolower(Arr::path($update, array('$set', 'data.44'), '')));
 
                     if ($status == 'built' && !Arr::path($job, 'data.264'))
-                        $new['$set']['data.264'] = $update_time;
+                        $update['$set']['data.264'] = $update_time;
 
                     if ($status == 'tested' && !Arr::path($job, 'data.265')) {
-                        $new['$set']['data.265'] = $update_time;
+                        $update['$set']['data.265'] = $update_time;
                         if (!Arr::path($job, 'data.264'))
-                            $new['$set']['data.264'] = $update_time;
+                            $update['$set']['data.264'] = $update_time;
                     }
 
                     $update['$set']['companies'] = array_keys($companies);
@@ -566,10 +566,23 @@ class Controller_Search_View extends Controller {
             if (!Group::current('show_all_jobs'))
                 $forms['company'] = User::current('company_id');
 
-            $result = Database_Mongo::collection('forms-data')->find($forms, array('data' => 0))->sort(array('created' => -1));
+            $result = Database_Mongo::collection('forms-data')->find($forms, array('data' => 0))->sort(array('last_update' => -1));
             $forms = array();
-            foreach ($result as $form)
+            $ids = array();
+            foreach ($result as $form) {
+                $ids[$form['form_id']] = 1;
                 $forms[] = $form;
+            }
+            $list = array();
+            foreach ($ids as $key => $dummy)
+                $list[] = new MongoId($key);
+            $result = Database_Mongo::collection('forms')->find(array('_id' => array('$in' => $list)), array('name' => 1));
+            $list = array();
+            foreach ($result as $form)
+                $list[strval($form['_id'])] = $form['name'];
+
+            foreach ($forms as $key => $form) if (isset($list[$form['form_id']]))
+                $forms[$key]['name'] = $list[$form['form_id']];
         }
 
 

@@ -50,7 +50,8 @@ class Controller_Form extends Controller {
 
         $view = View::factory('Forms/PDF')
             ->bind('name', $form['name'])
-            ->bind('form', $form['data']);
+            ->bind('form', $form['data'])
+            ->set('attachments', Arr::get($form_data, 'attachments', array()));
 
         if (isset($_GET['raw'])) {
             echo $view;
@@ -142,44 +143,18 @@ class Controller_Form extends Controller {
                 break;
         }
 
-        if (isset($_GET['load']) || $_POST) {
+        if (isset($_GET['load']) || isset($_GET['print']) || $_POST) {
             header('Content-type: application/json');
 
 
             if (isset($form_data['job']))
                 $job = Database_Mongo::collection('jobs')->findOne(array('_id' => is_array($form_data['job']) ? array('$in' => $form_data['job']) : $form_data['job']));
 
-            if ($_POST) {
-                $fl = false;
-                foreach ($form_data['data'] as $key => $value) if (Arr::get($_POST, $key) != $value) {
-                    $form_data['data'][$key] = Arr::get($_POST, $key);
-                    $fl = true;
-                }
-
-                if ($fl) {
-                    $form_data['last_update'] = time();
-
-                    if (Arr::get($form, 'geo'))
-                        $form_data['geo'] = Arr::get($_POST, 'geo');
-                }
-
-                if ($id) {
-                    if ($fl)
-                        $form_data['revision']++;
-                    Database_Mongo::collection('forms-data')->update(array('_id' => new MongoId($id)), $form_data);
-                } else {
-                    $form_data['created'] = time();
-                    $form_data['user_id'] = User::current('id');
-                    $form_data['company'] = User::current('company_id');
-                    $form_data['revision'] = 1;
-                    $form_data['last_update'] = time();
-                    Database_Mongo::collection('forms-data')->insert($form_data);
-                    $id = strval($form['_id']);
-                }
-
-                if (isset($_POST['print'])) {
+            if ($_POST || isset($_GET['print'])) {
+                if (isset($_GET['print'])) {
                     $columns = DB::select('id')->from('report_columns')->where('report_id', '=', Arr::get($form, 'report'))->execute()->as_array('id', 'id');
                     $report = array();
+                    $colors = array();
 
                     foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
                         foreach ($table['data'] as $row => $cells)
@@ -195,13 +170,25 @@ class Controller_Form extends Controller {
                                 if (Arr::get($input, 'name'))
                                     $form['data'][$key]['data'][$row][$cell]['value'] = $input['value'] = Arr::path($form_data, array('data', $input['name']), '');
 
-                                if (Arr::get($input, 'destination') && isset($columns[$input['destination']]))
+                                if (Arr::get($input, 'destination') && isset($columns[$input['destination']])) {
+                                    if (isset($input['colors'])) {
+                                        try {
+                                            $list = array_combine(explode(',', $input['options']), explode(',', $input['colors']));
+                                            $color = Arr::get($list, $input['value']);
+                                        } catch (Exception $e) {
+                                            $color = false;
+                                        }
+                                        if ($color)
+                                            $colors[$input['destination']] = $color;
+                                    }
                                     $report[$input['destination']] = Arr::get($input, in_array(Arr::get($input, 'type', ''), array('text', 'number', 'float', 'date', 'options')) ? 'value' : 'placeholder');
+                                }
                             }
 
                     $view = View::factory('Forms/PDF')
                         ->bind('name', $form['name'])
-                        ->bind('form', $form['data']);
+                        ->bind('form', $form['data'])
+                        ->set('attachments', Arr::get($form_data, 'attachments', array()));
 
                     require_once(APPPATH . 'mpdf/mpdf.php');
                     $pdf = new mPDF('UTF-8', 'A4');
@@ -269,8 +256,11 @@ class Controller_Form extends Controller {
                                     'attachment_id' => $image_id,
                                     'attachment' => $filename,
                                     'uploaded' => $uploaded,
+                                    'colors' => $colors,
                                 );
 
+                                if (Arr::get($form_data, 'attachments'))
+                                    $report['attachments'] = $form_data['attachments'];
                                 if (isset($form_data['geo']))
                                     $report['geo'] = $form_data['geo'];
 
@@ -284,7 +274,38 @@ class Controller_Form extends Controller {
                     }
 
                     $target = 'attachments';
-                } else $target = 'forms';
+                } else {
+                    $target = 'forms';
+
+                    $fl = false;
+                    foreach ($form_data['data'] as $key => $value) if (Arr::get($_POST, $key) != $value) {
+                        $form_data['data'][$key] = Arr::get($_POST, $key);
+                        $fl = true;
+                    }
+
+                    if ($fl) {
+                        $form_data['last_update'] = time();
+
+                        if (Arr::get($form, 'geo'))
+                            $form_data['geo'] = Arr::get($_POST, 'geo');
+
+                    }
+
+                    if ($id) {
+                        if ($fl)
+                            $form_data['revision']++;
+                        Database_Mongo::collection('forms-data')->update(array('_id' => new MongoId($id)), $form_data);
+                    } else {
+                        $form_data['created'] = time();
+                        $form_data['user_id'] = User::current('id');
+                        $form_data['company'] = User::current('company_id');
+                        $form_data['revision'] = 1;
+                        $form_data['last_update'] = time();
+                        Database_Mongo::collection('forms-data')->insert($form_data);
+                        $id = strval($form_data['_id']);
+                    }
+                }
+
                 header('Content-type: application/json');
                 switch ($form['type']) {
                     case Form::FORM_TYPE_TICKET:
@@ -295,7 +316,7 @@ class Controller_Form extends Controller {
                         $url = URL::base() . 'form/unattached';
                         break;
                 }
-                die(json_encode(array('success' => true, 'url' => $url)));
+                die(json_encode(array('success' => true, 'id' => $id, 'url' => $url)));
             }
 
             foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
@@ -304,13 +325,14 @@ class Controller_Form extends Controller {
                         if (Arr::get($input, 'name'))
                             $form['data'][$key]['data'][$row][$cell]['value'] = Arr::get($form_data['data'], $input['name']);
 
-            die(json_encode($form['data']));
+            die(json_encode(array('form' => $form['data'], 'attachments' => Arr::get($form_data, 'attachments'))));
         }
 
         $view = View::factory('Forms/Form')
             ->set('form_id', $form_id)
             ->set('id', $id)
             ->set('allow_geo', Arr::get($form, 'geo'))
+            ->set('allow_attachment', Arr::get($form, 'attachment'))
             ->set('name', $form['name']);
 
         $this->response->body($view);
@@ -328,6 +350,7 @@ class Controller_Form extends Controller {
             'type' => $type,
             'name' => $name,
             'geo' => Arr::get($_GET, 'geo') ? true : false,
+            'attachment' => Arr::get($_GET, 'attachment') ? true : false,
             'report' => intval(Arr::get($_GET, 'report')),
             'data' => $data,
         );
@@ -355,6 +378,7 @@ class Controller_Form extends Controller {
             'type' => $form['type'],
             'name' => $form['name'],
             'geo' => Arr::get($form, 'geo') ? true : false,
+            'attachment' => Arr::get($form, 'attachment') ? true : false,
             'report' => Arr::get($form, 'report'),
             'data' => $form['data'],
         )));
@@ -400,6 +424,82 @@ class Controller_Form extends Controller {
             ->bind('files', $files);
 
         $this->response->body($view);
+    }
+
+    public function action_upload() {
+        $id = $this->request->param('id');
+        $form_data = Database_Mongo::collection('forms-data')->findOne(array('_id' => new MongoId($id)));
+
+        if (!$form_data)
+            throw new HTTP_Exception_404('Not found');
+
+        $file = Arr::get($_FILES, 'files');
+
+        if (!$file || !is_uploaded_file($file['tmp_name']) || !file_exists($file['tmp_name']))
+            throw new HTTP_Exception_404('Not found');
+
+        $update_time = time();
+
+        $data = array(
+            'filename' => $file['name'],
+            'mime' => $file['type'],
+            'uploaded' => $update_time,
+            'user_id' => User::current('id'),
+            'job_id' => 0,
+            'folder' => '',
+            'fda_id' => '',
+            'address' => '',
+            'title' => '',
+        );
+        Database::instance()->begin();
+        $result = DB::insert('attachments', array_keys($data))->values(array_values($data))->execute();
+        $image_id = Arr::get($result, 0);
+        if ($image_id && move_uploaded_file($file['tmp_name'], DOCROOT . 'storage/' . $image_id)) {
+            unset($data['mime']);
+            $data = array(
+                'filename' => $file['name'],
+                'uploaded' => $update_time,
+                'user_id' => User::current('id'),
+                'job_id' => 0,
+                'action' => 1,
+            );
+            DB::insert('upload_log', array_keys($data))->values(array_values($data))->execute();
+
+            $attachments = Arr::get($form_data, 'attachments', array());
+            $attachments[] = $image_id;
+            Database_Mongo::collection('forms-data')->update(array('_id' => new MongoId($id)), array('$set' => array('last_update' => $update_time, 'attachments' => $attachments)));
+
+            Database::instance()->commit();
+        }
+
+        die(json_encode(array(
+            'success' => true,
+            'id' => $image_id,
+        )));
+    }
+
+    public function action_remove() {
+        $id = $this->request->param('id');
+        $form_data = Database_Mongo::collection('forms-data')->findOne(array('_id' => new MongoId($id)));
+
+        if (!$form_data)
+            throw new HTTP_Exception_404('Not found');
+
+        $image_id = intval($_GET['id']);
+        if (!in_array($image_id, Arr::get($form_data, 'attachments', array()), true))
+            throw new HTTP_Exception_404('Not found');
+
+        $attachments = array_diff($form_data['attachments'], array($image_id));
+        $update_time = time();
+
+        Database_Mongo::collection('forms-data')->update(array('_id' => new MongoId($id)), array('$set' => array('last_update' => $update_time, 'attachments' => $attachments)));
+        @unlink(DOCROOT . 'storage/' . $image_id);
+        @unlink(DOCROOT . 'storage/' . $image_id . '.thumb');
+
+
+        die(json_encode(array(
+            'success' => true,
+        )));
     }
 
 }

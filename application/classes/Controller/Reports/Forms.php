@@ -3,17 +3,20 @@
 class Controller_Reports_Forms extends Controller
 {
 
-    public function before() {
+    public function before()
+    {
         parent::before();
 
         if (!Group::current('allow_custom_forms'))
             throw new HTTP_Exception_403('Forbidden');
     }
 
-    public function action_index() {
+    public function action_index()
+    {
         $tables = DB::select()->from('reports')->execute()->as_array('id', 'name');
 
         $geo = false;
+        $attachments = false;
 
         if ($_POST) {
             $id = intval(Arr::get($_POST, 'id'));
@@ -70,6 +73,7 @@ class Controller_Reports_Forms extends Controller
                     'id' => $id,
                     'attachment' => Arr::get($report, 'attachment', 'Unknown file'),
                     'attachment_id' => Arr::get($report, 'attachment_id', 0),
+                    'colors' => Arr::get($report, 'colors', array()),
                 );
                 foreach ($columns as $key => $column)
                     $data[$key] = Arr::get($report, $key, '');
@@ -77,6 +81,11 @@ class Controller_Reports_Forms extends Controller
                 if (isset($report['geo'])) {
                     $geo = true;
                     $data['geo'] = $report['geo'];
+                }
+
+                if (Arr::get($report, 'attachments')) {
+                    $attachments = true;
+                    $data['attachments'] = $report['attachments'];
                 }
 
                 $reports[$id] = $data;
@@ -143,6 +152,7 @@ class Controller_Reports_Forms extends Controller
 
         $view = View::factory('Reports/Forms')
             ->set('geo', $geo)
+            ->set('attachments', $attachments)
             ->bind('tables', $tables)
             ->bind('reports', $reports)
             ->bind('filters', $query)
@@ -151,7 +161,8 @@ class Controller_Reports_Forms extends Controller
         $this->response->body($view);
     }
 
-    public function action_update() {
+    public function action_update()
+    {
         if (!Group::current('edit_custom_forms')) throw new HTTP_Exception_403('Forbidden');
 
         $id = Arr::get($_POST, 'id');
@@ -171,6 +182,26 @@ class Controller_Reports_Forms extends Controller
         $update = array('$set' => array($key => $value));
 
         die(json_encode(array('success' => Database_Mongo::collection('reports')->update(array('_id' => new MongoId($id)), $update))));
+    }
+
+    public function action_remove()
+    {
+        if (!Group::current('is_admin')) return false;
+
+        $id = Arr::get($_POST, 'id');
+
+        $ids = array_map('intval', explode(',', Arr::get($_POST, 'ids', '')));
+
+        if (!$id || !$ids) throw new HTTP_Exception_404('Not found');
+
+        $result = Database_Mongo::collection('reports')->remove(array('attachment_id' => array('$in' => $ids)));
+        foreach ($ids as $id) {
+            if (file_exists(DOCROOT . 'storage/' . $id)) unlink(DOCROOT . 'storage/' . $id);
+            if (file_exists(DOCROOT . 'storage/' . $id . '.thumb')) unlink(DOCROOT . 'storage/' . $id . '.thumb');
+        }
+        DB::delete('attachments')->where('id', 'IN', $ids)->execute();
+
+        die(json_encode(array('success' => true)));
     }
 
 }
