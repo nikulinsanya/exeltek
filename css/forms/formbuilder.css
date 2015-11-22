@@ -94,9 +94,11 @@ table.editable-table{
     height: 100px;
 }
 
-#field-type{
+#field-type,
+#assign-to{
     width: 200px;
 }
+
 #options-preview{
     width: 150px;
 }
