@@ -98,6 +98,10 @@ table.editable-table{
     height: 100px;
 }
 
+.editable-cell textarea{
+    width: 100%;
+}
+
 #field-type,
 #assign-to{
     width: 200px;

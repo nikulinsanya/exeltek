@@ -223,7 +223,7 @@ window.formbuilder = (function() {
                     var value = $('#placeholder-type').val();
                     $selectedCell.attr('data-type','text');
                     $selectedCell.attr('data-placeholder',value);
-                    $selectedCell.html('<input type="text" placeholder="'+value+'">');
+                    $selectedCell.html('<textarea placeholder="'+value+'"></textarea>');
                     $('#placeholder-type').val('');
                     break;
                 case 'number':
@@ -490,7 +490,8 @@ window.formbuilder = (function() {
                     break;
                 case 'text':
                     html.push(this.getFilledTd(element),
-                        '<input name="',element.name,'" type="text" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
+                        //'<input name="',element.name,'" type="text" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
+                        '<textarea name="',element.name,'" placeholder="',element.placeholder,'">',element.value,'</textarea>',
                         '</td>'
                     );
                     break;
