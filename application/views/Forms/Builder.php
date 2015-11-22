@@ -195,6 +195,26 @@
                             <canvas width="200" height="100" id="signature-canvas"></canvas>
                         </div>
                     </div>
+                    <div class="row" class="placeholder-type-config">
+                        <div class="col-md-4">
+                            <span class="form-label">Assign to</span>
+                        </div>
+                        <div class="col-md-8" >
+                            <select id="assign-to"></select>
+                        </div>
+                    </div>
+                    <div class="row" class="placeholder-type-config">
+                        <div class="col-md-4">
+                            <span class="form-label">Assign as</span>
+                        </div>
+                        <div class="col-md-8" >
+                            <select id="assign-as">
+                                <option value=""></option>
+                                <option value="replace">Replace</option>
+                                <option value="append">Append</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="row type-config options-type-config">
                         <div class="col-md-4">
                             <span class="form-label">Add option</span>
@@ -238,7 +258,7 @@
                             <span class="form-label">Background</span>
                         </div>
                         <div class="col-md-8" >
-                            <input style="width:100px;" id="color" type="text"/>
+                            <input style="width:125px;" id="color" type="text"/>
                         </div>
                     </div>
                 </div>

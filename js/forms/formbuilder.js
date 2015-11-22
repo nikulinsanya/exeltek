@@ -66,6 +66,26 @@ window.formbuilder = (function() {
                 });
             });
         },
+        fillAssignFields: function(cell){
+            var html = [],
+                ticketId = cell.attr('data-assign-to'),
+                i;
+            getColumns().then(function(data){
+                html.push('<option value=""></option>');
+                for(i in data){
+                    html.push(
+                        '<option value="',
+                        data[i].id,
+                        '"',
+                        data[i].id == ticketId ? ' selected="selected" ' : '',
+                        '>',
+                        data[i].name,
+                        '</option>');
+                }
+                $('#assign-to').html(html.join(''));
+                $('#assign-as').val(cell.attr('data-assign-as'));
+            });
+        },
         fillCellForm: function(cell){
             var type = cell.attr('data-type'),
                 $parent = $('#addField');
@@ -158,7 +178,7 @@ window.formbuilder = (function() {
                     $('.signature-type-config').show();
                     break;
             }
-            if(cell.attr('data-color')){
+            if(cell && cell.attr('data-color')){
                 $('#color').val(cell.attr('data-color')).css('background-color',cell.attr('data-color'));
             }else{
                 $('#color').val('').css('background-color','#fff');
@@ -258,6 +278,14 @@ window.formbuilder = (function() {
                 $selectedCell.attr('data-color',$('#color').val());
                 $selectedCell.css('background-color',$('#color').val());
             }
+            if($('#assign-to').val()){
+                var value = $('#assign-to').val();
+                $selectedCell.attr('data-assign-to', value);
+            }
+            if($('#assign-as').val()){
+                var value = $('#assign-as').val();
+                $selectedCell.attr('data-assign-as', value);
+            }
 
             $('#addField').modal('hide');
             $('.selected-cell').removeClass('selected-cell');
@@ -300,6 +328,8 @@ window.formbuilder = (function() {
                 c, r,
                 destination,
                 color,
+                assignTo,
+                assignAs,
                 widthSettings,
                 width,
                 data;
@@ -334,9 +364,11 @@ window.formbuilder = (function() {
                         destinations[$(e).attr('value')] = 1;
                     });
                     $(this).find('td').not('.tmp-cell').each(function(){
-                        value       = $(this).attr('data-value');
-                        destination = $(this).attr('data-destination');
-                        color       = $(this).attr('data-color');
+                        value       = $(this).attr('data-value') || '';
+                        destination = $(this).attr('data-destination') || '';
+                        color       = $(this).attr('data-color') || '';
+                        assignTo    = $(this).attr('data-assign-to') || '';
+                        assignAs    = $(this).attr('data-assign-as') || '';
                         if (destinations[destination] == undefined) destination = '';
                         input = {
                             type : $(this).attr('data-type'),
@@ -346,8 +378,9 @@ window.formbuilder = (function() {
                                 '',
                             value:value,
                             destination: destination,
-                            color: color
-
+                            color: color,
+                            assignTo: assignTo,
+                            assignAs: assignAs
                         };
                         if ($(this).attr('data-type') == 'options'){
                             input.options = $(this).find('option').map(function(){return $(this).val()}).toArray().join(',');
@@ -386,7 +419,6 @@ window.formbuilder = (function() {
                 style,
                 dataColor,
                 html = [];
-debugger;
             switch (element.type){
                 case 'table':
                     html.push('<div class="table-container ',this._editable ? 'user-edit' : '','"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs"><i class="glyphicon glyphicon-trash"></i></button><button class="btn btn-info config-table btn-xs"><i class="glyphicon glyphicon-cog"></i></button><table data-style=\''+element['data-style']+'\' style="'+element.style+'" class="table-responsive table table-bordered editable-table '+element.class+'" '+(element.class ? ' data-class="'+element.class+'" ' : '') +'><tbody class="ui-sortable">');
@@ -445,164 +477,45 @@ debugger;
                 case 'label':
                 case 'revision':
                 case 'timestamp':
-                    style = element['width-settings'] ?
-                        'width:'+element['width-settings'] +';':
-                        '';
-                    style += element.color ?
-                        'background:'+ element.color +';':
-                        '';
-                    dataColor = element.color ?
-                        ' data-color="'+element.color+'" ' :
-                        '';
-                    html.push('<td class="editable-cell"',
-                        style  ? ('style="'+style+'"') : '',
-                        ' data-type="',
-                        element.type,
-                        '" data-placeholder="',element.placeholder,'"  data-value="',element.value,'" data-destination="',
-                        element.destination,
-                        '" ',
-                        dataColor,
-                        '>',
+                    html.push(this.getFilledTd(element),
                         '<span>',element.placeholder,'</span>',
                         '<input type="hidden" value="',element.placeholder,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'text':
-                    style = element['width-settings'] ?
-                    'width:'+element['width-settings'] +';':
-                        '';
-                    style += element.color ?
-                    'background:'+ element.color +';':
-                        '';
-                    dataColor = element.color ?
-                    ' data-color="'+element.color+'" ' :
-                        '';
-                    html.push('<td class="editable-cell"',
-                        style  ? ('style="'+style+'"') : '',
-                        '  data-type="',
-                        element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.destination,
-                        '" ',
-                        dataColor,
-                        '>',
+                    html.push(this.getFilledTd(element),
                         '<input name="',element.name,'" type="text" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'number':
-                    style = element['width-settings'] ?
-                    'width:'+element['width-settings'] +';':
-                        '';
-                    style += element.color ?
-                    'background:'+ element.color +';':
-                        '';
-                    dataColor = element.color ?
-                    ' data-color="'+element.color+'" ' :
-                        '';
-                    html.push('<td class="editable-cell"',
-                        style  ? ('style="'+style+'"') : '',
-                        '  data-type="',
-                        element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.destination,
-                        '" ',
-                        dataColor,
-                        '>',
+                    html.push(this.getFilledTd(element),
                         '<input name="',element.name,'" type="number" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'float':
-                    style = element['width-settings'] ?
-                    'width:'+element['width-settings'] +';':
-                        '';
-                    style += element.color ?
-                    'background:'+ element.color +';':
-                        '';
-                    dataColor = element.color ?
-                    ' data-color="'+element.color+'" ' :
-                        '';
-                    html.push('<td class="editable-cell"',
-                        style  ? ('style="'+style+'"') : '',
-                        '  data-type="',
-                        element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.destination,
-                        '" ',
-                        dataColor,
-                        '>',
+                    html.push(this.getFilledTd(element),
                         '<input name="',element.name,'" step="0.01" type="number" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'date':
-                    style = element['width-settings'] ?
-                    'width:'+element['width-settings'] +';':
-                        '';
-                    style += element.color ?
-                    'background:'+ element.color +';':
-                        '';
-                    dataColor = element.color ?
-                    ' data-color="'+element.color+'" ' :
-                        '';
-                    html.push('<td class="editable-cell"',
-                        style  ? ('style="'+style+'"') : '',
-                        '  data-type="',
-                        element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.destination,
-                        '" ',
-                        dataColor,
-                        '>',
+                    html.push(this.getFilledTd(element),
                         '<input name="',element.name,'" type="text" placeholder="',element.placeholder,'" value="',element.value,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'ticket':
-                    style = element['width-settings'] ?
-                    'width:'+element['width-settings'] +';':
-                        '';
-                    style += element.color ?
-                    'background:'+ element.color +';':
-                        '';
-                    dataColor = element.color ?
-                    ' data-color="'+element.color+'" ' :
-                        '';
-                    html.push('<td class="editable-cell"',
-                        style  ? ('style="'+style+'"') : '',
-                        '  data-type="',
-                        element.type,
-                        '" data-placeholder="',element.placeholder,'" data-value="',element.value,'" data-destination="',
-                        element.destination,
-                        '" ',
-                        dataColor,
-                        '>',
+                    html.push(this.getFilledTd(element),
                         '<span>TICKETFIELD',element.placeholder,'</span>',
                         '<input type="hidden" value="',element.value,'"></input>',
                         '</td>'
                     );
                     break;
                 case 'signature':
-                    style = element['width-settings'] ?
-                    'width:'+element['width-settings'] +';':
-                        '';
-                    style += element.color ?
-                    'background:'+ element.color +';':
-                        '';
-                    dataColor = element.color ?
-                    ' data-color="'+element.color+'" ' :
-                        '';
-                    html.push('<td class="editable-cell"',
-                        style  ? ('style="'+style+'"') : '',
-                        '  data-type="',
-                        element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.destination,
-                        '" ',
-                        dataColor,
-                        '>',
+                    html.push(this.getFilledTd(element),
                         '<canvas width="200" height="100"></canvas>',
                         '<input name="',element.name,'" type="hidden" value="',element.value,'"></input>',
                         '</td>'
@@ -625,24 +538,7 @@ debugger;
                             available[i],
                             '</option>');
                     }
-                    dataColor = element.color ?
-                    ' data-color="'+element.color+'" ' :
-                        '';
-                    style = element['width-settings'] ?
-                    'width:'+element['width-settings'] +';':
-                        '';
-                    style += element.color ?
-                    'background:'+ element.color +';':
-                        '';
-                    html.push('<td class="editable-cell"',
-                        style  ? ('style="'+style+'"') : '',
-                        '  data-type="',
-                        element.type,
-                        '" data-placeholder="',element.placeholder,'" data-name="',element.name,'" data-value="',element.value,'" data-destination="',
-                        element.destination,
-                        '" ',
-                        dataColor,
-                        '>',
+                    html.push(this.getFilledTd(element),
                         '<select name="',element.name,'">',
                        options.join(''),
                         '</select>',
@@ -665,6 +561,37 @@ debugger;
                     break;
             }
 
+            return html.join('');
+        },
+
+        getFilledTd: function(element){
+            var html = [],
+                style = element['width-settings'] ?
+            'width:'+element['width-settings'] +';':
+                '';
+            style += element.color ?
+            'background:'+ element.color +';':
+                '';
+            var dataColor = element.color ?
+            ' data-color="'+element.color+'" ' :
+                '',
+                assignTo = element.assignTo ?
+                ' data-assign-to="'+element.assignTo+'" ' :
+                    '',
+                assignAs = element.assignAs ?
+                ' data-assign-as="'+element.assignAs+'" ' :
+                    '';
+            html.push('<td class="editable-cell"',
+                style  ? ('style="'+style+'"') : '',
+                '  data-type="',
+                element.type,
+                '" data-placeholder="',element.placeholder,'" data-value="',element.value,'" data-destination="',
+                element.destination,
+                '" ',
+                dataColor,
+                assignTo,
+                assignAs,
+                '>');
             return html.join('');
         },
 
@@ -754,6 +681,7 @@ debugger;
                 $('#addField').modal('show');
                 self.fillCellForm($(this));
                 self.refreshFieldForm($(this));
+                self.fillAssignFields($(this));
 
                 setTimeout(function(){
                     $('#placeholder-type').focus();
