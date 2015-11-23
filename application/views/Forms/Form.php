@@ -2,7 +2,7 @@
     <h1 style="margin-left: 15px;"><?=$name?></h1>
 </div>
 
-<form id="form-data" data-id="<?=$id?>" onkeypress="return event.keyCode != 13;">
+<form id="form-data" data-id="<?=$id?>">
     <?php if ($allow_geo):?>
         <input type="hidden" name="geo" class="geolocation" value="" />
     <?php endif;?>

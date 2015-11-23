@@ -1074,8 +1074,9 @@ $(function () {
             return false;
 
         $('form').find('canvas').each(function(){
+            //dump($(this).next());
             form.push({
-                name:$(this).parent().attr('data-name'),
+                name:$(this).next('input').attr('name'),
                 value: $(this).get(0).toDataURL()
             });
         });
