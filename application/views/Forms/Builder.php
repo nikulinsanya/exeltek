@@ -149,7 +149,25 @@
                 <h4 class="modal-title">Add field</h4>
             </div>
             <div class="modal-body text-center" id="new-cell-details">
-                <div class="row">
+                <div class="row" id="options-settings">
+                    <div class="row">
+                        <div class="col-md-12" >
+                            <h4>Select predifined options</h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" id="predifined-options">
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a class="btn btn-success close-options apply-options">Apply</a>
+                            <a class="btn btn-warning close-options">Close</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="main-settings">
                     <div class="row" class="placeholder-type-config">
                         <div class="col-md-4" >
                             <span class="form-label">Type</span>
@@ -222,6 +240,7 @@
                         <div class="col-md-8">
                             <input type="text" id="option-type-value">
                             <a class="btn btn-success btn-xs" id="add-option">Add option</a>
+                            <a class="btn btn-info btn-xs" id="show-options-settings"><span data-toggle="tooltip" data-placement="top" title="Set predefined" class="glyphicon glyphicon-cog"></span></a>
                         </div>
                     </div>
                     <div class="row type-config options-type-config">

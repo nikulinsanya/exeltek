@@ -717,7 +717,15 @@ window.formbuilder = (function() {
                });
             })
         },
-
+        selectOptions : [],
+        collectAvailableOptions: function(){
+            var self = this;
+            self.selectOptions = [];
+            $('.editable-cell[data-type="options"]').each(function(){
+                self.selectOptions.push($(this).find('select').html());
+            });
+            return self.selectOptions;
+        },
         setHandlers: function(){
             if(this._editable){
                 this._formContainer.find('canvas').each(function(){
@@ -742,7 +750,7 @@ window.formbuilder = (function() {
                 self.fillCellForm($(this));
                 self.refreshFieldForm($(this));
                 self.fillAssignFields($(this));
-
+                $('#options-settings').removeClass('visible');
                 setTimeout(function(){
                     $('#placeholder-type').focus();
                     $('#options-preview').trigger('change');
@@ -784,7 +792,6 @@ window.formbuilder = (function() {
                     }
 
                 }else{
-
                     $('#table-border').val($('#table-border').find('option').first().val());
                     $('#table-color').val($('#table-color').find('option').first().val());
                     if(table.hasClass('not-bordered')){
@@ -961,6 +968,57 @@ window.formbuilder = (function() {
                 $(this).parent().attr('style','width:auto;').removeAttr('data-resized');
                 $(this).remove();
             });
+
+            $('.close-options').on('click', function(){
+                $('#options-settings').removeClass('visible');
+            });
+            $('.apply-options').on('click', function(){
+                var selected = $('[name="option-item-list"]:checked'),
+                    idx,
+                    html;
+                if(selected.length){
+                    idx = selected.attr('data-idx');
+                    html = $('.available-select[data-idx="'+idx+'"]').html();
+                    $('#options-preview').html(html);
+                }
+
+            });
+
+
+            $('[data-toggle="tooltip"]').tooltip();
+
+            $('#show-options-settings').on('click', function(){
+                var options = self.collectAvailableOptions(),
+                    i,
+                    idx = 0,
+                    items = [];
+                if(options.length){
+                    for(i in options){
+                        items.push(
+                            '<div>',
+                            '<input type="radio" name="option-item-list"',
+                            'data-idx="',
+                            ++idx,
+                            '"',
+                            '/>',
+                            '<select class="available-select"',
+                            'data-idx="',
+                            idx,
+                            '"',
+                            '>',
+                            options[i],
+                            '</select>',
+                            '</div>'
+                        );
+                    }
+
+                    $('#predifined-options').html(items.join(''));
+                }else{
+                    $('#predifined-options').html('<h5>No options are available</h5>');
+                }
+
+                $('#options-settings').addClass('visible');
+            });
         }
     }
 })(window);
@@ -1110,4 +1168,5 @@ $(function () {
             $('div[data-id="' + image+ '"]').remove();
         });
     });
+
 });
