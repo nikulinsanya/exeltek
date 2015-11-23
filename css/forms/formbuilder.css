@@ -42,15 +42,21 @@ table.editable-table{
     display: none;
 }
 
+#predifined-options select{
+    width:200px;
+}
+
 #new-cell-details .row>div{
     text-align: left;
     padding-left: 15px;
 }
 #new-cell-details .row>div select,
-#new-cell-details .row>div input{
+#new-cell-details .row>div input:not('[type="radio"]'){
     width: 200px;
 }
-
+#new-cell-details .row>div input[type="radio"]{
+    width:30px;
+}
 .table-container{
     position: relative;
 }
@@ -241,6 +247,7 @@ table tr.tmp-cell:first-of-type>td.tmp-cell{
     background: #F8FFF8;
 }
 .onoffswitch {
+    margin-top: -5px;
     position: relative; width: 45px;
     -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
 }
@@ -280,4 +287,29 @@ table tr.tmp-cell:first-of-type>td.tmp-cell{
 .error{
     border:1px solid red!important;
     background: #FFECEC!important;
+}
+
+#options-settings{
+    visibility: hidden;
+    position: absolute;
+    left: -100%;
+    opacity:0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    z-index: 999;
+    margin-left: 0px;
+    padding: 10px;
+    background: #E9FFE8;
+    transition: opacity 0.2s, left 1s, visibility 1s;
+    animation-fill-mode: forwards;
+}
+
+#options-settings.visible{
+    visibility: visible;
+    position: absolute;
+    left: 0%;
+    opacity:1;
+    transition: opacity 0.2s, left 1s;
+    animation-fill-mode: forwards;
 }
