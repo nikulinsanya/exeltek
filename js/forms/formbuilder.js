@@ -724,6 +724,7 @@ window.formbuilder = (function() {
             $('.editable-cell[data-type="options"]').each(function(){
                 self.selectOptions.push($(this).find('select').html());
             });
+            self.selectOptions = $.unique(self.selectOptions);
             return self.selectOptions;
         },
         setHandlers: function(){
@@ -978,7 +979,10 @@ window.formbuilder = (function() {
                     html;
                 if(selected.length){
                     idx = selected.attr('data-idx');
-                    html = $('.available-select[data-idx="'+idx+'"]').html();
+                    html =
+                        '<select>'+
+                        $('.available-select[data-idx="'+idx+'"]').html()+
+                        '</select>';
                     $('#options-preview').html(html);
                 }
 
