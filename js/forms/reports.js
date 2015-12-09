@@ -74,9 +74,17 @@ $(function () {
         $('.dropdown-menu.collapse.in').removeClass('in');
     });
 
-    $('#filter-list').on('click','.clear-all',function(e){
+    $('.filter-info-container').on('click','.clear-all',function(e){
         e.preventDefault();
         $('tr.table-header').find('input[type="text"]').val('');
+        collectFilters();
+    });
+
+    $('#applyModalFilters').on('click',function(e) {
+        $('ul[data-guid]').each(function(){
+            var guid = $(this).attr('data-guid');
+            $('ul[data-parent-guid="'+guid+'"]').html($(this).html());
+        });
         collectFilters();
     });
 
@@ -96,7 +104,7 @@ $(function () {
             ids = items.map(function(){return $(this).attr('data-id')}).toArray();
         var data = {
             id: $('#form-reports').val(),
-            ids: ids.join(','),
+            ids: ids.join(',')
         };
         if (prompt('To confirm please type in "delete" and hit ok') !== 'delete') return false;
         $.ajax({
@@ -203,7 +211,7 @@ $(function () {
             i,
             html = [];
         if(Object.keys(data).length){
-            html.push('<h4>Filters:</h4><ul>');
+            html.push('<ul>');
             for(i in data){
                 html.push(
                     '<li>',
@@ -213,7 +221,7 @@ $(function () {
                     data[i],
                     '</li>')
             }
-            html.push('</ul><a class="btn btn-danger clear-all">Clear all</a>');
+            html.push('</ul>');
         }
         container.html(html.join(''));
 
@@ -261,4 +269,36 @@ $(function () {
             target.trigger('change');
         }
     }
+
+    function collectFormFilters(){
+        var filtersList = [];
+        $('#form-filter-form').html();
+        $('#reports .table-header').find('.dropdown-menu').each(function(){
+            var guid = utils.guid(),
+                item = $(this).clone(),
+                name,
+                $html = $('<div class="form-filter-item"></div>');
+
+            item.find('.buttons-row').remove();
+            item.removeClass().removeAttr('id').attr('data-guid',guid);
+            $(this).attr('data-parent-guid',guid);
+
+            name = $(this).prev().text();
+            $html.append('<div class="col-xs-12 col-sm-5 col-md-3"><h5>'+name+'</h5></div><div class="col-xs-12 col-sm-7 col-md-9 field-cont"></div>')
+            $html.find('.field-cont').append(item);
+
+            $('#form-filter-form').append($html);
+        });
+        $('#form-filter-form').find('input.datepicker').datetimepicker({
+            format: 'DD-MM-YYYY'
+        });
+        $('#form-filter-form').find('.datetimepicker').datetimepicker({
+            format: 'DD-MM-YYYY HH:mm'
+        });
+
+        $('#form-filter-form').find('input[type="text"]').on('blur',function(){
+            $(this).attr('value',$(this).val());
+        });
+    }
+    collectFormFilters();
 });
