@@ -165,7 +165,7 @@
                                 </label>
                             </div>
                             <div class="col-xs-4 col-sm-4 col-md-2">
-                                <?=Form::select('company', $companies, isset($_GET['company']) ? explode(',',$_GET['company']) : [], array('class' => 'multiselect form-control width-140', 'multiple'=>'multiple'))?>
+                                <?=Form::select('company', $companies, (isset($_GET['company']) ? explode(',',$_GET['company']) : []), array('class' => 'multiselect form-control width-140', 'multiple'=>'multiple'))?>
                             </div>
                             <div class="col-xs-6 col-sm-6 col-md-3">
                                 <label class="control-label">
