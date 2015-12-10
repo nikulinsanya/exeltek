@@ -386,6 +386,7 @@ window.formbuilder = (function() {
                 assignAs,
                 widthSettings,
                 width,
+                parentWidth,
                 data;
 
             tables.each(function(){
@@ -397,16 +398,19 @@ window.formbuilder = (function() {
                     'width-settings': [],
                     data:[]
                 };
+
                 widthSettings = [];
                 $(this).find('tr.tmp-cell').first().find('td').each(function(){
-
-                    if($(this).attr('data-resized')){
-                        widthSettings.push($(this).outerWidth()+'px;');
-                    }else{
-                        widthSettings.push('auto;');
-                    }
-
+                    //if($(this).attr('data-resized')){
+                    parentWidth = 0;
+                    $(this).parent().find('td.ui-resizable').each(function(){
+                        parentWidth += $(this).outerWidth();
+                    })
+                    width = $(this).outerWidth();
+                    width = width/parentWidth *100;
+                    widthSettings.push(width+'%;');
                 });
+
                 obj['width-settings'] = widthSettings;
 
 
