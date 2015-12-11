@@ -470,6 +470,25 @@ window.formbuilder = (function() {
             if(!this._editable){
                 this.updateTicketLabels();
             }
+            this.recalcColSizes();
+        },
+
+        recalcColSizes: function(){
+            setTimeout(function(){
+                $('.tmp-cell').each(function(){
+                    var cells = $(this).find('td[data-resized="true"]'),
+                        length = cells.length,
+                        c = 0;
+                    $(cells).each(function(){
+                        if(++c == length){
+                            $(this).css('width','auto');
+                            $(this).find('.reset-width').remove();
+                        }else {
+                            $(this).css('width', $(this).outerWidth() + 'px');
+                        }
+                    });
+                });
+            },200);
         },
 
         loadElement: function(element){
