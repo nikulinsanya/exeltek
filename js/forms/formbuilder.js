@@ -91,6 +91,7 @@ window.formbuilder = (function() {
         fillCellForm: function(cell){
             var type = cell.attr('data-type'),
                 $parent = $('#addField');
+            $('#options-preview').html('');
             switch (type) {
                 case 'label':
                 case 'text':
