@@ -53,6 +53,7 @@ class Controller_Security_Enums extends Controller
             $query->execute();
         }
 
+        header('Content: application/json');
         die(json_encode(array('success' => true, 'id' => $id)));
     }
 }
