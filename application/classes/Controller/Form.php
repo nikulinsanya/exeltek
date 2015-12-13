@@ -525,6 +525,21 @@ class Controller_Form extends Controller {
         if (!$file || !is_uploaded_file($file['tmp_name']) || !file_exists($file['tmp_name']))
             throw new HTTP_Exception_404('Not found');
 
+        $data = file_get_contents($file['tmp_name']);
+        $image = imagecreatefromstring($data);
+
+        $x = imagesx($image);
+        $y = imagesy($image);
+        $size = max($x, $y);
+        $x = round($x / $size * 96);
+        $y = round($y / $size * 96);
+
+        $thumb = imagecreatetruecolor($x, $y);
+        imagealphablending($thumb, false);
+        imagesavealpha($thumb, true);
+
+        imagecopyresampled($thumb, $image, 0, 0, 0, 0, $x, $y, imagesx($image), imagesy($image));
+
         $update_time = time();
 
         $data = array(
@@ -541,7 +556,9 @@ class Controller_Form extends Controller {
         Database::instance()->begin();
         $result = DB::insert('attachments', array_keys($data))->values(array_values($data))->execute();
         $image_id = Arr::get($result, 0);
+
         if ($image_id && move_uploaded_file($file['tmp_name'], DOCROOT . 'storage/' . $image_id)) {
+            imagepng($thumb, DOCROOT . 'storage/' . $image_id . '.thumb', 9);
             unset($data['mime']);
             $data = array(
                 'filename' => $file['name'],
