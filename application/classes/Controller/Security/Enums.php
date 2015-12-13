@@ -24,7 +24,7 @@ class Controller_Security_Enums extends Controller
         $id = $this->request->param('id');
 
         $items = Enums::get_values($id);
-        header('Content: application/json');
+        header('Content-type: application/json');
         die(json_encode(array(
             'multi' => Enums::is_multi($id) ? true : false,
             'items' => array_values($items),
@@ -53,7 +53,7 @@ class Controller_Security_Enums extends Controller
             $query->execute();
         }
 
-        header('Content: application/json');
+        header('Content-type: application/json');
         die(json_encode(array('success' => true, 'id' => $id)));
     }
 }
