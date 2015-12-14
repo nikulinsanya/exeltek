@@ -144,6 +144,8 @@
                     <li class="<?=Request::current()->directory() == 'Security' && Request::current()->controller() == 'Columns' ? 'active' : ''?>"><a href="<?=URL::base()?>security/columns">Columns</a></li>
                     <li class="<?=Request::current()->directory() == '' && Request::current()->controller() == 'Form' ? 'active' : ''?>"><a href="<?=URL::base()?>form">Forms</a></li>
                     <li class="<?=Request::current()->directory() == 'Security' && Request::current()->controller() == 'Reports' ? 'active' : ''?>"><a href="<?=URL::base()?>security/reports">Reports</a></li>
+                    <li class="<?=Request::current()->directory() == 'Security' && Request::current()->controller() == 'Structure' ? 'active' : ''?>"><a href="<?=URL::base()?>security/structure">Structure</a></li>
+                    <li class="<?=Request::current()->directory() == 'Security' && Request::current()->controller() == 'Enums' ? 'active' : ''?>"><a href="<?=URL::base()?>security/enums">Enumerations</a></li>
                 </ul>
             </li>
             <?php endif;?>

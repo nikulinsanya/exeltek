@@ -51,15 +51,15 @@ $(function () {
     $('#updateEnum').on('click',function(){
         var id   = $('#enumId').val(),
             data =  {
-                multi:$('#isMulti').is(':checked'),
-                items:$('#optionsPreview').find('option').map(function(){
+                multi:$('#isMulti').is(':checked') ? '1' : '',
+                'items[]':$('#optionsPreview').find('option').map(function(){
                     return $(this).text();
                 }).toArray(),
                 name: $('#enumName').val()
             };
         updateEnum(id,data).then(function(res){
             if(res.id){
-                editEnumTable(res.id,data.name, data.multi);
+                editEnumTable(res.id, data.name, data.multi);
                 $('#editEnum').modal('hide');
             }
         })
@@ -69,10 +69,10 @@ $(function () {
         if(tr.length){
             $(tr).find('.enumName').text(name);
             $(tr).find('.isMulti').html(
-                '<span class="glyphicon glyphicon-'+(isMulti ? 'ok text-success' : 'remove text-danger')+'></span>'
+                '<span class="glyphicon glyphicon-'+(isMulti ? 'ok text-success' : 'remove text-danger')+'"></span>'
             );
         }else{
-            $('#enumsTable tr:first-of-type').after(
+            $('#enumsTable tr:last-of-type').after(
                 ['<tr data-id="',
                     id,
                     '">',
@@ -95,7 +95,7 @@ $(function () {
 
     function removeEnum(id){
         return $.ajax({
-            url:utils.baseUrl()+'security/enums/delete/'+id,
+            url:utils.baseUrl()+'security/enums/remove/'+id,
             type:'get',
             dataType:'JSON'
         });
@@ -113,7 +113,10 @@ $(function () {
             url:utils.baseUrl()+'security/enums/save/' + id,
             type:'POST',
             dataType:'JSON',
-            data:data
+            data:data,
+            error: function(e) {
+                dump(e);
+            }
         });
     }
 });

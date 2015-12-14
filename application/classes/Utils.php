@@ -163,4 +163,8 @@ class Utils {
         if ($result)
             Database_Mongo::collection('jobs')->update(array('_id' => $job['_id']), $result);
     }
+
+    public static function bool_icon($value) {
+        return '<span class="glyphicon glyphicon-' . ($value ? 'ok' : 'remove') . ' text-' . ($value ? 'success' : 'danger') . '"></span>';
+    }
 }

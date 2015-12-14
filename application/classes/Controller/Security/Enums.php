@@ -41,7 +41,7 @@ class Controller_Security_Enums extends Controller
 
         if ($id) {
             DB::update('enumerations')->set(array('allow_multi' => $multi, 'name' => $name))->where('id', '=', $id)->execute();
-            DB::delete('enumeration_values')->where('id', '=', $id)->execute();
+            DB::delete('enumeration_values')->where('enum_id', '=', $id)->execute();
         } else
             $id = Arr::get(DB::insert('enumerations', array('allow_multi', 'name'))->values(array($multi, $name))->execute(), 0);
 
@@ -55,5 +55,16 @@ class Controller_Security_Enums extends Controller
 
         header('Content-type: application/json');
         die(json_encode(array('success' => true, 'id' => $id)));
+    }
+
+    public function action_remove() {
+        $id = $this->request->param('id');
+
+        DB::delete('enumerations')->where('id', '=', $id)->execute();
+        DB::delete('enumeration_values')->where('enum_id', '=', $id)->execute();
+        DB::update('job_columns')->set(array('type' => ''))->where('type', 'LIKE', 'enum_' . $id)->execute();
+
+        header('Content-type: application/json');
+        die(json_encode(array('success' => 'true')));
     }
 }
