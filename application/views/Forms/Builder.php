@@ -241,26 +241,7 @@
                             <a class="btn btn-danger btn-xs" id="remove-option">Remove option</a>
                         </div>
                     </div>
-                    <div class="row type-config ticket-type-hidden">
-                        <div class="col-md-4">
-                            <span class="form-label">Assign to</span>
-                        </div>
-                        <div class="col-md-8" >
-                            <select id="assign-to"></select>
-                        </div>
-                    </div>
-                    <div class="row type-config ticket-type-hidden">
-                        <div class="col-md-4">
-                            <span class="form-label">Assign as</span>
-                        </div>
-                        <div class="col-md-8" >
-                            <select id="assign-as">
-                                <option value=""></option>
-                                <option value="replace">Replace</option>
-                                <option value="append">Append</option>
-                            </select>
-                        </div>
-                    </div>
+
                     <div class="row">
                         <div class="col-md-4" >
                             <span class="form-label">Destination</span>
