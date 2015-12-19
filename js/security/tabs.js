@@ -88,6 +88,8 @@ $(function () {
 
 
             })
+        }else{
+            $('#column-tab').html(tabsOptions.join(''));
         }
 
         $('#tabName').val(name);
@@ -96,10 +98,13 @@ $(function () {
     });
 
     $('#updateColumn').on('click',function(){
+        var columnId = $('#columnId').val(),
+            row = columnId ?
+                $('#tabsTable').find('tr[data-id="'+columnId+'"]'):
+                $('#tabsTable').find('tr[data-id]').first().clone();
+
         $('#column-form').find('.column-field').each(function(){
             var id = $(this).attr('id'),
-                columnId = $('#columnId').val(),
-                row = $('#tabsTable').find('tr[data-id="'+columnId+'"]'),
                 val;
             if($(this).prop("tagName") == 'INPUT' && $(this).attr('type') == 'checkbox'){
                 val = boolIcon($(this).is(':checked'));
@@ -119,8 +124,11 @@ $(function () {
                 val = $(this).val();
                 row.find('td.' + id).text(val);
             }
-
         });
+        if(!columnId){
+            $('#tabsTable').append(row);
+            $('html, body').animate({scrollTop: $('#tabsTable').find('tr').last().offset().top-55}, 500);
+        }
 
 
         updateColumn();
