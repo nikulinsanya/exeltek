@@ -2,12 +2,14 @@
     <h3>Tabs:</h3>
     <table class="table" id="tabList">
         <tr >
-            <th><button class="btn btn-xs btn-success tab-item edit-tab">Add new tab</button></th>
+            <th width="1%"><button class="btn btn-xs btn-success tab-item edit-tab">Add new tab</button></th>
             <th>Name</th>
         </tr>
         <?php foreach ($tabs as $key => $tab):?>
         <tr>
-            <td><button class="btn btn-xs btn-warning tab-item edit-tab" data-id="<?=$key?>">Edit</button></td>
+            <td>
+                <button class="btn btn-xs btn-warning tab-item edit-tab" data-id="<?=$key?>"><span class="glyphicon glyphicon-pencil"></span></button>
+                <button class="btn btn-xs btn-danger tab-item remove-tab" data-id="<?=$key?>"><span class="glyphicon glyphicon-trash"></span></button></td>
             <td> <span data-target="<?=$key?>"><?=$tab?></span> </td>
         </tr>
         <?php endforeach;?>
@@ -17,7 +19,7 @@
         <?php $i = 0; foreach ($columns as $column):?>
         <?php if ($i % 20 == 0):?>
         <tr>
-            <th width="1%"><button class="btn btn-success column-item edit-column">Add</button></th>
+            <th width="1%"><button class="btn btn-xs btn-success column-item edit-column">Add new column</button></th>
             <th>Tab</th>
             <th>Name</th>
             <th>Type</th>
@@ -32,7 +34,10 @@
         </tr>
         <?php endif; $i++;?>
         <tr data-id="<?=$column['id']?>">
-            <td><button class="btn btn btn-warning column-item edit-column" data-id="<?=$column['id']?>">Edit</button></td>
+            <td>
+                <button class="btn btn-xs btn btn-warning column-item edit-column" data-id="<?=$column['id']?>"><span class="glyphicon glyphicon-pencil"></span></button>
+                <button class="btn btn-xs btn btn-danger column-item remove-column" data-id="<?=$column['id']?>"><span class="glyphicon glyphicon-trash"></span></button>
+            </td>
             <td class="tab-name"><?=Arr::get($tabs, $column['tab_id'], 'Unknown')?></td>
             <td class="column-name"><?=$column['name']?></td>
             <td class="column-type"
@@ -150,7 +155,7 @@
                         <span class="form-label">Export to CSV</span>
                     </div>
                     <div class="col-md-8">
-                        <input class="column-field" type="checkbox" id="column-export" name="csv" checked/>
+                        <input class="column-field" type="checkbox" id="column-export" name="csv"/>
                     </div>
                 </div>
                 <div class="row">
@@ -158,7 +163,7 @@
                         <span class="form-label">Show in reports</span>
                     </div>
                     <div class="col-md-8">
-                        <input class="column-field" type="checkbox" id="column-report"  name="show_reports" checked/>
+                        <input class="column-field" type="checkbox" id="column-report"  name="show_reports"/>
                     </div>
                 </div>
                 <div class="row">
@@ -166,7 +171,7 @@
                         <span class="form-label">Direct update</span>
                     </div>
                     <div class="col-md-8">
-                        <input class="column-field" type="checkbox" id="column-direct" name="direct" checked/>
+                        <input class="column-field" type="checkbox" id="column-direct" name="direct"/>
                     </div>
                 </div>
                 <div class="row">
@@ -174,7 +179,7 @@
                         <span class="form-label">Track column</span>
                     </div>
                     <div class="col-md-8">
-                        <input class="column-field" type="checkbox" id="column-track" name="track" checked/>
+                        <input class="column-field" type="checkbox" id="column-track" name="track"/>
                     </div>
                 </div>
                 <div class="row">
@@ -182,7 +187,7 @@
                         <span class="form-label">Persistent column</span>
                     </div>
                     <div class="col-md-8">
-                        <input class="column-field" type="checkbox" id="column-persistent" name="persistent" checked/>
+                        <input class="column-field" type="checkbox" id="column-persistent" name="persistent"/>
                     </div>
                 </div>
                 <div class="row">
@@ -190,7 +195,7 @@
                         <span class="form-label">Is editable</span>
                     </div>
                     <div class="col-md-8">
-                        <input class="column-field" type="checkbox" id="column-editable" name="editable" checked/>
+                        <input class="column-field" type="checkbox" id="column-editable" name="editable"/>
                     </div>
                 </div>
                 <div class="row">
@@ -198,7 +203,7 @@
                         <span class="form-label">Is readonly</span>
                     </div>
                     <div class="col-md-8">
-                        <input class="column-field" type="checkbox" id="column-readonly" name="read_only" checked/>
+                        <input class="column-field" type="checkbox" id="column-readonly" name="read_only"/>
                     </div>
                 </div>
                 <input type="hidden" id="columnId"/>

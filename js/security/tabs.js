@@ -6,6 +6,14 @@ $(function () {
         $('#tabId').val(id);
         $('#editTab').modal('show');
     });
+    $('#tabEditor').on('click','.remove-tab', function(){
+        var self = this;
+        if(confirm('Are you sure you want to remove tab?')){
+            removeTab($(this).attr('data-id')).then(function(){
+                $(self).parents('tr').remove();
+            });
+        }
+    });
 
     $('#updateTab').on('click',function(){
         var id = $('#tabId').val(),
@@ -17,7 +25,9 @@ $(function () {
             }else{
                 $('#tabList').append(['<tr><td><button class="btn btn-xs btn-warning tab-item edit-tab" data-id="',
                     data.id,
-                    '">Edit</button></td><td><span data-target="',
+                    '"><span class="glyphicon glyphicon-pencil"></span></button><button class="btn btn-xs btn-danger tab-item remove-tab" data-id="',
+                    data.id,
+                    '"><span class="glyphicon glyphicon-trash"></span></button></td><td><span data-target="',
                     data.id,
                     '">',
                     name,
@@ -27,11 +37,16 @@ $(function () {
         });
     });
 
+
+
     $('#column-type').on('change',function(){
         checkEnum($(this).val());
     });
 
     $('#tabEditor').on('click','.edit-column', function(){
+        if(!$(this).attr('data-id')){
+            $('#column-form-data')[0].reset();
+        }
         var id = $(this).attr('data-id'),
             parent = $(this).parents('tr[data-id]').first(),
             tabName = (parent ? parent.find('.tab-name').text() : ''),
@@ -43,6 +58,7 @@ $(function () {
             }).toArray(),
             name = parent ? parent.find('.column-name').text() : '';
         $('#columnId').val(id);
+
 
         if(parent.length){
             parent.find('td').each(function(){
@@ -111,6 +127,39 @@ $(function () {
 
         $('#editColumn').modal('hide');
     });
+
+    $('#tabEditor').on('click','.remove-column', function(){
+        var self = this;
+        if(confirm('Are you sure you want to remove column?')){
+            removeColumn($(this).attr('data-id')).then(function(){
+                $(self).parents('tr').remove();
+            });
+        }
+    });
+
+
+    function removeTab(id){
+        return $.ajax({
+            url:utils.baseUrl()+'security/structure/tab/remove' + id,
+            type:'GET',
+            dataType:'JSON',
+            error: function(e) {
+                console.log(e);
+            }
+        });
+    }
+
+    function removeColumn(id){
+        return $.ajax({
+            url:utils.baseUrl()+'security/structure/tab/remove' + id,
+            type:'GET',
+            dataType:'JSON',
+            error: function(e) {
+                console.log(e);
+            }
+        });
+    }
+
 
     function getTypeLabel(val){
         var labels = {
