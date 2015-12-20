@@ -9,9 +9,20 @@
         </select>
     </div>
 </form>
+<div class="filter-info-container">
+        <label  class="filter_value">Filters:</label>
+        <div class="text-info-filters">
+            <div id="filter-list"></div>
+        </div>
+
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#formsFilterModal">
+            <span class="glyphicon glyphicon-filter"></span>
+            Modify filters
+        </button>
+        <a class="btn btn-danger clear-all" >Clear all</a>
+</div>
 <?php if ($filters): ?>
 <div class="col-xs-12">
-    <div id="filter-list"></div>
     <?=View::factory('Pager')?>
     <div id="reports" style="margin-top: 10px;">
         <table class="table">
@@ -120,6 +131,28 @@
     </div>
 
 <?php endif;?>
+
+
+
+<!-- Modal Filters-->
+<div class="modal fade" id="formsFilterModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Modify filters</h4>
+                </div>
+                <div class="modal-body" id="form-filter-form">
+
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-warning" data-dismiss="modal" aria-label="Close">Close</a>
+                    <button class="btn btn-success" id="applyModalFilters">Apply filters</button>
+                </div>
+        </div>
+    </div>
+</div>
+
 
 <link href="<?= URL::base() ?>css/forms/formbuilder.css" rel="stylesheet">
 <script src="<?= URL::base() ?>js/forms/reports.js"></script>

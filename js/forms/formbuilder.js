@@ -91,6 +91,7 @@ window.formbuilder = (function() {
         fillCellForm: function(cell){
             var type = cell.attr('data-type'),
                 $parent = $('#addField');
+            $('#options-preview').html('');
             switch (type) {
                 case 'label':
                 case 'text':
@@ -386,6 +387,7 @@ window.formbuilder = (function() {
                 assignAs,
                 widthSettings,
                 width,
+                parentWidth,
                 data;
 
             tables.each(function(){
@@ -397,16 +399,19 @@ window.formbuilder = (function() {
                     'width-settings': [],
                     data:[]
                 };
+
                 widthSettings = [];
                 $(this).find('tr.tmp-cell').first().find('td').each(function(){
-
-                    if($(this).attr('data-resized')){
-                        widthSettings.push($(this).outerWidth()+'px;');
-                    }else{
-                        widthSettings.push('auto;');
-                    }
-
+                    //if($(this).attr('data-resized')){
+                    parentWidth = 0;
+                    $(this).parent().find('td.ui-resizable').each(function(){
+                        parentWidth += $(this).outerWidth();
+                    })
+                    width = $(this).outerWidth();
+                    width = width/parentWidth *100;
+                    widthSettings.push(width+'%;');
                 });
+
                 obj['width-settings'] = widthSettings;
 
 
@@ -465,6 +470,25 @@ window.formbuilder = (function() {
             if(!this._editable){
                 this.updateTicketLabels();
             }
+            this.recalcColSizes();
+        },
+
+        recalcColSizes: function(){
+            setTimeout(function(){
+                $('.tmp-cell').each(function(){
+                    var cells = $(this).find('td[data-resized="true"]'),
+                        length = cells.length,
+                        c = 0;
+                    $(cells).each(function(){
+                        if(++c == length){
+                            $(this).css('width','auto');
+                            $(this).find('.reset-width').remove();
+                        }else {
+                            $(this).css('width', $(this).outerWidth() + 'px');
+                        }
+                    });
+                });
+            },200);
         },
 
         loadElement: function(element){

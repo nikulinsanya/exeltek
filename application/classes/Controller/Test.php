@@ -6,6 +6,8 @@ class Controller_Test extends Controller {
         parent::before();
 
         if (!Group::current('is_admin')) throw new HTTP_Exception_403('Forbidden');
+
+        ini_set('memory_limit', -1);
     }
 
     public function action_indexes() {

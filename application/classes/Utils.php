@@ -116,8 +116,8 @@ class Utils {
             $used[$key] = true;
 
             if (isset($submission['paid'])) {
-                $data['acost'] += $submission['paid'] * $submission['rate'];
-                $data['ecost'] += $submission['paid'] * $submission['rate'];
+                $data['acost'] += round($submission['paid'] * $submission['rate'], 2);
+                $data['ecost'] += round($submission['paid'] * $submission['rate'], 2);
                 continue;
             }
 
@@ -127,7 +127,19 @@ class Utils {
 
             $value = min(floatval($submission['value']), $columns[$key]);
 
-            $data['ecost'] += $value * $rate;
+            $data['ecost'] += round($value * $rate, 2);
+        }
+
+        $data['apcost'] = $data['ecost'];
+        if (!isset($used['205'])) {
+            $max = 0;
+            $list = array_merge(Arr::get($job, 'companies', array()), Arr::get($job, 'ex', array()));
+            foreach ($list as $company) {
+                if (!isset($rates[$company])) continue;
+                $rate = $rates[$company];
+                $max = max($max, isset($rate[$job['region']]['205']) ? $rate[$job['region']]['205'] : (isset($rate[0]['205']) ? $rate[0]['205'] : 0));
+            }
+            $data['apcost'] += round(0.85 * $max, 2);
         }
 
         $data['egp'] = $data['rev'] - $data['ecost'];
@@ -144,6 +156,8 @@ class Utils {
             $result['$set']['data.261'] = $data['egp'];
         if (Arr::get($job['data'], 262, 0) != $data['gp'])
             $result['$set']['data.262'] = $data['gp'];
+        if (Arr::get($job['data'], 267, 0) != $data['apcost'])
+            $result['$set']['data.267'] = $data['apcost'];
 
         $target = DB::select(DB::expr('SUM(`amount`) as total'))->from('payment_jobs')->where('job_key', '=', $job['_id'])->execute()->get('total');
 
@@ -160,7 +174,12 @@ class Utils {
             if (isset($job['paid'])) $result['$unset']['paid'] = 1;
         }
 
+
         if ($result)
             Database_Mongo::collection('jobs')->update(array('_id' => $job['_id']), $result);
+    }
+
+    public static function bool_icon($value) {
+        return '<span class="glyphicon glyphicon-' . ($value ? 'ok' : 'remove') . ' text-' . ($value ? 'success' : 'danger') . '"></span>';
     }
 }

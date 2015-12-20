@@ -999,3 +999,61 @@ button>span.glyphicon{
 .popover-block {
     display: none;
 }
+
+
+.onoffswitch {
+    margin-top: -5px;
+    position: relative; width: 45px;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+.onoffswitch-checkbox {
+    display: none;
+}
+.onoffswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    height: 25px; padding: 0; line-height: 25px;
+    border: 2px solid #CCCCCC; border-radius: 25px;
+    background-color: #FFFFFF;
+    transition: background-color 0.3s ease-in;
+}
+.onoffswitch-label:before {
+    content: "";
+    display: block; width: 25px; margin: 0px;
+    background: #FFFFFF;
+    position: absolute; top: 0; bottom: 0;
+    right: 19px;
+    border: 2px solid #CCCCCC; border-radius: 25px;
+    transition: all 0.3s ease-in 0s;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label {
+    background-color: #49E845;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label, .onoffswitch-checkbox:checked + .onoffswitch-label:before {
+    border-color: #49E845;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label:before {
+    right: 0px;
+}
+
+
+#editEnum .row ,
+#editColumn .row {
+    padding: 5px 0px;
+}
+#editEnum .row>div,
+#editColumn .row>div{
+    text-align:left;
+}
+
+#enumsTable .edit-enum{
+    margin-right: 5px;
+}
+
+#editColumn input[type="text"],
+#editColumn select{
+    width: 200px;
+}
+
+#column-form-data{
+    border: none;
+}
