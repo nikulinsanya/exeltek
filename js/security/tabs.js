@@ -136,7 +136,9 @@ $(function () {
         }
 
 
-        updateColumn();
+        updateColumn().then(function(data){
+            row.find('button.edit-column').attr('data-id', data.id);
+        });
 
         $('#editColumn').modal('hide');
     });
