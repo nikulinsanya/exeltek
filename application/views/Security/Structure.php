@@ -41,7 +41,9 @@
             <td class="tab-name"><?=Arr::get($tabs, $column['tab_id'], 'Unknown')?></td>
             <td class="column-name"><?=$column['name']?></td>
             <td class="column-type"
-                data-type="<?php echo(strpos($column['type'], 'enum') === 0 ? 'enum' : $column['type'])?>">
+                data-type="<?php echo(strpos($column['type'], 'enum') === 0 ? 'enum' : $column['type'])?>"
+                <?php echo(strpos($column['type'], 'enum') === 0 ? 'data-id="'.substr($column['type'], 5).'"' : '')?>
+                >
                 <?php switch ($column['type']):
                     case 'text':
                         echo 'Text';
@@ -60,7 +62,7 @@
                         break;
                     default:
                         if (strpos($column['type'], 'enum') === 0) {
-                            $id = substr($column['type'], 5);
+                                $id = substr($column['type'], 5);
                             echo '<span title="' . (Enums::is_multi($id) ? 'MULTIPLE VALUES:' : 'SINGLE VALUE:') . "\n\n" . implode("\n", Enums::get_values($id)) . '">Enum (' . Arr::get($enums, $id, 'Unknown') . ')</span>';
                         } else echo 'Default (string)';
                     endswitch;
