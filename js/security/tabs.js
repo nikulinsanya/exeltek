@@ -137,7 +137,7 @@ $(function () {
 
 
         updateColumn().then(function(data){
-            row.find('button.edit-column').attr('data-id', data.id);
+            row.find('button.edit-column').attr('data-id', data.id).parents('tr').first().attr('data-id', data.id);
         });
 
         $('#editColumn').modal('hide');
