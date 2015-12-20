@@ -31,7 +31,10 @@ class Controller_Security_Structure extends Controller
         if (!$name) throw new HTTP_Exception_400('Wrong name');
 
         if ($id)
-            DB::update('job_tabs')->set(array('name' => $name))->where('id', '=', $id)->execute();
+            if ($name == 'REMOVE')
+                DB::delete('job_tabs')->where('id', '=', $id)->execute();
+            else
+                DB::update('job_tabs')->set(array('name' => $name))->where('id', '=', $id)->execute();
         else
             $id = Arr::get(DB::insert('job_tabs', array('name'))->values(array($name))->execute(), 0);
 
@@ -81,7 +84,7 @@ class Controller_Security_Structure extends Controller
         );
 
         if ($id)
-            DB::update('job_columns')->set(array($item))->where('id', '=', $id)->execute();
+            DB::update('job_columns')->set($item)->where('id', '=', $id)->execute();
         else
             $id = Arr::get(DB::insert('job_columns', array_keys($item))->values(array_values($item))->execute(), 0);
 

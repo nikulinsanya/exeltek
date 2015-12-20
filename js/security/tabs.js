@@ -214,13 +214,13 @@ $(function () {
                     $('#column-type').val(),
                 tab_id: $('#column-tab').val(),
                 financial: $('#column-financial').val(),
-                csv: $('#column-export').is(':checked'),
-                show_reports: $('#column-report').is(':checked'),
-                direct: $('#column-direct').is(':checked'),
-                track: $('#column-track').is(':checked'),
-                persistent: $('#column-persistent').is(':checked'),
-                editable: $('#column-editable').is(':checked'),
-                read_only: $('#column-readonly').is(':checked')
+                csv: $('#column-export').is(':checked') ? 1 : 0,
+                show_reports: $('#column-report').is(':checked') ? 1 : 0,
+                direct: $('#column-direct').is(':checked') ? 1 : 0,
+                track: $('#column-track').is(':checked') ? 1 : 0,
+                persistent: $('#column-persistent').is(':checked') ? 1 : 0,
+                editable: $('#column-editable').is(':checked') ? 1 : 0,
+                read_only: $('#column-readonly').is(':checked') ? 1 : 0,
             };
 
         return $.ajax({
@@ -229,7 +229,7 @@ $(function () {
             data:data,
             dataType:'JSON',
             error: function(e) {
-                console.log(e);
+                $('body').html(e.responseText);
             }
         });
     }

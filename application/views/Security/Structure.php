@@ -122,7 +122,7 @@
                                 <option value="date">Date</option>
                                 <option value="datetime">DateTime</option>
                                 <option value="float">Floating-point</option>
-                                <option value="integer">Integer</option>
+                                <option value="int">Number</option>
                                 <option value="enum">Enum</option>
                             </select>
                         </div>
