@@ -75,6 +75,8 @@ $(function () {
                         break;
                     case 'column-type':
                         $('#column-type').val(columnType);
+                        checkEnum(columnType);
+                        $('#enum-type').val($(this).attr('data-id'));
                         break;
                     case 'column-financial':
                         $('#column-financial').val($(this).text());
@@ -90,10 +92,12 @@ $(function () {
             })
         }else{
             $('#column-tab').html(tabsOptions.join(''));
+            $('#column-type').val('');
         }
 
         $('#tabName').val(name);
         $('#tabId').val(id);
+
         $('#editColumn').modal('show');
     });
 
@@ -112,7 +116,7 @@ $(function () {
             }else if($(this).prop("tagName") == 'SELECT'){
                 if($('#enum-type').is(':visible')){
                     val = 'Enum('+ $('#enum-type').find('option:selected').text()+')';
-                    row.find('td.column-type').text(val);
+                    row.find('td.column-type').text(val).attr('data-id', $('#enum-type').val());
                 }else if($(this).attr('id') == 'column-tab'){
                     val = $(this).find('option:selected').text();
                     row.find('td.tab-name').text(val);
