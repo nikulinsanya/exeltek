@@ -93,6 +93,7 @@ $(function () {
         }else{
             $('#column-tab').html(tabsOptions.join(''));
             $('#column-type').val('');
+            checkEnum();
         }
 
         $('#tabName').val(name);
