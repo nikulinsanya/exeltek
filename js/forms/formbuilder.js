@@ -1063,9 +1063,18 @@ $(function () {
         }
     });
 
+    $('#hide-form').on('click',function(){
+        $('#new-form').show();
+        $('#hide-form').hide();
+        $('#forms-list').show();
+        $('#form-builder').addClass('hidden');
+    });
+
     $('.form-edit-link').click(function() {
         var id = $(this).attr('data-id');
         $('#forms-list').hide();
+        $('#new-form').hide();
+        $('#hide-form').show();
 
         if (id == undefined) {
             $('#form-builder').attr('data-id', '');
