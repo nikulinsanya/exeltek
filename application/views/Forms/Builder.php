@@ -8,10 +8,12 @@
             </ul>
         </li>
     <?php endforeach;?>
-    <li>
-        <a href="javascript:;" class="form-edit-link">Create new form</a>
-    </li>
 </ul>
+<br/>
+<div class="builderactions">
+    <button class="form-edit-link btn btn-info" id="new-form"> Create new form </button>
+    <button class="btn btn-success" id="hide-form">Back to list</button>
+</div>
 
 <div id="form-builder" class="hidden">
     <div>
