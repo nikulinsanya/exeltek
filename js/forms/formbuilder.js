@@ -771,6 +771,8 @@ window.formbuilder = (function() {
             this._formContainer.on('click','.editable-cell',function(e){
                 $('.selected-cell').removeClass('selected-cell');
                 $(this).addClass('selected-cell');
+                $().colorPicker.destroy();
+                $('#color').val('').removeAttr('style').colorPicker();
                 $('#addField').modal('show');
                 self.fillCellForm($(this));
                 self.refreshFieldForm($(this));
