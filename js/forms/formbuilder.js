@@ -771,6 +771,8 @@ window.formbuilder = (function() {
             this._formContainer.on('click','.editable-cell',function(e){
                 $('.selected-cell').removeClass('selected-cell');
                 $(this).addClass('selected-cell');
+                $().colorPicker.destroy();
+                $('#color').val('').removeAttr('style').colorPicker();
                 $('#addField').modal('show');
                 self.fillCellForm($(this));
                 self.refreshFieldForm($(this));
@@ -1061,9 +1063,18 @@ $(function () {
         }
     });
 
+    $('#hide-form').on('click',function(){
+        $('#new-form').show();
+        $('#hide-form').hide();
+        $('#forms-list').show();
+        $('#form-builder').addClass('hidden');
+    });
+
     $('.form-edit-link').click(function() {
         var id = $(this).attr('data-id');
         $('#forms-list').hide();
+        $('#new-form').hide();
+        $('#hide-form').show();
 
         if (id == undefined) {
             $('#form-builder').attr('data-id', '');

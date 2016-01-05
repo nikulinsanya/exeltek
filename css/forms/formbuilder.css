@@ -30,7 +30,7 @@ table.editable-table{
 #form-builder-container table>tbody>tr>td.editable-cell:hover{
     border:1px solid #ccc;
     cursor: pointer;
-    background: #efefef;
+    background: #EDFFEB;
 }
 
 
@@ -307,4 +307,14 @@ table tr.tmp-cell:first-of-type>td.tmp-cell{
 
 #main-settings select{
     width:150px;
+}
+
+
+#hide-form{
+    display: none;
+}
+
+#form-builder>div:not(.builderactions):not(.container){
+    width: 400px;
+    margin-left: 10px;
 }

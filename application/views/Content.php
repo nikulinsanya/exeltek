@@ -49,11 +49,10 @@
       <script src="<?=URL::base()?>js/lib/wpaint/plugins/shapes/wPaint.menu.main.shapes.min.js"></script>
       <script src="<?=URL::base()?>js/lib/wpaint/plugins/file/wPaint.menu.main.file.min.js"></script>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWDqGAI0Zbb5kiwRG2-NkonZxnIUmYBeU"></script>
-    <script src="<?=URL::base()?>js/maps.js"></script>
     <script src="<?=URL::base()?>js/utils.js"></script>
     <script src="<?=URL::base()?>js/app.js"></script>
     <script src="<?=URL::base()?>js/reports.js"></script>
+
 
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css" />
     <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js"></script>
