@@ -10,6 +10,11 @@ class Controller_Test extends Controller {
         ini_set('memory_limit', -1);
     }
 
+    public function action_info() {
+        phpinfo();
+        die('test');
+    }
+
     public function action_indexes() {
         $columns = DB::select('column_id')->distinct(true)->from('group_columns')->where('search', '=', 2)->execute()->as_array(NULL, 'column_id');
 

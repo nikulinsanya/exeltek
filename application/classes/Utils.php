@@ -131,7 +131,7 @@ class Utils {
         }
 
         $data['apcost'] = $data['ecost'];
-        if (!isset($used['205'])) {
+        if (!isset($used['205']) && Arr::get($job['data'], '205')) {
             $max = 0;
             $list = array_merge(Arr::get($job, 'companies', array()), Arr::get($job, 'ex', array()));
             foreach ($list as $company) {
