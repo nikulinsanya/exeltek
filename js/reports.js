@@ -192,20 +192,6 @@ $(function () {
         });
     }
 
-    function handleMapTab(){
-        var start = $('#start-map').val(),
-            end = $('#end-map').val();
-        showMap();
-        $('#preloaderModal').modal('hide');
-//        getAddresses(start, end).then(function(data){
-//            geocodeAddresses(data);
-//            replaceAddressesWithTicketIDs(data);
-//            showMap(data);
-//            $('#preloaderModal').modal('hide');
-//        });
-    }
-
-
     function handleOverviewTab(){
         var start = $('#start-overview').val(),
             end = $('#end-overview').val();
@@ -280,13 +266,6 @@ $(function () {
                 $('#built-type-mix-report').off('submit').on('submit',function(e){
                     e.preventDefault();
                     handleBuiltTypeMixTab();
-                });
-                break;
-            case 'map':
-                handleMapTab();
-                $('#map-report').off('submit').on('submit',function(e){
-                    e.preventDefault();
-                    handleMapTab();
                 });
                 break;
 
@@ -853,23 +832,6 @@ $(function () {
             }
             localStorage.geocoded = JSON.stringify(store);
         });
-
-    }
-
-    function showMap(mapName){
-        if(mapName == 'mapquest'){
-            $('#mq-tickets-map').show();
-            $('#tickets-map').hide();
-            window.maps.MQMaps.initMap('mq-tickets-map');
-        }else{
-            $('#tickets-map').show();
-            $('#mq-tickets-map').hide();
-            window.maps.GoogleMaps.initMap('tickets-map');
-            window.maps.GoogleMaps.addMarker();
-        }
-
-
-
     }
 
     function showBuiltTypeMix(types){
