@@ -92,9 +92,29 @@
         <?php endforeach;?>
     <?php if ($attachments):?>
         <h4>Attachments:</h4>
-        <?php $i = 0; foreach ($attachments as $attachment): $i++;?>
-            <img style="float: left" src="data:image/png;base64,<?=base64_encode(file_get_contents(DOCROOT . 'storage/' . $attachment . '.thumb'))?>" />
-            <?=($i % 6 == 0) ? '<br/>' : ''?>
+        <?php $tmp = tempnam(sys_get_temp_dir(), 'attachments'); $i = 0; foreach ($attachments as $attachment): $i++;
+            $data = file_get_contents(DOCROOT . 'storage/' . $attachment);
+
+            $image = imagecreatefromstring($data);
+
+            $x = imagesx($image);
+            $y = imagesy($image);
+            $size = max($x, $y);
+            $x = round($x / $size * 300);
+            $y = round($y / $size * 300);
+
+            $thumb = imagecreatetruecolor($x, $y);
+            imagealphablending($thumb, false);
+            imagesavealpha($thumb, true);
+
+            imagecopyresampled($thumb, $image, 0, 0, 0, 0, $x, $y, imagesx($image), imagesy($image));
+
+            imagepng($thumb, $tmp, 9);
+            $data = file_get_contents($tmp);
+            unlink($tmp);
+        ?>
+            <img style="float: left" src="data:image/png;base64,<?=base64_encode($data)?>" />
+            <?=($i % 2 == 0) ? '<br/><br/>' : ''?>
         <?php endforeach;?>
     <?php endif;?>
 </div>
