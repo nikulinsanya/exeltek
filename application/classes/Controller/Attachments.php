@@ -268,7 +268,7 @@ class Controller_Attachments extends Controller {
             header('Content-type: application/zip');
             header('Content-disposition: attachment; filename="Attachments.zip"');
             header('X-Accel-Redirect: ' . URL::base() . 'storage/zip' . $id);
-            exit;
+            die();
             /*header('Content-length: ' . filesize($filename));
 
 
