@@ -80,7 +80,6 @@ class Controller_Test extends Controller {
         $ids = array();
         foreach ($list as $job) {
             $discr = Database_Mongo::collection('discrepancies')->find(array('job_key' => $job['_id']))->sort(array('update_time' => -1))->getNext();
-            header('Content-type: text/plain');
             $fl = true;
             foreach ($discr['data'] as $key => $value) {
                 if ($key == 44) {
