@@ -85,6 +85,10 @@ class Controller_Test extends Controller {
                 if ($key == 44) {
                     $status = preg_replace('/[^a-z]/i', '', strtolower($value['old_value']));
                     $status2 = preg_replace('/[^a-z]/i', '', strtolower($value['new_value']));
+                    $status0 = preg_replace('/[^a-z]/i', '', strtolower(Arr::get($job['data'], $key, '')));
+
+                    if ($status == $status0) continue;
+
                     if ((($status == 'tested' && $status2 != 'tested') || ($status == 'built' && ($status2 != 'built' && $status2 != 'tested')) ||
                             ($status != $status2 && in_array($status2, array('deferred', 'dirty', 'heldnbn'), true)))
                     ) {

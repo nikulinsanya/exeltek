@@ -316,11 +316,17 @@ class Controller_Search_View extends Controller {
 
                     if ($fl > 0 && !Arr::get($job, 'discrepancies'))
                         $update['$set']['discrepancies'] = 1;
-                    elseif($fl < 0 && Arr::get($job, 'discrepancies')) {
+                    elseif($fl <= 0 && Arr::get($job, 'discrepancies')) {
                         $fl = true;
                         foreach ($discrepancies['data'] as $key => $values) if (!Arr::get($values, 'ignore')) {
                             $value = $values['old_value'];
-                            if ($value != Arr::get($job['data'], $key, ''))
+                            $new_value = Arr::get($job['data'], $key, '');
+
+                            if ($key == 44) {
+                                $value = preg_replace('/[^a-z]/i', '', strtolower($value));
+                                $new_value = preg_replace('/[^a-z]/i', '', strtolower($new_value));
+                            }
+                            if ($value != $new_value)
                                 $fl = false;
                         }
                         if ($fl)
