@@ -265,7 +265,8 @@ class Controller_Attachments extends Controller {
             header('Content-type: application/zip');
             header('Content-disposition: filename="Attachments.zip"');
             header('X-Accel-Redirect: /storage/zip' . $id);
-            header('X-SendFile: ' . DOCROOT . 'storage/zip' . $id);
+            header('X-SendFile: ' . realpath(DOCROOT . 'storage/zip' . $id));
+            exit;
             /*header('Content-length: ' . filesize($filename));
 
             ob_end_clean();
@@ -277,7 +278,6 @@ class Controller_Attachments extends Controller {
                 $buf = '';
             }
             fclose($file);*/
-            die();
         }
 
         $count = 0;
