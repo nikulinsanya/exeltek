@@ -21,8 +21,11 @@ class Controller_Download extends Controller {
         header('Content-type: '. $this->attachment['mime']);
         header('Content-disposition: filename="' . $this->attachment['filename'] . '"');
         header('Content-length: ' . filesize(DOCROOT . 'storage/' . $this->attachment['id']));
-        
-        readfile(DOCROOT . 'storage/' . $this->attachment['id']);
+
+        header('X-Accel-Redirect: /storage/' . $this->attachment['id']);
+        header('X-SendFile: ' . DOCROOT . 'storage/' . $this->attachment['id']);
+
+        //readfile(DOCROOT . 'storage/' . $this->attachment['id']);
         
         die();
     }
@@ -55,7 +58,10 @@ class Controller_Download extends Controller {
         header('Content-disposition: filename="thumbnail.png"');
         header('Content-length: ' . filesize(DOCROOT . 'storage/' . $this->attachment['id'] . '.thumb'));
 
-        readfile(DOCROOT . 'storage/' . $this->attachment['id'] . '.thumb');
+        header('X-Accel-Redirect: /storage/' . $this->attachment['id'] . '.thumb');
+        header('X-SendFile: ' . DOCROOT . 'storage/' . $this->attachment['id'] . '.thumb');
+
+        //readfile(DOCROOT . 'storage/' . $this->attachment['id'] . '.thumb');
 
         die();
     }
