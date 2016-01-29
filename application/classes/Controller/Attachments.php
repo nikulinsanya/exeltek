@@ -262,12 +262,10 @@ class Controller_Attachments extends Controller {
         if (!$files) {
             if (!file_exists($filename)) throw new HTTP_Exception_404('Not found');
 
-            ob_end_clean();
-
-            print('X-SendFile: ' . realpath($filename));
-            print('Content-type: application/zip');
-            print('Content-disposition: attachment; filename="Attachments.zip"');
-            print('X-Accel-Redirect: ' . URL::base() . 'storage/zip' . $id);
+            header('X-SendFile: ' . realpath($filename));
+            header('Content-Type: application/zip');
+            header('Content-Disposition: attachment; filename="Attachments.zip"');
+            header('X-Accel-Redirect: ' . URL::base() . 'storage/zip' . $id);
             die();
             /*header('Content-length: ' . filesize($filename));
 
