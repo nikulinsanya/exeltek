@@ -264,10 +264,10 @@ class Controller_Attachments extends Controller {
 
             ob_end_clean();
 
-            header('X-SendFile: ' . realpath($filename));
-            header('Content-type: application/zip');
-            header('Content-disposition: attachment; filename="Attachments.zip"');
-            header('X-Accel-Redirect: ' . URL::base() . 'storage/zip' . $id);
+            print('X-SendFile: ' . realpath($filename));
+            print('Content-type: application/zip');
+            print('Content-disposition: attachment; filename="Attachments.zip"');
+            print('X-Accel-Redirect: ' . URL::base() . 'storage/zip' . $id);
             die();
             /*header('Content-length: ' . filesize($filename));
 
