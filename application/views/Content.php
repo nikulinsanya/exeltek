@@ -184,6 +184,19 @@
           </div>
       </div>
   </div>
+  <div class="modal fade" id="modal-download" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h4 class="modal-title">Preparing attachments...</h4>
+              </div>
+              <div class="modal-body">
+                  Files count: <span id="download-count">0</span>/<span id="download-count-total">0</span><br/>
+                  Total size: <span id="download-size">0 B</span>/<span id="download-size-total">0</span><br/>
+              </div>
+          </div>
+      </div>
+  </div>
 
   <?php if (Kohana::$environment == Kohana::DEVELOPMENT) echo '<div>&nbsp;</div>' . View::factory("profiler/stats");?>
   </body>

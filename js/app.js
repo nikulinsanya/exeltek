@@ -833,13 +833,38 @@ $(function () {
         $(this).attr('href', url + $('div.content').find('form').serialize());
     });
 
+    function download_handler(data) {
+        var url = utils.baseUrl() + 'attachments/download/' + data.id;
+        if (data.count == 0) {
+            $('#modal-download').modal('hide');
+            window.location = url;
+        } else {
+            var count = parseInt($('#download-count-total').text()) - data.count;
+            var size = bytesToSize(parseInt($('#download-size-total').attr('data-value')) - data.total);
+            $('#download-count').text(count);
+            $('#download-size').text(size);
+            $.get(url, download_handler);
+        }
+    }
+
     $('.export-attachments').click(function() {
         var ids = [];
         $('#search-table input[type=checkbox][data-id]:checked').each(function(i, e) {
             ids.push($(e).attr('data-id'));
         });
 
-        document.location = utils.baseUrl() + 'attachments/tickets?id=' + ids.toString();
+        $.get(utils.baseUrl() + 'attachments/tickets?id=' + ids.toString(), function(data) {
+            var size = bytesToSize(data.total);
+
+            $('#download-count-total').text(data.count);
+            $('#download-size-total').text(size).attr('data-value', data.total);
+            $('#modal-download').modal({
+                backdrop: 'static',
+                keyboard: false,
+                show: true,
+            });
+            download_handler(data);
+        });
     });
 
 
@@ -1037,8 +1062,19 @@ $(function () {
             var address = data.address;
             
             var url = $('.tree').attr('data-url') + 'folder?folder=' + folder + '&fda=' + fda + '&address=' + address;
-            
-            window.location = url;
+
+            $.get(url, function(data) {
+                var size = bytesToSize(data.total);
+
+                $('#download-count-total').text(data.count);
+                $('#download-size-total').text(size).attr('data-value', data.total);
+                $('#modal-download').modal({
+                    backdrop: 'static',
+                    keyboard: false,
+                    show: true,
+                });
+                download_handler(data);
+            });
         }
         //dump(selected);
     });
