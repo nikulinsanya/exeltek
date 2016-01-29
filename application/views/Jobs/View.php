@@ -267,7 +267,7 @@
                     $fl = true;
                     foreach($ticket['data'] as $key => $value):
                         if ($key == 44)
-                            $equal = preg_replace('/[^a-z]/i', '', $value['old_value']) == preg_replace('/[^a-z]/i', '', Arr::get($job['data'], $key));
+                            $equal = preg_replace('/[^a-z]/i', '', strtolower($value['old_value'])) == preg_replace('/[^a-z]/i', '', strtolower(Arr::get($job['data'], $key)));
                         else
                             $equal = $value['old_value'] == Arr::get($job['data'], $key);
                     ?>
