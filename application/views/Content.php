@@ -191,8 +191,8 @@
                   <h4 class="modal-title">Preparing attachments...</h4>
               </div>
               <div class="modal-body">
-                  Files count: <span id="download-count">0</span>/<span id="download-count-total">0</span><br/>
-                  Total size: <span id="download-size">0 B</span>/<span id="download-size-total">0</span><br/>
+                  Files count: <b><span id="download-count">0</span></b>/<b><span id="download-count-total">0</span></b><br/>
+                  Total size: <b><span id="download-size">0 B</span></b>/<b><span id="download-size-total">0</span></b><br/>
               </div>
           </div>
       </div>
