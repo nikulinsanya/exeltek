@@ -9,6 +9,9 @@
     .modal-dialog {
         width: 90%;
     }
+    .modal-dialog.modal-sm {
+        width: 300px;
+    }
 }
 @media (max-width:1070px){
     .col-container tr:nth-child(odd){
