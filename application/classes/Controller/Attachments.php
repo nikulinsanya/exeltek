@@ -110,7 +110,7 @@ class Controller_Attachments extends Controller {
                 $name = $name . '(' . $i . ')';
             }
 
-            $list[] = array(
+            $list[$name . $ext] = array(
                 'path' => $name . $ext,
                 'attachment_id' => $file['id'],
                 'size' => filesize(DOCROOT . 'storage/' . $file['id']),
@@ -192,7 +192,7 @@ class Controller_Attachments extends Controller {
                 $name = $name . '(' . $i . ')';
             }
 
-            $list[] = array(
+            $list[$name . $ext] = array(
                 'path' => $name . $ext,
                 'attachment_id' => $file['id'],
                 'size' => filesize(DOCROOT . 'storage/' . $file['id']),
