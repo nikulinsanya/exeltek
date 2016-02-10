@@ -135,6 +135,7 @@ window.formbuilder = (function() {
                 $('#destination').val(cell.attr('data-destination'))
             }
 
+            $('#option-title').val(cell.attr('data-title') || '');
         },
         refreshFieldForm: function(cell){
             var type = cell && cell.attr('data-type') || $('#fieldType').val(),
@@ -264,11 +265,13 @@ window.formbuilder = (function() {
                 case 'options':
                     var value = $('#options-preview').val(),
                         select = $('#options-preview').clone(),
-                        color = $('#options-preview').attr('data-color');
+                        color = $('#options-preview').attr('data-color'),
+                        title = $('#option-title').val();
                     select.removeAttr('id');
                     $selectedCell.attr('data-type','options');
                     $selectedCell.attr('data-value',value);
                     $selectedCell.attr('data-color',value);
+                    $selectedCell.attr('data-title',title);
                     $selectedCell.html(select);
                     $('#options-preview').val('');
                     break;
@@ -385,6 +388,7 @@ window.formbuilder = (function() {
                 color,
                 assignTo,
                 assignAs,
+                title,
                 widthSettings,
                 width,
                 parentWidth,
@@ -428,6 +432,7 @@ window.formbuilder = (function() {
                         color       = $(this).attr('data-color') || '';
                         assignTo    = $(this).attr('data-assign-to') || '';
                         assignAs    = $(this).attr('data-assign-as') || '';
+                        title    = $(this).attr('data-title') || '';
                         if (destinations[destination] == undefined) destination = '';
                         input = {
                             type : $(this).attr('data-type'),
@@ -440,6 +445,7 @@ window.formbuilder = (function() {
                             color: color,
                             assignTo: assignTo,
                             assignAs: assignAs,
+                            title: title,
                             required: !!$(this).attr('data-required')
                         };
                         if ($(this).attr('data-type') == 'options'){
@@ -604,7 +610,8 @@ window.formbuilder = (function() {
                 case 'options':
                     var options = [], i,
                         available = element.options && element.options.split(',') || [],
-                        colors = element.colors && element.colors.split(',') || [];
+                        colors = element.colors && element.colors.split(',') || [],
+                        title = element.title;
                     for(i=0;i<available.length;i++){
                         options.push( '<option value="',
                             available[i],
@@ -619,7 +626,7 @@ window.formbuilder = (function() {
                             '</option>');
                     }
                     html.push(this.getFilledTd(element),
-                        '<select name="',element.name,'">',
+                        '<select name="',element.name,'" data-title="',title,'">',
                        options.join(''),
                         '</select>',
                         '</td>'
@@ -663,6 +670,9 @@ window.formbuilder = (function() {
                     '',
                 required = element.required ?
                 ' data-required="true" ' :
+                    '',
+                title = element.title ?
+                    ' data-title="'+element.title+'" ' :
                     '';
             html.push('<td class="editable-cell"',
                 style  ? ('style="'+style+'"') : '',
@@ -675,6 +685,7 @@ window.formbuilder = (function() {
                 assignTo,
                 assignAs,
                 required,
+                title,
                 '>');
             return html.join('');
         },
@@ -827,6 +838,21 @@ window.formbuilder = (function() {
                         $('#cells-border').val('');
                     }
                 }
+
+                //fill related selects
+                var options = {},
+                    selects = ['<option value=""></option>'];
+                $('table.editable-table:not(".selected-table") td.editable-cell').find('select').each(function(){
+                    var title = $(this).attr('data-title') || $(this).attr('name');
+                    options[title] = $(this).find('option').clone();
+                    selects.push('<option value="'+title+'">'+title+'</option>');
+                });
+                $('#related_option').html(selects.join(''));
+                $('#related_option').off().on('change',function(){
+                    var val = $(this).val();
+                    $('#related_value').html(options[val] || '');
+                });
+                $('#related_option').trigger('change');
 
                 $('#configTable').modal('show');
             });

@@ -60,7 +60,7 @@
 
 
 <div class="modal fade"  id="addTable" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document" style="width:300px;">
+    <div class="modal-dialog" role="document" style="width:400px;">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -87,7 +87,7 @@
 </div>
 
 <div class="modal fade"  id="configTable" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document" style="width:300px;">
+    <div class="modal-dialog" role="document" style="width:400px;">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -127,6 +127,18 @@
                             <option value="">Yes</option>
                             <option value="not-bordered">No</option>
                         </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="form-label">Related option</span>
+                        <select id="related_option"></select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="form-label">Select related value</span>
+                        <select id="related_value"></select>
                     </div>
                 </div>
                 <div class="row">
@@ -215,6 +227,15 @@
                             <canvas width="200" height="100" id="signature-canvas"></canvas>
                         </div>
                     </div>
+                    <div class="row type-config options-type-config">
+                        <div class="col-md-4">
+                            <span class="form-label">Title</span>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" id="option-title">
+                        </div>
+                    </div>
+
                     <div class="row type-config options-type-config">
                         <div class="col-md-4">
                             <span class="form-label">Add option</span>
