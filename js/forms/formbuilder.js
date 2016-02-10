@@ -135,6 +135,7 @@ window.formbuilder = (function() {
                 $('#destination').val(cell.attr('data-destination'))
             }
 
+            //$('#option-title').val(cell.attr('data-title') || '');
         },
         refreshFieldForm: function(cell){
             var type = cell && cell.attr('data-type') || $('#fieldType').val(),
@@ -201,7 +202,7 @@ window.formbuilder = (function() {
             e.preventDefault();
             var type = $('#fieldType').val(),
                 $selectedCell = $('.selected-cell');
-
+            $selectedCell.removeAttr('data-type data-value data-color data-title name');
 
             switch (type) {
                 case 'timestamp':
@@ -265,10 +266,13 @@ window.formbuilder = (function() {
                     var value = $('#options-preview').val(),
                         select = $('#options-preview').clone(),
                         color = $('#options-preview').attr('data-color');
+                        //title = $('#option-title').val();
                     select.removeAttr('id');
                     $selectedCell.attr('data-type','options');
                     $selectedCell.attr('data-value',value);
                     $selectedCell.attr('data-color',value);
+                    //$selectedCell.attr('data-title',title);
+                    select.attr('name',window.formbuilder.guid());
                     $selectedCell.html(select);
                     $('#options-preview').val('');
                     break;
@@ -385,6 +389,7 @@ window.formbuilder = (function() {
                 color,
                 assignTo,
                 assignAs,
+                title,
                 widthSettings,
                 width,
                 parentWidth,
@@ -395,6 +400,8 @@ window.formbuilder = (function() {
                     type:'table',
                     style: $(this).attr('style'),
                     'data-style': $(this).attr('data-style'),
+                    'data-related-option': $(this).attr('data-related-option'),
+                    'data-related-value': $(this).attr('data-related-value'),
                     class: $(this).attr('data-class'),
                     'width-settings': [],
                     data:[]
@@ -428,18 +435,20 @@ window.formbuilder = (function() {
                         color       = $(this).attr('data-color') || '';
                         assignTo    = $(this).attr('data-assign-to') || '';
                         assignAs    = $(this).attr('data-assign-as') || '';
+                        //title    = $(this).attr('data-title') || '';
                         if (destinations[destination] == undefined) destination = '';
                         input = {
                             type : $(this).attr('data-type'),
                             placeholder: $(this).attr('data-placeholder'),
                             name: ['label','ticket','revision','timestamp'].indexOf($(this).attr('data-type')) == -1 ?
-                                $(this).attr('data-name') || self.guid():
+                                $(this).attr('name') || self.guid():
                                 '',
                             value:value,
                             destination: destination,
                             color: color,
                             assignTo: assignTo,
                             assignAs: assignAs,
+                            //title: title,
                             required: !!$(this).attr('data-required')
                         };
                         if ($(this).attr('data-type') == 'options'){
@@ -498,9 +507,10 @@ window.formbuilder = (function() {
                 style,
                 dataColor,
                 html = [];
+
             switch (element.type){
                 case 'table':
-                    html.push('<div class="table-container ',this._editable ? 'user-edit' : '','"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs"><i class="glyphicon glyphicon-trash"></i></button><button class="btn btn-info config-table btn-xs"><i class="glyphicon glyphicon-cog"></i></button><table data-style=\''+element['data-style']+'\' style="'+element.style+'" class="table-responsive table table-bordered editable-table '+element.class+'" '+(element.class ? ' data-class="'+element.class+'" ' : '') +'><tbody class="ui-sortable">');
+                    html.push('<div class="table-container ',this._editable ? 'user-edit' : '','"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs"><i class="glyphicon glyphicon-trash"></i></button><button class="btn btn-info config-table btn-xs"><i class="glyphicon glyphicon-cog"></i></button><table data-style=\''+element['data-style']+'\' style="'+element.style+'" class="table-responsive table table-bordered editable-table '+element.class+'" '+(element.class ? ' data-class="'+element.class+'" ' : '') + (element['data-related-option'] ? (' data-related-option=\''+element['data-related-option']+'\'') : '') + (element['data-related-value'] ? (' data-related-value=\''+element['data-related-value']+'\'') : '') + ' ><tbody class="ui-sortable">');
 
                     if(!this._editable){
                         html.push('<tr class="tmp-cell">');
@@ -605,6 +615,7 @@ window.formbuilder = (function() {
                     var options = [], i,
                         available = element.options && element.options.split(',') || [],
                         colors = element.colors && element.colors.split(',') || [];
+                        //title = element.title;
                     for(i=0;i<available.length;i++){
                         options.push( '<option value="',
                             available[i],
@@ -619,7 +630,7 @@ window.formbuilder = (function() {
                             '</option>');
                     }
                     html.push(this.getFilledTd(element),
-                        '<select name="',element.name,'">',
+                        '<select name="',element.name,'">',// data-title="',title,'">',
                        options.join(''),
                         '</select>',
                         '</td>'
@@ -663,6 +674,9 @@ window.formbuilder = (function() {
                     '',
                 required = element.required ?
                 ' data-required="true" ' :
+                    '',
+                title = element.title ?
+                    ' data-title="'+element.title+'" ' :
                     '';
             html.push('<td class="editable-cell"',
                 style  ? ('style="'+style+'"') : '',
@@ -675,6 +689,7 @@ window.formbuilder = (function() {
                 assignTo,
                 assignAs,
                 required,
+                title,
                 '>');
             return html.join('');
         },
@@ -786,13 +801,15 @@ window.formbuilder = (function() {
             this._formContainer.on('click','.remove-table',function(e){
                 var self = this;
                 if(confirm('Do you want to remove table?')){
-                    $(self).next().remove();
+                    $(self).parent().remove();
                 }
             });
             this._formContainer.on('click','.config-table',function(e){
                 var self  = this,
                     dataStyle = $(this).parents('.table-container').find('table').attr('data-style'),
-                    table = $(this).parent().find('table').first();
+                    table = $(this).parent().find('table').first(),
+                    relatedOption = table.attr('data-related-option'),
+                    relatedOption = table.attr('data-related-option');
 
                 $('.selected-table').removeClass('selected-table');
                 table.addClass('selected-table');
@@ -827,6 +844,22 @@ window.formbuilder = (function() {
                         $('#cells-border').val('');
                     }
                 }
+
+                //fill related selects
+                var options = {},
+                    selects = ['<option value=""></option>'];
+                $('table.editable-table:not(".selected-table") td.editable-cell').find('select').each(function(){
+                    var title = /*$(this).attr('data-title') ||*/ $(this).attr('name');
+                    options[title] = $(this).find('option').clone();
+                    selects.push('<option value="'+title+'">'+title+'</option>');
+                });
+                $('#related_option').html(selects.join(''));
+                $('#related_option').off().on('change',function(){
+                    var val = $(this).val();
+                    $('#related_value').html(options[val] || '');
+                });
+                $('#related_option').val(relatedOption);
+                $('#related_option').trigger('change');
 
                 $('#configTable').modal('show');
             });
@@ -925,12 +958,17 @@ window.formbuilder = (function() {
                     borderVal = $('#table-border').val()|| '0',
                     borderColor = $('#table-color').val() || '#ccc',
                     style = "border:"+borderVal+"px solid " +borderColor,
-                    className = $('#cells-border').val() || '';
+                    className = $('#cells-border').val() || '',
+                    relatedOption = $('#related_option').val() || '',
+                    relatedValue = $('#related_value').val() || '';
 
                 table
                     .attr('style',style)
                     .attr('data-style',JSON.stringify({border:borderVal,borderColor:borderColor}))
-                    .attr('data-class',className);
+                    .attr('data-class',className)
+                    .attr('data-related-option',relatedOption)
+                    .attr('data-related-value',relatedValue)
+                ;
 
                 table.removeClass('not-bordered').addClass(className);
 
