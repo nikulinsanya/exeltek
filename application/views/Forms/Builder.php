@@ -227,14 +227,14 @@
                             <canvas width="200" height="100" id="signature-canvas"></canvas>
                         </div>
                     </div>
-                    <div class="row type-config options-type-config">
-                        <div class="col-md-4">
-                            <span class="form-label">Title</span>
-                        </div>
-                        <div class="col-md-8">
-                            <input type="text" id="option-title">
-                        </div>
-                    </div>
+<!--                    <div class="row type-config options-type-config">-->
+<!--                        <div class="col-md-4">-->
+<!--                            <span class="form-label">Title</span>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-8">-->
+<!--                            <input type="text" id="option-title">-->
+<!--                        </div>-->
+<!--                    </div>-->
 
                     <div class="row type-config options-type-config">
                         <div class="col-md-4">

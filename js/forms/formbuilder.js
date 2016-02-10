@@ -135,7 +135,7 @@ window.formbuilder = (function() {
                 $('#destination').val(cell.attr('data-destination'))
             }
 
-            $('#option-title').val(cell.attr('data-title') || '');
+            //$('#option-title').val(cell.attr('data-title') || '');
         },
         refreshFieldForm: function(cell){
             var type = cell && cell.attr('data-type') || $('#fieldType').val(),
@@ -265,13 +265,13 @@ window.formbuilder = (function() {
                 case 'options':
                     var value = $('#options-preview').val(),
                         select = $('#options-preview').clone(),
-                        color = $('#options-preview').attr('data-color'),
-                        title = $('#option-title').val();
+                        color = $('#options-preview').attr('data-color');
+                        //title = $('#option-title').val();
                     select.removeAttr('id');
                     $selectedCell.attr('data-type','options');
                     $selectedCell.attr('data-value',value);
                     $selectedCell.attr('data-color',value);
-                    $selectedCell.attr('data-title',title);
+                    //$selectedCell.attr('data-title',title);
                     select.attr('name',window.formbuilder.guid());
                     $selectedCell.html(select);
                     $('#options-preview').val('');
@@ -435,7 +435,7 @@ window.formbuilder = (function() {
                         color       = $(this).attr('data-color') || '';
                         assignTo    = $(this).attr('data-assign-to') || '';
                         assignAs    = $(this).attr('data-assign-as') || '';
-                        title    = $(this).attr('data-title') || '';
+                        //title    = $(this).attr('data-title') || '';
                         if (destinations[destination] == undefined) destination = '';
                         input = {
                             type : $(this).attr('data-type'),
@@ -448,7 +448,7 @@ window.formbuilder = (function() {
                             color: color,
                             assignTo: assignTo,
                             assignAs: assignAs,
-                            title: title,
+                            //title: title,
                             required: !!$(this).attr('data-required')
                         };
                         if ($(this).attr('data-type') == 'options'){
@@ -614,8 +614,8 @@ window.formbuilder = (function() {
                 case 'options':
                     var options = [], i,
                         available = element.options && element.options.split(',') || [],
-                        colors = element.colors && element.colors.split(',') || [],
-                        title = element.title;
+                        colors = element.colors && element.colors.split(',') || [];
+                        //title = element.title;
                     for(i=0;i<available.length;i++){
                         options.push( '<option value="',
                             available[i],
@@ -630,7 +630,7 @@ window.formbuilder = (function() {
                             '</option>');
                     }
                     html.push(this.getFilledTd(element),
-                        '<select name="',element.name,'" data-title="',title,'">',
+                        '<select name="',element.name,'">',// data-title="',title,'">',
                        options.join(''),
                         '</select>',
                         '</td>'
@@ -849,7 +849,7 @@ window.formbuilder = (function() {
                 var options = {},
                     selects = ['<option value=""></option>'];
                 $('table.editable-table:not(".selected-table") td.editable-cell').find('select').each(function(){
-                    var title = $(this).attr('data-title') || $(this).attr('name');
+                    var title = /*$(this).attr('data-title') ||*/ $(this).attr('name');
                     options[title] = $(this).find('option').clone();
                     selects.push('<option value="'+title+'">'+title+'</option>');
                 });
