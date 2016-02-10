@@ -202,7 +202,7 @@ window.formbuilder = (function() {
             e.preventDefault();
             var type = $('#fieldType').val(),
                 $selectedCell = $('.selected-cell');
-
+            $selectedCell.removeAttr('data-type data-value data-color data-title name');
 
             switch (type) {
                 case 'timestamp':
@@ -272,6 +272,7 @@ window.formbuilder = (function() {
                     $selectedCell.attr('data-value',value);
                     $selectedCell.attr('data-color',value);
                     $selectedCell.attr('data-title',title);
+                    select.attr('name',window.formbuilder.guid());
                     $selectedCell.html(select);
                     $('#options-preview').val('');
                     break;
@@ -399,6 +400,8 @@ window.formbuilder = (function() {
                     type:'table',
                     style: $(this).attr('style'),
                     'data-style': $(this).attr('data-style'),
+                    'data-related-option': $(this).attr('data-related-option'),
+                    'data-related-value': $(this).attr('data-related-value'),
                     class: $(this).attr('data-class'),
                     'width-settings': [],
                     data:[]
@@ -438,7 +441,7 @@ window.formbuilder = (function() {
                             type : $(this).attr('data-type'),
                             placeholder: $(this).attr('data-placeholder'),
                             name: ['label','ticket','revision','timestamp'].indexOf($(this).attr('data-type')) == -1 ?
-                                $(this).attr('data-name') || self.guid():
+                                $(this).attr('name') || self.guid():
                                 '',
                             value:value,
                             destination: destination,
@@ -504,9 +507,10 @@ window.formbuilder = (function() {
                 style,
                 dataColor,
                 html = [];
+
             switch (element.type){
                 case 'table':
-                    html.push('<div class="table-container ',this._editable ? 'user-edit' : '','"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs"><i class="glyphicon glyphicon-trash"></i></button><button class="btn btn-info config-table btn-xs"><i class="glyphicon glyphicon-cog"></i></button><table data-style=\''+element['data-style']+'\' style="'+element.style+'" class="table-responsive table table-bordered editable-table '+element.class+'" '+(element.class ? ' data-class="'+element.class+'" ' : '') +'><tbody class="ui-sortable">');
+                    html.push('<div class="table-container ',this._editable ? 'user-edit' : '','"><i class="glyphicon glyphicon-move"></i><button class="btn btn-danger remove-table btn-xs"><i class="glyphicon glyphicon-trash"></i></button><button class="btn btn-info config-table btn-xs"><i class="glyphicon glyphicon-cog"></i></button><table data-style=\''+element['data-style']+'\' style="'+element.style+'" class="table-responsive table table-bordered editable-table '+element.class+'" '+(element.class ? ' data-class="'+element.class+'" ' : '') + (element['data-related-option'] ? (' data-related-option=\''+element['data-related-option']+'\'') : '') + (element['data-related-value'] ? (' data-related-value=\''+element['data-related-value']+'\'') : '') + ' ><tbody class="ui-sortable">');
 
                     if(!this._editable){
                         html.push('<tr class="tmp-cell">');
@@ -797,13 +801,15 @@ window.formbuilder = (function() {
             this._formContainer.on('click','.remove-table',function(e){
                 var self = this;
                 if(confirm('Do you want to remove table?')){
-                    $(self).next().remove();
+                    $(self).parent().remove();
                 }
             });
             this._formContainer.on('click','.config-table',function(e){
                 var self  = this,
                     dataStyle = $(this).parents('.table-container').find('table').attr('data-style'),
-                    table = $(this).parent().find('table').first();
+                    table = $(this).parent().find('table').first(),
+                    relatedOption = table.attr('data-related-option'),
+                    relatedOption = table.attr('data-related-option');
 
                 $('.selected-table').removeClass('selected-table');
                 table.addClass('selected-table');
@@ -852,6 +858,7 @@ window.formbuilder = (function() {
                     var val = $(this).val();
                     $('#related_value').html(options[val] || '');
                 });
+                $('#related_option').val(relatedOption);
                 $('#related_option').trigger('change');
 
                 $('#configTable').modal('show');
@@ -951,12 +958,17 @@ window.formbuilder = (function() {
                     borderVal = $('#table-border').val()|| '0',
                     borderColor = $('#table-color').val() || '#ccc',
                     style = "border:"+borderVal+"px solid " +borderColor,
-                    className = $('#cells-border').val() || '';
+                    className = $('#cells-border').val() || '',
+                    relatedOption = $('#related_option').val() || '',
+                    relatedValue = $('#related_value').val() || '';
 
                 table
                     .attr('style',style)
                     .attr('data-style',JSON.stringify({border:borderVal,borderColor:borderColor}))
-                    .attr('data-class',className);
+                    .attr('data-class',className)
+                    .attr('data-related-option',relatedOption)
+                    .attr('data-related-value',relatedValue)
+                ;
 
                 table.removeClass('not-bordered').addClass(className);
 
