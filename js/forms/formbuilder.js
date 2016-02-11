@@ -265,14 +265,16 @@ window.formbuilder = (function() {
                 case 'options':
                     var value = $('#options-preview').val(),
                         select = $('#options-preview').clone(),
-                        color = $('#options-preview').attr('data-color');
+                        color = $('#options-preview').attr('data-color'),
+                        guid = window.formbuilder.guid();
                         //title = $('#option-title').val();
                     select.removeAttr('id');
                     $selectedCell.attr('data-type','options');
                     $selectedCell.attr('data-value',value);
                     $selectedCell.attr('data-color',value);
+                    $selectedCell.attr('data-name',guid);
                     //$selectedCell.attr('data-title',title);
-                    select.attr('name',window.formbuilder.guid());
+                    select.attr('name',guid);
                     $selectedCell.html(select);
                     $('#options-preview').val('');
                     break;
@@ -441,7 +443,7 @@ window.formbuilder = (function() {
                             type : $(this).attr('data-type'),
                             placeholder: $(this).attr('data-placeholder'),
                             name: ['label','ticket','revision','timestamp'].indexOf($(this).attr('data-type')) == -1 ?
-                                $(this).attr('name') || self.guid():
+                                $(this).attr('data-name') || self.guid():
                                 '',
                             value:value,
                             destination: destination,
