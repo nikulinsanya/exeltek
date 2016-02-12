@@ -22,6 +22,9 @@ window.formbuilder = (function() {
                 this.getReports();
                 this.applyColors();
             }
+            if(this._editable){
+                this.setTableRelations();
+            }
             this.initSortable();
             this.setHandlers();
         },
@@ -135,7 +138,7 @@ window.formbuilder = (function() {
                 $('#destination').val(cell.attr('data-destination'))
             }
 
-            //$('#option-title').val(cell.attr('data-title') || '');
+            $('#option-title').val(cell.attr('data-title') || '');
         },
         refreshFieldForm: function(cell){
             var type = cell && cell.attr('data-type') || $('#fieldType').val(),
@@ -266,14 +269,14 @@ window.formbuilder = (function() {
                     var value = $('#options-preview').val(),
                         select = $('#options-preview').clone(),
                         color = $('#options-preview').attr('data-color'),
-                        guid = window.formbuilder.guid();
-                        //title = $('#option-title').val();
+                        guid = window.formbuilder.guid(),
+                        title = $('#option-title').val();
                     select.removeAttr('id');
                     $selectedCell.attr('data-type','options');
                     $selectedCell.attr('data-value',value);
                     $selectedCell.attr('data-color',value);
                     $selectedCell.attr('data-name',guid);
-                    //$selectedCell.attr('data-title',title);
+                    $selectedCell.attr('data-title',title);
                     select.attr('name',guid);
                     $selectedCell.html(select);
                     $('#options-preview').val('');
@@ -437,7 +440,7 @@ window.formbuilder = (function() {
                         color       = $(this).attr('data-color') || '';
                         assignTo    = $(this).attr('data-assign-to') || '';
                         assignAs    = $(this).attr('data-assign-as') || '';
-                        //title    = $(this).attr('data-title') || '';
+                        title    = $(this).attr('data-title') || '';
                         if (destinations[destination] == undefined) destination = '';
                         input = {
                             type : $(this).attr('data-type'),
@@ -450,7 +453,7 @@ window.formbuilder = (function() {
                             color: color,
                             assignTo: assignTo,
                             assignAs: assignAs,
-                            //title: title,
+                            title: title,
                             required: !!$(this).attr('data-required')
                         };
                         if ($(this).attr('data-type') == 'options'){
@@ -616,8 +619,8 @@ window.formbuilder = (function() {
                 case 'options':
                     var options = [], i,
                         available = element.options && element.options.split(',') || [],
-                        colors = element.colors && element.colors.split(',') || [];
-                        //title = element.title;
+                        colors = element.colors && element.colors.split(',') || [],
+                        title = element.title;
                     for(i=0;i<available.length;i++){
                         options.push( '<option value="',
                             available[i],
@@ -632,7 +635,7 @@ window.formbuilder = (function() {
                             '</option>');
                     }
                     html.push(this.getFilledTd(element),
-                        '<select name="',element.name,'">',// data-title="',title,'">',
+                        '<select name="',element.name,'" data-title="',title,'">',
                        options.join(''),
                         '</select>',
                         '</td>'
@@ -737,9 +740,33 @@ window.formbuilder = (function() {
                 placeholder: "ui-state-highlight"
             });
             self._formContainer.disableSelection();
-
-
         },
+
+        setTableRelations: function(){
+            var selects = [];
+
+            $('table[data-related-option]').each(function(){
+                var relation = $(this).attr('data-related-option'),
+                    select = $('select[name="'+relation+'"]');
+                select = select.length ? select : $('select[data-title="'+relation+'"]');
+                if(select.length) {
+                    selects.push(select);
+                }
+                $(this).hide();
+            });
+            selects.forEach(function(el){
+                $(el).off().on('change',function(e){
+                    var relation = $(this).attr('name');
+                    $('table[data-related-option="'+relation+'"]').hide();
+                    var table = $('table[data-related-value="'+$(this).val()+'"]');
+                    table.show();
+                    table.addClass('showed-once');
+                });
+                $(el).trigger('change');
+            })
+        },
+
+
         t:false,
         initResize: function(){
             var self = this;
@@ -851,7 +878,7 @@ window.formbuilder = (function() {
                 var options = {},
                     selects = ['<option value=""></option>'];
                 $('table.editable-table:not(".selected-table") td.editable-cell').find('select').each(function(){
-                    var title = /*$(this).attr('data-title') ||*/ $(this).attr('name');
+                    var title = $(this).attr('data-title') || $(this).attr('name');
                     options[title] = $(this).find('option').clone();
                     selects.push('<option value="'+title+'">'+title+'</option>');
                 });
@@ -1056,6 +1083,7 @@ window.formbuilder = (function() {
 
 
             $('[data-toggle="tooltip"]').tooltip();
+            $('[title]').tooltip();
 
             $('#show-options-settings').on('click', function(){
                 var options = self.collectAvailableOptions(),
