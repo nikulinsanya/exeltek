@@ -107,6 +107,24 @@ class Controller_Test extends Controller {
 
     }
 
+    public function action_underbore() {
+        header('Content-type: text/plain');
+        $list = Database_Mongo::collection('submissions')->find(array('key' => 'data.205', 'active' => -1));
+        $jobs = array();
+        foreach ($list as $submission) {
+            if (!isset($jobs[$submission['job_key']]) || $jobs[$submission['job_key']]['time'] <= $submission['process_time'])
+                $jobs[$submission['job_key']] = array(
+                    'time' => $submission['process_time'],
+                    'value' => $submission['value'],
+                );
+        }
+        foreach ($jobs as $key => $job) {
+            Database_Mongo::collection('jobs')->update(array('_id' => $key), array('$set' => array('data.268' => $job['value'])));
+        }
+        //print_r($list->explain());
+        die('Done');
+    }
+
     public function action_index() {
         header('Content-type: text/plain');
 

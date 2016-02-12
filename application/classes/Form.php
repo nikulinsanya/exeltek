@@ -58,7 +58,7 @@ class Form extends Kohana_Form {
             '174,202' => 'Installation Type C: Breakout and Reinstatement - Pavers in sqm',
             '175,203' => 'Installation Type C: Breakout and Reinstatement - Pebblecrete in sqm',
             '176,204' => 'Aerial to Underground',
-            'z,177,205' => 'Installation Type C: Under Bore',
+            'z,177,205,268' => 'Installation Type C: Under Bore',
             '178,206' => 'Installation Type C: Rock Installation in Metres',
             '179,207' => 'Installation Type C: Core Bore',
             '180,208' => 'Installation Type C: Asbestos Pit P20 Install',
