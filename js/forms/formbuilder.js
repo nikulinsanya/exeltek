@@ -756,7 +756,7 @@ window.formbuilder = (function() {
             });
             selects.forEach(function(el){
                 $(el).off().on('change',function(e){
-                    var relation = $(this).attr('name');
+                    var relation = $(this).attr('data-title') || $(this).attr('name');
                     $('table[data-related-option="'+relation+'"]').hide();
                     var table = $('table[data-related-value="'+$(this).val()+'"]');
                     table.show();
@@ -1174,14 +1174,16 @@ $(function () {
             return false;
         }
 
-        var form = $(this).parents('form').serializeArray();
         var print = $(this).hasClass('btn-info');
 
         if (print && !confirm('Do you really want to convert this file to PDF? After this, form data can\'t  be edited!'))
             return false;
 
+        var form = $(this).parents('form');
+        form.find('table:not(:visible)').remove();
+        form = form.serializeArray();
+
         $('form').find('canvas').each(function(){
-            //dump($(this).next());
             form.push({
                 name:$(this).next('input').attr('name'),
                 value: $(this).get(0).toDataURL()
