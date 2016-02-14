@@ -1136,6 +1136,8 @@ $(function () {
         $('#hide-form').hide();
         $('#forms-list').show();
         $('#form-builder').addClass('hidden');
+        $('#form-builder-container').html('');
+
     });
 
     $('.form-edit-link').click(function() {
