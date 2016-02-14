@@ -952,8 +952,6 @@ window.formbuilder = (function() {
 
             $('#confirm-insert-field').on('click',self.confirmAddField);
 
-            $('#form-insert-field').on('submit',self.confirmAddField)
-
             $('.confirm-insert-table').on('click',function(){
                 var cols = $('#cols-number').val(),
                     rows = $('#rows-number').val(),

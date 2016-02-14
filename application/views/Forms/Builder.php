@@ -156,7 +156,6 @@
 
 <div class="modal fade"  id="addField" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document" style="width:600px;">
-        <form id="form-insert-field">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -302,7 +301,6 @@
                 <button class="btn btn-success" id="confirm-insert-field">Save</button>
             </div>
         </div>
-        </form>
     </div>
 </div>
 <canvas id="blank-canvas"></canvas>
