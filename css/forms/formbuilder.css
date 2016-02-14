@@ -333,3 +333,7 @@ table tr.tmp-cell:first-of-type>td.tmp-cell{
 .tooltip-inner {
     max-width: 300px;
 }
+
+.bootstrap-select .dropdown-menu.open{
+    max-width: 400px;
+}

@@ -214,7 +214,16 @@
                             <span class="form-label">Ticket field</span>
                         </div>
                         <div class="col-md-8">
-                            <select id="field-type">
+                            <select id="field-type" data-live-search="true">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row type-config ticket-bind-type-config">
+                        <div class="col-md-4">
+                            <span class="form-label">Bind fields</span>
+                        </div>
+                        <div class="col-md-8">
+                            <select id="bind-field-type" multiple data-live-search="true">
                             </select>
                         </div>
                     </div>
@@ -250,7 +259,7 @@
                             <span class="form-label">Preview</span>
                         </div>
                         <div class="col-md-8">
-                            <select id="options-preview" style="width:150px;">
+                            <select id="options-preview" style="width:150px;" >
                             </select>
                             <select id="option-color" style="width:100px;">
                                 <option value="">Related color</option>
