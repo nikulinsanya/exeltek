@@ -57,6 +57,10 @@ table.editable-table{
     overflow-y: auto;
 }
 
+#new-cell-details{
+    overflow: hidden;
+}
+
 #new-cell-details .row>div{
     text-align: left;
     padding-left: 15px;
@@ -309,7 +313,9 @@ table tr.tmp-cell:first-of-type>td.tmp-cell{
     padding: 1px 10px;
     margin-bottom: 10px;
 }
-
+#main-settings{
+    padding-top: 10px;
+}
 #main-settings select{
     width:150px;
 }
@@ -322,4 +328,12 @@ table tr.tmp-cell:first-of-type>td.tmp-cell{
 #form-builder>div:not(.builderactions):not(.container){
     width: 400px;
     margin-left: 10px;
+}
+
+.tooltip-inner {
+    max-width: 300px;
+}
+
+.bootstrap-select .dropdown-menu.open{
+    max-width: 400px;
 }

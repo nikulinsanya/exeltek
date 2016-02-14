@@ -69,6 +69,9 @@ window.formbuilder = (function() {
                 });
             });
         },
+        initSelect: function(){
+            $('#addField').find('select').selectpicker({size:5});
+        },
         fillAssignFields: function(cell){
             var html = [],
                 ticketId = cell.attr('data-assign-to'),
@@ -95,6 +98,7 @@ window.formbuilder = (function() {
             var type = cell.attr('data-type'),
                 $parent = $('#addField');
             $('#options-preview').html('');
+            $('.ticket-bind-type-config').show();
             switch (type) {
                 case 'label':
                 case 'text':
@@ -109,6 +113,7 @@ window.formbuilder = (function() {
                     var html = [],
                         ticketId = cell.attr('data-ticket-id');
                     $('.ticket-type-config').show();
+                    $('.ticket-bind-type-config').hide();
                     $('#field-type').html('');
                     getColumns().then(function(data){
                         for(i in data){
@@ -142,12 +147,13 @@ window.formbuilder = (function() {
         },
         refreshFieldForm: function(cell){
             var type = cell && cell.attr('data-type') || $('#fieldType').val(),
-                $parent = $('#addField');
+                $parent = $('#addField'),
+                self = this;
             if(cell){
                 $('#fieldType').val(type);
             }
             $parent.find('.type-config').hide();
-            $('.ticket-type-hidden').show();
+            $('.ticket-bind-type-config').show();
             switch (type) {
                 case 'label':
                 case 'text':
@@ -160,7 +166,7 @@ window.formbuilder = (function() {
                     break;
                 case 'ticket':
                     $('.ticket-type-config').show();
-                    $('.ticket-type-hidden').hide();
+                    $('.ticket-bind-type-config').hide();
                     if(!$('#field-type').find('option').length){
                         var html = [];
                         $('.ticket-type-config').show();
@@ -177,7 +183,27 @@ window.formbuilder = (function() {
                                     '</option>');
                             }
                             $('#field-type').html(html.join(''));
+                            $('#bind-field-type').html(html.join(''));
+                            var parent = $('#field-type').parents('div.col-md-8'),
+                                select = $('#field-type').clone();
+                            parent.find('.bootstrap-select').replaceWith(select);
+                            $('#field-type').selectpicker({size:5});
+
+
+                            var parent = $('#bind-field-type').parents('div.col-md-8'),
+                                select = $('#bind-field-type').clone();
+                            parent.find('.bootstrap-select').replaceWith(select);
+                            $('#bind-field-type').selectpicker({size:5});
+
+
                         });
+
+                        //
+                        //setTimeout(function(){
+                        //    debugger;
+                        //    parent.find('.bootstrap-select').replaceWith(select);
+                        //    $(select).selectpicker({size:5});
+                        //},100)
                     }
 
                     break;
@@ -188,6 +214,28 @@ window.formbuilder = (function() {
                     $('.signature-type-config').show();
                     break;
             }
+            if(!$('#bind-field-type').find('option').length) {
+                getColumns().then(function (data) {
+                    var html = [];
+                    for (i in data) {
+                        html.push(
+                            '<option value="',
+                            data[i].id,
+                            '" ',
+                            cell && cell.attr('data-value') == data[i].id ? 'selected="selected"' : '',
+                            '>',
+                            data[i].name,
+                            '</option>');
+                    }
+                    $('#bind-field-type').html(html.join(''));
+                    var parent = $('#bind-field-type').parents('div.col-md-8'),
+                        select = $('#bind-field-type').clone();
+                    parent.find('.bootstrap-select').replaceWith(select);
+                    $('#bind-field-type').selectpicker({size: 5});
+                });
+            }
+
+
             if(cell && cell.attr('data-color')){
                 $('#color').val(cell.attr('data-color')).css('background-color',cell.attr('data-color'));
             }else{
@@ -277,6 +325,7 @@ window.formbuilder = (function() {
                     $selectedCell.attr('data-color',value);
                     $selectedCell.attr('data-name',guid);
                     $selectedCell.attr('data-title',title);
+                    select.attr('data-title',title);
                     select.attr('name',guid);
                     $selectedCell.html(select);
                     $('#options-preview').val('');
@@ -312,6 +361,15 @@ window.formbuilder = (function() {
 
             $('#addField').modal('hide');
             $('.selected-cell').removeClass('selected-cell');
+
+
+            if(type != 'options') {
+                var options = $('#bind-field-type').val(),
+                    value = options.join(','),
+                    ticket = $('#bind-field-type').find('option:selected').text();
+                $selectedCell.attr('data-bind-value', value);
+                $('#bind-field-type').val('');
+            }
         },
         guid: function () {
             function s4() {
@@ -818,6 +876,7 @@ window.formbuilder = (function() {
                 $().colorPicker.destroy();
                 $('#color').val('').removeAttr('style').colorPicker();
                 $('#addField').modal('show');
+                self.initSelect();
                 self.fillCellForm($(this));
                 self.refreshFieldForm($(this));
                 self.fillAssignFields($(this));
@@ -951,8 +1010,6 @@ window.formbuilder = (function() {
             $('#color').colorPicker();
 
             $('#confirm-insert-field').on('click',self.confirmAddField);
-
-            $('#form-insert-field').on('submit',self.confirmAddField)
 
             $('.confirm-insert-table').on('click',function(){
                 var cols = $('#cols-number').val(),
@@ -1136,6 +1193,8 @@ $(function () {
         $('#hide-form').hide();
         $('#forms-list').show();
         $('#form-builder').addClass('hidden');
+        $('#form-builder-container').html('');
+
     });
 
     $('.form-edit-link').click(function() {

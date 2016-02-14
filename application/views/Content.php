@@ -34,6 +34,11 @@
 
     <script src="<?=URL::base()?>js/lib/bootstrap/bootstrap-multiselect.js"></script>
     <link href="<?=URL::base()?>css/bootstrap-multiselect.css" rel="stylesheet">
+      <!-- Latest compiled and minified CSS -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.4/css/bootstrap-select.min.css">
+
+      <!-- Latest compiled and minified JavaScript -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.4/js/bootstrap-select.min.js"></script>
     <script src="<?=URL::base()?>js/lib/highcharts/highcharts.src.js"></script>
     <script src="<?=URL::base()?>js/lib/highcharts/exporting.js"></script>
     <script src="<?=URL::base()?>js/lib/highcharts/no-data-to-display.js"></script>
