@@ -198,12 +198,6 @@ window.formbuilder = (function() {
 
                         });
 
-                        //
-                        //setTimeout(function(){
-                        //    debugger;
-                        //    parent.find('.bootstrap-select').replaceWith(select);
-                        //    $(select).selectpicker({size:5});
-                        //},100)
                     }
 
                     break;
@@ -230,10 +224,29 @@ window.formbuilder = (function() {
                     $('#bind-field-type').html(html.join(''));
                     var parent = $('#bind-field-type').parents('div.col-md-8'),
                         select = $('#bind-field-type').clone();
+
+                    if(cell && cell.attr('data-bind-value')){
+                        var dataarray=cell.attr('data-bind-value').split(",");
+                        select.val(dataarray);
+                    }else{
+                        select.val([]);
+                    }
+
                     parent.find('.bootstrap-select').replaceWith(select);
                     $('#bind-field-type').selectpicker({size: 5});
                 });
+            }else{
+                var select = $('#bind-field-type');
+                if(cell && cell.attr('data-bind-value')){
+                    var dataarray=cell.attr('data-bind-value').split(",");
+                    select.val(dataarray);
+                }else{
+                    select.val([]);
+                }
+                select.selectpicker('refresh');
+
             }
+
 
 
             if(cell && cell.attr('data-color')){
@@ -362,14 +375,17 @@ window.formbuilder = (function() {
             $('#addField').modal('hide');
             $('.selected-cell').removeClass('selected-cell');
 
-
             if(type != 'options') {
-                var options = $('#bind-field-type').val(),
-                    value = options.join(','),
+                var options = $('#bind-field-type').val();
+                if(!options){
+                    return;
+                }
+                var value = options.join(','),
                     ticket = $('#bind-field-type').find('option:selected').text();
                 $selectedCell.attr('data-bind-value', value);
                 $('#bind-field-type').val('');
             }
+            $('select').selectpicker('refresh');
         },
         guid: function () {
             function s4() {
@@ -449,6 +465,7 @@ window.formbuilder = (function() {
                 obj, trs,tds, input,
                 c, r,
                 destination,
+                bindValue,
                 color,
                 assignTo,
                 assignAs,
@@ -498,7 +515,8 @@ window.formbuilder = (function() {
                         color       = $(this).attr('data-color') || '';
                         assignTo    = $(this).attr('data-assign-to') || '';
                         assignAs    = $(this).attr('data-assign-as') || '';
-                        title    = $(this).attr('data-title') || '';
+                        title       = $(this).attr('data-title') || '';
+                        bindValue   = $(this).attr('data-bind-value') || '';
                         if (destinations[destination] == undefined) destination = '';
                         input = {
                             type : $(this).attr('data-type'),
@@ -512,6 +530,7 @@ window.formbuilder = (function() {
                             assignTo: assignTo,
                             assignAs: assignAs,
                             title: title,
+                            bindValue: bindValue,
                             required: !!$(this).attr('data-required')
                         };
                         if ($(this).attr('data-type') == 'options'){
@@ -532,7 +551,6 @@ window.formbuilder = (function() {
             var i, j,
                 html = [],
                 self = this,
-
                 container = this._formContainer;
             for(i=0;i<data.length;i++){
                 html.push(self.loadElement(data[i]));
@@ -740,7 +758,11 @@ window.formbuilder = (function() {
                     '',
                 title = element.title ?
                     ' data-title="'+element.title+'" ' :
+                    '',
+                bindValue = element.bindValue ?
+                    ' data-bind-value="'+element.bindValue+'" ':
                     '';
+
             html.push('<td class="editable-cell"',
                 style  ? ('style="'+style+'"') : '',
                 '  data-type="',
@@ -752,6 +774,7 @@ window.formbuilder = (function() {
                 assignTo,
                 assignAs,
                 required,
+                bindValue,
                 title,
                 '>');
             return html.join('');
