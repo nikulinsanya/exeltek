@@ -860,8 +860,12 @@ window.formbuilder = (function() {
             })
 
             $('select').each(function(){
+                var parent = $(this).parents('td.editable-cell').first(),
+                    value = parent.attr('data-value');
+
                 if(!$(this).find('option[value=""]').length){
-                    $(this).prepend('<option selected="selected"></option>');
+                    $(this).prepend('<option value=""></option>');
+                    $(this).val(value || "");
                     $(this).trigger('change');
                 }
             });
