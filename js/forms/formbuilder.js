@@ -24,10 +24,13 @@ window.formbuilder = (function() {
             }
             if(this._editable){
                 this.setTableRelations();
+            }else{
+                this.initSelect();
             }
             this.initSortable();
             this.setHandlers();
-            this.initSelect();
+
+
         },
 
         getReports: function(){
@@ -76,7 +79,9 @@ window.formbuilder = (function() {
                 width:false
             });
             $('select').on('loaded.bs.select', function (e) {
-                $(e.currentTarget).find('option[value=""]').remove();
+                if($(e.currentTarget).find('option[value=""]').length > 1) {
+                    $(e.currentTarget).find('option[value=""]').remove();
+                }
             });
         },
         fillAssignFields: function(cell){
@@ -151,7 +156,7 @@ window.formbuilder = (function() {
                 $('#destination').val(cell.attr('data-destination'))
             }
 
-            $('#option-title').val(cell.attr('data-title') || '');
+            $('#option-title').val(cell.attr('data-text') || '');
         },
         refreshFieldForm: function(cell){
             var type = cell && cell.attr('data-type') || $('#fieldType').val(),
@@ -274,7 +279,7 @@ window.formbuilder = (function() {
             e.preventDefault();
             var type = $('#fieldType').val(),
                 $selectedCell = $('.selected-cell');
-            $selectedCell.removeAttr('data-type data-value data-color data-title name');
+            $selectedCell.removeAttr('data-type data-value data-color data-text name');
 
             switch (type) {
                 case 'timestamp':
@@ -345,8 +350,8 @@ window.formbuilder = (function() {
                     $selectedCell.attr('data-value',value);
                     $selectedCell.attr('data-color',value);
                     $selectedCell.attr('data-name',guid);
-                    $selectedCell.attr('data-title',title);
-                    select.attr('data-title',title);
+                    $selectedCell.attr('data-text',title);
+                    select.attr('data-text',title);
                     select.attr('name',guid);
                     $selectedCell.html(select);
                     $('#options-preview').val('');
@@ -523,7 +528,7 @@ window.formbuilder = (function() {
                         color       = $(this).attr('data-color') || '';
                         assignTo    = $(this).attr('data-assign-to') || '';
                         assignAs    = $(this).attr('data-assign-as') || '';
-                        title       = $(this).attr('data-title') || '';
+                        title       = $(this).attr('data-text') || '';
                         bindValue   = $(this).attr('data-bind-value') || '';
                         if (destinations[destination] == undefined) destination = '';
                         input = {
@@ -719,7 +724,7 @@ window.formbuilder = (function() {
                             '</option>');
                     }
                     html.push(this.getFilledTd(element),
-                        '<select name="',element.name,'" data-title="',title,'">',
+                        '<select name="',element.name,'" data-text="',title,'">',
                        options.join(''),
                         '</select>',
                         '</td>'
@@ -765,7 +770,7 @@ window.formbuilder = (function() {
                 ' data-required="true" ' :
                     '',
                 title = element.title ?
-                    ' data-title="'+element.title+'" ' :
+                    ' data-text="'+element.title+'" ' :
                     '',
                 bindValue = element.bindValue ?
                     ' data-bind-value="'+element.bindValue+'" ':
@@ -837,7 +842,7 @@ window.formbuilder = (function() {
             $('table[data-related-option]').each(function(){
                 var relation = $(this).attr('data-related-option'),
                     select = $('select[name="'+relation+'"]');
-                select = select.length ? select : $('select[data-title="'+relation+'"]');
+                select = select.length ? select : $('select[data-text="'+relation+'"]');
                 if(select.length) {
                     selects.push(select);
                 }
@@ -845,7 +850,7 @@ window.formbuilder = (function() {
             });
             selects.forEach(function(el){
                 $(el).off().on('change',function(e){
-                    var relation = $(this).attr('data-title') || $(this).attr('name');
+                    var relation = $(this).attr('data-text') || $(this).attr('name');
                     $('table[data-related-option="'+relation+'"]').hide();
                     var table = $('table[data-related-value="'+$(this).val()+'"]');
                     table.show();
@@ -970,7 +975,7 @@ window.formbuilder = (function() {
                     selects = ['<option value=""></option>'];
                 $('table.editable-table:not(".selected-table") td.editable-cell').find('select').each(function(){
 
-                    var title = $(this).attr('data-title') || $(this).attr('name');
+                    var title = $(this).attr('data-text') || $(this).attr('name');
                     options[title] = $(this).find('option').clone();
                     selects.push('<option value="'+title+'">'+title+'</option>');
 
