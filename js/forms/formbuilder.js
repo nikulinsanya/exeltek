@@ -862,8 +862,12 @@ window.formbuilder = (function() {
             $('select').each(function(){
                 if(!$(this).find('option[value=""]').length){
                     $(this).prepend('<option selected="selected"></option>');
+                    $(this).trigger('change');
                 }
             });
+            setTimeout(function(){
+                $('select').trigger('change')
+            },500);
         },
 
 
