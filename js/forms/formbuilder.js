@@ -858,6 +858,12 @@ window.formbuilder = (function() {
                 });
                 $(el).trigger('change');
             })
+
+            $('select').each(function(){
+                if(!$(this).find('option[value=""]').length){
+                    $(this).prepend('<option selected="selected"></option>');
+                }
+            });
         },
 
 
