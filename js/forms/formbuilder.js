@@ -27,6 +27,7 @@ window.formbuilder = (function() {
             }
             this.initSortable();
             this.setHandlers();
+            this.initSelect();
         },
 
         getReports: function(){
@@ -70,7 +71,13 @@ window.formbuilder = (function() {
             });
         },
         initSelect: function(){
-            $('#addField').find('select').selectpicker({size:5});
+            $('select').selectpicker({
+                size:5,
+                width:false
+            });
+            $('select').on('loaded.bs.select', function (e) {
+                $(e.currentTarget).find('option[value=""]').remove();
+            });
         },
         fillAssignFields: function(cell){
             var html = [],
@@ -922,7 +929,7 @@ window.formbuilder = (function() {
                     dataStyle = $(this).parents('.table-container').find('table').attr('data-style'),
                     table = $(this).parent().find('table').first(),
                     relatedOption = table.attr('data-related-option'),
-                    relatedOption = table.attr('data-related-option');
+                    relatedValue = table.attr('data-related-value');
 
                 $('.selected-table').removeClass('selected-table');
                 table.addClass('selected-table');
@@ -962,9 +969,11 @@ window.formbuilder = (function() {
                 var options = {},
                     selects = ['<option value=""></option>'];
                 $('table.editable-table:not(".selected-table") td.editable-cell').find('select').each(function(){
+
                     var title = $(this).attr('data-title') || $(this).attr('name');
                     options[title] = $(this).find('option').clone();
                     selects.push('<option value="'+title+'">'+title+'</option>');
+
                 });
                 $('#related_option').html(selects.join(''));
                 $('#related_option').off().on('change',function(){
@@ -972,8 +981,10 @@ window.formbuilder = (function() {
                     $('#related_value').html(options[val] || '');
                     $('select').selectpicker('refresh');
                 });
+
                 $('#related_option').val(relatedOption);
                 $('#related_option').trigger('change');
+                $('#related_value').val(relatedValue);
 
                 setTimeout(function(){
                     $('select').selectpicker('refresh');
@@ -1021,11 +1032,13 @@ window.formbuilder = (function() {
                 var value = $('#option-type-value').val();
                 $('#options-preview').append('<option value="'+value+'">'+value+'</option>');
                 $('#option-type-value').val('');
+                $('select').selectpicker('refresh');
             });
             $('#remove-option').on('click',function(){
                 var value = $('#options-preview').val();
                 $("#options-preview option[value='"+value+"']").remove();
                 $('#option-color').val('');
+                $('select').selectpicker('refresh');
             });
             $('#option-color').on('change', function(e){
                 $('#options-preview').find('option[value="'+$('#options-preview').val()+'"]').attr('data-color',$(this).val());
