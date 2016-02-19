@@ -23,6 +23,14 @@ table.editable-table{
     margin-bottom: 0px;
 }
 
+table.editable-table td>.bootstrap-select>button{
+    pointer-events: none;
+    cursor: default;
+}
+#table-settings{
+    min-height: 400px;
+}
+
 
 #form-builder-container table>tbody>tr>td {
     border-right: 1px solid #e9e9e9;
@@ -55,6 +63,10 @@ table.editable-table{
     overflow-x: hidden;
     display: block;
     overflow-y: auto;
+}
+
+#new-cell-details{
+    overflow: hidden;
 }
 
 #new-cell-details .row>div{
@@ -309,7 +321,9 @@ table tr.tmp-cell:first-of-type>td.tmp-cell{
     padding: 1px 10px;
     margin-bottom: 10px;
 }
-
+#main-settings{
+    padding-top: 10px;
+}
 #main-settings select{
     width:150px;
 }
@@ -322,4 +336,23 @@ table tr.tmp-cell:first-of-type>td.tmp-cell{
 #form-builder>div:not(.builderactions):not(.container){
     width: 400px;
     margin-left: 10px;
+}
+
+.tooltip-inner {
+    max-width: 300px;
+}
+
+.modal-body  .bootstrap-select .dropdown-menu.open{
+    max-width: 300px;
+}
+
+.modal-body .bootstrap-select .dropdown-menu.open ul{
+    max-width: 300px;
+    overflow: hidden;
+}
+
+.modal-body .bootstrap-select .dropdown-menu.open ul li a{
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

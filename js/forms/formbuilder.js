@@ -22,8 +22,15 @@ window.formbuilder = (function() {
                 this.getReports();
                 this.applyColors();
             }
+            if(this._editable){
+                this.setTableRelations();
+            }else{
+                this.initSelect();
+            }
             this.initSortable();
             this.setHandlers();
+
+
         },
 
         getReports: function(){
@@ -66,6 +73,17 @@ window.formbuilder = (function() {
                 });
             });
         },
+        initSelect: function(){
+            $('select').selectpicker({
+                size:5,
+                width:false
+            });
+            $('select').on('loaded.bs.select', function (e) {
+                if($(e.currentTarget).find('option[value=""]').length > 1) {
+                    $(e.currentTarget).find('option[value=""]').remove();
+                }
+            });
+        },
         fillAssignFields: function(cell){
             var html = [],
                 ticketId = cell.attr('data-assign-to'),
@@ -86,12 +104,14 @@ window.formbuilder = (function() {
                 }
                 $('#assign-to').html(html.join(''));
                 $('#assign-as').val(cell.attr('data-assign-as'));
+                $('select').selectpicker('refresh');
             });
         },
         fillCellForm: function(cell){
             var type = cell.attr('data-type'),
                 $parent = $('#addField');
             $('#options-preview').html('');
+            $('.ticket-bind-type-config').show();
             switch (type) {
                 case 'label':
                 case 'text':
@@ -106,6 +126,7 @@ window.formbuilder = (function() {
                     var html = [],
                         ticketId = cell.attr('data-ticket-id');
                     $('.ticket-type-config').show();
+                    $('.ticket-bind-type-config').hide();
                     $('#field-type').html('');
                     getColumns().then(function(data){
                         for(i in data){
@@ -135,16 +156,17 @@ window.formbuilder = (function() {
                 $('#destination').val(cell.attr('data-destination'))
             }
 
-            //$('#option-title').val(cell.attr('data-title') || '');
+            $('#option-title').val(cell.attr('data-text') || '');
         },
         refreshFieldForm: function(cell){
             var type = cell && cell.attr('data-type') || $('#fieldType').val(),
-                $parent = $('#addField');
+                $parent = $('#addField'),
+                self = this;
             if(cell){
                 $('#fieldType').val(type);
             }
             $parent.find('.type-config').hide();
-            $('.ticket-type-hidden').show();
+            $('.ticket-bind-type-config').show();
             switch (type) {
                 case 'label':
                 case 'text':
@@ -157,7 +179,7 @@ window.formbuilder = (function() {
                     break;
                 case 'ticket':
                     $('.ticket-type-config').show();
-                    $('.ticket-type-hidden').hide();
+                    $('.ticket-bind-type-config').hide();
                     if(!$('#field-type').find('option').length){
                         var html = [];
                         $('.ticket-type-config').show();
@@ -174,7 +196,21 @@ window.formbuilder = (function() {
                                     '</option>');
                             }
                             $('#field-type').html(html.join(''));
+                            $('#bind-field-type').html(html.join(''));
+                            var parent = $('#field-type').parents('div.col-md-8'),
+                                select = $('#field-type').clone();
+                            parent.find('.bootstrap-select').replaceWith(select);
+                            $('#field-type').selectpicker({size:5});
+
+
+                            var parent = $('#bind-field-type').parents('div.col-md-8'),
+                                select = $('#bind-field-type').clone();
+                            parent.find('.bootstrap-select').replaceWith(select);
+                            $('#bind-field-type').selectpicker({size:5});
+
+
                         });
+
                     }
 
                     break;
@@ -185,6 +221,47 @@ window.formbuilder = (function() {
                     $('.signature-type-config').show();
                     break;
             }
+            if(!$('#bind-field-type').find('option').length) {
+                getColumns().then(function (data) {
+                    var html = [];
+                    for (i in data) {
+                        html.push(
+                            '<option value="',
+                            data[i].id,
+                            '" ',
+                            cell && cell.attr('data-value') == data[i].id ? 'selected="selected"' : '',
+                            '>',
+                            data[i].name,
+                            '</option>');
+                    }
+                    $('#bind-field-type').html(html.join(''));
+                    var parent = $('#bind-field-type').parents('div.col-md-8'),
+                        select = $('#bind-field-type').clone();
+
+                    if(cell && cell.attr('data-bind-value')){
+                        var dataarray=cell.attr('data-bind-value').split(",");
+                        select.val(dataarray);
+                    }else{
+                        select.val([]);
+                    }
+
+                    parent.find('.bootstrap-select').replaceWith(select);
+                    $('#bind-field-type').selectpicker({size: 5});
+                });
+            }else{
+                var select = $('#bind-field-type');
+                if(cell && cell.attr('data-bind-value')){
+                    var dataarray=cell.attr('data-bind-value').split(",");
+                    select.val(dataarray);
+                }else{
+                    select.val([]);
+                }
+                select.selectpicker('refresh');
+
+            }
+
+
+
             if(cell && cell.attr('data-color')){
                 $('#color').val(cell.attr('data-color')).css('background-color',cell.attr('data-color'));
             }else{
@@ -202,7 +279,7 @@ window.formbuilder = (function() {
             e.preventDefault();
             var type = $('#fieldType').val(),
                 $selectedCell = $('.selected-cell');
-            $selectedCell.removeAttr('data-type data-value data-color data-title name');
+            $selectedCell.removeAttr('data-type data-value data-color data-text name');
 
             switch (type) {
                 case 'timestamp':
@@ -266,14 +343,15 @@ window.formbuilder = (function() {
                     var value = $('#options-preview').val(),
                         select = $('#options-preview').clone(),
                         color = $('#options-preview').attr('data-color'),
-                        guid = window.formbuilder.guid();
-                        //title = $('#option-title').val();
+                        guid = window.formbuilder.guid(),
+                        title = $('#option-title').val();
                     select.removeAttr('id');
                     $selectedCell.attr('data-type','options');
                     $selectedCell.attr('data-value',value);
                     $selectedCell.attr('data-color',value);
                     $selectedCell.attr('data-name',guid);
-                    //$selectedCell.attr('data-title',title);
+                    $selectedCell.attr('data-text',title);
+                    select.attr('data-text',title);
                     select.attr('name',guid);
                     $selectedCell.html(select);
                     $('#options-preview').val('');
@@ -309,6 +387,18 @@ window.formbuilder = (function() {
 
             $('#addField').modal('hide');
             $('.selected-cell').removeClass('selected-cell');
+
+            if(type != 'options') {
+                var options = $('#bind-field-type').val();
+                if(!options){
+                    return;
+                }
+                var value = options.join(','),
+                    ticket = $('#bind-field-type').find('option:selected').text();
+                $selectedCell.attr('data-bind-value', value);
+                $('#bind-field-type').val('');
+            }
+            $('select').selectpicker('refresh');
         },
         guid: function () {
             function s4() {
@@ -388,6 +478,7 @@ window.formbuilder = (function() {
                 obj, trs,tds, input,
                 c, r,
                 destination,
+                bindValue,
                 color,
                 assignTo,
                 assignAs,
@@ -437,7 +528,8 @@ window.formbuilder = (function() {
                         color       = $(this).attr('data-color') || '';
                         assignTo    = $(this).attr('data-assign-to') || '';
                         assignAs    = $(this).attr('data-assign-as') || '';
-                        //title    = $(this).attr('data-title') || '';
+                        title       = $(this).attr('data-text') || '';
+                        bindValue   = $(this).attr('data-bind-value') || '';
                         if (destinations[destination] == undefined) destination = '';
                         input = {
                             type : $(this).attr('data-type'),
@@ -450,7 +542,8 @@ window.formbuilder = (function() {
                             color: color,
                             assignTo: assignTo,
                             assignAs: assignAs,
-                            //title: title,
+                            title: title,
+                            bindValue: bindValue,
                             required: !!$(this).attr('data-required')
                         };
                         if ($(this).attr('data-type') == 'options'){
@@ -471,7 +564,6 @@ window.formbuilder = (function() {
             var i, j,
                 html = [],
                 self = this,
-
                 container = this._formContainer;
             for(i=0;i<data.length;i++){
                 html.push(self.loadElement(data[i]));
@@ -616,8 +708,8 @@ window.formbuilder = (function() {
                 case 'options':
                     var options = [], i,
                         available = element.options && element.options.split(',') || [],
-                        colors = element.colors && element.colors.split(',') || [];
-                        //title = element.title;
+                        colors = element.colors && element.colors.split(',') || [],
+                        title = element.title;
                     for(i=0;i<available.length;i++){
                         options.push( '<option value="',
                             available[i],
@@ -632,7 +724,7 @@ window.formbuilder = (function() {
                             '</option>');
                     }
                     html.push(this.getFilledTd(element),
-                        '<select name="',element.name,'">',// data-title="',title,'">',
+                        '<select name="',element.name,'" data-text="',title,'">',
                        options.join(''),
                         '</select>',
                         '</td>'
@@ -678,8 +770,12 @@ window.formbuilder = (function() {
                 ' data-required="true" ' :
                     '',
                 title = element.title ?
-                    ' data-title="'+element.title+'" ' :
+                    ' data-text="'+element.title+'" ' :
+                    '',
+                bindValue = element.bindValue ?
+                    ' data-bind-value="'+element.bindValue+'" ':
                     '';
+
             html.push('<td class="editable-cell"',
                 style  ? ('style="'+style+'"') : '',
                 '  data-type="',
@@ -691,6 +787,7 @@ window.formbuilder = (function() {
                 assignTo,
                 assignAs,
                 required,
+                bindValue,
                 title,
                 '>');
             return html.join('');
@@ -737,9 +834,47 @@ window.formbuilder = (function() {
                 placeholder: "ui-state-highlight"
             });
             self._formContainer.disableSelection();
-
-
         },
+
+        setTableRelations: function(){
+            var selects = [];
+
+            $('table[data-related-option]').each(function(){
+                var relation = $(this).attr('data-related-option'),
+                    select = $('select[name="'+relation+'"]');
+                select = select.length ? select : $('select[data-text="'+relation+'"]');
+                if(select.length) {
+                    selects.push(select);
+                }
+                $(this).hide();
+            });
+            selects.forEach(function(el){
+                $(el).off().on('change',function(e){
+                    var relation = $(this).attr('data-text') || $(this).attr('name');
+                    $('table[data-related-option="'+relation+'"]').hide();
+                    var table = $('table[data-related-value="'+$(this).val()+'"]');
+                    table.show();
+                    table.addClass('showed-once');
+                });
+                $(el).trigger('change');
+            })
+
+            $('select').each(function(){
+                var parent = $(this).parents('td.editable-cell').first(),
+                    value = parent.attr('data-value');
+
+                if(!$(this).find('option[value=""]').length){
+                    $(this).prepend('<option value=""></option>');
+                    $(this).val(value || "");
+                    $(this).trigger('change');
+                }
+            });
+            setTimeout(function(){
+                $('select').trigger('change')
+            },500);
+        },
+
+
         t:false,
         initResize: function(){
             var self = this;
@@ -791,6 +926,7 @@ window.formbuilder = (function() {
                 $().colorPicker.destroy();
                 $('#color').val('').removeAttr('style').colorPicker();
                 $('#addField').modal('show');
+                self.initSelect();
                 self.fillCellForm($(this));
                 self.refreshFieldForm($(this));
                 self.fillAssignFields($(this));
@@ -798,6 +934,7 @@ window.formbuilder = (function() {
                 setTimeout(function(){
                     $('#placeholder-type').focus();
                     $('#options-preview').trigger('change');
+                    $('select').selectpicker('refresh');
                 },500);
             });
             this._formContainer.on('click','.remove-table',function(e){
@@ -811,7 +948,7 @@ window.formbuilder = (function() {
                     dataStyle = $(this).parents('.table-container').find('table').attr('data-style'),
                     table = $(this).parent().find('table').first(),
                     relatedOption = table.attr('data-related-option'),
-                    relatedOption = table.attr('data-related-option');
+                    relatedValue = table.attr('data-related-value');
 
                 $('.selected-table').removeClass('selected-table');
                 table.addClass('selected-table');
@@ -851,18 +988,26 @@ window.formbuilder = (function() {
                 var options = {},
                     selects = ['<option value=""></option>'];
                 $('table.editable-table:not(".selected-table") td.editable-cell').find('select').each(function(){
-                    var title = /*$(this).attr('data-title') ||*/ $(this).attr('name');
+
+                    var title = $(this).attr('data-text') || $(this).attr('name');
                     options[title] = $(this).find('option').clone();
                     selects.push('<option value="'+title+'">'+title+'</option>');
+
                 });
                 $('#related_option').html(selects.join(''));
                 $('#related_option').off().on('change',function(){
                     var val = $(this).val();
                     $('#related_value').html(options[val] || '');
+                    $('select').selectpicker('refresh');
                 });
+
                 $('#related_option').val(relatedOption);
                 $('#related_option').trigger('change');
+                $('#related_value').val(relatedValue);
 
+                setTimeout(function(){
+                    $('select').selectpicker('refresh');
+                },500);
                 $('#configTable').modal('show');
             });
             this._formContainer.on('click','.remove-column',function(e){
@@ -906,11 +1051,13 @@ window.formbuilder = (function() {
                 var value = $('#option-type-value').val();
                 $('#options-preview').append('<option value="'+value+'">'+value+'</option>');
                 $('#option-type-value').val('');
+                $('select').selectpicker('refresh');
             });
             $('#remove-option').on('click',function(){
                 var value = $('#options-preview').val();
                 $("#options-preview option[value='"+value+"']").remove();
                 $('#option-color').val('');
+                $('select').selectpicker('refresh');
             });
             $('#option-color').on('change', function(e){
                 $('#options-preview').find('option[value="'+$('#options-preview').val()+'"]').attr('data-color',$(this).val());
@@ -924,8 +1071,6 @@ window.formbuilder = (function() {
             $('#color').colorPicker();
 
             $('#confirm-insert-field').on('click',self.confirmAddField);
-
-            $('#form-insert-field').on('submit',self.confirmAddField)
 
             $('.confirm-insert-table').on('click',function(){
                 var cols = $('#cols-number').val(),
@@ -1056,6 +1201,7 @@ window.formbuilder = (function() {
 
 
             $('[data-toggle="tooltip"]').tooltip();
+            $('[title]').tooltip();
 
             $('#show-options-settings').on('click', function(){
                 var options = self.collectAvailableOptions(),
@@ -1108,6 +1254,8 @@ $(function () {
         $('#hide-form').hide();
         $('#forms-list').show();
         $('#form-builder').addClass('hidden');
+        $('#form-builder-container').html('');
+
     });
 
     $('.form-edit-link').click(function() {
@@ -1146,14 +1294,16 @@ $(function () {
             return false;
         }
 
-        var form = $(this).parents('form').serializeArray();
         var print = $(this).hasClass('btn-info');
 
         if (print && !confirm('Do you really want to convert this file to PDF? After this, form data can\'t  be edited!'))
             return false;
 
+        var form = $(this).parents('form');
+        form.find('table:not(:visible)').remove();
+        form = form.serializeArray();
+
         $('form').find('canvas').each(function(){
-            //dump($(this).next());
             form.push({
                 name:$(this).next('input').attr('name'),
                 value: $(this).get(0).toDataURL()

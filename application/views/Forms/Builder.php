@@ -87,7 +87,7 @@
 </div>
 
 <div class="modal fade"  id="configTable" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document" style="width:400px;">
+    <div class="modal-dialog" role="document" style="width:600px;">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -156,7 +156,6 @@
 
 <div class="modal fade"  id="addField" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document" style="width:600px;">
-        <form id="form-insert-field">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -215,7 +214,16 @@
                             <span class="form-label">Ticket field</span>
                         </div>
                         <div class="col-md-8">
-                            <select id="field-type">
+                            <select id="field-type" data-live-search="true">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row type-config ticket-bind-type-config">
+                        <div class="col-md-4">
+                            <span class="form-label">Bind fields</span>
+                        </div>
+                        <div class="col-md-8">
+                            <select id="bind-field-type" multiple data-live-search="true">
                             </select>
                         </div>
                     </div>
@@ -227,14 +235,14 @@
                             <canvas width="200" height="100" id="signature-canvas"></canvas>
                         </div>
                     </div>
-<!--                    <div class="row type-config options-type-config">-->
-<!--                        <div class="col-md-4">-->
-<!--                            <span class="form-label">Title</span>-->
-<!--                        </div>-->
-<!--                        <div class="col-md-8">-->
-<!--                            <input type="text" id="option-title">-->
-<!--                        </div>-->
-<!--                    </div>-->
+                    <div class="row type-config options-type-config">
+                        <div class="col-md-4">
+                            <span class="form-label">Title</span>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" id="option-title"><span style="margin: 0px 5px;" class="glyphicon glyphicon-info-sign" title="The title will be used to set table relations only. Otherwice automatic GUID will be used."></span>
+                        </div>
+                    </div>
 
                     <div class="row type-config options-type-config">
                         <div class="col-md-4">
@@ -251,7 +259,7 @@
                             <span class="form-label">Preview</span>
                         </div>
                         <div class="col-md-8">
-                            <select id="options-preview" style="width:150px;">
+                            <select id="options-preview" style="width:150px;" >
                             </select>
                             <select id="option-color" style="width:100px;">
                                 <option value="">Related color</option>
@@ -302,7 +310,6 @@
                 <button class="btn btn-success" id="confirm-insert-field">Save</button>
             </div>
         </div>
-        </form>
     </div>
 </div>
 <canvas id="blank-canvas"></canvas>

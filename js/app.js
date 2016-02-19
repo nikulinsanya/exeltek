@@ -69,6 +69,19 @@ $(function () {
         $('#upload>h2').text($('#upload>h2').text() + ' (' + $(this).parent().text().trim() + '):')
     });
 
+    $('.tools').click(function() {
+        var url = $(this).attr('href');
+        $('#preloaderModal').modal('show');
+        $.get(url, function() {
+            $('#preloaderModal').modal('hide');
+            alert('Done!');
+        }).fail(function() {
+            $('#preloaderModal').modal('hide');
+            alert('Some error occured!');
+        });
+        return false;
+    });
+
     $('.popover-block').each(function(i, e) {
         var content = $(e).html();
         var control = $('<button type="button" role="button" class="btn btn-info">View more</button>');
