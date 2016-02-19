@@ -21,6 +21,7 @@ window.formbuilder = (function() {
                 this.loadJson(json);
                 this.getReports();
                 this.applyColors();
+                this.checkUnbinded();
             }
             if(this._editable){
                 this.setTableRelations();
@@ -31,6 +32,16 @@ window.formbuilder = (function() {
             this.setHandlers();
 
 
+        },
+
+        checkUnbinded: function(){
+            if($('#form-type').val() == 3){
+                $('#new-cell-details').addClass('unattached-container');
+                $('#form-save').attr('is_unattached',true);
+            }else{
+                $('#new-cell-details').removeClass('unattached-container');
+                $('#form-save').removeAttr('is_unattached');
+            }
         },
 
         getReports: function(){
@@ -519,6 +530,7 @@ window.formbuilder = (function() {
                 $(this).find('tr').not('.tmp-cell').each(function(){
                     data = [];
                     var destinations = [];
+                    var isUnattached = $('#form-save').attr('is_unattached');
                     $('#destination>option').each(function(i, e) {
                         destinations[$(e).attr('value')] = 1;
                     });
@@ -529,7 +541,8 @@ window.formbuilder = (function() {
                         assignTo    = $(this).attr('data-assign-to') || '';
                         assignAs    = $(this).attr('data-assign-as') || '';
                         title       = $(this).attr('data-text') || '';
-                        bindValue   = $(this).attr('data-bind-value') || '';
+                        bindValue   = !isUnattached && $(this).attr('data-bind-value') || '';
+
                         if (destinations[destination] == undefined) destination = '';
                         input = {
                             type : $(this).attr('data-type'),
@@ -546,6 +559,7 @@ window.formbuilder = (function() {
                             bindValue: bindValue,
                             required: !!$(this).attr('data-required')
                         };
+
                         if ($(this).attr('data-type') == 'options'){
                             input.options = $(this).find('option').map(function(){return $(this).val()}).toArray().join(',');
                             input.colors = $(this).find('option').map(function(){return $(this).attr('data-color')}).toArray().join(',');
@@ -917,9 +931,10 @@ window.formbuilder = (function() {
             }
 
             var self = this;
-            $('.add-table').on('click',function(){
+            $('.add-table').off().on('click',function(){
                 $('#addTable').modal('show');
             });
+            this._formContainer.off('click','.editable-cell');
             this._formContainer.on('click','.editable-cell',function(e){
                 $('.selected-cell').removeClass('selected-cell');
                 $(this).addClass('selected-cell');
@@ -937,12 +952,14 @@ window.formbuilder = (function() {
                     $('select').selectpicker('refresh');
                 },500);
             });
+            this._formContainer.off('click','.remove-table');
             this._formContainer.on('click','.remove-table',function(e){
                 var self = this;
                 if(confirm('Do you want to remove table?')){
                     $(self).parent().remove();
                 }
             });
+            this._formContainer.off('click','.config-table');
             this._formContainer.on('click','.config-table',function(e){
                 var self  = this,
                     dataStyle = $(this).parents('.table-container').find('table').attr('data-style'),
@@ -1010,6 +1027,7 @@ window.formbuilder = (function() {
                 },500);
                 $('#configTable').modal('show');
             });
+            this._formContainer.off('click','.remove-column');
             this._formContainer.on('click','.remove-column',function(e){
                 var self = this,
                     index,
@@ -1032,7 +1050,7 @@ window.formbuilder = (function() {
 
                 }
             });
-
+            this._formContainer.off('click','.remove-row');
             this._formContainer.on('click','.remove-row',function(e){
                 var self = this;
                 if(confirm('Do you want to remove row?')){
@@ -1041,38 +1059,38 @@ window.formbuilder = (function() {
             });
 
 
-            $('.confirm-insert-field').on('click',function(){
+            $('.confirm-insert-field').off().on('click',function(){
                 $('#addField').modal('hide');
             });
-            $('#fieldType').on('change',function(){
+            $('#fieldType').off().on('change',function(){
                 self.refreshFieldForm();
             });
-            $('#add-option').on('click',function(){
+            $('#add-option').off().on('click',function(){
                 var value = $('#option-type-value').val();
                 $('#options-preview').append('<option value="'+value+'">'+value+'</option>');
                 $('#option-type-value').val('');
                 $('select').selectpicker('refresh');
             });
-            $('#remove-option').on('click',function(){
+            $('#remove-option').off().on('click',function(){
                 var value = $('#options-preview').val();
                 $("#options-preview option[value='"+value+"']").remove();
                 $('#option-color').val('');
                 $('select').selectpicker('refresh');
             });
-            $('#option-color').on('change', function(e){
+            $('#option-color').off().on('change', function(e){
                 $('#options-preview').find('option[value="'+$('#options-preview').val()+'"]').attr('data-color',$(this).val());
             });
 
-            $('#options-preview').on('change',function(){
+            $('#options-preview').off().on('change',function(){
                 var color = $(this).find('option[value="'+$(this).val()+'"]').attr('data-color');
                 $('#option-color').val(color);
             });
 
             $('#color').colorPicker();
 
-            $('#confirm-insert-field').on('click',self.confirmAddField);
+            $('#confirm-insert-field').off().on('click',self.confirmAddField);
 
-            $('.confirm-insert-table').on('click',function(){
+            $('.confirm-insert-table').off().on('click',function(){
                 var cols = $('#cols-number').val(),
                     rows = $('#rows-number').val(),
                     html = [],
@@ -1100,7 +1118,7 @@ window.formbuilder = (function() {
                 self.initSortable();
                 self.initResize();
             });
-            $('.confirm-table-settings').on('click',function(){
+            $('.confirm-table-settings').off().on('click',function(){
                 var table = $('.selected-table'),
                     borderVal = $('#table-border').val()|| '0',
                     borderColor = $('#table-color').val() || '#ccc',
@@ -1123,7 +1141,7 @@ window.formbuilder = (function() {
                 $('#configTable').modal('hide');
             });
 
-            $('.add-row').on('click',function(){
+            $('.add-row').off().on('click',function(){
                 var table = $('.selected-table'),
                     row = table.find('tr').last().clone();
                 row.find('td:not(".tmp-cell")').each(function(){
@@ -1151,7 +1169,7 @@ window.formbuilder = (function() {
                 self.initResize();
             });
 
-            $('.add-column').on('click',function(){
+            $('.add-column').off().on('click',function(){
                 var table   = $('.selected-table'),
                     firstTd = table.find('tr').first().find('td').last().clone();
 
@@ -1166,13 +1184,13 @@ window.formbuilder = (function() {
             });
 
 
-            $('#form-save').on('click', function(){
+            $('#form-save').off().on('click', function(){
                 if(confirm('Save form and close the editor?')){
                     self.sendForm();
                 }
             });
 
-            $('#form-report').on('change', function(){
+            $('#form-report').off().on('change', function(){
                 self.getReports();
             });
 
@@ -1181,10 +1199,10 @@ window.formbuilder = (function() {
                 $(this).remove();
             });
 
-            $('.close-options').on('click', function(){
+            $('.close-options').off().on('click', function(){
                 $('#options-settings').removeClass('visible');
             });
-            $('.apply-options').on('click', function(){
+            $('.apply-options').off().on('click', function(){
                 var selected = $('[name="option-item-list"]:checked'),
                     idx,
                     html;
@@ -1203,7 +1221,7 @@ window.formbuilder = (function() {
             $('[data-toggle="tooltip"]').tooltip();
             $('[title]').tooltip();
 
-            $('#show-options-settings').on('click', function(){
+            $('#show-options-settings').off().on('click', function(){
                 var options = self.collectAvailableOptions(),
                     i,
                     idx = 0,
@@ -1246,6 +1264,13 @@ $(function () {
             $('#fieldType').find('option[value="ticket"]').attr('disabled','disabled');
         }else{
             $('#fieldType').find('option[value="ticket"]').removeAttr('disabled');
+        }
+        if($(this).val() == 3){
+            $('#new-cell-details').addClass('unattached-container');
+            $('#form-save').attr('is_unattached',true);
+        }else{
+            $('#new-cell-details').removeClass('unattached-container');
+            $('#form-save').removeAttr('is_unattached');
         }
     });
 
