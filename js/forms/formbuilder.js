@@ -569,6 +569,13 @@ window.formbuilder = (function () {
                                 return $(this).attr('data-color')
                             }).toArray().join(',');
                         }
+
+                        for(var i in input){
+                            if (!input[i]){
+                                delete(input[i]);
+                            }
+                        }
+
                         data.push(input);
                     });
                     obj.data.push(data);
