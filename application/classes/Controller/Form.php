@@ -40,13 +40,19 @@ class Controller_Form extends Controller {
 
         if (!$form) throw new HTTP_Exception_404('Not found');
 
+        $hide = array();
+
         foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
-            foreach ($table['data'] as $row => $cells)
-                foreach ($cells as $cell => $input)
-                    if (Arr::get($input, 'name'))
-                        $form['data'][$key]['data'][$row][$cell]['value'] = Arr::get($form_data['data'], $input['name']);
+            if (Arr::get($table, 'data-related-option') && Arr::get($table, 'data-related-value') != Arr::get($form_data['data'], $table['data-related-option']))
+                $hide[] = $key;
+            else
+                foreach ($table['data'] as $row => $cells)
+                    foreach ($cells as $cell => $input)
+                        if (Arr::get($input, 'name'))
+                            $form['data'][$key]['data'][$row][$cell]['value'] = Arr::get($form_data['data'], $input['name']);
 
-
+        foreach ($hide as $key)
+            unset($form['data'][$key]);
 
         $view = View::factory('Forms/PDF')
             ->bind('name', $form['name'])
@@ -145,7 +151,6 @@ class Controller_Form extends Controller {
         if (isset($_GET['load']) || isset($_GET['print']) || $_POST) {
             header('Content-type: application/json');
 
-
             if (isset($form_data['job']))
                 $job = Database_Mongo::collection('jobs')->findOne(array('_id' => is_array($form_data['job']) ? array('$in' => $form_data['job']) : $form_data['job']));
 
@@ -155,42 +160,51 @@ class Controller_Form extends Controller {
                     $report = array();
                     $colors = array();
                     $update = array();
+                    $hide = array();
 
                     foreach ($form['data'] as $key => $table) if (is_array($table) && Arr::get($table, 'type') == 'table')
-                        foreach ($table['data'] as $row => $cells)
-                            foreach ($cells as $cell => $input) {
-                                switch (Arr::get($input, 'type')) {
-                                    case 'revision':
-                                        $form['data'][$key]['data'][$row][$cell]['placeholder'] = $input['placeholder'] = Arr::get($form_data, 'revision', 1);
-                                        break;
-                                    case 'timestamp':
-                                        $form['data'][$key]['data'][$row][$cell]['placeholder'] = $input['placeholder'] = Arr::get($form_data, 'last_update') ? date('d-m-Y H:i', $form_data['last_update']) : '';
-                                        break;
-                                }
-                                if (Arr::get($input, 'name'))
-                                    $form['data'][$key]['data'][$row][$cell]['value'] = $input['value'] = Arr::path($form_data, array('data', $input['name']), '');
-
-                                if (Arr::get($input, 'destination') && isset($columns[$input['destination']])) {
-                                    if (isset($input['colors'])) {
-                                        try {
-                                            $list = array_combine(explode(',', $input['options']), explode(',', $input['colors']));
-                                            $color = Arr::get($list, $input['value']);
-                                        } catch (Exception $e) {
-                                            $color = false;
-                                        }
-                                        if ($color)
-                                            $colors[$input['destination']] = $color;
+                        if (Arr::get($table, 'data-related-option') && Arr::get($table, 'data-related-value') != Arr::get($form_data['data'], $table['data-related-option']))
+                            $hide[] = $key;
+                        else
+                            foreach ($table['data'] as $row => $cells)
+                                foreach ($cells as $cell => $input) {
+                                    switch (Arr::get($input, 'type')) {
+                                        case 'revision':
+                                            $form['data'][$key]['data'][$row][$cell]['placeholder'] = $input['placeholder'] = Arr::get($form_data, 'revision', 1);
+                                            break;
+                                        case 'timestamp':
+                                            $form['data'][$key]['data'][$row][$cell]['placeholder'] = $input['placeholder'] = Arr::get($form_data, 'last_update') ? date('d-m-Y H:i', $form_data['last_update']) : '';
+                                            break;
                                     }
-                                    $report[$input['destination']] = Arr::get($input, in_array(Arr::get($input, 'type', ''), array('text', 'number', 'float', 'date', 'options')) ? 'value' : 'placeholder');
+                                    if (Arr::get($input, 'name'))
+                                        $form['data'][$key]['data'][$row][$cell]['value'] = $input['value'] = Arr::path($form_data, array('data', $input['name']), '');
+
+                                    if (Arr::get($input, 'destination') && isset($columns[$input['destination']])) {
+                                        if (isset($input['colors'])) {
+                                            try {
+                                                $list = array_combine(explode(',', $input['options']), explode(',', $input['colors']));
+                                                $color = Arr::get($list, $input['value']);
+                                            } catch (Exception $e) {
+                                                $color = false;
+                                            }
+                                            if ($color)
+                                                $colors[$input['destination']] = $color;
+                                        }
+                                        $report[$input['destination']] = Arr::get($input, in_array(Arr::get($input, 'type', ''), array('text', 'number', 'float', 'date', 'options')) ? 'value' : 'placeholder');
+                                    }
+
+                                    if (Arr::get($input, 'bindValue')) {
+                                        $bind = explode(',', $input['bindValue']);
+                                        foreach ($bind as $target)
+                                            $update[$target] = array(
+                                                'value' => Arr::get($input, in_array(Arr::get($input, 'type', ''), array('text', 'number', 'float', 'date', 'options')) ? 'value' : 'placeholder'),
+                                                'type' => 'replace', //Arr::get($input, 'assignAs', 'replace'),
+                                            );
+                                    }
                                 }
 
-                                if (Arr::get($input, 'assignTo')) {
-                                    $update[$input['assignTo']] = array(
-                                        'value' => Arr::get($input, in_array(Arr::get($input, 'type', ''), array('text', 'number', 'float', 'date', 'options')) ? 'value' : 'placeholder'),
-                                        'type' => Arr::get($input, 'assignAs', 'replace'),
-                                    );
-                                }
-                            }
+                    foreach ($hide as $key)
+                        unset($form['data'][$key]);
 
                     $view = View::factory('Forms/PDF')
                         ->bind('name', $form['name'])
@@ -275,25 +289,26 @@ class Controller_Form extends Controller {
                                     $new['$set']['status'] = Enums::STATUS_PENDING;
                                     $submissions[$job['_id']][$key] = $value;
                                 }
-                                if ($new) {
-                                    $new['$set']['last_update'] = $uploaded;
-                                    Database_Mongo::collection('jobs')->update(
-                                        array('_id' => $job['_id']),
-                                        $new
-                                    );
+                            }
+                            if ($new) {
+                                $new['$set']['last_update'] = $uploaded;
+                                Database_Mongo::collection('jobs')->update(
+                                    array('_id' => $job['_id']),
+                                    $new
+                                );
 
-                                    if ($archive) {
-                                        $archive['fields'] = array_keys($archive['data']);
-                                        $archive['job_key'] = $job['_id'];
-                                        $archive['user_id'] = User::current('id');
-                                        $archive['update_time'] = $uploaded;
-                                        $archive['update_type'] = 2;
-                                        $archive['filename'] = 'MANUAL';
-                                        Database_Mongo::collection('archive')->insert($archive);
-                                    }
+                                if ($archive) {
+                                    $archive['fields'] = array_keys($archive['data']);
+                                    $archive['job_key'] = $job['_id'];
+                                    $archive['user_id'] = User::current('id');
+                                    $archive['update_time'] = $uploaded;
+                                    $archive['update_type'] = 2;
+                                    $archive['filename'] = 'MANUAL';
+                                    Database_Mongo::collection('archive')->insert($archive);
                                 }
                             }
                         }
+
 
                         $filename = $name . ' (' . $company . ') -' . date('dmY-His') . '.pdf';
 

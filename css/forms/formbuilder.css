@@ -356,3 +356,7 @@ table tr.tmp-cell:first-of-type>td.tmp-cell{
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+#new-cell-details.unattached-container .ticket-bind-type-config{
+    display:none!important;
+}

@@ -126,4 +126,24 @@ class Controller_Json extends Controller {
 
         die(json_encode($list));
     }
+
+    public function action_enums() {
+        $list = DB::select()->from('enumerations')->execute()->as_array();
+        $result = DB::select()->from('enumeration_values')->execute()->as_array();
+        $values = array();
+        foreach ($result as $value)
+            $values[$value['enum_id']][] = $value['value'];
+
+        $result = array();
+        foreach ($list as $enum)
+            $result[] = array(
+                'id' => $enum['id'],
+                'name' => $enum['name'],
+                'multi' => $enum['allow_multi'],
+                'values' => Arr::get($values, $enum['id'], array()),
+            );
+
+        header('Content-type: application/json');
+        die(json_encode($result));
+    }
 }
