@@ -58,11 +58,11 @@ class Form extends Kohana_Form {
             '174,202' => 'Installation Type C: Breakout and Reinstatement - Pavers in sqm',
             '175,203' => 'Installation Type C: Breakout and Reinstatement - Pebblecrete in sqm',
             '176,204' => 'Aerial to Underground',
-            'z,177,205' => 'Installation Type C: Under Bore',
+            'z,177,205,268' => 'Installation Type C: Under Bore',
             '178,206' => 'Installation Type C: Rock Installation in Metres',
             '179,207' => 'Installation Type C: Core Bore',
             '180,208' => 'Installation Type C: Asbestos Pit P20 Install',
-            '181,209' => 'Non-Standard Variation in $AUD excl. GST',
+            257 => 'Non-Standard Variation in $AUD excl. GST',
             228 => 'Variation Sequence Number',
         ),
         'Yes - submit OTDR testing data only' => array(
@@ -74,6 +74,27 @@ class Form extends Kohana_Form {
             'ot2' => 'Optical Test Results on 1625 wavelength',
             246 => 'Status',
         ),
+    );
+
+    public static $required = array(
+        'No - job not yet finished / cannot be completed' => array(
+            246 => 'Status',
+        ),
+        'Yes - proceed to completed job submission form' => array(
+        ),
+        'Yes - submit OTDR testing data only' => array(
+            246 => 'Status',
+        ),
+    );
+
+    const FORM_TYPE_TICKET = 1;
+    //const FORM_TYPE_TICKET_GROUP = 2;
+    const FORM_TYPE_COMMON = 3;
+
+    public static $form_types = array(
+        self::FORM_TYPE_TICKET => 'Ticket form',
+        //self::FORM_TYPE_TICKET_GROUP => 'Group of tickets form',
+        self::FORM_TYPE_COMMON => 'Unattached form',
     );
     
     private $elements = array();
@@ -154,6 +175,7 @@ class Form extends Kohana_Form {
         $params = array('method' => $this->method);
         if ($this->has_files)
             $params['enctype'] = 'multipart/form-data';
+        $params['class'] = 'modal-form';
         
         $form = Form::open($this->action, $params);
 
@@ -232,9 +254,9 @@ class Form extends Kohana_Form {
             }
             $form .= '</div>';
         }
-        $form .= '<div class="form-group">' . Form::submit(NULL, 'Save', array('class' => 'btn btn-primary'));
+        $form .= '<div class="form-group buttons-group">' . Form::submit(NULL, 'Save', array('class' => 'btn btn-primary'));
         if ($this->back_button)
-            $form .= '&nbsp;' . Form::button(NULL, 'Back', array('class' => 'btn btn-danger back-button', 'type' => 'button'));
+            $form .= '&nbsp;' . Form::button(NULL, 'Back', array('class' => 'btn btn-danger back-button', 'type' => 'button', 'data-dismiss'=>"modal"));
         $form .= '</div>';
         
         $form .= Form::close();

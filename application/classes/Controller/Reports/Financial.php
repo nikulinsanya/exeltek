@@ -31,18 +31,90 @@ class Controller_Reports_Financial extends Controller {
             $query['financial_time']['$lt'] = strtotime($_GET['fin-end']) + 86399;
 
         if (Group::current('allow_assign'))
-            $companies = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
+            $companies = DB::select('id', 'name')->from('companies')->order_by('name', 'asc')->execute()->as_array('id', 'name');
 
-        if (!Group::current('allow_assign') || Arr::get($_GET, 'company'))
-            $query['user_id'] = array('$in' => DB::select('id')->from('users')->where('company_id', '=', Group::current('allow_assign') ? $_GET['company'] : User::current('company_id'))->execute()->as_array(NULL, 'id'));
+        if (!Group::current('allow_assign') || Arr::get($_GET, 'company')) {
+            if (Group::current('allow_assign')) {
+                $company = $_GET['company'];
+                if (!is_array($company))
+                    $company = explode(',', $company);
 
-        $result = Database_Mongo::collection('submissions')->find($query)->sort(array('job_key' => 1, 'update_time' => -1));
+                $company = array_map('intval', $company);
+            } else $company = array(User::current('company_id'));
+            $query['user_id'] = array('$in' => DB::select('id')->from('users')->where('company_id', 'IN', $company)->execute()->as_array(NULL, 'id'));
+        }
+
+        $jobs = array();
+
+        if (Arr::get($_GET, 'ticket')) {
+            $tickets = explode(',', $_GET['ticket']);
+            $q = array();
+            foreach ($tickets as $ticket) {
+                $ticket = preg_replace('/[^a-z0-9]/i', '', strval($ticket));
+                if (!$ticket) continue;
+                if (preg_match('/^T1W[0-9]{12}$/', $ticket))
+                    $q[] = $ticket;
+                else
+                    $q[] = new MongoRegex('/.*' . $ticket . '.*/i');
+            }
+            if (count($q) > 1)
+                $jobs['_id'] = array('$in' => $q);
+            elseif ($q)
+                $jobs['_id'] = $q[0];
+        }
+
+        if (Arr::get($_GET, 'fsa')) {
+            $values = is_array($_GET['fsa']) ? $_GET['fsa'] : explode(',', $_GET['fsa']);
+            $jobs['data.12'] = count($values) > 1 ? array('$in' => array_values($values)) : current($values);
+        }
+
+        if (Arr::get($_GET, 'fsam')) {
+            $values = is_array($_GET['fsam']) ? $_GET['fsam'] : explode(',', $_GET['fsam']);
+            $jobs['data.13'] = count($values) > 1 ? array('$in' => array_values($values)) : current($values);
+        }
+
+        if (Arr::get($_GET, 'fda')) {
+            $values = is_array($_GET['fda']) ? $_GET['fda'] : explode(',', $_GET['fda']);
+            $jobs['data.14'] = count($values) > 1 ? array('$in' => array_values($values)) : current($values);
+        }
+
+        if (Arr::get($_GET, 'address'))
+            $jobs['data.8'] = new MongoRegex('/.*' . strval($_GET['address']) . '.*/mi');
+
+        if ($jobs)
+            if (count($jobs) == 1 && isset($jobs['_id']))
+                $query['job_key'] = $jobs['_id'];
+            else
+                $query['job_key'] = array('$in' => Database_Mongo::collection('jobs')->distinct('_id', $jobs));
+
+        $sort = array('job_key' => 1);
+
+        if (!Arr::get($_GET, 'sort'))
+            $_GET['sort'] = array('-submission');
+
+        foreach ($_GET['sort'] as $s) {
+            $dir = substr($s, 0, 1) == '-' ? -1 : 1;
+            $s = substr($s, 1);
+            switch ($s) {
+                case 'submission':
+                    $sort['update_time'] = $dir;
+                    break;
+                case 'approval':
+                    $sort['process_time'] = $dir;
+                    break;
+                case 'financial':
+                    $sort['financial_time'] = $dir;
+                    break;
+            }
+        }
+
+        $result = Database_Mongo::collection('submissions')->find($query)->sort($sort);
 
         $submissions = array();
         $users = array();
 
         $jobs = array();
-        $keys = array();
+        $keys = array('region' => 1, 'data.8' => 1, 'data.9' => 1, 'data.14' => 1);
 
         foreach ($result as $submission) {
             $jobs[$submission['job_key']] = 1;
@@ -61,12 +133,12 @@ class Controller_Reports_Financial extends Controller {
 
         $rates = array();
 
-        $result = DB::select('company_id', 'column_id', 'rate')->from('rates')->execute();
+        $result = DB::select()->from('rates')->execute();
 
         foreach ($result as $row)
-            $rates[$row['company_id']][$row['column_id']] = $row['rate'];
+            $rates[$row['company_id']][$row['region_id']][$row['column_id']] = $row['rate'];
 
-        $columns = DB::select('id', 'financial')->from('job_columns')->where('financial', '>', 0)->execute()->as_array('id', 'financial');
+        $columns = Columns::get_financial();
 
         $approved = array();
         $duplicates = array();
@@ -74,9 +146,10 @@ class Controller_Reports_Financial extends Controller {
         $partial = array();
         $full = array();
         $skip = array();
-        if (Group::current('allow_assign') && isset($_GET['approve']) && Arr::get($_GET, 'company')) {
-            $rates = Arr::get($rates, $_GET['company'], array());
+        if (Group::current('allow_assign') && isset($_GET['approve']) && Arr::get($_GET, 'company') && count($_GET['company']) == 1) {
+            $rates = Arr::get($rates, $_GET['company'][0], array());
             foreach ($submissions as $job => $list) {
+                $region = $jobs[$job]['region'];
                 $data = array();
                 $partial_fl = false;
                 $full_fl = true;
@@ -87,21 +160,23 @@ class Controller_Reports_Financial extends Controller {
                     $data[$submission['key']][] = $submission;
 
                 foreach ($data as $key => $values) {
+                    $key = substr($key, 5);
+                    $rate = isset($rates[$region][$key]) ? $rates[$region][$key] : (isset($rates[0][$key]) ? $rates[0][$key] : 0);
                     $value = array_shift($values);
                     if (count($values)) {
                         $dup_fl = true;
                         $full_fl = false;
-                    } elseif ($value['value'] != Arr::path($jobs, $job . '.' . $key)) {
+                    } elseif ($value['value'] != Arr::path($jobs, $job . '.data.' . $key)) {
                         $discr_fl = true;
                         $full_fl = false;
-                    } elseif (!Arr::get($rates, substr($key, 5))) {
+                    } elseif (!$rate) {
                         $skip_fl = true;
                         $full_fl = false;
                     } elseif (!$value['financial_time']) {
                         $approved[] = array(
                             'id' => $value['_id'],
-                            'rate' => $rates[substr($key, 5)],
-                            'paid' => min(floatval($value['value']), Arr::get($columns, substr($key, 5))),
+                            'rate' => $rate,
+                            'paid' => min(floatval($value['value']), Arr::get($columns, $key)),
                         );
                         $partial_fl = true;
                     }
@@ -127,13 +202,20 @@ class Controller_Reports_Financial extends Controller {
                     'financial_time' => $time,
                 )));
             }
-            Messages::save(sprintf('%d/%d tickets were successfully approved.', count($full), count($jobs)), 'success');
+
+            $count = count($jobs);
+            $jobs = Database_Mongo::collection('jobs')->find(array('_id' => array('$in' => array_keys($jobs))));
+            foreach ($jobs as $job)
+                Utils::calculate_financial($job);
+
+            Messages::save(sprintf('%d/%d tickets were successfully approved.', count($full), $count), 'success');
             if ($partial) Messages::save(sprintf('%d tickets were partially approved.', count($partial)), 'warning');
             if ($discr) Messages::save(sprintf('%d tickets contain discrepancies.', count($discr)), 'danger');
             if ($duplicates) Messages::save(sprintf('%d tickets contain duplicates.', count($duplicates)), 'danger');
             if ($skip) Messages::save(sprintf('%d tickets contain submissions with unknown rates.', count($skip)), 'danger');
             $this->redirect($this->request->uri() . URL::query(array('approve' => NULL)));
         } elseif (isset($_GET['export'])) {
+            $discr = isset($_GET['discrepancy']);
             header('Content-type: text/csv');
             header('Content-disposition: filename="Submissions.' . date('Ymd', $start) . '-' . date('Ymd', $end) . '.' . date('YmdHi', time()) . '.csv"');
             $file = tmpfile();
@@ -151,7 +233,7 @@ class Controller_Reports_Financial extends Controller {
 
             fputcsv($file, $headers);
             foreach ($submissions as $job => $list)
-                foreach ($list as $submission) {
+                foreach ($list as $submission) if (!$discr || Arr::path($jobs, $job . '.' . $submission['key']) != $submission['value']) {
                     $keys[$submission['key']] = 1;
                     $key = substr($submission['key'], 5);
                     $data = array(
@@ -200,7 +282,7 @@ class Controller_Reports_Financial extends Controller {
                 'X' => '207',
                 'Y' => '208',
                 'Z' => '43',
-                'AA' => '209',
+                'AA' => '257',
             );
 
             $i = 10;
@@ -313,7 +395,7 @@ class Controller_Reports_Financial extends Controller {
         }
 
         $view = View::factory("Reports/Financial")
-            ->set('approve_all', ($start > 0) && (date('m', $start) == date('m', $end)) && Arr::get($_GET, 'company') && !Arr::get($_GET, 'fin-start'))
+            ->set('approve_all', ($start > 0) && (date('m', $start) == date('m', $end)) && Arr::get($_GET, 'company') && count($_GET['company']) == 1 && !Arr::get($_GET, 'fin-start'))
             ->bind('companies', $companies)
             ->bind('submissions', $submissions)
             ->bind('discrepancies', $discrepancies)
@@ -332,6 +414,10 @@ class Controller_Reports_Financial extends Controller {
         $result = Database_Mongo::collection('submissions')->findOne(array('_id' => $id));
         
         if (!$result) throw new HTTP_Exception_404('Not found');
+
+        $job = Database_Mongo::collection('jobs')->findOne(array('_id' => $result['job_key']));
+        if (!$job) throw new HTTP_Exception_404('Not found');
+        $region = $job['region'];
         
         $key = substr($result['key'], 5);
         $max = DB::select('financial')->from('job_columns')->where('id', '=', $key)->execute()->get('financial');
@@ -339,7 +425,9 @@ class Controller_Reports_Financial extends Controller {
         if ($value > $max) $value = $max;
         
         $company = User::get($result['user_id'], 'company_id');
-        $rate = DB::select('rate')->from('rates')->where('company_id', '=', $company)->and_where('column_id', '=', $key)->execute()->get('rate');
+        $rates = DB::select('region_id', 'rate')->from('rates')->where('company_id', '=', $company)->and_where('column_id', '=', $key)->execute()->as_array('region_id', 'rate');
+
+        $rate = Arr::get($rates, $region, Arr::get($rates, 0, 0));
         
         if (!$rate) throw new HTTP_Exception_403('Forbidden');
         
@@ -353,6 +441,36 @@ class Controller_Reports_Financial extends Controller {
         
         Database_Mongo::collection('submissions')->update(array('_id' => $id), $update);
 
+        Utils::calculate_financial($job);
+
         die(json_encode(array('success' => true, 'rate' => $rate, 'value' => $value, 'time' => date('d-m-Y H:i', $time))));
+    }
+
+    public function action_unapprove() {
+        if (!Group::current('allow_assign')) throw new HTTP_Exception_403('Forbidden');
+
+        $id = new MongoId(strval(Arr::get($_GET, 'id')));
+        $result = Database_Mongo::collection('submissions')->findOne(array('_id' => $id));
+
+        if (!$result) throw new HTTP_Exception_404('Not found');
+
+        if (!Arr::get($result, 'financial_time')) throw new HTTP_Exception_404('Not found');
+
+        $job = Database_Mongo::collection('jobs')->findOne(array('_id' => $result['job_key']));
+        if (!$job) throw new HTTP_Exception_404('Not found');
+
+        $update = array(
+            '$set' => array('financial_time' => 0),
+            '$unset' => array(
+                'paid' => 1,
+                'rate' => 1,
+            ),
+        );
+
+        Database_Mongo::collection('submissions')->update(array('_id' => $id), $update);
+
+        Utils::calculate_financial($job);
+
+        die(json_encode(array('success' => true)));
     }
 }

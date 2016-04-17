@@ -15,7 +15,15 @@ class Controller_Imex_Discrepancies extends Controller {
         $filters = array();
 
         if (Arr::get($_GET, 'ticket')) {
-            $filters['job_key'] = $_GET['ticket'];
+
+            $tickets = array();
+            foreach (explode(',', $_GET['ticket']) as $ticket)
+                if (preg_match('/^T1W[0-9]{12}$/', $ticket))
+                    $tickets[] = $ticket;
+                else
+                    $tickets[] = new MongoRegex('/.*' . $ticket . '.*/i');
+
+            $filters['job_key']['$in'] = $tickets;
         }
         if (Arr::get($_GET, 'file')) {
             $filters['filename'] = $_GET['file'];
@@ -29,7 +37,7 @@ class Controller_Imex_Discrepancies extends Controller {
             $filters['update_time']['$lt'] = $end;
         }
         
-        $result = $archive->find($filters)->sort(array('job_key' => 1, 'update_time' => -1));
+        $result = $archive->find($filters)->sort(array('update_time' => -1, 'job_key' => 1));
         
         if (!$all) {
             Pager::$count = $result->count();
@@ -54,9 +62,13 @@ class Controller_Imex_Discrepancies extends Controller {
         foreach ($list as $row) {
             $row['data'] = array_intersect_key($row['data'], Columns::get_visible());
             $row['current'] = array();
+            $row['discr'] = 1;
 
             foreach ($row['data'] as $key => $value) {
                 $row['current'][$key] = Arr::path($jobs, array($row['job_key'], $key));
+                if ($row['current'][$key] != $value['old_value']) {
+                    $row['discr'] = 0;
+                }
             }
 
             foreach (Columns::get_static() as $static => $show)
@@ -77,6 +89,8 @@ class Controller_Imex_Discrepancies extends Controller {
         $reports = array();
         foreach (Columns::get_static() as $column => $value)
             $reports[$column] = Columns::get_name($column);
+
+
         //print_r(array_shift($result));
         
         $view->bind('tickets', $result)
@@ -115,7 +129,7 @@ class Controller_Imex_Discrepancies extends Controller {
 
         fputcsv($file, $data);
         
-        foreach ($result as $ticket) {
+        foreach ($result as $ticket) if (!$ticket['discr'] || !isset($_GET['discrepancy'])) {
             $ticket['update_time'] = date('d-m-Y H:i', $ticket['update_time']);
 
             $data = array(
@@ -126,7 +140,7 @@ class Controller_Imex_Discrepancies extends Controller {
             foreach ($reports as $id => $name) $data[] = Arr::path($ticket, 'static.' . $id);
 
             $base = $data;
-            foreach ($ticket['data'] as $key => $value) {
+            foreach ($ticket['data'] as $key => $value) if (!isset($_GET['discrepancy']) || $ticket['current'][$key] != $value['old_value']){
                 $data = $base;
                 $date = Columns::get_type($key) == 'date';
                 $data[] = Columns::get_name($key);

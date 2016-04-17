@@ -37,19 +37,15 @@
                     <span class="filter-item">
                         Assigned:
                         <label class="filter_value">
-                            <?=Arr::get($companies, $_GET['company'])?>
+                            <?php $comps = explode(',',$_GET['company']);$compa = array();?>
+                            <?php foreach ($comps as $id => $c):?>
+                                <?php $compa[]= Arr::get($companies, $c)?>
+                            <?php endforeach; ?>
+                            <?=implode(', ',$compa)?>
+                            <?=Arr::get($_GET, 'ex') ? ' (Include previously assigned)' : ''?>
                         </label>
                     </span>
-                <?php endif; ?>
-                <?php if(Arr::get($_GET, 'ex')):
-                    $hasFilters = true;
-                ?>
-                    <span class="filter-item">
-                        Previous:
-                        <label class="filter_value">
-                            <?=Arr::get($companies, $_GET['ex'])?>
-                        </label>
-                    </span>
+                    <br/>
                 <?php endif; ?>
                 <?php $cols = Arr::get($_GET, 'columns', array()); foreach ($cols as $id => $column):?>
                     <span class="filter-item">
@@ -117,7 +113,7 @@
     <div class="modal fade" id="filterModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <form class="filters-form" action="" method="get">
+                <form class="filters-form" action="" method="post">
 
                     <!--template filter row-->
                     <!--@todo - move to js templates -->
@@ -150,7 +146,7 @@
                     </div>
                     <div class="modal-body" id="filter-form">
                         <div class="col-xs-4 col-sm-4 col-md-2">
-                            <input type="text" class="form-control" id="ticket-id" placeholder="Ticket ID" name="ticket" value="<?=Arr::get($_GET, 'ticket')?>" />
+                            <input type="text" class="form-control multiline" data-separator="," placeholder="Ticket ID" name="ticket" value="<?=Arr::get($_GET, 'ticket')?>" />
                         </div>
                         <div class="col-xs-4 col-sm-4 col-md-2">
                             <?=Form::select('region', array('' => 'All regions') + $regions, Arr::get($_GET, 'region'), array('class' => 'form-control'))?>
@@ -169,15 +165,13 @@
                                 </label>
                             </div>
                             <div class="col-xs-4 col-sm-4 col-md-2">
-                                <?=Form::select('company', array('' => 'Any company') + $companies, Arr::get($_GET, 'company'), array('class' => 'form-control'))?>
+                                <?=Form::select('company', $companies, (isset($_GET['company']) ? explode(',',$_GET['company']) : []), array('class' => 'multiselect form-control width-140', 'multiple'=>'multiple'))?>
                             </div>
-                            <div class="col-xs-2 col-sm-2 col-md-1">
+                            <div class="col-xs-6 col-sm-6 col-md-3">
                                 <label class="control-label">
-                                    Previous:
+                                    <input type="checkbox" <?=Arr::get($_GET, 'ex') ? 'checked' : ''?> name="ex" value="1" />
+                                    Include previously assigned
                                 </label>
-                            </div>
-                            <div class="col-xs-4 col-sm-4 col-md-2">
-                                <?=Form::select('ex', array('' => 'Any company') + $companies, Arr::get($_GET, 'ex'), array('class' => 'form-control'))?>
                             </div>
                         <?php endif;?>
                         <div class="clearfix">&nbsp;</div>
@@ -262,7 +256,7 @@
     <li role="presentation" <?=$_GET['status'] === $key ? 'class="active"' : ''?>><a href="javascript:;" data-id="<?=$key?>"><?=$status?></a></li>
     <?php endforeach;?>
 </ul>
-<form action="<?=URL::base()?>search/assign" method="post">
+<form action="<?=URL::base()?>search/assign" method="post" id="search-form">
 <?php $columns = array_flip(explode(',', Group::current('columns')));?>
 <table class="table small" id="search-table">
     <tr class="text-center table-header">
@@ -308,13 +302,17 @@
         <?php if (isset($columns['status']) && Group::current('show_all_jobs') && $_GET['status'] == -1):?>
         <th class="hidden-sm hidden-xs">Job status</th>
         <?php endif;?>
-        
+
         <?php if (isset($columns['types'])):?>
         <th class="hidden-xs">Assigned works</th>
         <?php endif;?>
 
         <?php if (isset($columns['companies'])):?>
-        <th class="hidden-sm hidden-xs">Assigned companies</th>
+            <th class="hidden-sm hidden-xs">Assigned companies</th>
+        <?php endif;?>
+
+        <?php if (isset($columns['ex'])):?>
+            <th class="hidden-sm hidden-xs">Previously assigned companies</th>
         <?php endif;?>
 
         <?php if (isset($columns['settings'])):?>
@@ -324,20 +322,40 @@
         <?php if (isset($columns['pending'])):?>
         <th class="hidden-sm hidden-xs">Pending submissions</th>
         <?php endif;?>
-        
+
         <?php if (isset($columns['attachments'])):?>
         <th class="hidden-xs">Attachments</th>
         <?php endif;?>
 
         <?php foreach (Columns::get_search() as $id => $type):?>
-        <th class="dropdown sortable" data-id="data-<?=$id?>">
+        <th class="dropdown sortable" data-id="data-<?=$id?>" data-editable-cell>
             <a href="#" class="dropdown-toggle" data-toggle="collapse" data-target="#filter-<?=$id?>">
                 <?=Columns::get_name($id)?>
             </a>
-                <ul class="collapse dropdown-menu"  id="filter-<?=$id?>" data-id="<?=$id?>">
+            <?php if(Columns::get_type($id) == 'date'):?>
+            <ul class="collapse dropdown-menu" id="filter-<?=$id?>" data-id="<?=$id?>">
+                <?php
+                    if (isset($query['data.' . $id]) && !is_array($query['data.' . $id])) {
+                        $start = $end = $query['data.' . $id];
+                    } else {
+                        $start = isset($query['data.' . $id]['$gte']) ? $query['data.' . $id]['$gte'] : 0;
+                        $end = isset($query['data.' . $id]['$lte']) ? $query['data.' . $id]['$lte'] : 0;
+                    }
+                ?>
+                <li class="dropdown-header">Add filter:</li>
+                <li><?=Form::input(NULL, $start ? date('d-m-Y', $start) : '', array('class' => 'start-date form-control datepicker', 'placeholder' => 'Start date'))?></li>
+                <li><?=Form::input(NULL, $end ? date('d-m-Y', $end) : '', array('class' => 'end-date form-control datepicker', 'placeholder' => 'End date'))?></li>
+                <li class="dropdown-header buttons-row">
+                    <button class="btn btn-success date-table-filter" type="button">Apply</button>
+                    <button class="btn btn-warning date-clear" type="button">Clear</button>
+                    <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-<?=$id?>">Cancel</button>
+                </li>
+            </ul>
+            <?php else:?>
+                <ul class="collapse dropdown-menu dropdown-menu-right"  id="filter-<?=$id?>" data-id="<?=$id?>">
                     <li class="dropdown-header">Add filter:</li>
                     <li><?=Form::select(NULL, $actions, false, array('class' => 'selectize'))?></li>
-                    <li><?=Form::input(NULL, NULL, array('class' => 'form-control' . (Columns::get_type($id) == 'date' ? ' datepicker' : ''), 'placeholder' => 'Filtering value'))?></li>
+                    <li><?=Form::input(NULL, NULL, array('class' => 'form-control multiline' . (Columns::get_type($id) == 'date' ? ' datepicker' : ''), 'data-separator' => '|', 'placeholder' => 'Filtering value'))?></li>
                     <li class="dropdown-header buttons-row">
                         <button class="btn btn-success table-filter" type="button">Apply</button>
                         <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-<?=$id?>">Cancel</button>
@@ -351,7 +369,8 @@
                         </ul>
                     </li>
                     <?php endif;?>
-                </ul>                                     
+                </ul>
+            <?php endif;?>
         </th>
         <?php endforeach;?>
 
@@ -381,7 +400,7 @@
         }
     ?>
     <tr class="text-center <?=$status?>">
-        <td class="checkbox-container"><input type="checkbox" class="checkbox" name="job[<?=$ticket['_id']?>]" /></td>
+        <td class="checkbox-container"><input type="checkbox" class="checkbox" data-id=<?=$ticket['_id']?> name="job[<?=$ticket['_id']?>]" /></td>
 
         <td><?=HTML::chars($ticket['_id'])?></td>
 
@@ -396,7 +415,7 @@
         <?php if (isset($columns['status']) && Group::current('show_all_jobs') && $_GET['status'] == -1):?>
         <td class="hidden-sm hidden-xs"><?=Arr::get(Enums::$statuses, Arr::get($ticket, 'status', 0), 'Unknown')?></td>
         <?php endif;?>
-        
+
         <?php if (isset($columns['types'])):?>
         <?php if (Group::current('allow_assign')):?>
         <td class="hidden-xs"><?=HTML::chars(implode(', ', array_intersect_key($types, Arr::get($ticket, 'assigned', array()))))?></td>
@@ -406,7 +425,11 @@
         <?php endif;?>
 
         <?php if (isset($columns['companies'])):?>
-        <td class="hidden-sm hidden-xs"><?=HTML::chars(implode(', ', array_intersect_key($companies, array_flip(Arr::get($ticket, 'assigned', array())))))?></td>
+            <td class="hidden-sm hidden-xs"><?=HTML::chars(implode(', ', array_intersect_key($companies, array_flip(Arr::get($ticket, 'assigned', array())))))?></td>
+        <?php endif;?>
+
+        <?php if (isset($columns['ex'])):?>
+            <td class="hidden-sm hidden-xs"><?=HTML::chars(implode(', ', array_intersect_key($companies, array_flip(Arr::get($ticket, 'ex', array())))))?></td>
         <?php endif;?>
 
         <?php if (isset($columns['settings'])):?>
@@ -420,14 +443,27 @@
         <?php if (isset($columns['pending'])):?>
         <td class="hidden-sm hidden-xs"><?=Arr::get($submissions, $ticket['_id'])?></td>
         <?php endif;?>
-        
+
         <?php if (isset($columns['attachments'])):?>
-        <td class="hidden-xs"><?=Arr::get($attachments, $ticket['_id'])?></td>
+        <td class="hidden-xs">
+            <strong><?=Arr::get($attachments, $ticket['_id'])?></strong>
+            <?php if (Group::current('allow_assign') && isset($ticket['download-by'])):?>
+                <small><br/>Last&nbsp;download:<br/>
+                <?=User::get($ticket['download-by'], 'login')?><br/>
+                <?=Arr::get($companies, User::get($ticket['download-by'], 'company_id'))?>
+                <?php if (isset($ticket['download-at'])):?>
+                    <br/><?=date('d-m-Y H:i', $ticket['download-at'])?>
+                <?php endif;?>
+                </small>
+            <?php endif;?>
+        </td>
         <?php endif;?>
 
         <?php foreach (Columns::get_search() as $id => $name): $value = Columns::output(Arr::path($ticket, 'data.'.$id), Columns::get_type($id));?>
-        <td <?=strlen($value) > 100 ? 'class="shorten"' : ''?>><?=$value?></td>
+        <td <?=strlen($value) > 100 ? 'class="shorten data-editable-cell"' : 'data-editable-cell'?>><?=$value?></td>
         <?php endforeach;?>
+
+
 
         <td  class="table-buttons">
             <?php if (Group::current('allow_forms') && !Arr::get($ticket, 'locked') && in_array(User::current('company_id'), Arr::get($ticket, 'assigned', array(), true))):?>
@@ -441,6 +477,16 @@
             <?php if (Group::current('allow_submissions')):?>
             <a href="<?=URL::base()?>submissions?ticket=<?=$ticket['_id']?>" class="btn btn-danger col-xs-12" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-check"></span> Submissions</a>
             <?php endif;?>
+            <?php if (Group::current('allow_custom_forms') && Arr::get($forms, Form::FORM_TYPE_TICKET)):?>
+                <div class="btn-group dropup">
+                    <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Forms <span class="caret"></span></button>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                        <?php foreach ($forms[Form::FORM_TYPE_TICKET] as $key => $name):?>
+                            <li><a href="<?=URL::base()?>form/fill?form=<?=$key . '/' . $ticket['_id']?>"><?=$name?></a></li>
+                        <?php endforeach;?>
+                    </ul>
+                </div>
+            <?php endif;?>
         </td>
     </tr>
     <?php endforeach;?>
@@ -450,31 +496,49 @@
         <div class="text-center text-danger">
         <h3>No jobs found!</h3>
         </div>
-    <?php endif;?>    
+    <?php endif;?>
 <div class="col-xs-12 text-center">
 <?=$pager;?>
 </div>
+<div class="col-xs-12 text-center">
 <?php if (Group::current('allow_assign')):?>
-<div class="col-sm-6 col-xs-12">
-    <?=Form::select('type', array('' => 'Please, select works type...') + $types, false, array('class' => 'form-control'))?>
-</div>
-<div class="hidden visible-xs clearfix">&nbsp;</div>
-<div class="col-sm-6 col-xs-12">
-    <?=Form::select('company', array('' => 'Please, select company...', -1 => 'Unassign jobs') + $companies, false, array('class' => 'form-control'))?>
-</div>
-<div class="clearfix">&nbsp;</div>
+    <div class="search-select-container">
+        <?=Form::select('type', array('' => 'Please, select works type...') + $types, false, array('class' => 'form-control'))?>
+    </div>
+    <div class="search-select-container">
+        <?=Form::select('company', array('' => 'Please, select company...', -1 => 'Unassign jobs') + $companies, false, array('class' => 'form-control'))?>
+    </div>
 <?php endif;?>
-<div class="col-xs-12">
+</div>
+<div class="col-xs-12 search-buttons-bottom">
     <?php if (Group::current('allow_assign')):?>
-    <button type="submit" class="btn btn-warning assign-jobs">Assign jobs</button>
-    <button type="submit" class="btn btn-danger archive-jobs">Archive jobs</button>
-    <button type="submit" class="btn btn-success complete-jobs">Complete jobs</button>
-    <button type="submit" class="btn btn-primary reset-jobs">Reset jobs</button>
+    <button type="submit" class="btn btn-warning assign-jobs"><span class="glyphicon glyphicon-pushpin"></span> Assign jobs</button>
+    <button type="submit" class="btn btn-danger archive-jobs"><span class="glyphicon glyphicon-floppy-save"></span> Archive jobs</button>
+    <button type="submit" class="btn btn-success complete-jobs"><span class="glyphicon glyphicon-piggy-bank"></span> Complete jobs</button>
+    <button type="submit" class="btn btn-primary reset-jobs"><span class="glyphicon glyphicon-remove-circle"></span> Reset jobs</button>
+    <button type="button" class="btn btn-success batch-jobs"><span class="glyphicon glyphicon-edit"></span>Batch Edit</button>
     <?php endif;?>
-    <?php if (Group::current('allow_reports')):?>
-    <button type="submit" class="btn btn-info export-jobs"><span class="glyphicon glyphicon-export"></span>Export jobs</button>
+
+    <div class="btn-group">
+        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="glyphicon glyphicon-export"></span> Export options <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu export-options">
+            <?php if (Group::current('allow_assign')):?>
+                <li><button type="button" class="export-attachments"><span class="glyphicon glyphicon-paperclip"></span> Export Attachments</button></li>
+            <?php endif;?>
+            <?php if (Group::current('allow_reports')):?>
+                <li><button type="submit" class="export-jobs"><span class="glyphicon glyphicon-list-alt"></span>Export jobs</button></li>
+            <?php endif;?>
+            <li><button type="submit" class="export-result"><span class="glyphicon glyphicon-search"></span>Export search result</button></li>
+            <li><button type="submit" class="export-excel"><span class="glyphicon glyphicon-file"></span>Export to Excel</button></li>
+            <li><button type="submit" class="export-map" id="export-map"><span class="glyphicon glyphicon-globe"></span>Export map</button></li>
+        </ul>
+    </div>
+    <?php if (Group::current('allow_finance') && Group::current('show_all_jobs')):?>
+                <button type="submit" class="btn btn-success" id="payment-jobs"><span class="glyphicon glyphicon-usd"></span>Add payment</button
     <?php endif;?>
-    <button type="submit" class="btn btn-info export-result"><span class="glyphicon glyphicon-export"></span>Export search result</button>
+
 </div>
 <div class="clearfix">&nbsp;</div>
 
@@ -492,14 +556,15 @@
                 <table class="table small">
                     <tr class="text-center tr-header">
                         <th>Ticket ID</th>
-                        <?php if (isset($columns['last_update'])):?><th>Last update</th><?php endif;?>
-                        <?php if (isset($columns['last_submit'])):?><th> Last submit</th><?php endif;?>
-                        <?php if (isset($columns['status']) && Group::current('show_all_jobs') && $_GET['status'] == -1):?><th>Job status</th><?php endif;?>
-                        <?php if (isset($columns['types'])):?><th>Assigned works</th><?php endif;?>
-                        <?php if (isset($columns['companies'])):?><th>Assigned companies</th><?php endif;?>
-                        <?php if (isset($columns['settings'])):?><th>Settings</th><?php endif;?>
-                        <?php if (isset($columns['pending'])):?><th>Pending submissions</th><?php endif;?>
-                        <?php if (isset($columns['attachments'])):?><th>Attachments</th><?php endif;?>
+                        <?php if (isset($columns['last_update'])):?><th class="hidden-sm hidden-xs">Last update</th><?php endif;?>
+                        <?php if (isset($columns['last_submit'])):?><th class="hidden-sm hidden-xs"> Last submit</th><?php endif;?>
+                        <?php if (isset($columns['status']) && Group::current('show_all_jobs') && $_GET['status'] == -1):?><th class="hidden-sm hidden-xs">Job status</th><?php endif;?>
+                        <?php if (isset($columns['types'])):?><th class="hidden-xs">Assigned works</th><?php endif;?>
+                        <?php if (isset($columns['companies'])):?><th class="hidden-sm hidden-xs">Assigned companies</th><?php endif;?>
+                        <?php if (isset($columns['ex'])):?><th class="hidden-sm hidden-xs">Previously assigned companies</th><?php endif;?>
+                        <?php if (isset($columns['settings'])):?><th class="hidden-sm hidden-xs">Settings</th><?php endif;?>
+                        <?php if (isset($columns['pending'])):?><th class="hidden-sm hidden-xs">Pending submissions</th><?php endif;?>
+                        <?php if (isset($columns['attachments'])):?><th class="hidden-xs">Attachments</th><?php endif;?>
                         <?php foreach (Columns::get_search() as $id => $type):?>
                         <th><?=Columns::get_name($id)?></th>
                         <?php endforeach;?>
@@ -508,6 +573,31 @@
                 </table>
             </div>
             <div class="modal-footer" id="tableRowButtons">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="batchEditModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Ticket details</h4>
+            </div>
+            <div class="modal-body text-center" id="table-row-details">
+                <table class="table small edit-tickets-table">
+
+                </table>
+            </div>
+            <div class="modal-footer" class="tableRowButtons">
+                <span class="filter-item">
+                    Your Username:
+                    <label class="filter_value">
+                        <input type="text" id="your-username" placeholder="">
+                    </label>
+                </span>
+                <button type="submit" class="btn btn-success batch-ticket">Update</button>
             </div>
         </div>
     </div>

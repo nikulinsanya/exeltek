@@ -13,15 +13,19 @@ class Controller_Security_Rates extends Controller {
     {
         $companies = DB::select('id', 'name')->from('companies')->execute()->as_array('id', 'name');
         $columns = DB::select('id', 'name')->from('job_columns')->where('financial', '>', 0)->execute()->as_array('id', 'name');
+        $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
 
         $rates = array();
 
-        $company = intval(Arr::get($_GET, 'company'));
-        if ($company)
-            $rates = DB::select('column_id', 'rate')->from('rates')->where('company_id', '=', $company)->execute()->as_array('column_id', 'rate');
+        $company = intval(Arr::get($_GET, 'company', -1));
+        $region = intval(Arr::get($_GET, 'region'));
+
+        if ($company >= 0)
+            $rates = DB::select('column_id', 'rate')->from('rates')->where('company_id', '=', $company)->and_where('region_id', '=', $region)->execute()->as_array('column_id', 'rate');
 
         $view = View::factory('Security/Rates')
             ->bind('companies', $companies)
+            ->bind('regions', $regions)
             ->bind('columns', $columns)
             ->bind('rates', $rates);
             
@@ -34,21 +38,23 @@ class Controller_Security_Rates extends Controller {
             throw new HTTP_Exception_403();
             
         $company = Arr::get($_GET, 'company');
-        if (!DB::select('id')->from('companies')->where('id', '=', $company)->execute()->get('id'))
+        if ($company !== '0' && ($company && !DB::select('id')->from('companies')->where('id', '=', $company)->execute()->get('id')))
             throw new HTTP_Exception_403();
-            
+
+        $region = intval(Arr::get($_GET, 'region'));
         $rate = floatval(Arr::get($_GET, 'rate'));
         if ($rate) {
             DB::query(Database::INSERT,
-                DB::expr("INSERT INTO `rates` (`column_id`, `company_id`, `rate`) VALUES (:id, :company, :rate) ON DUPLICATE KEY UPDATE `rate` = :rate",
+                DB::expr("INSERT INTO `rates` (`column_id`, `region_id`, `company_id`, `rate`) VALUES (:id, :region, :company, :rate) ON DUPLICATE KEY UPDATE `rate` = :rate",
                     array(
                         ':id' => $id,
+                        ':region' => $region,
                         ':company' => $company,
                         ':rate' => $rate,
                     )
                 )->compile())->execute();
         } else {
-            DB::delete('rates')->where('column_id', '=', $id)->and_where('company_id', '=', $company)->execute();
+            DB::delete('rates')->where('column_id', '=', $id)->and_where('company_id', '=', $company)->and_where('region_id', '=', $region)->execute();
         }
         
         die(json_encode(array('success' => true)));

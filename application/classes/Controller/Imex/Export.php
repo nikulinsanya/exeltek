@@ -8,54 +8,54 @@ class Controller_Imex_Export extends Controller {
             throw new HTTP_Exception_403('Forbidden');
 
         $regions = DB::select('id', 'name')->from('regions')->execute()->as_array('id', 'name');
+        $groups = DB::select('id', 'name')->from('groups')->execute()->as_array('id', 'name');
         
         $form = new Form();
         $form->add('region', 'Region', Form::SELECT, array('' => 'Please, select region') + $regions, array('not_empty'));
 
-        if (isset($_POST['job'])) {
+        if (isset($_POST['group']) && isset($_POST['csv'])) {
+            if (isset($_POST['job'])) {
+                $query = array('_id' => array('$in' => array_keys($_POST['job'])));
+                $region = array('name' => 'PARTIAL');
+            } else {
+                if (!Arr::get($_POST, 'region'))
+                    throw new HTTP_Exception_404('Not found');
+                $region = DB::select('id', 'name')->from('regions')->where('id', '=', $_POST['region'])->execute()->current();
+
+                $query = array('region' => $region['id']);
+            }
+
+            $jobs = Database_Mongo::collection('jobs')->find($query);
+
+            $columns = array();
+            $csv = $_POST['csv'];
+            if ($_POST['group']) {
+                if (Group::get($_POST['group'], 'is_admin'))
+                    $result = DB::select('id')->from('job_columns')->execute()->as_array(NULL, 'id');
+                else
+                    $result = DB::select('column_id')->from('group_columns')->where('group_id', '=', $_POST['group'])->and_where('permissions', '>', 0)->execute()->as_array(NULL, 'column_id');
+
+                if ($csv != 'none') foreach ($result as $column)
+                    if ($csv == 'all' || !(($csv == 'csv') xor Columns::get_csv($column)))
+                        $columns[$column] = Columns::get_name($column);
+            } else {
+                foreach (Arr::get($_POST, 'columns', array()) as $column => $value)
+                    $columns[$column] = Columns::get_name($column);
+            }
+
             header("Content-type: text/csv");
-            header('Content-disposition: filename="' . date('Ymd') . '_EXEL_PARTIAL_EOD.csv"');
-            
+            header('Content-disposition: filename="' . date('Ymd') . '_EXEL_' . $region['name'] . '_EOD.csv"');
+
             $file = tmpfile();
 
-            $columns = Columns::get_csv();
-            
             fputcsv($file, array(0 => 'Ticket Of Work') + $columns);
-            
-            $jobs = Database_Mongo::collection('jobs')->find(array('_id' => array('$in' => array_keys($_POST['job']))));
-            
+
             while ($job = $jobs->next()) {
-                $data = array_fill(0, count($columns) + 1, '');
                 $data[0] = $job['_id'];
+                $i = 1;
                 foreach ($columns as $key => $value)
-                    $data[$key] = Columns::output(Arr::get($job['data'], $key, ''), Columns::get_type($key), true);
-                     
-                fputcsv($file, $data);
-            }
-            rewind($file);
-            fpassthru($file);
-            fclose($file);
-            die();
-        } elseif (isset($regions[Arr::get($_POST, 'region')])) {
-            $region = $_POST['region'];
-            
-            header("Content-type: text/csv");
-            header('Content-disposition: filename="' . date('Ymd') . '_EXEL_' . $regions[$region] . '_EOD.csv"');
-            
-            $file = tmpfile();
-            
-            $columns = Columns::get_csv();
-            
-            fputcsv($file, array(0 => 'Ticket Of Work') + $columns);
-            
-            $jobs = Database_Mongo::collection('jobs')->find(array('region' => $region));
-            
-            while ($job = $jobs->next()) {
-                $data = array_fill(0, count($columns) + 1, '');
-                $data[0] = $job['_id'];
-                foreach ($columns as $key => $value)
-                    $data[$key] = Columns::output(Arr::get($job['data'], $key, ''), Columns::get_type($key), true);
-                     
+                    $data[$i++] = iconv("CP1251", 'CP1251//ignore', Columns::output(Arr::get($job['data'], $key, ''), Columns::get_type($key), true));
+
                 fputcsv($file, $data);
             }
             rewind($file);
@@ -64,6 +64,9 @@ class Controller_Imex_Export extends Controller {
             die();
         }
 
-        $this->response->body($form->render());
+        $view = View::factory('Jobs/Export')
+            ->bind('regions', $regions)
+            ->bind('groups', $groups);
+        $this->response->body($view);
     }
 }

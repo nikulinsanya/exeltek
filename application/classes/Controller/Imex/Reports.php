@@ -39,14 +39,19 @@ class Controller_Imex_Reports extends Controller {
             $end = strtotime($_GET['end']);
             $filters['update_time']['$lt'] = $end;
         }
-        
-        $result = $archive->find($filters)->sort(array('job_key' => 1, 'update_time' => -1));
-        
+
+        $filters = $filters ? array(array('$match' => $filters)) : array();
+        $filters[] = array('$sort' => array('update_time' => -1, 'job_key' => 1));
+
         if (!$all) {
-            Pager::$count = $result->count();
-            $result->skip(Pager::offset())->limit(Pager::limit());
+            $count = Database_Mongo::collection('archive')->find(Arr::path($filters, '0.$match', array()))->count();
+
+            Pager::$count = $count;
+            $filters[] = array('$skip' => Pager::offset());
+            $filters[] = array('$limit' => Pager::limit());
         }
-        
+
+        $result = $archive->aggregateCursor($filters, array('allowDiskUse' => true));
         $list = array();
         $ids = array();
         
@@ -61,13 +66,13 @@ class Controller_Imex_Reports extends Controller {
             $jobs[$job['_id']] = Arr::get($job, 'data');
             
         $items = array();
-        
+
         foreach ($list as $row) {
             $row['data'] = array_intersect_key($row['data'], Columns::get_visible());
-            
+
             foreach (Columns::get_static() as $static => $show)
                 $row['static'][$static] = Arr::path($jobs, array($row['job_key'], $static));
-                            
+
             $items[] = $row;
         }
 
@@ -95,10 +100,7 @@ class Controller_Imex_Reports extends Controller {
     public function action_export() {
         $id = $this->request->param('id');
         
-        if ($id == 'all') ini_set('memory_limit', '512M');
-        
-        header('Content-type: text/csv');
-        header('Content-disposition: filename=Export.csv');
+        if ($id == 'all') ini_set('memory_limit', '4G');
         
         $result = $this->get_results($id == 'all');
         
@@ -137,7 +139,7 @@ class Controller_Imex_Reports extends Controller {
                 $ticket['type'],
                 $ticket['filename'],
             );
-            foreach ($reports as $id => $name) $data[] = Arr::path($ticket, 'static.' . $id);
+            foreach ($reports as $id => $name) $data[] = Columns::output(Arr::path($ticket, 'static.' . $id), Columns::get_type($id), true);
 
 
             if ($ticket['update_type'] == 2) {
@@ -162,8 +164,13 @@ class Controller_Imex_Reports extends Controller {
         }
         
         rewind($file);
-        
+
+        header('Content-type: text/csv');
+        header('Content-disposition: filename=Export.csv');
+
         fpassthru($file);
+
+        fclose($file);
         
         die();
     }
@@ -204,8 +211,8 @@ class Controller_Imex_Reports extends Controller {
         $result = Database_Mongo::collection('archive')
             ->aggregate(array(
                 array('$match' => array('filename' => array('$regex' => '.*' . $id . '.*', '$options' => 'i'))),
-                array('$group' => array('_id' => '$filename')),
-                array('$sort' => array('_id' => 1)),
+                array('$group' => array('_id' => '$filename', 'update_time' => array('$max' => '$update_time'))),
+                array('$sort' => array('update_time' => -1)),
                 array('$limit' => 10),
             ));
             

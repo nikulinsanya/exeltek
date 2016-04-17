@@ -1,0 +1,44 @@
+html, body {
+    height: 100%;
+}
+
+.left_panel{
+    min-width:200px;
+    width: 20%;
+    height: 100%;
+    float: left;
+    overflow-y: auto;
+}
+.right_panel{
+    box-shadow: -1px -1px 3px #ccc;
+    background: #ccc;
+    height: 100%;
+    width: 79%;
+    float: left;
+}
+
+.left_panel ul{
+    list-style: none;
+    padding-left: 0px;
+}
+.left_panel ul .marker-name{
+    cursor: pointer;
+    padding: 5px 10px;
+    max-height: 55px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.left_panel ul li{
+    margin: 3px 0px ;
+    border-top: 1px solid #ccc;
+}
+
+
+.left_panel ul li img{
+
+}
+
+.left_panel ul li .marker-name:hover div{
+    text-decoration: underline;
+}

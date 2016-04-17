@@ -1,4 +1,6 @@
 @charset "UTF-8";
+@import "media.css";
+@import "reports.css";
 /*
  * jQuery File Upload Plugin CSS Example 8.8.2
  * https://github.com/blueimp/jQuery-File-Upload
@@ -12,7 +14,7 @@
 
 body {
   padding-top: 60px;
-    min-width: 900px;
+    min-width: 800px;
 }
 
 label {
@@ -27,6 +29,9 @@ label {
     width: 70px;
     top:50%;
     margin-top: -70px;
+    color: #fff;
+    text-align: center;
+    font-size: 17px;
 }
 
 #loading img{
@@ -52,7 +57,7 @@ label {
 
 .filter-info-container{
     border: 1px solid #ccc;
-    padding: 0px 10px 10px 10px;
+    padding: 10px 10px 10px 10px;
 }
 
 .filter-item{
@@ -97,6 +102,13 @@ tr.text-center td{
 table td input[type=checkbox]{
     margin-top: -3px;
 }
+table td .multiselect-container input[type=checkbox]{
+    margin-top: 3px;
+}
+
+.multiselect-container input[type=checkbox]{
+    width:15px;
+}
 
 .no-filters{
     top: -39px;
@@ -113,7 +125,7 @@ table td input[type=checkbox]{
 }
 
 #navbar,.navbar-header{
-    padding: 0px 20px;
+    padding: 0px 10px;
 }
 
 /*row colors*/
@@ -129,14 +141,14 @@ table td input[type=checkbox]{
 
 
 .green:nth-child(even){
-    background: #8c8;
+    background: #93d893;
 }
 .green:nth-child(odd) {
-    background: #93d893;
+    background: #8c8;
 }
 
 .green:hover{
-    background: #9dd89e;
+    background: #9dd89e!important;
 }
 
 .lightcyan:nth-child(even){
@@ -147,7 +159,7 @@ table td input[type=checkbox]{
     background: rgb(210, 253, 253);
 }
 .lightcyan:hover{
-    background: rgb(198, 245, 253);
+    background: rgb(198, 245, 253)!important;
 }
 
 .yellow:nth-child(even){
@@ -157,7 +169,15 @@ table td input[type=checkbox]{
     background: #f5ffcf;
 }
 .yellow:hover{
-    background: #fafac7;
+    background: #fafac7!important;
+}
+
+.yellow:nth-child(even) .same-yellow{
+    background: #ffc;
+}
+
+.yellow:nth-child(odd) .same-yellow{
+    background: #f5ffcf;
 }
 
 .lgreen:nth-child(even){
@@ -169,6 +189,167 @@ table td input[type=checkbox]{
 .lgreen:hover{
     background: #bdf3bd;
 }
+
+
+
+
+/*lifd-report row colors*/
+#lifd-report tr:nth-child(even){
+    background: #cfffcc;
+}
+#lifd-report  tr:nth-child(odd){
+    background: #cfffcc;
+}
+
+#lifd-report  tr:hover{
+    background: #bdf3bd;
+}
+
+
+
+#lifd-report tr:nth-child(even) .rose{
+    background: #FFD7D7;
+}
+#lifd-report tr:nth-child(odd) .rose{
+    background: #FFD7D7;
+}
+#lifd-report tr:hover .rose{
+    background: #FFCCCC;
+}
+
+
+#lifd-report  tr:nth-child(even) .green{
+    background: #93d893;
+}
+#lifd-report  tr:nth-child(odd) .green {
+    background: #93d893;
+}
+
+#lifd-report  tr:hover .green{
+    background: #9dd89e!important;
+}
+
+#lifd-report  tr:nth-child(odd) .lightcyan{
+    background: lightcyan;
+}
+#lifd-report  tr:nth-child(even) .lightcyan{
+    background: lightcyan;
+}
+#lifd-report tr:hover .lightcyan{
+    background: rgb(198, 245, 253)!important;
+}
+
+#lifd-report  tr:nth-child(odd) .purple{
+    background: #F8EBFD;
+}
+#lifd-report  tr:nth-child(even) .purple{
+    background: #F8EBFD;
+}
+#lifd-report tr:hover .purple{
+    background: #f8e0ff !important;
+}
+
+
+#lifd-report tr:nth-child(even) .yellow{
+    background: #f5ffcf;
+}
+#lifd-report tr:nth-child(odd) .yellow{
+    background: #f5ffcf;
+}
+#lifd-report tr:hover .yellow{
+    background: #fafac7;
+}
+
+
+#lifd-report tr:nth-child(even) .lgreen{
+    background: #cfffcc;
+}
+#lifd-report tr:nth-child(odd) .lgreen{
+    background: #cfffcc;
+}
+#lifd-report tr:nth-child(odd):hover .lgreen{
+    background: #acffbd;
+}
+#lifd-report tr:hover .lgreen{
+    background: #acffbd;
+}
+
+#lifd-report .collapsing{
+    -webkit-transition: none;
+    transition: none;
+}
+
+#lifd-report tr[data-row]{
+    border-bottom: 1px solid #ccc;
+}
+
+#lifd-report .collapse-container{
+    border: 2px solid #35E244;
+}
+#lifd-report table{
+    margin-top:10px;
+}
+
+#lifd-report .blank{
+    opacity: 0;
+}
+
+#lifd-report .table>tbody>tr{
+    border-bottom: 1px solid #ccc;
+}
+#lifd-report .table>tbody>tr>td{
+    border-top: none;
+}
+#lifd-report tr.text-center td{
+    cursor: default;
+}
+#lifd-report tr.collapse-container td{
+    cursor: pointer;
+}
+
+#lifd-report .table>tbody>tr>th {
+    border-right: 1px solid #ededed;
+    height: 160px;
+    white-space: nowrap;
+    width: 50px;
+}
+#lifd-report .table>tbody>tr>th>div {
+    transform: translate(15px, 135px) rotate(270deg);
+    width: 0px;
+}
+
+
+#lifd-report .label {
+    display: inline;
+    font-size: 100%;
+    font-weight: normal;
+    color: #333;
+    text-align: left;
+    white-space: normal;
+    vertical-align: baseline;
+}
+
+#lifd-report table tr td a{
+    color:#333;
+}
+
+
+
+.table>tbody>tr.same-yellow:first-child{
+    border:1px solid #fff!important;
+}
+.table>tbody>tr.same-yellow:first-child th{
+    border: none;
+}
+table.subtable{
+    border:1px solid #fff;
+    margin: 0px;
+}
+.table>tbody>tr.same-yellow>th{
+    background: #FFFFB2!important
+}
+
+
 
 
 .nav.nav-tabs.status-filter{
@@ -207,6 +388,12 @@ form.dashboard-form{
     width: auto;
 }
 
+#table-row-details{
+    padding: 5px;
+    max-height: 500px;
+    min-height: 300px;
+    overflow: auto;
+}
 
 #table-row-details table.table{
     margin-bottom: 0px;
@@ -215,6 +402,26 @@ form.dashboard-form{
 
 #table-row-details table.table td{
     cursor: default;
+    vertical-align: middle;
+}
+
+#table-row-details textarea{
+    min-width: 250px;
+    height: 50px;
+    width: 100%;
+}
+#table-row-details select,
+#table-row-details input[type="text"],
+#table-row-details input[type="number"]{
+    min-width: 100px;
+    width: 100%;
+    padding: 10px 5px;
+}
+
+#table-row-details .multiselect-selected-text{
+    max-width: 200px;
+    overflow: hidden;
+    display: inline-block;
 }
 
 #search-table .table-buttons{
@@ -241,15 +448,220 @@ form.dashboard-form{
 }
 
 
+.view-form.form-horizontal .control-label {
+    padding-top: 0px;
+    margin-top: 0px;
+}
 
-.job-submit .column-value .multiselect-container a input[type="checkbox"] {
-  width: 20px;
+form.view-form{
+    border: none;
+}
+
+.view-form .panel-body {
+    padding: 0px;
+}
+form.view-form textarea{
+    height: 110px;
+    margin-top: 5px;
+}
+
+form.view-form .nav-tabs>li{
+    margin-bottom: -2px;
+}
+form.view-form .panel{
+margin-bottom: 5px;
+}
+
+form.view-form .btn-group,
+form.view-form  .btn-group>.btn:first-child{
+    width:100%;
+
+}
+form.view-form  .btn-group>.btn:first-child{
+    text-align: right;
+    padding-right: 20px;
+}
+form.view-form  label.checkbox{
+    width: 100%;
+}
+
+.multiselect-selected-text{
+    max-width: 100%;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.col-container textarea,
+.col-container input,
+.col-container select{
+    width: 100%;
 }
 
 
+.col-container tr:nth-child(odd){
+    background: #D9FDDE;
+}
+.col-container tr:nth-child(even){
+    background: #BEFFC7;
+}
+.col-container td{
+    width: 50%;
+    padding: 10px;
+    border-left: 2px solid #fff;
+    border-top: 2px solid #fff;
+}
+
+.col-container label{
+    width: 35%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 18px;
+}
+.col-container .radio-container label{
+    width: 100%;
+}
+
+.col-container .left-label{
+    float: left;
+}
+
+.col-container td>div{
+    display: inline-block;
+    position: relative;
+    top: -5px;
+    width: 63%;
+}
+
+.view-header{
+    border: 1px solid #ccc;
+    margin: 0;
+    padding: 10px 0px;
+}
+
+.top-buttons{
+    padding: 10px 0px 10px 0px;
+    text-align: left;
+}
+
+.radio-container input[type="radio"]{
+    width: 20px;
+    float: left;
+    margin-top: 2px;
+}
+
+.multiselect .multiselect-selected-text{
+    display: initial;
+}
+
+.panel-body.active .col-container,
+.job-submit,
+.file-upload{
+    width: 100%;
+}
+
+.checkbox-label input[type="checkbox"]{
+    width: 20px;
+    height: 14px;
+    display: inline-block;
+}
+
+.upload-buttons,
+.status-cell{
+    padding: 10px;
+}
 
 
+.modal-content .progress{
+    width: 500px;
+    margin: 10px auto;
+}
 
+.col-container .multiselect-container label {
+    width: 100%;
+}
+
+.column-value .multiselect-container a{
+    height: 25px;
+}
+.column-value .multiselect-container a input[type="checkbox"] {
+    margin-top: 3px;
+}
+.job-submit .column-value .multiselect-container a input[type="checkbox"] {
+  width: 20px;
+}
+.col-container label.old_value{
+    width: 100%;
+}
+
+.flatten-sub-table tr{
+    background: none!important;
+}
+.flatten-sub-table td{
+    background: none!important;
+    border:none!important;
+}
+
+.width100{
+    width: 100%!important;
+}
+.text-right{
+    text-align: right;
+}
+
+.extra{
+    border-left: none!important;
+}
+
+.margin-10{
+    margin-top: -10px;
+}
+
+.date-range-container input[type="text"],
+.date-range-container select{
+    width: 200px;
+    text-align: center;
+    font-weight: bold;
+}
+.date-range-container{
+    display: inline-block;
+}
+.filter-select-container{
+    display: inline-block;
+    min-width: 215px;
+}
+.filter-select-label{
+    position: relative;
+    top: -10px;
+}
+
+.date-range-label{
+    width:165px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin-bottom: -5px;
+}
+
+.filter-info-container .selectize-input{
+    padding-right: 30px;
+}
+
+
+#filterModal .multiselect .multiselect-selected-text{
+    display: inline-block;
+    overflow: hidden;
+    width: 140px;
+    margin-bottom: -5px;
+}
+
+#lifd-report-form .multiselect .multiselect-selected-text{
+    width: 240px;
+}
+
+#lifd-report .table-header.fixed{
+    position: fixed;
+    top: 50px;
+}
 
 
 
@@ -295,6 +707,12 @@ table.table>tbody>tr>td{
     .navbar-toggle {
         display: block;
     }
+    .navbar-header .navbar-toggle {
+        float:left;
+    }
+    .black-navbar .container-fluid{
+        padding-left: 0px;
+    }
     .navbar-collapse {
         border-top: 1px solid transparent;
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
@@ -324,4 +742,318 @@ table.table>tbody>tr>td{
     .collapsing {
         overflow: hidden!important;
     }
+}
+
+@media (min-width: 768px){
+    .form-horizontal .control-label {
+        /*padding-top: 0px;*/
+    }
+}
+
+
+
+.nav-tabs.upsidedown {
+    border-bottom: 0px;
+    border-top: 1px solid #ddd;
+    padding-bottom: 10px!important;
+}
+.nav-tabs.upsidedown > li {
+    margin-bottom:0;
+    margin-top: -6px;
+}
+
+.nav-tabs.upsidedown > li > a {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    line-height: 20px;
+    border: 1px solid transparent;
+    -moz-border-radius:0px;
+    -webkit-border-radius:0px;
+    border-radius:0px;
+    -moz-border-radius-bottomright: 5px;
+    -webkit-border-bottom-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+.nav-tabs.upsidedown > .active > a, .nav-tabs.upsidedown > .active > a:hover, .nav-tabs.upsidedown > .active > a:focus {
+    color: #555555;
+    cursor: default;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-top-color: transparent;
+}
+
+.badge{
+    background-color: #FF8484;
+}
+
+.btn-simple{
+    border: 1px solid #ccc;
+}
+
+.btn .caret {
+    margin-top: -2px;
+}
+
+.modal-body{
+    overflow: scroll;
+}
+
+.text-danger {
+    color: red!important;
+}
+
+.pagination>.disabled>a{
+    color: #BBB;
+}
+
+.odd.fsa-cell,
+.even.fsa-cell,
+.even.fsam-cell,
+.odd.fsam-cell{
+    font-weight: bold;
+    vertical-align: top!important;
+}
+
+.odd.fsa-cell,.odd.fsam-cell{
+    background: rgb(198, 255, 198);
+}
+.even.fsa-cell,.even.fsam-cell{
+    background: rgb(227, 255, 227);
+}
+
+.text-center td.top-aligned {
+    vertical-align: top!important;
+    padding-top: 15px;
+}
+
+.files-container>.col-xs-12{
+    height:100px;
+}
+
+
+.td-image-center{
+    width: 100px;
+    padding: 1px 1px;
+    text-align: center;
+    max-width: 100%;
+    margin-right: 15px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+
+td a.text-danger{
+    margin-left: -5px;
+    margin-right: 10px;
+}
+
+
+.col-xs-12.col-md-6.col-lg-4 table{
+    height: 100px;
+}
+
+
+.report-form-container .filter-select-container .btn-group button.multiselect,
+.report-form-container .filter-select-container .btn-group{
+    width:100%;
+}
+
+.report-form-container .filter-info-container .filter-select-label{
+    top:0px;
+}
+
+.modal-form .form-group{
+    width: 30%;
+    float: left;
+    padding: 10px;
+}
+.modal-form .form-group .btn-group{
+    display: block;
+}
+.modal-form .form-group button.multiselect{
+    width:100%;
+}
+
+.modal-form .buttons-group{
+    width: 100%;
+    clear: both;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
+
+.modal-form  .checkbox, .radio{
+    clear: both;
+    margin-left: 10px;
+}
+
+.form-group p.form-control-static{
+    margin-bottom: -45px;
+}
+
+.popover-content ul{
+    padding-left: 0px;
+    list-style: none;
+}
+
+#fda_table td>.glyphicon{
+    float: right;
+    margin-top: 3px;
+    margin-left: 2px;
+    font-size: 12px;
+    cursor: pointer;
+    color:#848484;
+}
+
+#fda_table td>.glyphicon:hover{
+    color:#333;
+    text-decoration: underline;
+}
+
+.search-select-container{
+    margin: 0px 0px 10px 15px;
+    width: 380px;
+}
+.search-buttons-bottom button{
+    margin-bottom: 10px;
+}
+
+button>span.glyphicon{
+    margin-right: 5px;
+}
+
+#payment-pre .payment-info{
+    height: 35px;
+    line-height: 35px;
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+}
+
+#payment-pre .payment-info:nth-child(4n+1){
+    border-right: 1px solid #ccc;
+}
+
+#payment-pre .payment-info:nth-last-of-type(4){
+    border-bottom: 1px solid #ccc;
+}
+#payment-pre .payment-info:nth-last-of-type(3){
+    border-bottom: 1px solid #ccc;
+}
+#payment-pre .payment-info:nth-last-of-type(5){
+    border-bottom: 1px solid #ccc;
+}
+#payment-pre .payment-info:nth-last-of-type(6){
+    border-bottom: 1px solid #ccc;
+}
+.payment-info:nth-last-child(3){
+    border-right: 1px solid #ccc;
+}
+
+
+#payment-details> table{
+    border:1px solid #ccc;
+}
+
+#payment-amount{
+    width: 200px;
+}
+
+#payment-buttons{
+    margin-top: 10px;
+}
+.export-options{
+    padding: 0px;
+}
+
+.export-options button{
+    width: 100%;
+    margin-bottom: 0;
+    background: #fff;
+    border: none;
+    text-align: left;
+    padding: 5px 0px 5px 3px;
+}
+.export-options button:hover{
+    background: #ccc;
+}
+
+.fileinput-button {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+.fileinput-button input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    opacity: 0;
+    -ms-filter: 'alpha(opacity=0)';
+    font-size: 200px;
+    direction: ltr;
+    cursor: pointer;
+}
+
+.popover-block {
+    display: none;
+}
+
+
+.onoffswitch {
+    margin-top: -5px;
+    position: relative; width: 45px;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+.onoffswitch-checkbox {
+    display: none;
+}
+.onoffswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    height: 25px; padding: 0; line-height: 25px;
+    border: 2px solid #CCCCCC; border-radius: 25px;
+    background-color: #FFFFFF;
+    transition: background-color 0.3s ease-in;
+}
+.onoffswitch-label:before {
+    content: "";
+    display: block; width: 25px; margin: 0px;
+    background: #FFFFFF;
+    position: absolute; top: 0; bottom: 0;
+    right: 19px;
+    border: 2px solid #CCCCCC; border-radius: 25px;
+    transition: all 0.3s ease-in 0s;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label {
+    background-color: #49E845;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label, .onoffswitch-checkbox:checked + .onoffswitch-label:before {
+    border-color: #49E845;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label:before {
+    right: 0px;
+}
+
+
+#editEnum .row ,
+#editColumn .row {
+    padding: 5px 0px;
+}
+#editEnum .row>div,
+#editColumn .row>div{
+    text-align:left;
+}
+
+#enumsTable .edit-enum{
+    margin-right: 5px;
+}
+
+#editColumn input[type="text"],
+#editColumn select{
+    width: 200px;
+}
+
+#column-form-data{
+    border: none;
 }

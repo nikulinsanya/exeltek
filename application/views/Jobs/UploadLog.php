@@ -1,7 +1,10 @@
-<div class="col-xs-12">
+<div class="col-xs-12 text-center">
 <?php if (Pager::pages() > 1) echo $pager = View::factory('Pager');?>
+
 </div>
+<button class="btn btn-danger back-button" onclick="history.go(-1);" type="button">Back</button>
 <div class="clearfix">&nbsp;</div>
+
 <table class="table table-hover table-striped">
     <tr>
         <th>Action</th>
@@ -20,7 +23,8 @@
         </tr>
     <?php endforeach;?>
 </table>
-<div class="col-xs-12">
+<div class="col-xs-12 text-center">
 <?php if (Pager::pages() > 1) echo $pager = View::factory('Pager');?>
 </div>
 <div class="clearfix">&nbsp;</div>
+<button class="btn btn-danger back-button" onclick="history.go(-1);" type="button">Back</button>

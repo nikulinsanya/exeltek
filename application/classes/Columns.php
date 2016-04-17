@@ -22,6 +22,7 @@ class Columns {
         'status' => 'Job status',
         'types' => 'Assigned job types',
         'companies' => 'Assigned companies',
+        'ex' => 'Previously assigned companies',
         'settings' => 'Job settings',
         'pending' => 'Pending submissions',
         'attachments' => 'Attachments',
@@ -35,6 +36,19 @@ class Columns {
         'sor' => 'SOR data correct',
         'quality' => 'QA audit done',
         'passed' => 'QA audit passed',
+        'removed' => 'Removed from SOD',
+        'downloaded' => 'Attachments downloaded',
+        'discrepancies' => 'Has discrepancies',
+        'partial' => 'Is partially paid',
+        'paid' => 'Is paid',
+    );
+
+    public static $settings_read_only = array(
+        'removed',
+        'downloaded',
+        'discrepancies',
+        'partial',
+        'paid',
     );
     
     public static $settings_img = array(
@@ -45,6 +59,11 @@ class Columns {
         'sor' => 'ok',
         'quality' => 'pencil',
         'passed' => 'check',
+        'removed' => 'remove',
+        'downloaded' => 'floppy-saved',
+        'discrepancies' => 'duplicate',
+        'partial' => 'align-left',
+        'paid' => 'align-justify',
     );
     
     private static $columns = array();
@@ -58,6 +77,9 @@ class Columns {
     private static $search = array();
     private static $direct = array();
     private static $track = array();
+    private static $persistent = array();
+    private static $readonly = array();
+    private static $financial = array();
     
     private static function init() {
         $columns = DB::select()->from('job_columns')->execute()->as_array();
@@ -80,6 +102,9 @@ class Columns {
             if (Arr::get($permissions, $column['id'])) self::$permissions[$column['id']] = Arr::get($permissions, $column['id']);
             if (Arr::get($search, $column['id'])) self::$search[$column['id']] = Arr::get($search, $column['id']);
             if ($column['track']) self::$track[$column['id']] = $column['id'];
+            if ($column['persistent']) self::$persistent[$column['id']] = $column['id'];
+            if ($column['read_only']) self::$readonly[$column['id']] = $column['id'];
+            if (floatval($column['financial'])) self::$financial[$column['id']] = floatval($column['financial']);
         }
         
         if (Group::current('is_admin')) {
@@ -88,21 +113,42 @@ class Columns {
         } else
             self::$columns = array_intersect_key(self::$all, self::$permissions);
     }
-    
+
+    public static function get_readonly($id = false) {
+        if (!self::$all)
+            self::init();
+
+        return $id ? Arr::get(self::$readonly, $id) : self::$readonly;
+    }
+
+    public static function get_financial($id = false) {
+        if (!self::$all)
+            self::init();
+
+        return $id ? Arr::get(self::$financial, $id) : self::$financial;
+    }
+
     public static function get_name($id) {
         if (!self::$all)
             self::init();
         
         return Arr::get(self::$all, $id);
     }
-    
+
     public static function get_track($id = false) {
         if (!self::$all)
             self::init();
-        
+
         return $id ? Arr::get(self::$track, $id) : self::$track;
     }
-    
+
+    public static function get_persistent($id = false) {
+        if (!self::$all)
+            self::init();
+
+        return $id ? Arr::get(self::$persistent, $id) : self::$persistent;
+    }
+
     public static function get_static($id = false) {
         if (!self::$all)
             self::init();
@@ -177,7 +223,7 @@ class Columns {
         return $id ? Arr::get(self::$permissions, $id) : self::$permissions;
     }
     
-    public static function parse($value, $type = false) {
+    public static function  parse($value, $type = false) {
         if (strpos($type, 'enum') !== false) {
             $enum = substr($type, 5);
             if (Enums::is_multi($enum))
@@ -186,21 +232,29 @@ class Columns {
                 return $value;
         } elseif ($type == 'date' || $type == 'datetime')
             return strtotime($value);
+        elseif ($type == 'float')
+            return floatval($value);
+        elseif ($type == 'int')
+            return intval($value);
         elseif ($type == 'bool')
             return $value ? 1 : 0;
         else
             return $value;
     }
     
-    public static function input($name, $id, $type, $value, $title = '') {
+    public static function input($name, $id, $type, $value, $title = '', $required = false) {
         if (strpos($type, 'enum') !== false) {
             $enum = substr($type, 5);
             if (Enums::is_multi($enum)) {
-                $values = explode(', ', $value);
-                $result = '';
-                foreach (Enums::get_values($enum) as $value)
-                    $result .= Form::label(NULL, Form::checkbox($name . ($id ? '[' . $id . ']' : '') . '[]', $value, in_array($value, $values, true)) . $value, array('class' => 'control-label')) . '<br/>';
-                return $result;
+                $class = array('class' => 'form-control multiselect', 'multiple'=>'multiple');
+                if ($required) $class['data-validation'] = 'required';
+                return Form::select($name . ($id ? '[' . $id . '][]' : '[]'),Enums::get_values($enum), explode(', ', $value), $class);
+
+//                $values = explode(', ', $value);
+//                $result = '';
+//                foreach (Enums::get_values($enum) as $value)
+//                    $result .= Form::label(NULL, Form::checkbox($name . ($id ? '[' . $id . ']' : '') . '[]', $value, in_array($value, $values, true)) . $value, array('class' => 'control-label')) . '<br/>';
+//                return $result;
             } else {
                 return Form::select($name . ($id ? '[' . $id . ']' : ''), array('' => '') + Enums::get_values($enum, $value), $value, array('class' => 'form-control'));
             }
@@ -216,25 +270,35 @@ class Columns {
             case 'datetime':
                 return '<input type="text" id="' . $name . ($id ? '-' . $id : '') . '" class="form-control datetimepicker" name="' . $name . ($id ? '[' . $id . ']' : '') . '" value="' . ($value ? date('d-m-Y H:i', $value) : '') . '" />';
                 break;
+            case 'float':
+                return '<input class="form-control input-float" id="' . $name . ($id ? '-' . $id : '') . '" name="' . $name . ($id ? '[' . $id . ']' : '') . '" type="text" value="'. HTML::chars($value) . '" />';
+                break;
+            case 'int':
+                return '<input class="form-control input-int" id="' . $name . ($id ? '-' . $id : '') . '" name="' . $name . ($id ? '[' . $id . ']' : '') . '" type="text" value="'. HTML::chars($value) . '" />';
+                break;
             default:
                 return '<input class="form-control" id="' . $name . ($id ? '-' . $id : '') . '" name="' . $name . ($id ? '[' . $id . ']' : '') . '" type="text" value="'. HTML::chars($value) . '" />';
         }
     }
     
     public static function output($value, $type, $export = false) {
-        if ($type == 'date')
-            return $value ? date('d-m-Y', $value) : '';
-        elseif ($type == 'datetime')
-            return $value ? date('d-m-Y H:i', $value) : '';
-        elseif ($type == 'float')
-            return floatval($value);
-        elseif ($type == 'int')
-            return intval($value);
-        elseif ($type == 'bool')
-            return $export ? ($value ? 1 : 0) : '<span class="glyphicon glyphicon-' . $value ? 'ok text-success' : 'remove text-danger' . '"></span>';
-        elseif ($type == 'text')
-            return $export ? $value : nl2br(HTML::chars($value));
-        else
-            return $export ? $value : HTML::chars($value);        
+        try {
+            if ($type == 'date')
+                return $value ? date('d-m-Y', $value) : '';
+            elseif ($type == 'datetime')
+                return $value ? date('d-m-Y H:i', $value) : '';
+            elseif ($type == 'float')
+                return floatval($value);
+            elseif ($type == 'int')
+                return intval($value);
+            elseif ($type == 'bool')
+                return $export ? ($value ? 1 : 0) : '<span class="glyphicon glyphicon-' . $value ? 'ok text-success' : 'remove text-danger' . '"></span>';
+            elseif ($type == 'text')
+                return $export ? $value : nl2br(HTML::chars($value));
+            else
+                return $export ? $value : HTML::chars($value);
+        } catch (Exception $e) {
+            return '';
+        }
     }
 }

@@ -29,7 +29,7 @@ class Controller_Api_Images extends Kohana_Controller {
             die(json_encode(array('success' => false, 'error' => 'type required')));
 
         $pos = strrpos($filename, '.');
-        $ext = $pos ? substr($filename, $pos + 1) : '';
+        $ext = $pos ? substr($filename, $pos) : '';
 
         $number = DB::select('numbering')
             ->from('attachments')
@@ -67,7 +67,7 @@ class Controller_Api_Images extends Kohana_Controller {
                 $type = 'otdr-traces';
                 break;
             default:
-                $type = 'other';
+                $type = 'Other';
                 $filename = $title . $filename;
                 break;
         }
@@ -94,6 +94,8 @@ class Controller_Api_Images extends Kohana_Controller {
         die(json_encode(array(
             'success' => true,
             'id' => $result,
+            'folder' => $type,
+            'name' => $filename,
         )));
     }
 
@@ -152,7 +154,8 @@ class Controller_Api_Images extends Kohana_Controller {
                 );
                 DB::insert('upload_log', array_keys($data))->values(array_values($data))->execute();
                 Database::instance()->commit();
-                die(json_encode(array('success' => true)));
+                Database_Mongo::collection('jobs')->update(array('_id' => $attachment['job_id']), array('$unset' => array('downloaded' => 1), '$set' => array('last_update' => time())));
+                die(json_encode(array('success' => true, 'time' => $data['uploaded'])));
             }
         } catch (Exception $e) {
             die(json_encode(array('success' => false, 'error' => 'exception')));

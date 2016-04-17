@@ -82,7 +82,7 @@ if (isset($_SERVER['SERVER_PROTOCOL']))
  * Note: If you supply an invalid environment name, a PHP warning will be thrown
  * saying "Couldn't find constant Kohana::<INVALID_ENV_NAME>"
  */
-if ($_SERVER['HTTP_HOST'] == 'exeltek.savvyled.pl' || $_SERVER['HTTP_HOST'] == 'localhost')
+if (strpos($_SERVER['HTTP_HOST'], 'savvyled.pl') !== false || $_SERVER['HTTP_HOST'] == 'localhost')
     Kohana::$environment = Kohana::DEVELOPMENT;
 else
     Kohana::$environment = Kohana::PRODUCTION;
@@ -112,7 +112,7 @@ if (Kohana::$environment == Kohana::PRODUCTION)
  */
 Kohana::init(array(
     'index_file' => false,
-    'base_url'   => (Kohana::$environment == Kohana::PRODUCTION ? '/jobs/' : $_SERVER['HTTP_HOST'] == 'localhost' ? '/exeltek' : '/'),
+    'base_url'   => (Kohana::$environment == Kohana::PRODUCTION ? '/jobs/' : ($_SERVER['HTTP_HOST'] == 'localhost' ? '/exeltek' : '/')),
     'profile'    => Kohana::$environment !== Kohana::PRODUCTION,
 ));
 
@@ -154,6 +154,12 @@ Cookie::$salt = 'fnFTmwHPZGrt8ncs';
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
  * defaults for the URI.
  */
+Route::set('search', '(search(/<controller>(/<id>)))', array('id' => '.*'))
+    ->defaults(array(
+        'directory' => 'search',
+        'controller' => 'search',
+        'action'     => 'index',
+    ));
 Route::set('defects', '<directory>(/<controller>(/<action>(/<id>)))', array('directory' => '(defects|security|imex|reports|api)', 'id' => '.*'))
     ->defaults(array(
         'controller' => 'default',

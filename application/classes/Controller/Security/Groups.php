@@ -25,7 +25,7 @@ class Controller_Security_Groups extends Controller {
     public function action_edit() {
         $id = $this->request->param('id');
         
-        $form = new Form();
+        $form = new Form('security/groups/edit' . ($id ? '/' . $id : ''));
         
         $form->add("name", 'Name', Form::STRING, '', array('not_empty'))
             ->add('is_admin', 'Administrative group', Form::BOOL)
@@ -34,8 +34,11 @@ class Controller_Security_Groups extends Controller {
             ->add('allow_reports', 'Allow tracking changes', Form::BOOL)
             ->add('allow_submissions', 'Allow tracking submissions', Form::BOOL)
             ->add('allow_finance', 'Financial reports', Form::BOOL)
-            ->add('allow_forms', 'Forms submission', Form::BOOL);
-            
+            ->add('allow_forms', 'Forms submission', Form::BOOL)
+            ->add('allow_custom_forms', 'Custom forms submission', Form::BOOL)
+            ->add('edit_custom_forms', 'Edit custom forms reports', Form::BOOL)
+            ->add('time_machine', 'Time Machine', Form::BOOL);
+
         $form->add('columns', 'Show columns in job search', Form::INFO);
         
         foreach (Columns::$fixed as $key => $value)
@@ -62,6 +65,9 @@ class Controller_Security_Groups extends Controller {
                 $value['allow_submissions'] = 1;
                 $value['allow_finance'] = 1;
                 $value['allow_forms'] = 0;
+                $value['allow_custom_forms'] = 1;
+                $value['edit_custom_forms'] = 1;
+                $value['time_machine'] = 1;
                 $value['columns'] = implode(',', array_keys(Columns::$fixed));
             } else {
                 $columns = array();

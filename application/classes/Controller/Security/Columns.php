@@ -16,7 +16,7 @@ class Controller_Security_Columns extends Controller {
         $result = DB::select()->from('group_columns')->where('group_id', 'IN', array_keys($groups))->execute()->as_array();
         $permissions = array();
         $search = array();
-        
+
         foreach ($result as $perm) {
             $permissions[$perm['group_id']][$perm['column_id']] = $perm['permissions'];
             $search[$perm['group_id']][$perm['column_id']] = $perm['search'];
@@ -47,7 +47,7 @@ class Controller_Security_Columns extends Controller {
                     ':state' => $state,
                 )
             )->compile())->execute();
-        
+
         die(json_encode(array('success' => true)));
     }
     
@@ -69,7 +69,23 @@ class Controller_Security_Columns extends Controller {
                     ':state' => $state,
                 )
             )->compile())->execute();
-        
+
+        if ($state == 2) {
+            if (Columns::get_type($id) != 'text')
+                Database_Mongo::collection('jobs')->ensureIndex(array('data.' . $id => true), array('sparse' => true));
+        } else {
+            if (!DB::select('group_id')->from('group_columns')->where('column_id', '=', $id)->and_where('search', '=', 2)->execute()->get('group_id'))
+                Database_Mongo::collection('jobs')->deleteIndex(array('data.' . $id => true));
+        }
+
+        die(json_encode(array('success' => true)));
+    }
+
+    public function action_persistent() {
+        $id = Arr::get($_GET, 'id');
+        $state = intval(Arr::get($_GET, 'state'));
+
+        DB::update('job_columns')->set(array('persistent' => $state))->where('id', '=', $id)->execute();
         die(json_encode(array('success' => true)));
     }
     

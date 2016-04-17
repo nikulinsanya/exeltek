@@ -1,0 +1,63 @@
+@import "devices-media.css";
+
+@media (min-width: 992px){
+    #batchEditModal .modal-dialog.modal-lg{
+        width: 90%;
+    }
+}
+@media (min-width: 768px){
+    .modal-dialog {
+        width: 90%;
+    }
+    .modal-dialog.modal-sm {
+        width: 300px;
+    }
+}
+@media (max-width:1070px){
+    .col-container tr:nth-child(odd){
+        background: none!important;
+        /*background: #D9FDDE;*/
+    }
+    .col-container tr:nth-child(even){
+        /*background: #BEFFC7;*/
+        background: none!important;
+    }
+    .col-container td{
+        width: 100%!important;
+        display: inline-block;
+    }
+    .col-container td:nth-child(odd){
+        background: #D9FDDE;
+    }
+    .col-container td:nth-child(even){
+        background: #BEFFC7;
+    }
+
+    .status-cell{
+        width: 100%!important;
+    }
+    .extra{
+        display: none!important;
+    }
+    .bg-danger {
+        background-color: #f2dede!important;
+    }
+
+    .daterangepicker.dropdown-menu{
+        min-width: 675px;
+        left: 0px!important;
+    }
+
+    .daterangepicker.show-calendar .calendar{
+        float: right;
+    }
+    .daterangepicker.opensright:before,
+    .daterangepicker.opensright:after{
+        display: none!important;
+    }
+
+
+    .width-1-3{
+        width: 48%;
+    }
+}
