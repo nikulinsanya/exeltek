@@ -279,9 +279,9 @@ window.formbuilder = (function () {
                 $('#color').val('').css('background-color', '#fff');
             }
             if (cell && cell.attr('data-required')) {
-                $('#required').attr('checked', 'checked');
+                $('#required').prop('checked', true);
             } else {
-                $('#required').removeAttr('checked');
+                $('#required').prop('checked', false);
             }
 
             $('#placeholder-type').trigger('focus');
@@ -394,17 +394,18 @@ window.formbuilder = (function () {
             }
             if ($('#required').is(':checked')) {
                 $selectedCell.attr('data-required', true);
-            }
+            } else
+                $selectedCell.attr('data-required', '');
 
             $('#addField').modal('hide');
             $('.selected-cell').removeClass('selected-cell');
 
             if (type != 'ticket') {
                 var options = $('#bind-field-type').val();
-                if (!options) {
+                /*if (!options) {
                     return;
-                }
-                var value = options.join(','),
+                }*/
+                var value = options ? options.join(',') : '',
                     ticket = $('#bind-field-type').find('option:selected').text();
                 $selectedCell.attr('data-bind-value', value);
                 $('#bind-field-type').val('');
@@ -440,8 +441,8 @@ window.formbuilder = (function () {
                     case 'number':
                     case 'float':
                     case 'date':
-                        if (!$(this).find('input[type="text"]').val()) {
-                            $(this).find('input[type="text"]').addClass('error');
+                        if (!$(this).find('input').val()) {
+                            $(this).find('input').addClass('error');
                             valid = false;
                         }
                         break;
@@ -558,7 +559,7 @@ window.formbuilder = (function () {
                             assignAs: assignAs,
                             title: title,
                             bindValue: bindValue,
-                            required: !!$(this).attr('data-required')
+                            required: $(this).attr('data-required') ? true : false
                         };
 
                         if ($(this).attr('data-type') == 'options') {
