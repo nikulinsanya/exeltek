@@ -357,10 +357,19 @@ class Controller_Search_View extends Controller {
                         $update['$unset']['status'] = 1;
                     }
                     $update['$set']['last_update'] = $update_time;
-                    if (isset($update['$set']['data.8']))
-                        $update['$set']['address'] = MapQuest::parse($update['$set']['data.8']);
-                    elseif (isset($update['$unset']['data.8']))
-                        $update['$unset']['address'] = 1;
+
+                    $addr_id = 0;
+                    foreach (Columns::get_all() as $id => $name)
+                        if (trim(strtolower($name)) == 'address') {
+                            $addr_id = $id;
+                            break;
+                        }
+                    if ($addr_id)
+                        if (isset($update['$set']['data.' . $addr_id]))
+                            $update['$set']['address'] = MapQuest::parse($update['$set']['data.' . $addr_id]);
+                        elseif (isset($update['$unset']['data.' . $addr_id]))
+                            $update['$unset']['address'] = 1;
+                    Log::instance()->add(Log::INFO, 'Address ID: ' . $addr_id);
                     Database_Mongo::collection('jobs')->update(array('_id' => $id), $update);
                     if ($archive) {
                         foreach (Columns::get_static() as $key => $value)

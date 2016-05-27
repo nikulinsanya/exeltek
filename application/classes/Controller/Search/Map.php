@@ -67,9 +67,16 @@ class Controller_Search_Map extends Controller {
 
         $list = array();
 
+        $addr_id = 0;
+        foreach (Columns::get_all() as $id => $name)
+            if (trim(strtolower($name)) == 'address') {
+                $addr_id = $id;
+                break;
+            }
+
         $request = array();
-        foreach ($jobs as $job) if (!isset($job['lat'])) {
-            $request[$job['_id']] = Arr::path($job, 'data.8');
+        foreach ($jobs as $job) if (!isset($job['lat']) && Arr::path($job, 'data.' . $addr_id)) {
+            $request[$job['_id']] = Arr::path($job, 'data.' . $addr_id);
         }
 
         if ($request) {

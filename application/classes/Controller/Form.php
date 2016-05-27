@@ -270,7 +270,7 @@ class Controller_Form extends Controller {
                                     else
                                         $new['$unset']['data.' . $key] = 1;
 
-                                    if (!Group::current('allow_assign')) {
+                                    if (!Group::current('allow_assign') && Columns::get_name($key)) {
                                         $submission['job_key'] = $job['_id'];
                                         $submission['key'] = 'data.' . $key;
                                         $submission['value'] = $value;

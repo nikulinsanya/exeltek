@@ -542,7 +542,7 @@ window.formbuilder = (function () {
                         assignTo = $(this).attr('data-assign-to') || '';
                         assignAs = $(this).attr('data-assign-as') || '';
                         title = $(this).attr('data-text') || '';
-                        bindValue = !isUnattached && $(this).attr('data-bind-value') || '';
+                        bindValue = (isUnattached || $(this).attr('data-bind-value') == undefined) ? '' : $(this).attr('data-bind-value');
 
                         if (destinations[destination] == undefined) destination = '';
 

@@ -19,10 +19,10 @@ class MapQuest
         while ($item = current($address)) {
             $list[$item] = key($address);
 
-            $state = substr($item, strrpos($item, ',') + 1);
+            $addr = self::parse($item);
 
-            $item = array('country' => 'AU', 'street' => $item);
-            if ($state) $item['state'] = $state;
+            $item = array('country' => 'AU', 'street' => is_array($addr) ? $addr['number'] . ' ' . $addr['street'] . ', ' . $addr['city'] : $item);
+            if (is_array($addr) && $addr['state']) $item['state'] = $addr['state'];
 
             $data[] = $item;
 
@@ -69,7 +69,7 @@ class MapQuest
     }
 
     public static function parse($address) {
-        if (preg_match('/^((unit|whse|lot|shop|ant|bldg|shed|site|hall|dupl|tncy|se|offc|fcty|room[ a-z]*|hse) [0-9a-z-]+,? )*(\d[-0-9a-z]* )?([a-z- \']+),?(\r\n|\n)([a-z ]+), ([a-z]+)( \d+)?$/msi', trim($address), $matches)) {
+        if (preg_match('/^((unit|whse|lot|shop|ant|bldg|shed|site|hall|dupl|tncy|se|offc|fcty|room[ a-z]*|hse) [0-9a-z-]+,? )*(\d[-0-9a-z]* )?([a-z- \']+),?(\r\n|\n)([a-z ]+),? ([a-z]{3})( \d+)?$/msi', trim($address), $matches)) {
             $matches = array_map('trim', $matches);
             $address = array(
                 'state' => $matches[7],
@@ -79,7 +79,7 @@ class MapQuest
                 'house' => $matches[3],
                 'extra' => $matches[1],
             );
-        } elseif (preg_match('/^([0-9a-z-]+) ((the |rue )?[a-z]+) ([a-z ]+), ([a-z]+)$/msi', trim($address), $matches)) {
+        } elseif (preg_match('/^([0-9a-z-]+) ((the |rue )?[a-z]+) ([a-z ]+),? ([a-z]{3})$/msi', trim($address), $matches)) {
             $matches = array_map('trim', $matches);
             $address = array(
                 'state' => $matches[5],
