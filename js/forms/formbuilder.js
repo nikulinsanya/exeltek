@@ -1077,6 +1077,7 @@ window.formbuilder = (function () {
             });
             $('#fieldType').off().on('change', function () {
                 self.refreshFieldForm();
+                $('select').selectpicker('refresh');
             });
             $('#add-option').off().on('click', function () {
                 var value = $('#option-type-value').val();
@@ -1097,6 +1098,7 @@ window.formbuilder = (function () {
             $('#options-preview').off().on('change', function () {
                 var color = $(this).find('option[value="' + $(this).val() + '"]').attr('data-color');
                 $('#option-color').val(color);
+                $('select').selectpicker('refresh');
             });
 
             $('#color').colorPicker();
