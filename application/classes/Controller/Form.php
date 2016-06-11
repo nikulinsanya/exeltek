@@ -270,7 +270,7 @@ class Controller_Form extends Controller {
                                     else
                                         $new['$unset']['data.' . $key] = 1;
 
-                                    if (!Group::current('allow_assign')) {
+                                    if (!Group::current('allow_assign') && Columns::get_name($key)) {
                                         $submission['job_key'] = $job['_id'];
                                         $submission['key'] = 'data.' . $key;
                                         $submission['value'] = $value;
@@ -319,7 +319,7 @@ class Controller_Form extends Controller {
                             'user_id' => $form_data['user_id'],
                             'job_id' => $job ? $job['_id'] : 0,
                             'folder' => 'Reports',
-                            'fda_id' => $job ? Arr::path($job, 'data.14') : 'Unattached',
+                            'fda_id' => $job ? Arr::path($job, 'data.14', '') : 'Unattached',
                             'address' => $job ? trim(preg_replace('/-{2,}/', '-', preg_replace('/[^0-9a-z\-]/i', '-', Arr::path($job, 'data.8'))), '-') : 'Unattached',
                             'title' => '',
                         );

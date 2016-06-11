@@ -118,12 +118,14 @@ class Controller_Search_Assign extends Controller {
 
                 $users = DB::select('id')->from('users')->where('company_id', '=', $company)->execute()->as_array(NULL, 'id');
 
-                $message = $count . ' tickets were allocated on ' . date('d-m-Y H:i', $assign_time) . '. <a href="javascript:;" class="tickets-search-assign" data-date="' . date('d-m-Y H:i:s', $assign_time) . '">View ticket(s)</a>';
-                $insert = DB::insert('notifications', array('user_id', 'message'));
+                if ($users) {
+                    $message = $count . ' tickets were allocated on ' . date('d-m-Y H:i', $assign_time) . '. <a href="javascript:;" class="tickets-search-assign" data-date="' . date('d-m-Y H:i:s', $assign_time) . '">View ticket(s)</a>';
+                    $insert = DB::insert('notifications', array('user_id', 'message'));
 
-                foreach ($users as $user)
-                    $insert->values(array($user, $message));
-                $insert->execute();
+                    foreach ($users as $user)
+                        $insert->values(array($user, $message));
+                    $insert->execute();
+                }
             }
         }
 

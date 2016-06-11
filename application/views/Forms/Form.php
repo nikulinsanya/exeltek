@@ -29,6 +29,7 @@
         <button type="button" class="btn btn-info form-save">Save & Print</button>
     </div>
 </form>
+<canvas id="blank-canvas"></canvas>
 
 
 <link href="<?= URL::base() ?>css/forms/formbuilder.css" rel="stylesheet">

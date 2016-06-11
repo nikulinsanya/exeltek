@@ -9,7 +9,7 @@ $(function () {
     $('#tabEditor').on('click','.remove-tab', function(){
         var self = this;
         if(confirm('Are you sure you want to remove tab?')){
-            removeTab($(this).attr('data-id')).then(function(){
+            updateTab($(this).attr('data-id'), 'REMOVE').then(function(){
                 $(self).parents('tr').remove();
             });
         }
@@ -152,26 +152,11 @@ $(function () {
         }
     });
 
-
-    function removeTab(id){
-        return $.ajax({
-            url:utils.baseUrl()+'security/structure/tab/remove' + id,
-            type:'GET',
-            dataType:'JSON',
-            error: function(e) {
-                console.log(e);
-            }
-        });
-    }
-
     function removeColumn(id){
         return $.ajax({
-            url:utils.baseUrl()+'security/structure/tab/remove' + id,
+            url:utils.baseUrl()+'security/structure/remove/' + id,
             type:'GET',
             dataType:'JSON',
-            error: function(e) {
-                console.log(e);
-            }
         });
     }
 

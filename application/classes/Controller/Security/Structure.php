@@ -91,4 +91,13 @@ class Controller_Security_Structure extends Controller
         header('Content-type: application/json');
         die(json_encode(array('success' => true, 'id' => $id)));
     }
+
+    public function action_remove() {
+        $id = $this->request->param('id');
+
+        DB::delete('job_columns')->where('id', '=', $id)->execute();
+
+        header('Content-type: application/json');
+        die(json_encode(array('success' => true)));
+    }
 }

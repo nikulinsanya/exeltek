@@ -5,7 +5,7 @@ class Controller_Search_Export extends Controller {
     public function action_index() {
         $action = $this->request->param('id');
 
-        $ids = array_keys(Arr::get($_POST, 'job', array()));
+        $ids = array_map('strval', array_keys(Arr::get($_POST, 'job', array())));
         if (!$ids)
             throw new HTTP_Exception_404('Not found');
 
