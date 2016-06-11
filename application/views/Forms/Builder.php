@@ -163,6 +163,7 @@
             </div>
             <div class="modal-body text-center" id="new-cell-details">
                 <div class="row" id="options-settings">
+                    <div class="col-md-12" >
                     <div class="row">
                         <div class="col-md-12" >
                             <h4>Select predifined options</h4>
@@ -178,6 +179,7 @@
                             <a class="btn btn-success close-options apply-options">Apply</a>
                             <a class="btn btn-warning close-options">Close</a>
                         </div>
+                    </div>
                     </div>
                 </div>
                 <div class="row" id="main-settings">
